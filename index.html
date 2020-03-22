@@ -116,14 +116,14 @@ function makePlotly( dates, total_count){
 
     //console.log(dates.slice(0,i+1))
     if(i == 0){
-      frames[i].data[1].x = dates.slice(0, i+1);
-      frames[i].data[1].y = total_count.slice(0, i+1);
-      frames[i].data[1].name = "Linear Fit"
-
-
       frames[i].data[2].x = dates.slice(0, i+1);
       frames[i].data[2].y = total_count.slice(0, i+1);
-      frames[i].data[2].name = "Exponential Fit"
+      frames[i].data[2].name = "Linear Fit"
+
+
+      frames[i].data[1].x = dates.slice(0, i+1);
+      frames[i].data[1].y = total_count.slice(0, i+1);
+      frames[i].data[1].name = "Exponential Fit"
 
 
     } else {
@@ -139,16 +139,19 @@ function makePlotly( dates, total_count){
       a2 = out_vec[3];
       linear_fit = out_vec[4];
       exp_fit = out_vec[5];
-      frames[i].data[1].x = dates.slice(0, i+1);
-      frames[i].data[1].y = linear_fit;
-
-      frames[i].data[1].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + "(day)"
-      frames[i].data[2].name = math.round(String(a1),1) + " e^(" + math.round(String(a2),4) + "(day))"
 
 
 
       frames[i].data[2].x = dates.slice(0, i+1);
-      frames[i].data[2].y = exp_fit;
+      frames[i].data[2].y = linear_fit;
+
+      frames[i].data[2].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + "(day)"
+      frames[i].data[1].name = math.round(String(a1),1) + " e^(" + math.round(String(a2),4) + "(day))"
+
+
+
+      frames[i].data[1].x = dates.slice(0, i+1);
+      frames[i].data[1].y = exp_fit;
     }
 
   }
