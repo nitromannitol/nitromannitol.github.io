@@ -121,6 +121,7 @@ data_out[2:end,3] = days;
 data_out[2:end,4] = linear_fit;
 data_out[2:end,5] = exp_fit;
 
+
 ### now study the difference 
 new_cases = zeros(counts)
 new_cases[1]=counts[1];
@@ -164,7 +165,7 @@ while(true)
 end
 
 
-#counts2 = copy(counts)
+counts2 = copy(counts)
 
 
 #counts_diff = copy(counts);
@@ -172,6 +173,8 @@ counts_diff = [];
 for i in 2:length(counts2)
 	push!(counts_diff,100*(counts2[i]-counts2[i-1])/(counts2[i-1]));
 end
+
+println(mean(counts_diff[end-6:end]))
 
 ##
 #counts_diff = counts_diff[10:end]

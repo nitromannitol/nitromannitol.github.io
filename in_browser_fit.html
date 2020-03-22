@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+body { font: 12px Arial;}
+</style>
+<body>
+
+<!-- load the plotly.js and math.js libraries -->      
+
+<head>
+  <script src="plotly-latest.min.js"></script>
+    <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
+</head>
+
+
+<body>
+
+  <!-- load the plotly.js library -->      
+<div id="graph" width="500" height="500"></div>
+
+
+<script>
+
+
+
+function makeplot() {
+  Plotly.d3.csv("data_fit.csv", function(data){ processData(data) } );
+};
+
+
+// fit y = b1 + b2 x  with least squares
+
+function fitLS(x_vec,y_vec,){
+  const range_val = [...Array(x_vec.length).keys()];
+  var x_mat = math.ones(x_vec.length,2)
+  x_mat = math.subset(x_mat,math.index(range_val, 0), x_vec);
+  var pinv_mat = math.multiply(math.transpose(x_mat),x_mat);
+  pinv_mat = math.inv(pinv_mat);
+  pinv_mat = math.multiply(pinv_mat, math.transpose(x_mat))
+  return math.multiply(pinv_mat,y_vec);
+}
+
+
+// count_vec is vector of true counts
+// test range is range on which to test data,
+// out_range is range on which to output data
+function buildModels(test_range, out_range, count_vec){
+
+  //fit linear and exponential models 
+  var y_vec = math.matrix(count_vec);
+  var range_val = [...Array(count_vec.length).keys()];
+  var x_vec = math.add(range_val,1);
+
+  // modify the range to test on but cap it
+  test_range = math.min(test_range, count_vec.length);
+
+  var out_range = [...Array(out_range).keys()];
+  var test_range = [...Array(test_range).keys()];
+
+  y_vec = math.subset(y_vec, math.index(test_range));
+  x_vec = math.subset(x_vec, math.index(test_range));
+
+
+
+  // fit  y = b1 + b2 x 
+  const beta_hat_linear = fitLS(x_vec,y_vec);
+  const b1 = beta_hat_linear.subset(math.index(1));
+  const b2 = beta_hat_linear.subset(math.index(0));
+
+
+  // fit y = a1 *exp(a2 x)
+  const beta_hat_exp = fitLS(x_vec, math.log(y_vec))
+  const a1 = math.exp(beta_hat_exp.subset(math.index(1)));
+  const a2 = beta_hat_exp.subset(math.index(0));
+
+
+  //fill the prediction vectors 
+  x_vec = math.add(out_range,1);
+
+
+  var linear_fit = [];
+  var exp_fit = [];
+  for (var i=0; i<x_vec.length; i++) {
+    linear_fit.push(b1 + b2*x_vec[i])
+    exp_fit.push(a1*math.exp(a2*x_vec[i]))
+  }
+
+
+  return [b1,b2,a1,a2,linear_fit,exp_fit];
+
+
+}
+
+  
+function processData(allRows) {
+  var dates = [];
+  var total_count = [];
+  for (var i=0; i<allRows.length; i++) {
+    row = allRows[i];
+    dates.push( row['date'] );
+    total_count.push( row['total_count'] );
+  }
+
+
+  // build the model and pass it to the plot 
+  count_vec = math.clone(total_count);
+  var test_range = 50;
+  var out_range = 50;
+  out_vec = buildModels(test_range, out_range,count_vec);
+  b1 = out_vec[0];
+  b2 = out_vec[1];
+  a1 = out_vec[2];
+  a2 = out_vec[3];
+  linear_fit = out_vec[4];
+  exp_fit = out_vec[5];
+
+  makePlotly( dates,total_count, linear_fit,exp_fit);
+}
+
+function makePlotly( dates, total_count, linear_fit, exp_fit){
+  var plotDiv = document.getElementById("plot");
+  var traces = [
+
+  {
+    x: dates, 
+    y: total_count,
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Total Confirmed Cases'
+  },
+
+  {
+    x: dates, 
+    y: exp_fit,
+    mode: 'lines',
+    type: 'scatter',
+    name: 'Exponential Fit',
+  },
+
+   {
+    x: dates, 
+    y: linear_fit,
+    mode: 'lines',
+    type: 'scatter',
+    name: 'Linear Fit',
+  }
+
+
+  ];
+
+  var layout = {
+  legend: {
+    y: 0.5,
+    yref: 'paper',
+    font: {
+      family: 'Courier New, monospace',
+      size: 15,
+      color: 'grey',
+    }
+  },
+  title: {
+    text:'COVID-19 in Kuwait',
+    font: {
+      family: 'Courier New, monospace',
+      size: 24
+    },
+    xref: 'paper',
+    x: 0.05,
+  },
+
+  yaxis: {
+    title: {
+      text: 'Count',
+      font: {
+        family: 'Courier New, monospace',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  },
+  colorway : ['#000000', '#ff0000', '#0000ff']
+};
+
+
+
+  Plotly.newPlot('graph', traces, layout, {responsive:true});
+
+
+};
+
+
+  makeplot();
+</script>
+
+
+</body>
+
+<hr>
+  
+
+Each data point corresponds to daily, public updates by <a href = "https://twitter.com/KUWAIT_MOH"> Kuwait's Ministry of Health</a>.
+
+
+
+<hr>
+
+      Last updated March 21, 6:30 AM CDT.  
+<hr>
+
+
+   <footer>
+      Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee </a>
+
+    </footer>
+
+
+
+
