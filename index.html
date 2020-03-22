@@ -1,197 +1,323 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style> /* set the CSS */
-
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 2px;
-}
-
 body { font: 12px Arial;}
-
-.legend {
-    font-size: 16px;
-    font-weight: bold;
-    text-anchor: left;
-}
 </style>
 <body>
 
-<!-- load the d3.js and regression libraries -->    	
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://unpkg.com/d3-regression@1.3.4/dist/d3-regression.min.js"></script>
+<!-- load the plotly.js and math.js libraries -->      
+
+<head>
+  <script src="plotly-latest.min.js"></script>
+    <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
+</head>
+
+
+<body>
+
+  <!-- load the plotly.js library -->      
+<div id="graph" width="500" height="500"></div>
 
 
 <script>
 
 
-// set the dimensions and margins of the graph
-var margin = {top: 50, right: 200, bottom: 30, left: 50},
-    width = 1000 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
 
-// parse the date / time
-var parseTime = d3.timeParse("%d-%b-%y");
-
-// set the ranges
-var x = d3.scaleTime().range([0, width]);
-var y = d3.scaleLinear().range([height, 0]);
-
-// define the line
-var valueline = d3.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.linear_fit); });
-
-// define the line
-var valueline2 = d3.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.exp_fit); });
+function makeplot() {
+  Plotly.d3.csv("data_fit.csv", function(data){ processData(data) } );
+};
 
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+// fit y = b1 + b2 x  with least squares
 
-// Input actual data
-d3.csv("data.csv", function(error, data) {
-  if (error) throw error;
+function fitLS(x_vec,y_vec,){
+  const range_val = [...Array(x_vec.length).keys()];
+  var x_mat = math.ones(x_vec.length,2)
+  x_mat = math.subset(x_mat,math.index(range_val, 0), x_vec);
+  var pinv_mat = math.multiply(math.transpose(x_mat),x_mat);
+  pinv_mat = math.inv(pinv_mat);
+  pinv_mat = math.multiply(pinv_mat, math.transpose(x_mat))
+  return math.multiply(pinv_mat,y_vec);
+}
 
-  // format the data
-  data.forEach(function(d) {
-      d.date = parseTime(d.date);
-      d.total_cases = +d.total_cases;
-      d.total_recovered = +d.total_recovered;
+
+// count_vec is vector of true counts
+// test range is range on which to test data,
+// out_range is range on which to output data
+function buildModels(test_range, out_range, count_vec){
+  //fit linear and exponential models 
+  var range_val = [...Array(count_vec.length).keys()];
+  var x_vec = math.add(range_val,1);
+
+  x_vec = x_vec.slice(0,test_range+1);
+  y_vec = count_vec.slice(0,test_range+1);
+  y_vec = math.matrix(y_vec)
+
+
+  // fit  y = b1 + b2 x 
+  const beta_hat_linear = fitLS(x_vec,y_vec);
+  const b1 = beta_hat_linear.subset(math.index(1));
+  const b2 = beta_hat_linear.subset(math.index(0));
+
+
+  // fit y = a1 *exp(a2 x)
+  const beta_hat_exp = fitLS(x_vec, math.log(y_vec))
+  const a1 = math.exp(beta_hat_exp.subset(math.index(1)));
+  const a2 = beta_hat_exp.subset(math.index(0));
+
+
+  //fill the prediction vectors 
+  x_vec = [...Array(out_range).keys()];
+  x_vec = math.add(x_vec,1)
+
+  var linear_fit = [];
+  var exp_fit = [];
+  for (var i=0; i<x_vec.length; i++) {
+    linear_fit.push(b1 + b2*x_vec[i])
+    exp_fit.push(a1*math.exp(a2*x_vec[i]))
+  }
+
+
+  return [b1,b2,a1,a2,linear_fit,exp_fit];
+
+
+}
+
+  
+function processData(allRows) {
+  var dates = [];
+  var total_count = [];
+  for (var i=0; i<allRows.length; i++) {
+    row = allRows[i];
+    dates.push( row['date'] );
+    total_count.push( row['total_count'] );
+  }
+
+  makePlotly( dates,total_count);
+}
+
+
+
+
+
+function makePlotly( dates, total_count){
+  var plotDiv = document.getElementById("plot");
+
+  // each frame is going to correspond to a day and the model
+  // fit up to that point 
+  var frames = [];
+
+  for (var i = 0; i < dates.length; i++) {
+    frames[i] = {data: [{x: [], y: []}, {x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]};
+    frames[i].data[0].x = dates.slice(0, i+1);
+    frames[i].data[0].y = total_count.slice(0, i+1);
+
+    //console.log(dates.slice(0,i+1))
+    if(i == 0){
+      frames[i].data[1].x = dates.slice(0, i+1);
+      frames[i].data[1].y = total_count.slice(0, i+1);
+      frames[i].data[1].name = "Linear Fit"
+
+
+      frames[i].data[2].x = dates.slice(0, i+1);
+      frames[i].data[2].y = total_count.slice(0, i+1);
+      frames[i].data[2].name = "Exponential Fit"
+
+
+    } else {
+      // fit the linear and exponential models on this slice
+      count_vec = math.clone(total_count);
+      var test_range = i+1;
+      var out_range = i+1;
+
+      out_vec = buildModels(test_range, out_range,count_vec);
+      b1 = out_vec[0];
+      b2 = out_vec[1];
+      a1 = out_vec[2];
+      a2 = out_vec[3];
+      linear_fit = out_vec[4];
+      exp_fit = out_vec[5];
+      frames[i].data[1].x = dates.slice(0, i+1);
+      frames[i].data[1].y = linear_fit;
+
+      frames[i].data[1].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + "(day)"
+      frames[i].data[2].name = math.round(String(a1),1) + " e^(" + math.round(String(a2),4) + "(day))"
+
+
+
+      frames[i].data[2].x = dates.slice(0, i+1);
+      frames[i].data[2].y = exp_fit;
+    }
+
+  }
+
+  var sliderSteps = [];
+  for (i = 0; i < dates.length; i++) {
+    sliderSteps.push({
+      method: 'animate',
+      label: i+1,
+      args: [[dates[i]], {
+        mode: 'immediate',
+        transition: {duration: 300},
+        frame: {duration: 300, redraw: true},
+      }]
+    });
+  }
+
+
+  const start_ind = dates.length-1
+
+  var trace1 = {
+      x: frames[start_ind].data[0].x, 
+      y: frames[start_ind].data[0].y,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Total Confirmed Cases'
+  };
+
+
+  var trace2 = {
+      x: frames[start_ind].data[2].x, 
+      y: frames[start_ind].data[2].y,
+      mode: 'lines',
+      type: 'scatter',
+      name: frames[start_ind].data[2].name
+  };
+
+   var trace3 = {
+      x: frames[start_ind].data[1].x, 
+      y: frames[start_ind].data[1].y,
+      mode: 'lines',
+      type: 'scatter',
+      name: frames[start_ind].data[1].name
+  };
+  
+
+  var data = [trace1,trace2,trace3];
+
+  // create the traces 
+
+
+
+
+  var layout = {
+    title: {
+      text:'COVID-19 in Kuwait',
+      font: {
+        family: 'Courier New, monospace',
+        size: 24
+      },
+      xref: 'paper',
+    },
+    xaxis: {
+      range: ["2020-02-23", "2020-03-31"],
+      showgrid: true
+    },
+    yaxis: {
+      range: [0, 200],
+      showgrid: true
+    },
+    legend: {
+    //  orientation: 'h',
+      y: 0.5,
+      yref: 'paper',
+      font: {
+        family: 'Courier New, monospace',
+        size: 15
+      },
+    bgcolor: '#E2E2E2',
+    bordercolor: '#FFFFFF',
+    borderwidth: 2
+    },
+    colorway : ['#000000', '#ff0000', '#0000ff'],
+
+
+     hovermode: 'closest',
+   // We'll use updatemenus (whose functionality includes menus as
+   // well as buttons) to create a play button and a pause button.
+   // The play button works by passing `null`, which indicates that
+   // Plotly should animate all frames. The pause button works by
+   // passing `[null]`, which indicates we'd like to interrupt any
+   // currently running animations with a new list of frames. Here
+   // The new list of frames is empty, so it halts the animation.
+    updatemenus: [{
+      x: 0,
+      y: 0,
+      yanchor: 'top',
+      xanchor: 'left',
+      showactive: false,
+      direction: 'left',
+      type: 'buttons',
+      pad: {t: 87, r: 10},
+      buttons: [{
+        method: 'animate',
+        args: [null, {
+          mode: 'immediate',
+          fromcurrent: true,
+          transition: {duration: 300},
+          frame: {duration: 500, redraw: true}
+        }],
+        label: 'Play'
+      }, {
+        method: 'animate',
+        args: [[null], {
+          mode: 'immediate',
+          transition: {duration: 0},
+          frame: {duration: 0, redraw: true}
+        }],
+        label: 'Pause'
+      }]
+    }],
+
+    // Finally, add the slider and use `pad` to position it
+   // nicely next to the buttons.
+    sliders: [{
+      pad: {l: 130, t: 55},
+      currentvalue: {
+        visible: true,
+        prefix: 'Day:',
+        xanchor: 'right',
+        font: {size: 20, color: '#666'}
+      },
+      steps: sliderSteps
+    }]
+  
+
+
+
+  
+  };
+
+
+
+  // Create the plot:
+  Plotly.newPlot('graph', {
+    data: data,
+    layout: layout,
+    frames: frames,
+    responsive: true, 
   });
 
-  // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) { return d.total_cases; })]);
-
-  // Add the X Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
-
-  // Add the Y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y));
-
-
- // text label for the y axis
-  svg.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left)
-      .attr("x",0 - (height / 2))
-      .attr("dy", "1em")
-      .style("text-anchor", "middle")
-      .text("Total Count");      
-
-
-   // add a title
-  svg.append("text")
-      .attr("x", (width / 2))       
-      .attr("y", 0 - (margin.top / 2))
-      .attr("text-anchor", "middle")  
-      .style("font-size", "20px") 
-      .style("text-decoration", "underline")  
-      .text("Total Confirmed COVID-19 Cases in Kuwait");
+ // Plotly.newPlot('graph', data, layout, {responsive:true}).then(function() {
+ //   Plotly.addFrames('graph', frames);
+ // });
 
 
 
-
-});
-
-
-// Fit the data
-d3.csv("data_fit.csv", function(error, data) {
-  if (error) throw error;
-
-  // format the data
-  data.forEach(function(d) {
-      d.date = parseTime(d.date);      
-      d.day = +d.day;
-      d.total_count = +d.total_count
-      d.linear_fit = +d.linear_fit;
-      d.exp_fit = +d.exp_fit;
-
-  });
-
-   // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) {
-    return Math.max(d.exp_fit, d.linear_fit); })]);
-
-    // Add the valueline path.
-  svg.append("path")
-      .data([data])
-      .attr("class", "line")
-      .style("stroke", "blue")
-      .attr("d", valueline);
-
-  // Add the valueline2 path.
-  svg.append("path")
-      .data([data])
-      .attr("class", "line")
-      .style("stroke", "red")
-      .attr("d", valueline2);
+ // Plotly.newPlot('graph', data, layout, {responsive:true});
 
 
-  svg.append("text")
-      .attr("transform", "translate("+(width+5)+","+y(data[0].exp_fit)+")")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "start")
-      .style("fill", "blue")
-      .text("Linear Fit");
-
-  svg.append("text")
-      .attr("transform", "translate("+(width+5)+","+y(data[0].linear_fit)+")")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "start")
-      .style("fill", "red")
-      .text("Exponential Fit");
-
-       // Add the scatterplot
-  svg.selectAll("dot")
-      .data(data)
-    .enter().append("circle")
-      .attr("r", 3)
-      .attr("cx", function(d) { return x(d.date); })
-      .attr("cy", function(d) { return y(d.total_count); });
+};
 
 
-
-
-
-
-});
-
-
-
-
+  makeplot();
 </script>
 
 
 </body>
 
-
 <hr>
-Linear fit is <font color="blue"> 5.3*day + 8.3 </font>  with <font color = "blue"> R^2=0.90 </font>. 
-<br>
-Exponential fit is <font color="red"> 25.5*exp(1.05*day) </font> with <font color = "red" > R^2=1.05 </font>.
-<br>
-Today is the <font color="red"> 26th </font> day of the outbreak in Kuwait.
-<br>
-There are <font color="red"> 176 </font> total cases.
-<br>
-The average daily rate of growth in the last 7 days is <font color = "red"> 7.8% </font>
-
-
-<hr>
-	
+  
 
 Each data point corresponds to daily, public updates by <a href = "https://twitter.com/KUWAIT_MOH"> Kuwait's Ministry of Health</a>.
 
@@ -199,11 +325,11 @@ Each data point corresponds to daily, public updates by <a href = "https://twitt
 
 <hr>
 
-      Last updated March 21, 6:30 AM CDT.  
+      Last updated March 22, 11:02 AM CDT.  
 <hr>
 
 
-	 <footer>
+   <footer>
       Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee </a>
 
     </footer>
