@@ -182,19 +182,19 @@ function makePlotly( dates, total_count){
 
 
   var trace2 = {
-      x: frames[start_ind].data[2].x, 
-      y: frames[start_ind].data[2].y,
-      mode: 'lines',
-      type: 'scatter',
-      name: frames[start_ind].data[2].name
-  };
-
-   var trace3 = {
       x: frames[start_ind].data[1].x, 
       y: frames[start_ind].data[1].y,
       mode: 'lines',
       type: 'scatter',
       name: frames[start_ind].data[1].name
+  };
+
+   var trace3 = {
+      x: frames[start_ind].data[2].x, 
+      y: frames[start_ind].data[2].y,
+      mode: 'lines',
+      type: 'scatter',
+      name: frames[start_ind].data[2].name
   };
   
 
