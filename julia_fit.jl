@@ -44,6 +44,30 @@ days = Int.(days);
 counts = Int.(counts)
 
 
+dates2 = [];
+#modify the dates 
+for DD in dates
+	day, mon, year = split(DD, "-");
+
+	year = string("20",year)
+
+	if(length(day)==1)
+		day = string("0", day);
+	end
+	if(mon == "Feb")
+		mon = "02"
+	end
+	if(mon == "Mar")
+		mon = "03"
+	end
+	push!(dates2, string(year, "-", mon, "-", day));
+end
+
+dates=dates2;
+
+
+
+
 
 
 
