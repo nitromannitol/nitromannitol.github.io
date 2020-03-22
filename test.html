@@ -129,9 +129,7 @@ function makePlotly( dates, total_count){
     } else {
       // fit the linear and exponential models on this slice
       count_vec = math.clone(total_count);
-     // const curr_day = 27;
       var test_range = i+1;
-    //  var test_range = math.min(i+1,curr_day+1);
       var out_range = i+1;
 
       out_vec = buildModels(test_range, out_range,count_vec);
@@ -172,7 +170,7 @@ function makePlotly( dates, total_count){
   }
 
 
-  const start_ind = 26
+  const start_ind = dates.length-1
 
   var trace1 = {
       x: frames[start_ind].data[0].x, 
@@ -203,7 +201,7 @@ function makePlotly( dates, total_count){
   var data = [trace1,trace2,trace3];
 
   // create the traces 
- // console.log(frames[dates.length-1].data[1].x[dates.length-1])
+
 
 
 
@@ -218,13 +216,11 @@ function makePlotly( dates, total_count){
     },
     xaxis: {
       type: 'date',
-      range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
-      //range: ["2020-02-23", frames[dates.length-1].data[1].x],
+      range: ["2020-02-23", "2020-03-31"],
       showgrid: false
     },
     yaxis: {
-      range: [0, frames[dates.length-1].data[1].y[dates.length-1]],
-      //range: [0, frames[dates.length-1].data[1].y],
+      range: [0, 200],
       showgrid: false
     },
     legend: {
@@ -351,8 +347,8 @@ Notice the parameters of the exponential model do not change much after the 16th
 
 
    <footer>
-      Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
-      <a href = "mailto: ahmedmb@gmail.com">here</a>. 
+      Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions to 
+      <a href = "mailto: ahmedmb@gmail.com">Ahmed</a>. 
     </footer>
 
 
