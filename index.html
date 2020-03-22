@@ -10,6 +10,8 @@ body { font: 12px Arial;}
 <head>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
 
@@ -320,13 +322,20 @@ function makePlotly( dates, total_count){
 <hr>
   
 
-Each data point corresponds to daily, public updates by <a href = "https://twitter.com/KUWAIT_MOH"> Kuwait's Ministry of Health</a>.
-
-
+Each data point corresponds to daily, public updates by <a href = "https://twitter.com/KUWAIT_MOH"> Kuwait's Ministry of Health</a>
+of the total number of confirmed COVID-19 cases in Kuwait.
+<br>
+<br>
+The <font color = "blue" > blue </font> line represents the best linear fit: count = b_1 + b_2 (day). 
+<br> 
+The <font color = "red" > red </font> line represents the best exponential fit: count = a_1 e^(a_2 (day)).
+<br>
+<br>
+Notice the parameters of the exponential model do not change much after the 16h day,  while the linear model keeps changing.
 
 <hr>
 
-      Last updated March 22, 11:02 AM CDT.  
+      Last updated March 22, 12:38 AM CDT.  
 <hr>
 
 
