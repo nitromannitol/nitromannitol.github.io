@@ -174,7 +174,7 @@ function makePlotly( dates, total_count){
       y: frames[start_ind].data[0].y,
       mode: 'markers',
       type: 'scatter',
-      name: 'Total Confirmed Cases'
+      name: 'Total Confirmed Cases',
   };
 
 
@@ -278,7 +278,7 @@ function makePlotly( dates, total_count){
       pad: {l: 130, t: 55},
       currentvalue: {
         visible: true,
-        prefix: 'Day:',
+        prefix: 'Days since first confirmed case:',
         xanchor: 'right',
         font: {size: 20, color: '#666'}
       },
@@ -290,7 +290,6 @@ function makePlotly( dates, total_count){
 
   
   };
-
 
 
   // Create the plot:
@@ -332,7 +331,7 @@ The <font color = "red" > red </font> line represents the best exponential fit: 
 <br>
 <br>
 
-Click the buttons and slider to see the best linear and exponential models over time. See the legend for the fit parameters. 
+Click the buttons and slider to see the best linear and exponential models over time. See the legend on the right for the fit parameters. 
 
 <br>
 
