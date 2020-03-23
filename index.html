@@ -172,7 +172,7 @@ function makePlotly( dates, total_count){
   }
 
 
-  const start_ind = 26
+  const start_ind = dates.length-1;
 
   var trace1 = {
       x: frames[start_ind].data[0].x, 
@@ -218,7 +218,7 @@ function makePlotly( dates, total_count){
     },
     xaxis: {
       type: 'date',
-      range: ["2020-02-23", "2020-03-23"],
+      range: ["2020-02-23", "2020-03-25"],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x],
       showgrid: false
@@ -347,7 +347,7 @@ Notice the parameters of the exponential model do not change much after the 16th
 
 <hr>
 
-      Last updated March 22, 2:24 PM CDT.  
+      Last updated March 23, 4:58 AM CDT.  
 <hr>
 
 
