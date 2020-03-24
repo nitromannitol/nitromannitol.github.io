@@ -37,6 +37,9 @@ function fitLS(x_vec,y_vec,){
   var x_mat = math.ones(x_vec.length,2)
   x_mat = math.subset(x_mat,math.index(range_val, 0), x_vec);
   var pinv_mat = math.multiply(math.transpose(x_mat),x_mat);
+  var id_mat = math.identity(math.size(pinv_mat));
+  id_mat = math.multiply(id_mat,0.05);
+  pinv_mat = math.add(pinv_mat,id_mat);
   pinv_mat = math.inv(pinv_mat);
   pinv_mat = math.multiply(pinv_mat, math.transpose(x_mat))
   return math.multiply(pinv_mat,y_vec);
@@ -218,7 +221,7 @@ function makePlotly( dates, total_count){
     },
     xaxis: {
       type: 'date',
-      range: ["2020-02-23", "2020-03-25"],
+      range: ["2020-02-23", "2020-03-26"],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x],
       showgrid: false
@@ -333,21 +336,26 @@ Each data point corresponds to daily, public updates by Kuwait's <a href = "http
 or <a href = "https://twitter.com/MOInformation" > Ministry of Information</a> of the total number of confirmed COVID-19 cases in Kuwait.
 <br>
 <br>
-The <font color = "blue" > blue </font> line represents the best linear fit up to that day: count = b_1 + b_2 (day). 
+The <font color = "blue" > blue </font> line represents a best linear fit up to that day: count = b_1 + b_2 (day). 
 <br> 
-The <font color = "red" > red </font> line represents the best exponential fit: count = a_1 e^(a_2 (day)).
+The <font color = "red" > red </font> line represents a best exponential fit: count = a_1 e^(a_2 (day)).
 <br>
+<br> 
+Both models are fit with <a href = "https://en.wikipedia.org/wiki/Tikhonov_regularization"> regularized least squares </a> to prevent outliers from influencing the model. 
+<br> 
 <br>
+
 
 Click the buttons and slider bar to see the best linear and exponential models for that day. See the legend on the right for the fit parameters. 
 
 <br>
 
-Notice the parameters of the exponential model do not change much after the 16th day,  while the slope of the linear model keeps growing. This suggest we have not reached an <a href = "https://youtu.be/Kas0tIxDvrg"> inflection point </a> for the curve.
+Notice the parameters of the exponential model do not change much day 16-27,  while the slope of the linear model keeps growing. This suggested we have not reached an <a href = "https://youtu.be/Kas0tIxDvrg"> inflection point </a> for the curve. However, in the last two days, there have only been three new cases, which is promising. It remains to be seen if we have truly reached an inflection point. 
+
 
 <hr>
 
-      Last updated March 23, 4:58 AM CDT.  
+      Last updated March 24, 5:27 AM CDT.  
 <hr>
 
 
