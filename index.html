@@ -72,7 +72,7 @@ function buildModels(test_range, out_range, count_vec){
 
 
   //fill the prediction vectors 
-  x_vec = [...Array(out_range).keys()];
+  x_vec = [...Array(out_range+1).keys()];
   x_vec = math.add(x_vec,1)
 
   var linear_fit = [];
@@ -111,6 +111,7 @@ function makePlotly( dates, total_count){
   // each frame is going to correspond to a day and the model
   // fit up to that point 
   var frames = [];
+  //console.log(dates.slice(0,dates.length))
 
   for (var i = 0; i < dates.length; i++) {
     frames[i] = {data: [{x: [], y: []}, {x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]};
@@ -133,9 +134,9 @@ function makePlotly( dates, total_count){
       // fit the linear and exponential models on this slice
       count_vec = math.clone(total_count);
      // const curr_day = 27;
-      var test_range = i+1;
+      var test_range = i;
     //  var test_range = math.min(i+1,curr_day+1);
-      var out_range = i+1;
+      var out_range = i;
 
       out_vec = buildModels(test_range, out_range,count_vec);
       b1 = out_vec[0];
@@ -144,7 +145,7 @@ function makePlotly( dates, total_count){
       a2 = out_vec[3];
       linear_fit = out_vec[4];
       exp_fit = out_vec[5];
-
+     // console.log(a2);
 
 
       frames[i].data[2].x = dates.slice(0, i+1);
