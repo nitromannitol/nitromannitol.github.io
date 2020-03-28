@@ -83,3 +83,13 @@ data_out[2:end,2] = counts
 
  writecsv("data_fit.csv",data_out)
 
+
+Z = [];
+i = 1; 
+while(true)
+	push!(Z, counts[i+3]-counts[i]; )
+	i = i +3; 
+	if(i > length(counts))
+		break;
+	end
+end
