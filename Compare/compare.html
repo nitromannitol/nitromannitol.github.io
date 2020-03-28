@@ -304,7 +304,7 @@ function makePlotly( dates, norm_count, locations, countries){
                 y: frames[j].data[1].y,
                 mode: 'lines',
                 type: 'scatter',
-                name: frames[j].name + " - " + frames[j].data[1].name
+                name: frames[j].name + " : " + frames[j].data[1].name
             };
             data.push(trace1);
             data.push(trace2);
@@ -377,9 +377,9 @@ Sourced from <a href="https://ourworldindata.org/coronavirus-source-data"> most 
 The data for each country is fit to an exponential model, f(x) = a exp(b x),
 using <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
 <br></br>
-Use the drop down menu to select the countries to display. 
+Use the drop down menu to select the countries to display. See the legend for the parameters of the fitted exponential models.
 <hr>
-  Last updated March 28, 9:06 AM CDT.  
+  Last updated March 28, 9:21 AM CDT.  
 <hr>
 
 
