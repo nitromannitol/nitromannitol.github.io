@@ -75,15 +75,10 @@ data_out = Array{Any,2}(length(dates)+1,2)
 data_out[1,1] = "date";
 data_out[1,2] = "total_count";
 
-
 data_out[2:length(dates)+1,1] = dates;
 data_out[2:end,2] = counts
 
-
-
  writecsv("data_fit.csv",data_out)
-
-
 Z = [];
 i = 1; 
 while(true)
