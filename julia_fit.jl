@@ -35,6 +35,9 @@ for DD in dates
 	if(mon == "Mar")
 		mon = "03"
 	end
+	if(mon == "Apr")
+		mon = "04"
+	end
 	push!(dates2, string(year, "-", mon, "-", day));
 end
 
