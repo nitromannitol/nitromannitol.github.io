@@ -3,20 +3,31 @@ using PyPlot
 data = readcsv("data.csv")
 dates = data[2:end,1];
 count = Int.(data[2:end,2])
+total_ICU = Int.(data[2:end,3]);
+total_recovered = Int.(data[2:end,4]);
 
 
 #first flatten the data
 counts = []
+total_ICU_vec = []; 
+total_recovered_vec = []; 
+
 i = 1;
 while(i < length(count))
 	if(dates[i] != dates[i+1])
 		push!(counts, count[i])
+		push!(total_ICU_vec, total_ICU[i]);
+		push!(total_recovered_vec, total_recovered[i])
 	end
 	i+=1;
 end
+push!(total_ICU_vec, total_ICU[i]);
 push!(counts,count[i])
+push!(total_recovered_vec, total_recovered[i]);
 dates = unique(dates)
 counts = counts
+total_ICU = total_ICU_vec; 
+total_recovered = total_recovered_vec; 
 
 
 dates2 = [];
@@ -74,18 +85,26 @@ dates=copy(dates2);
 
 
 #save data
-data_out = Array{Any,2}(length(dates)+1,2)
+data_out = Array{Any,2}(length(dates)+1,4)
 data_out[1,1] = "date";
 data_out[1,2] = "total_count";
+data_out[1,3] = "total_ICU";
+data_out[1,4] = "total_recovered";
+
 
 data_out[2:length(dates)+1,1] = dates;
 data_out[2:end,2] = counts
+data_out[2:end,3] = total_recovered
+data_out[2:end,4] = total_ICU
+
 
  writecsv("data_fit.csv",data_out)
+
+
 Z = [];
 i = 1; 
 while(true)
-	push!(Z, counts[i+3]-counts[i]; )
+	push!(Z, counts[i+2]-counts[i]; )
 	i = i +3; 
 	if(i > length(counts))
 		break;
