@@ -222,13 +222,14 @@ function makePlotly( dates, total_count){
     },
     xaxis: {
       type: 'date',
-      range: ["2020-02-23", "2020-04-05"],
+      range: ["2020-02-23", "2020-04-06"],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x],
       showgrid: false
     },
     yaxis: {
-      range: [0, frames[dates.length-1].data[1].y[dates.length-1]+10],
+      //range: [0, frames[dates.length-1].data[1].y[dates.length]+10],
+      range: [0, 500],
       //range: [0, frames[dates.length-1].data[1].y],
       showgrid: false
     },
