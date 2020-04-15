@@ -229,8 +229,9 @@ function makePlotly( dates, total_count){
     },
     yaxis: {
       //range: [0, frames[dates.length-1].data[1].y[dates.length]+10],
-      range: [0, 1400],
+       range: [0, 1500],
       //range: [0, frames[dates.length-1].data[1].y],
+    //  autorange: true, 
       showgrid: false
     },
     legend: {
@@ -298,9 +299,6 @@ function makePlotly( dates, total_count){
       steps: sliderSteps
     }]
   
-
-
-
   
   };
 
@@ -357,12 +355,14 @@ Notice the parameters of the exponential model do not change much day 16-27,  wh
 
 
 <br></br>
-In the last <font color = "red"> seven days </font> there were <font color = "red" > 635 new cases</font>, the largest reported weekly increase in Kuwait since the beginning of the pandemic. 
+In the last <font color = "red"> five days </font> there were <font color = "red" > 412 new cases</font>. 
+Kuwait currently has <font color = "red"> 330 cases </font> per million. 
+
 <br></br>
-The current doubling time in Kuwait is <font color = "red"> 6 days</font>. 
+The current <a href = "https://en.wikipedia.org/wiki/Exponential_growth">doubling time</a> in Kuwait is <font color = "red"> 8 days</font>. 
 
 <hr>
-      Last updated April 14, 5:33 AM CDT.  
+      Last updated April 15, 8:03 AM CDT.  
 <hr>
 
 Please note that we are not trying to predict the future. The main purpose of this site is to display the data and visualize the similarities and differences between exponential and linear growth.
