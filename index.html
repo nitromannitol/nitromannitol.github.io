@@ -8,10 +8,20 @@ body { font: 12px Arial;}
 <!-- load the plotly.js and math.js libraries -->      
 
 <head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-53592269-3');
+</script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 </head>
 
 
@@ -25,25 +35,21 @@ body { font: 12px Arial;}
 
 
 
+//function makeplot() {
+//  Plotly.d3.csv("data_fit.csv", function(data){ processData(data) } );
+//};
+
 function makeplot() {
-  Plotly.d3.csv("data_fit.csv", function(data){ processData(data) } );
+    Plotly.d3.csv("data_fit.csv", function(data1){ 
+    Plotly.d3.text("richard_fit.csv", function(data2){ 
+      processData(data1,data2)
+      });
+    });
 };
 
 
-// fit y = b1 + b2 x  with least squares
 
-function fitLS(x_vec,y_vec,){
-  const range_val = [...Array(x_vec.length).keys()];
-  var x_mat = math.ones(x_vec.length,2)
-  x_mat = math.subset(x_mat,math.index(range_val, 0), x_vec);
-  var pinv_mat = math.multiply(math.transpose(x_mat),x_mat);
-  var id_mat = math.identity(math.size(pinv_mat));
-  id_mat = math.multiply(id_mat,0.05);
-  pinv_mat = math.add(pinv_mat,id_mat);
-  pinv_mat = math.inv(pinv_mat);
-  pinv_mat = math.multiply(pinv_mat, math.transpose(x_mat))
-  return math.multiply(pinv_mat,y_vec);
-}
+
 
 
 // count_vec is vector of true counts
@@ -70,7 +76,6 @@ function buildModels(test_range, out_range, count_vec){
   const a1 = math.exp(beta_hat_exp.subset(math.index(1)));
   const a2 = beta_hat_exp.subset(math.index(0));
 
-
   //fill the prediction vectors 
   x_vec = [...Array(out_range+1).keys()];
   x_vec = math.add(x_vec,1)
@@ -88,24 +93,49 @@ function buildModels(test_range, out_range, count_vec){
 
 }
 
-  
-function processData(allRows) {
+
+// fit y = b1 + b2 x  with least squares
+function fitLS(x_vec,y_vec){
+  const range_val = [...Array(x_vec.length).keys()];
+  var x_mat = math.ones(x_vec.length,2)
+  x_mat = math.subset(x_mat,math.index(range_val, 0), x_vec);
+  var pinv_mat = math.multiply(math.transpose(x_mat),x_mat);
+  var id_mat = math.identity(math.size(pinv_mat));
+  id_mat = math.multiply(id_mat,0.05);
+  pinv_mat = math.add(pinv_mat,id_mat);
+  pinv_mat = math.inv(pinv_mat);
+  pinv_mat = math.multiply(pinv_mat, math.transpose(x_mat))
+  return math.multiply(pinv_mat,y_vec);
+}
+
+
+
+function processData(allRows1, allRows2) {
   var dates = [];
   var total_count = [];
-  for (var i=0; i<allRows.length; i++) {
-    row = allRows[i];
+  for (var i=0; i<allRows1.length; i++) {
+    row = allRows1[i];
     dates.push( row['date'] );
     total_count.push( row['total_count'] );
   }
 
-  makePlotly( dates,total_count);
+  data2 = d3.csvParseRows(allRows2);
+
+  //console.log(d3.csvParseRows(allRows2))
+  // process the second csv file
+
+  //console.log(data2)
+
+  //console.log(data2[0].slice(0,1))
+
+  makePlotly(dates,total_count,data2);
 }
 
 
 
 
 
-function makePlotly( dates, total_count){
+function makePlotly( dates, total_count,data2){
   var plotDiv = document.getElementById("plot");
 
   // each frame is going to correspond to a day and the model
@@ -114,10 +144,19 @@ function makePlotly( dates, total_count){
   //console.log(dates.slice(0,dates.length))
 
   for (var i = 0; i < dates.length; i++) {
-    frames[i] = {data: [{x: [], y: []}, {x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]};
+    frames[i] = {data: [{x: [], y: [], name:[]}, {x: [], y: [], name: []}, {x: [], y: [], name: []},{x: [], y: [], name: []}], name: dates[i]},
     frames[i].data[0].x = dates.slice(0, i+1);
     frames[i].data[0].y = total_count.slice(0, i+1);
+    frames[i].data[0].name = "Total Cases = " + total_count[i];
 
+
+    frames[i].data[3].x = dates.slice(0, i+1);
+    frames[i].data[3].y = data2[i].slice(4, i+1+4); // first 4 terms are parameters
+
+     var params = data2[i].slice(0,4);
+
+
+  
     //console.log(dates.slice(0,i+1))
     if(i == 0){
       frames[i].data[2].x = dates.slice(0, i+1);
@@ -128,6 +167,8 @@ function makePlotly( dates, total_count){
       frames[i].data[1].x = dates.slice(0, i+1);
       frames[i].data[1].y = total_count.slice(0, i+1);
       frames[i].data[1].name = "Exponential Fit"
+
+      frames[i].data[3].name = "Richard's Fit";
 
 
     } else {
@@ -151,13 +192,22 @@ function makePlotly( dates, total_count){
       frames[i].data[2].x = dates.slice(0, i+1);
       frames[i].data[2].y = linear_fit;
 
-      frames[i].data[2].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + "(day)"
-      frames[i].data[1].name = math.round(String(a1),1) + " e^(" + math.round(String(a2),4) + "(day))"
+     // frames[i].data[2].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + " day"
+      //frames[i].data[1].name = math.round(String(a1),1) + " exp(" + math.round(String(a2),4) + " day)"
+
+      frames[i].data[2].name = "(b1, b2) = " + "(" + math.round(String(b1),1) + "," +  math.round(String(b2),1) + ")";
+      frames[i].data[1].name = "(a1, a2) = " + "(" +math.round(String(a1),1) + "," +   math.round(String(a2),4) + ")";
 
 
 
       frames[i].data[1].x = dates.slice(0, i+1);
       frames[i].data[1].y = exp_fit;
+
+
+      c0 = +params[0]; c1 = +params[1]; c2 = +params[2]; c3 = +params[3]; 
+     // frames[i].data[3].name = math.round(String(c0)) + "(1-" + math.round(String(c1)) + " exp(-" + math.round(String(c2),2) + " day))^" + "(" + math.round(String(c3),2) + ")";
+frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + "," + math.round(String(c1)) + "," +  math.round(String(c2),1)  + "," + math.round(String(1/c3),2) + ")";
+
     }
 
   }
@@ -183,7 +233,8 @@ function makePlotly( dates, total_count){
       y: frames[start_ind].data[0].y,
       mode: 'markers',
       type: 'scatter',
-      name: 'Total Confirmed Cases',
+     // name: 'Total Confirmed Cases',
+      name: frames[start_ind].data[0].name
   };
 
 
@@ -203,8 +254,16 @@ function makePlotly( dates, total_count){
       name: frames[start_ind].data[2].name
   };
   
+    var trace4 = {
+      x: frames[start_ind].data[3].x, 
+      y: frames[start_ind].data[3].y,
+      mode: 'lines',
+      type: 'scatter',
+      name: frames[start_ind].data[3].name
+  };
 
-  var data = [trace1,trace2,trace3];
+
+  var data = [trace1,trace2,trace3, trace4];
 
   // create the traces 
  // console.log(frames[dates.length-1].data[1].x[dates.length-1])
@@ -246,7 +305,7 @@ function makePlotly( dates, total_count){
     bordercolor: '#FFFFFF',
     borderwidth: 2
     },
-    colorway : ['#000000', '#ff0000', '#0000ff'],
+    colorway : ['#000000', '#0000ff','#fff000', '#ff0000'],
 
 
      hovermode: 'closest',
@@ -332,25 +391,40 @@ function makePlotly( dates, total_count){
 <hr>
   
 
+Hover over the graph to see options for zooming in, rescaling, and downloading. Also, click the legend on the right to remove or display each curve. The legend displays the function parameters for various functions defined below.f Press play to see the progression of the curves over time. 
+<hr>
+
+
+<br>
+
+
 Each data point corresponds to daily, public updates by Kuwait's <a href = "https://twitter.com/KUWAIT_MOH"> Ministry of Health</a>
 or <a href = "https://twitter.com/MOInformation" > Ministry of Information</a> of the total number of confirmed COVID-19 cases in Kuwait.
+The <font color = '#fff000'>co</font><font color = "blue">lo</font><font color = "red">red</font> curves represent the closest simple function to all of the cases up to that day. 
+
 <br>
 <br>
-The <font color = "blue" > blue </font> line represents a best linear fit up to that day: count = b_1 + b_2 (day). 
+<font color = "blue"> Blue </font> is exponential,  
+ \( \mbox{cases} = a_1 \cdot \exp(a_2 \cdot \mbox{ day })\)
+<br></br>
+<font color = '#fff000' > Yellow </font> is linear, 
+  \( \mbox{cases} = b_1 + b_2 \cdot \mbox{ day }\).
+<br></br>
+<font color = "red"> Red </font> is a Richard's growth curve, 
+\( \mbox{cases} = c_0 \cdot (1-c_1 \exp(-c_2 \cdot \mbox{ day }))^{c_3} \)
+<br></br>
+The linear and exponential models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
+The <a href = "https://en.wikipedia.org/wiki/Generalised_logistic_function"> Richard's growth curve</a> is notoriously difficult to fit numerically; we determine the curve via <a href = "https://web.stanford.edu/class/ee364b/lectures/stoch_subgrad_slides.pdf"> gradient descent </a> with multiple random initial starting conditions.
+
 <br> 
-The <font color = "red" > red </font> line represents a best exponential fit: count = a_1 e^(a_2 (day)).
-<br>
-<br> 
-Both models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
-<br> 
 <br>
 
+<hr>
 
-Click the buttons and slider bar to see the best linear and exponential models for that day. See the legend on the right for the fit parameters. 
+Observe the, sometimes extreme, day-to-day changes in the best fit models, despite visually not changing much. The reason for this is twofold. The number of reported 
+cases per day varies in an unknown fashion and cannot be captured by simple functions: linear, exponential or even Richard's curve. And, the daily best fits are the nearest simple functions to only the available data up to that day. In order for this to not change the next day, the number of confirmed cases needs to follow a simple curve exactly - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this site is to display and visualize the data together with the similarites and differences between linear, exponential, and logistic growth over time. 
 
-<br>
 
-Notice the parameters of the exponential model do not change much day 16-27,  while the slope of the linear model keeps growing. This suggested we have not reached an <a href = "https://youtu.be/Kas0tIxDvrg"> inflection point </a> for the curve. Then, day 38 onwards, the exponential model consistently has underestimated the actual number of confirmed cases. This reflects a growing rate of increase.
 
 
 
@@ -360,14 +434,12 @@ since the beginning of the pandemic.
 Kuwait currently has about <font color = "red"> 410 cases per million. </font>
 
 <br></br>
-The current <a href = "https://en.wikipedia.org/wiki/Exponential_growth">doubling time</a> in Kuwait is about <font color = "red"> 9 days</font>. 
+The current <a href = "https://en.wikipedia.org/wiki/Doubling_time">doubling time</a> in Kuwait is about <font color = "red"> 9 days</font>. 
 
 <hr>
       Last updated April 18, 8:00 AM CDT.  
 <hr>
 
-Please note that we are not trying to predict the future. The main purpose of this site is to display the data and visualize the similarities and differences between exponential and linear growth.
-<hr>
 
    <footer>
       Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
