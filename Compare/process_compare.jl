@@ -38,7 +38,6 @@ pop_list = [];
 death_vec = []
 
 
-
 i = 1; 
 while(true)
 	if(i > length(count)) break; end;
@@ -62,6 +61,8 @@ while(true)
 		push!(curr_vec, count[i]) # 10^6*count[i]/pop[i])
 		push!(curr_vec2, deaths[i]);
 	end
+	start_ind = findn(curr_vec.>)
+
 	push!(count_vec,curr_vec)
 	push!(death_vec, curr_vec2);
 end
