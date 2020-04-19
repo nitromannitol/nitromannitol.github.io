@@ -155,8 +155,8 @@ body {
 <option value="Uruguay">Uruguay</option>
 <option value="Vatican">Vatican</option>
     </select>
-    <input type="button" id="btnget1" value="Plot Selected Countries" />
-    <input type="button" id="btnget2" value="Find Nearest Curves" />
+    <input type="button" id="btnget1" value="Plot selected countries" />
+    <input type="button" id="btnget2" value="Plot countries with curves closest to selected countries" />
 </form>
 </div>
 
@@ -195,27 +195,23 @@ function unique ( array ) {
 
 
 function findNearest(countries) {
-  country = countries[0]; 
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processFindNearest(data, countries) } );
+ Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
 };
 
 
 function makeplot(countries = ["Kuwait"]) {
   //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processData(data, countries) } );
+  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processData(data, countries) });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
 
-
-function processFindNearest(allRows, country){
+function findNearestCountry(allRows, country){
   var num_nearest = 3;
-
   var total_count = [];
   var locations = d3.keys(allRows[0])
   locations = locations.slice(1,locations.length+1);
   unique_locations = unique(locations);
-
   // first determine vector of normalized 20 counts per million 
   var country_norm_vec = []; 
   for(var j = 0; j < allRows.length; j++){
@@ -259,17 +255,22 @@ function processFindNearest(allRows, country){
   for(var i = 0; i < num_nearest; i++){
     nearest_countries.push(country_names[indices[i]]);
   }
-  console.log(nearest_countries)
-  makeplot(nearest_countries)
 
-  //console.log(country_names.sort((a,b) => (msd_val[a] > msd_val[b]) ? 1 : ((msd_val[b] > msd_val[a]) ? -1 : 0)))
-  //console.log(country_names[indices])
+  return nearest_countries;
 
-  //sorted_countries = country_names.sort(function (a,b) { return msd_val[a] < msd_val[b] ? -1 : msd_val[a] > msd_val[b] ? 1 : 0;});
- // console.log(sorted_countries)
- // console.log(msd_val)
+}
 
 
+
+function processFindNearest(allRows, countries){
+  //console.log("hello")
+  var nearest_countries = []; 
+   for(var i=0; i < countries.length;i++){
+    country = countries[i]; 
+    nearest_countries.push(findNearestCountry(allRows,country));
+  }
+  //console.log(nearest_countries.flat());
+  makeplot(nearest_countries.flat());
 }
 
   
@@ -363,19 +364,32 @@ function makePlotly( dates, allRows, locations, countries){
 
   var layout = {
     title: {
-      text:'COVID-19 confirmed cases per million',
+      text:'COVID-19 across the world',
       font: {
-        family: 'Courier New, monospace',
+        family: 'Arial',
         size: 24
       },
       xref: 'paper',
+    },
+
+     legend: {
+      //orientation: 'd',
+      y: 0.5,
+      yref: 'paper',
+      font: {
+        family: 'Arial',
+        size: 15
+      },
+    bgcolor: '#E2E2E2',
+    bordercolor: '#FFFFFF',
+    borderwidth: 2
     },
 
     xaxis: {
     title: {
       text: 'days since 20 cases per million',
       font: {
-        family: 'Courier New, monospace',
+        family: 'Arial',
         size: 18,
         color: '#7f7f7f'
       }
@@ -385,7 +399,7 @@ function makePlotly( dates, allRows, locations, countries){
     title: {
       text: 'cases per million',
       font: {
-        family: 'Courier New, monospace',
+        family: 'Arial',
         size: 18,
         color: '#7f7f7f'
       }
@@ -417,23 +431,22 @@ makeplot(["Kuwait", "Bahrain", "Oman"]);
 <hr>
 Hover over the graph to see options for zooming in, rescaling, and downloading. Also, click the legend on the right to remove or display each curve. 
 <br></br>
-Select multiple countries from the dropdown bar and click the first button to plot the number of confirmed cases per million across
-the different countries.
-To find countries with similar curves, select one country from the dropdown bar and press the second button. We measure 
-similarity by normalized mean squared difference. The nearest countries appear in sorted order in the legend on the right.
-<hr>
-
+Select multiple countries from the dropdown bar and click the first button to plot the confirmed cases per million for
+the different countries. To find other countries with curves similar to the selected countries, press the second button. For each 
+country selected, this displays two other countries with curves most similar to it. We measure 
+similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. The nearest countries appear in sorted order in the legend on the right.
 
 
 
 <hr>
 Data is updated in real time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
 <hr>
+ <a href = "https://nitromannitol.github.io"> Click to go back to the Kuwait curve</a>.
+<hr>
 
 
  <footer>
-    Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
-    <a href = "mailto: ahmedmb@gmail.com">here</a>. 
+    Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a>   
   </footer>
 
 
