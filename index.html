@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style> /* set the CSS */
-body { font: 12px Arial;}
-</style>
-<body>
 
 <!-- load the plotly.js and math.js libraries -->      
 
@@ -22,13 +18,23 @@ body { font: 12px Arial;}
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style> /* set the CSS */
+body { 
+  margin-left: 20px;
+}
+</style>
+
+
 </head>
 
 
 <body>
 
   <!-- load the plotly.js library -->      
-<div id="graph" width="500" height="100"></div>
+<div id="graph"></div>
 
 
 <script>
