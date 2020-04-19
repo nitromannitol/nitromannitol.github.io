@@ -1,0 +1,130 @@
+using PyPlot
+
+#topple with reflecting boundary conditions
+function one_topple_sym!(S,T)
+	isTopple = false; 
+	N = size(S,1);
+	S_copy = copy(S); 
+	for x in 2:N
+		for y in 2:N
+			z = floor(max(S_copy[x,y],0)/4);
+			if(x == N && y < N)
+				S[x,y] -= 3*z;
+				S[x-1,y]+=z;
+				S[x,y+1]+=z;
+				S[x,y-1]+=z; 
+				T[x,y]+=z; 
+			elseif(y == N && x < N)
+				S[x,y] -= 3*z;
+				S[x+1,y] += z; 
+				S[x-1,y]+=z;
+				S[x,y-1]+=z; 
+				T[x,y]+=z; 
+			elseif(x == N && y == N)
+				S[x,y] -= 2*z;
+				S[x-1,y]+=z;
+				S[x,y-1]+=z; 
+				T[x,y]+=z; 
+			else
+				S[x,y] -= 4*z;
+				S[x+1,y] += z; 
+				S[x-1,y]+=z;
+				S[x,y+1]+=z;
+				S[x,y-1]+=z; 
+				T[x,y]+=z; 
+			end
+			if(z > 0) isTopple = true; end; 
+		end
+	end
+	return isTopple;
+end
+function one_topple_1D_sym!(S,T)
+	isTopple = false; 
+	N = size(S,1);
+	S_copy = copy(S); 
+	for x in 2:N
+		z = floor(max(S_copy[x],0)/2);
+		z = min(z,1);
+		T[x]+=z;
+		if(x == N)
+			S[x]-=z;
+			S[x-1]+=z;
+		else
+			S[x]-=2*z;
+			S[x-1]+=z;
+			S[x+1]+=z;
+		end
+		if(z > 0) isTopple = true; end; 
+	end
+	return isTopple;
+end
+
+
+function one_topple_3D!(S,T)
+	isTopple = false; 
+	N = size(S,1);
+	S_copy = copy(S); 
+	for x in 2:(N-1)
+		for y in 2:(N-1)
+			for w in 2:(N-1)
+				#z = min(floor(max(S_copy[x,y],0)/4),1);
+				z = floor(max(S_copy[x,y,w],0)/6);
+				S[x,y,w] -= 6*z;
+				S[x+1,y,w] += z; 
+				S[x-1,y,w]+=z;
+				S[x,y+1,w]+=z;
+				S[x,y-1,w]+=z; 
+				S[x,y,w+1]+=z; 
+				S[x,y,w-1]+=z; 
+				T[x,y,w]+=z; 
+				if(z > 0) isTopple = true; end; 
+			end
+		end
+	end
+	return isTopple;
+end
+
+for M in 3:1:100
+	MM = M-1; 
+	println(M)
+
+	kk = 1
+	A = (4+kk)*ones(M,M);
+	A[1,:]=-Inf;
+	A[:,1]=-Inf;
+	T = zeros(A);
+
+
+	isTopple2 = true; 
+	isBreak = false; 
+	isShow = true; 
+
+	threshold = (M-1)
+	max_neighbors = Set{Int64}(); 
+	num_iters = 0; 
+
+	while(isTopple2)
+		#isTopple2 = one_topple_sym!(A,T)
+		#if(maximum(T[2,:]) > (MM-1))
+			TT = zeros(T); 
+			isTopple2 = one_topple_sym!(A,TT)
+			isTopple2 = one_topple_sym!(A,TT)
+			T = T + TT; 
+			if(maximum(TT) == 2)
+				clf()
+				imshow(TT)
+				val = readline()
+				if(val == "stop\n") isBreak = true; break; end
+				clf()
+				imshow(A)
+				val = readline()
+			end
+		
+		#end
+	end
+
+end
+
+
+
+
