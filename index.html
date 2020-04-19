@@ -396,13 +396,20 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
 </body>
 
 <hr>
-  
+
+In the last <font color = "red"> day </font> there was <font color = "red" > 164 new cases</font>, the largest daily increase
+since the beginning of the pandemic.
+Kuwait currently has about <font color = "red"> 460 cases per million. </font> Navigate <a href = "Compare/compare.html"> here </a> 
+to compare cases across countries. 
+
+<br>
+The current <a href = "https://en.wikipedia.org/wiki/Doubling_time">doubling time</a> in Kuwait is about <font color = "red"> 9 days</font>. 
+
+<hr>
 
 Hover over the graph to see options for zooming in, rescaling, and downloading. Also, click the legend on the right to remove or display each curve. The legend displays the function parameters for various functions defined below. Press play to see the progression of the curves over time. 
 <hr>
 
-
-<br>
 
 
 Each data point corresponds to daily, public updates by Kuwait's <a href = "https://twitter.com/KUWAIT_MOH"> Ministry of Health</a>
@@ -423,25 +430,14 @@ The <font color = '#fff000'>co</font><font color = "blue">lo</font><font color =
 The linear and exponential models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
 The <a href = "https://en.wikipedia.org/wiki/Generalised_logistic_function"> Richard's growth curve</a> is notoriously difficult to fit numerically; we determine the curve via <a href = "https://web.stanford.edu/class/ee364b/lectures/stoch_subgrad_slides.pdf"> gradient descent </a> with multiple random initial starting conditions.
 
-<br> 
-<br>
 
 <hr>
 
 Observe the, sometimes extreme, day-to-day changes in the best fit models, despite visually not changing much. The reason for this is twofold. The number of reported 
-cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, or even Richard's curve. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this site is to display and visualize the data together with the similarites and differences between linear, exponential, and logistic growth over time. 
+cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, or even Richard's curve. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this page is to visualize Kuwait's data together with the similarites and differences between linear, exponential, and logistic growth over time. 
 
 
 
-
-
-<br></br>
-In the last <font color = "red"> day </font> there was <font color = "red" > 164 new cases</font>, the largest daily increase
-since the beginning of the pandemic.
-Kuwait currently has about <font color = "red"> 460 cases per million. </font> Navigate <a href = "Compare/compare.html"> here </a> 
-to compare cases across countries. 
-<br></br>
-The current <a href = "https://en.wikipedia.org/wiki/Doubling_time">doubling time</a> in Kuwait is about <font color = "red"> 9 days</font>. 
 
 <hr>
       Last updated April 19, 10:05 AM CDT.  

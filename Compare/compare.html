@@ -199,9 +199,9 @@ function findNearest(countries) {
 };
 
 
-function makeplot(countries = ["Kuwait"]) {
+function makeplot(countries = ["Kuwait"], verticalLines = []) {
   //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processData(data, countries) });
+  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
@@ -220,12 +220,16 @@ function findNearestCountry(allRows, country){
         country_norm_vec.push(norm_count);
       }
     };
+  x0 = country_norm_vec.length;
+  y1 = math.max(country_norm_vec);
 
-  //console.log(math.norm(country_norm_vec))
+   // console.log(country_norm_vec)
+
 
   // now determine all countries closest to it
   var country_names = []; 
   var msd_val = []; 
+  var max_vec = []; 
 
   for(var i = 0; i < unique_locations.length; i++){
     //fill out the array corresponding to the normalized count of country
@@ -241,10 +245,15 @@ function findNearestCountry(allRows, country){
       continue; 
     }
     y = y.slice(0, country_norm_vec.length)
+
    // console.log(math.subtract(y, country_norm_vec))
     msd_val.push(math.norm(math.subtract(y,country_norm_vec)))
     country_names.push(unique_locations[i])
+    max_vec.push(math.max(y));
   };
+
+  //console.log(msd_val)
+
 
   var indices = new Array(msd_val.length);
   for (var i = 0; i < msd_val.length; ++i) indices[i] = i;
@@ -254,9 +263,10 @@ function findNearestCountry(allRows, country){
   var nearest_countries = []
   for(var i = 0; i < num_nearest; i++){
     nearest_countries.push(country_names[indices[i]]);
+    y1 = math.max(y1, max_vec[indices[i]]);
   }
 
-  return nearest_countries;
+  return [nearest_countries,x0,y1];
 
 }
 
@@ -265,16 +275,22 @@ function findNearestCountry(allRows, country){
 function processFindNearest(allRows, countries){
   //console.log("hello")
   var nearest_countries = []; 
+ // console.log(countries)
+  verticalLines = []; 
    for(var i=0; i < countries.length;i++){
     country = countries[i]; 
-    nearest_countries.push(findNearestCountry(allRows,country));
+    out_vec = findNearestCountry(allRows,country);
+    verticalLines.push([out_vec[1], out_vec[2]]);
+    nearest_countries.push(out_vec[0]);
   }
+
+  console.log(verticalLines)
   //console.log(nearest_countries.flat());
-  makeplot(nearest_countries.flat());
+  makeplot(nearest_countries.flat(), verticalLines);
 }
 
   
-function processData(allRows, countries) {
+function processData(allRows, countries, verticalLines) {
   var dates = [];
   var total_count = [];
   var locations = d3.keys(allRows[0])
@@ -288,13 +304,14 @@ function processData(allRows, countries) {
     dates.push( row[date_name] );
   }
   //console.log(allRows[])
-  makePlotly( dates,allRows, locations, countries);
+  makePlotly( dates,allRows, locations, countries,verticalLines);
 }
 
 
 
-function makePlotly( dates, allRows, locations, countries){
+function makePlotly( dates, allRows, locations, countries,verticalLines){
   var plotDiv = document.getElementById("plotdiv");
+
 
 
 
@@ -404,8 +421,58 @@ function makePlotly( dates, allRows, locations, countries){
         color: '#7f7f7f'
       }
     }
-  }
+  }, 
+  shapes: [
+  ]
 };
+
+  
+  console.log(verticalLines.length)
+
+  for(var i = 0; i <verticalLines.length;i++){
+    row = verticalLines[i]; 
+    val1 = row[0]; 
+    val2 = row[1]; 
+
+    val =  { type: 'line',
+      x0: val1,
+      y0: 0,
+      x1: val1,
+      y1: val2,
+      line: {
+        color: 'rgb(1, 1, 1)',
+        width: 2,
+        dash: 'dashdot'
+      }
+    };
+
+    layout.shapes.push(val)
+
+  }
+
+
+
+
+
+
+    
+
+
+  //console.log(layout.shapes[0].x0)
+  //layout.shapes[0].x0 = 40; 
+  //layout.shapes[0].x1 = 40; 
+
+  //layout.shapes.y1 = 40; 
+
+
+
+
+  
+
+
+
+   
+
 
    
 
@@ -429,12 +496,11 @@ makeplot(["Kuwait", "Bahrain", "Oman"]);
 
 
 <hr>
-Hover over the graph to see options for zooming in, rescaling, and downloading. Also, click the legend on the right to remove or display each curve. 
-<br></br>
 Select multiple countries from the dropdown bar and click the first button to plot the confirmed cases per million for
 the different countries. To find other countries with curves similar to the selected countries, press the second button. For each 
 country selected, this displays two other countries with curves most similar to it. We measure 
-similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. The nearest countries appear in sorted order in the legend on the right.
+similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. Hence, this notion of similiarity
+is not symmetric. The nearest countries appear in sorted order in the legend on the right.
 
 
 
