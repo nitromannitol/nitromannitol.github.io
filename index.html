@@ -223,11 +223,11 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
   for (i = 0; i < dates.length; i++) {
     sliderSteps.push({
       method: 'animate',
-      label: i+1,
+      label: i,
       args: [[dates[i]], {
         mode: 'immediate',
-        transition: {duration: 300},
-        frame: {duration: 300, redraw: true},
+       // transition: {duration: 500},
+        frame: {duration: 500, redraw: true},
       }]
     });
   }
@@ -250,7 +250,8 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
       y: frames[start_ind].data[1].y,
       mode: 'lines',
       type: 'scatter',
-      name: frames[start_ind].data[1].name
+      name: frames[start_ind].data[1].name,
+      visible: 'legendonly'
   };
 
    var trace3 = {
@@ -258,7 +259,9 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
       y: frames[start_ind].data[2].y,
       mode: 'lines',
       type: 'scatter',
-      name: frames[start_ind].data[2].name
+      name: frames[start_ind].data[2].name,
+      visible: 'legendonly'
+
   };
   
     var trace4 = {
@@ -266,7 +269,8 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
       y: frames[start_ind].data[3].y,
       mode: 'lines',
       type: 'scatter',
-      name: frames[start_ind].data[3].name
+      name: frames[start_ind].data[3].name,
+      visible: 'legendonly'
   };
 
 
@@ -288,17 +292,18 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
     },
     xaxis: {
       type: 'date',
-      range: ["2020-02-22", "2020-04-21"],
+      //range: ["2020-02-22", "2020-04-21"],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x],
-      showgrid: false
+      autorange: true,
+      showgrid: true
     },
     yaxis: {
       //range: [0, frames[dates.length-1].data[1].y[dates.length]+10],
-       range: [-100, 2000],
-      //range: [0, frames[dates.length-1].data[1].y],
-    //  autorange: true, 
-      showgrid: false
+     //  range: [-100, 2000],
+     // range: [0, frames[dates.length-1].data[1].y+200],
+      //autorange: true, 
+      showgrid: true
     },
     legend: {
       //orientation: 'd',
@@ -337,11 +342,12 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
         args: [null, {
           mode: 'immediate',
           fromcurrent: true,
-          transition: {duration: 300},
+          transition: {duration: 500},
           frame: {duration: 500, redraw: true}
         }],
         label: 'Play'
-      }, {
+      }, 
+      {
         method: 'animate',
         args: [[null], {
           mode: 'immediate',
@@ -350,6 +356,7 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
         }],
         label: 'Pause'
       }]
+
     }],
 
     // Finally, add the slider and use `pad` to position it
