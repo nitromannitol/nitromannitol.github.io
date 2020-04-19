@@ -144,7 +144,7 @@ function processData(allRows1, allRows2) {
 function makePlotly( dates, total_count,data2){
   var plotDiv = document.getElementById("plot");
 
-  console.log(data2)
+  //console.log(data2)
   // each frame is going to correspond to a day and the model
   // fit up to that point 
   var frames = [];
@@ -288,14 +288,14 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
     },
     xaxis: {
       type: 'date',
-      range: ["2020-02-22", "2020-04-19"],
+      range: ["2020-02-22", "2020-04-21"],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
       //range: ["2020-02-23", frames[dates.length-1].data[1].x],
       showgrid: false
     },
     yaxis: {
       //range: [0, frames[dates.length-1].data[1].y[dates.length]+10],
-       range: [-100, 1800],
+       range: [-100, 2000],
       //range: [0, frames[dates.length-1].data[1].y],
     //  autorange: true, 
       showgrid: false
