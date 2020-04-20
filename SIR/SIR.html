@@ -404,9 +404,9 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
 
 <hr>
 
-In the last <font color = "red"> two days </font> there was <font color = "red" > 244 new cases</font>, the largest two day increase
+In the last <font color = "red"> day </font> there was <font color = "red" > 164 new cases</font>, the largest daily increase
 since the beginning of the pandemic.
-Kuwait currently has about <font color = "red"> 482 cases per million. </font> Navigate <a href = "Compare/compare.html"> here </a> 
+Kuwait currently has about <font color = "red"> 460 cases per million. </font> Navigate <a href = "Compare/compare.html"> here </a> 
 to compare cases across countries. 
 
 <br>
@@ -434,6 +434,11 @@ The <font color = '#fff000'>co</font><font color = "blue">lo</font><font color =
 <font color = "red"> Red </font> is Richard's growth curve, 
 \( \mbox{cases} = c_0 \cdot (1-c_1 \exp(-c_2 \cdot \mbox{ day}))^{c_3} \)
 <br></br>
+<br></br>
+<font color = "black"> Red </font> is SIR, 
+\( \mbox{cases} = c_0 \cdot (1-c_1 \exp(-c_2 \cdot \mbox{ day}))^{c_3} \)
+<br></br>
+
 The linear and exponential models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
 The <a href = "https://en.wikipedia.org/wiki/Generalised_logistic_function"> Richard's growth curve</a> is notoriously difficult to fit numerically; we determine the curve via <a href = "https://web.stanford.edu/class/ee364b/lectures/stoch_subgrad_slides.pdf"> gradient descent </a> with multiple random initial starting conditions.
 
@@ -447,7 +452,7 @@ cases per day varies in an unknown fashion and cannot be captured by nice functi
 
 
 <hr>
-      Last updated April 20, 7:20 AM CDT.  
+      Last updated April 19, 10:05 AM CDT.  
 <hr>
 
 

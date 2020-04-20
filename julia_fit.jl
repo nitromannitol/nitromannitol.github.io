@@ -82,8 +82,6 @@ end
 
 dates=copy(dates2);
 
-
-
 #save data
 data_out = Array{Any,2}(length(dates)+1,4)
 data_out[1,1] = "date";
@@ -110,3 +108,5 @@ while(true)
 		break;
 	end
 end
+
+println(length(counts)-findn(counts.>=counts[end]/2)[1])
