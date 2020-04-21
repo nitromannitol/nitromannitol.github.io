@@ -49,12 +49,15 @@ for DD in dates
 	if(mon == "Apr")
 		mon = "04"
 	end
+	if(mon == "May")
+		mon = "05"
+	end
 	push!(dates2, string(year, "-", mon, "-", day));
 end
 
 
 #add 0 more days to the dates
-num_iters = 0;
+num_iters = 14;
 curr_date = dates2[end];
 for k in 1:num_iters
 	year, mon, day = split(curr_date, "-");
@@ -62,6 +65,9 @@ for k in 1:num_iters
 	if(day == 31 && mon == 3)
 		day = 1
 		mon = 4
+	elseif(day == 30 && mon = 4)
+		day = 1
+		mon = 5
 	else
 		day = day+1;
 	end
@@ -77,6 +83,8 @@ for k in 1:num_iters
 	curr_date = string(year, "-", mon, "-", day);
 	push!(dates2, curr_date);
 	push!(counts, counts[end])
+	push!(total_recovered, total_recovered[end])
+	push!(total_ICU, total_ICU[end])
 end
 
 
