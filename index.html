@@ -26,6 +26,12 @@
 body { 
   margin-left: 20px;
 }
+p { 
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid black ;
+}
 </style>
 
 
@@ -34,8 +40,17 @@ body {
 
 <body>
 
+
+
+
+<p> Click the legend on the right to remove or display each curve; press play to see the progression of the curves over time. Hover over the graph to see options for zooming in, rescaling, and downloading. The legend displays the function parameters for various functions defined below. 
+</p>
+
+
   <!-- load the plotly.js library -->      
 <div id="graph"></div>
+
+
 
 
 <script>
@@ -403,20 +418,21 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
 
 </body>
 
-<hr>
 
-In the last <font color = "red"> seven days </font> there were <font color = "red" > 725 new cases</font>, the largest seven day increase
-since the beginning of the pandemic.
-Kuwait currently has about <font color = "red"> 502 cases per million. </font> Navigate <a href = "Compare/compare.html"> here </a> 
+
+<p>
+Kuwait currently has about <font color = "red"> 502 cases per million. </font> Click <a href = "Compare/compare.html"> here </a> 
 to compare cases across countries. 
+</p>
+
+
+<hr>
 
 <br>
-The current <a href = "https://en.wikipedia.org/wiki/Doubling_time">doubling time</a> in Kuwait is about <font color = "red"> 10 days</font>. 
-
+In the last <font color = "red"> seven days </font> there were <font color = "red" > 725 new cases</font>, the largest seven day increase
+since the beginning of the pandemic. The current <a href = "https://en.wikipedia.org/wiki/Doubling_time">doubling time</a> in Kuwait is about <font color = "red"> 10 days</font>. 
 <hr>
 
-Hover over the graph to see options for zooming in, rescaling, and downloading. Also, click the legend on the right to remove or display each curve. The legend displays the function parameters for various functions defined below. Press play to see the progression of the curves over time. 
-<hr>
 
 
 
