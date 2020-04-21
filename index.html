@@ -154,11 +154,14 @@ function processData(allRows1, allRows2) {
 }
 
 
-
+const extra = 14; 
 
 
 function makePlotly( dates, total_count,data2){
   var plotDiv = document.getElementById("plot");
+  var future_dates = Array.from(dates);
+  dates = dates.slice(0,dates.length-extra)
+
 
   //console.log(data2)
   // each frame is going to correspond to a day and the model
@@ -167,22 +170,23 @@ function makePlotly( dates, total_count,data2){
   //console.log(dates.slice(0,dates.length))
 
   for (var i = 0; i < dates.length; i++) {
-    frames[i] = {data: [{x: [], y: [], name:[]}, {x: [], y: [], name: []}, {x: [], y: [], name: []},{x: [], y: [], name: []}], name: dates[i]},
+    frames[i] = {data: [{x: [], y: [], name:[]}, {x: [], y: [], name: []}, {x: [], y: [], name: []},{x: [], y: [], name: []},{x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]},
     frames[i].data[0].x = dates.slice(0, i+1);
     frames[i].data[0].y = total_count.slice(0, i+1);
     frames[i].data[0].name = "Total Cases = " + total_count[i];
 
 
-    frames[i].data[3].x = dates.slice(0, i+1);
-    frames[i].data[3].y = data2[i].slice(4, i+1+4); // first 4 terms are parameters
+    frames[i].data[3].x = future_dates.slice(0, i+1+extra);
+    frames[i].data[3].y = data2[i].slice(4, i+1+4+extra); // first 4 terms are parameters
 
      var params = data2[i].slice(0,4);
+
 
 
   
     //console.log(dates.slice(0,i+1))
     if(i == 0){
-      frames[i].data[2].x = dates.slice(0, i+1);
+      frames[i].data[2].x = dates.slice(0, i+1+4);
       frames[i].data[2].y = total_count.slice(0, i+1);
       frames[i].data[2].name = "Linear Fit"
 
@@ -194,13 +198,15 @@ function makePlotly( dates, total_count,data2){
       frames[i].data[3].name = "Richard's Fit";
 
 
+
     } else {
       // fit the linear and exponential models on this slice
       count_vec = math.clone(total_count);
      // const curr_day = 27;
       var test_range = i;
     //  var test_range = math.min(i+1,curr_day+1);
-      var out_range = i;
+      var out_range = i+extra;
+
 
       out_vec = buildModels(test_range, out_range,count_vec);
       b1 = out_vec[0];
@@ -212,7 +218,7 @@ function makePlotly( dates, total_count,data2){
      // console.log(a2);
 
 
-      frames[i].data[2].x = dates.slice(0, i+1);
+      frames[i].data[2].x = future_dates.slice(0, i+1+extra);
       frames[i].data[2].y = linear_fit;
 
      // frames[i].data[2].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + " day"
@@ -223,8 +229,21 @@ function makePlotly( dates, total_count,data2){
 
 
 
-      frames[i].data[1].x = dates.slice(0, i+1);
+      frames[i].data[1].x = future_dates.slice(0, i+1+extra);
       frames[i].data[1].y = exp_fit;
+
+     // if(i+1+extra < dates.length){
+        frames[i].data[4].x = dates.slice(i+1, i+1+extra);
+        frames[i].data[4].y = total_count.slice(i+1, i+1+extra);
+        frames[i].data[4].name = "Future cases"
+     // }
+
+     //console.log(dates.slice(i+1, i+1+extra));
+
+      frames[i].data[5].x = [dates[i], dates[i]];
+      frames[i].data[5].y = [0, total_count[i]];
+
+
 
 
       c0 = +params[0]; c1 = +params[1]; c2 = +params[2]; c3 = +params[3]; 
@@ -289,8 +308,36 @@ frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + 
       visible: 'legendonly'
   };
 
+    var trace5 = {
+      x: frames[start_ind].data[4].x, 
+      y: frames[start_ind].data[4].y,
+      mode: 'markers',
+      type: 'scatter',
+      name: 'Total Confirmed Cases',
+      name: frames[start_ind].data[0].name,
+      //visible: 'legendonly',
+      opacity: 0.2
+  };
 
-  var data = [trace1,trace2,trace3, trace4];
+    var trace6 = {
+      x: frames[start_ind].data[5].x, 
+      y: frames[start_ind].data[5].y,
+      mode: 'lines',
+      type: 'scatter',
+      color: 'black',
+      showlegend: false,
+      line: {
+        color: 'rgb(1,1,1)',
+        dash: 'dot'
+      }
+  
+  };
+
+
+
+
+
+  var data = [trace1,trace2,trace3, trace4, trace5 ,trace6];
 
   // create the traces 
  // console.log(frames[dates.length-1].data[1].x[dates.length-1])
