@@ -90,9 +90,14 @@ count = Int.(data[2:end,2])
 num_days = length(count);
 
 
+extra_days = 14; 
+
+
 
 
 y_true = copy(count);
+y_true = y_true[1:end-extra_days]
+
 y = copy(count); 
 train_window = length(y_true)-7;
 train_window = 40; 
@@ -106,7 +111,9 @@ num_iters2 = 100;
 B0 = B_true[1]; B1 = B_true[2]; B2 = B_true[3]; B3 = B_true[4]; 
 
 clf()
-num_days = length(y_true)
+
+
+num_days = length(y_true)+extra_days
 #num_days = length(y)+7
 f_t = [f(t,B0,B1,B2,B3) for t in 1:num_days]
 close("all")
@@ -121,7 +128,7 @@ legend()
 
 
 
-A = NaN*zeros(num_days,num_days);
+A = NaN*zeros(length(y_true),num_days);
 param_vec = [];
 
 num_iters1 = 100;
@@ -168,8 +175,8 @@ for t in 2:length(y_true)
 		end
 	end
 	B0 = B_true[1]; B1 = B_true[2]; B2 = B_true[3]; B3 = B_true[4]; 
-	f_t = [f(t,B0,B1,B2,B3) for t in 1:length(y)]
-	A[t,1:t] = f_t; 
+	f_t = [f(t,B0,B1,B2,B3) for t in 1:num_days]
+	A[t,1:t+extra_days] = f_t[1:t+extra_days]; 
 	push!(param_vec, B_true)
 	B_prev = B_true; 
 end
@@ -183,8 +190,6 @@ end
 
 
 writecsv("richard_fit.csv",[param_mat A])
-
-
 AA = readcsv("richard_fit.csv")
 
 
