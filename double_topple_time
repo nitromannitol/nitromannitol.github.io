@@ -84,46 +84,75 @@ function one_topple_3D!(S,T)
 	return isTopple;
 end
 
-for M in 3:1:100
+
+z = []; #last time you topple twice
+z2 = []; #first time you reach M on boundary
+z3 = []; #stabilizing time
+z4 = []; #last time you have self similarity
+for M in 2:1:20
 	MM = M-1; 
 	println(M)
 
 	kk = 1
-	A = (4+kk)*ones(M,M);
+	A = (2*2+kk)*ones(M,M);
 	A[1,:]=-Inf;
 	A[:,1]=-Inf;
 	T = zeros(A);
 
 
-	isTopple2 = true; 
-	isBreak = false; 
-	isShow = true; 
+	A_small = copy(A[1:M-1,1:M-1])
+	T_small = zeros(A_small);
 
-	threshold = (M-1)
-	max_neighbors = Set{Int64}(); 
-	num_iters = 0; 
+
+
+	TT = zeros(T); 
+	isTopple2 = one_topple_sym!(A,TT)
+	T = TT; 
+
+	one_topple_sym!(A_small,T_small)
+
+	TT_prev = copy(TT); 
+	isTopple2 = true; 
+	num_iters = 1; 
+
+	max_same = -Inf; 
+	isPushed = false; 
+
+	max_sim = -Inf; 
 
 	while(isTopple2)
-		#isTopple2 = one_topple_sym!(A,T)
-		#if(maximum(T[2,:]) > (MM-1))
-			TT = zeros(T); 
-			isTopple2 = one_topple_sym!(A,TT)
-			isTopple2 = one_topple_sym!(A,TT)
-			T = T + TT; 
-			if(maximum(TT) == 2)
-				clf()
-				imshow(TT)
-				val = readline()
-				if(val == "stop\n") isBreak = true; break; end
-				clf()
-				imshow(A)
-				val = readline()
-			end
-		
-		#end
-	end
+		TT = zeros(T); 
+		isTopple2 = one_topple_sym!(A,TT)
+		if(maximum(TT_prev + TT) == 2)
+			max_same = num_iters;
+			#push!(z, num_iters)
+			#break;
+		end
+		if(maximum(T[2,:]) == MM && !isPushed)
+			isPushed = true; 
+			push!(z2, num_iters)
+		end
+		if(T[1:M-1,1:M-1] ==T_small)
+			max_sim = num_iters
+		end
 
+
+		one_topple_sym!(A_small,T_small)
+
+		#if(maximum(TT_prev + TT) < 2)
+		#	push!(z,num_iters)
+		#	break;
+		#end
+		T = T + TT; 
+		TT_prev = TT; 
+		num_iters+=1; 
+	end
+	push!(z3, num_iters-1)
+	push!(z, max_same)
+	push!(z4, max_sim)
 end
+display([z4 z])
+#println(all(z3[1:end-1].>=z[2:end]))
 
 
 
