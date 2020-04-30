@@ -56,7 +56,7 @@ for DD in dates
 end
 
 
-#add 0 more days to the dates
+#add k more days to the dates
 num_iters = 14;
 curr_date = dates2[end];
 for k in 1:num_iters
@@ -65,7 +65,7 @@ for k in 1:num_iters
 	if(day == 31 && mon == 3)
 		day = 1
 		mon = 4
-	elseif(day == 30 && mon = 4)
+	elseif(day == 30 && mon == 4)
 		day = 1
 		mon = 5
 	else
@@ -107,6 +107,8 @@ data_out[2:end,4] = total_ICU
  writecsv("data_fit.csv",data_out)
 
 
+
+
 Z = [];
 i = 1; 
 while(true)
@@ -117,4 +119,44 @@ while(true)
 	end
 end
 
-println(length(counts)-findn(counts.>=counts[end]/2)[1])
+Z = []
+i = 1; 
+CC = [count[1]; diff(count)];
+while(true)
+	if(i + 7 > length(CC)) break; end;
+	#push!(Z, mean(CC[i:i+7]))
+	push!(Z, sum(CC[i:i+7]))
+	i = i + 8;
+	if(i > length(CC))
+		break;
+	end
+end
+bar(1:length(Z), Z)
+suptitle("Total new cases per week")
+title("Kuwait")
+xlabel("Weeks since Feb 25th")
+ylabel("Confirmed new cases")
+
+CC = counts[1:end-num_iters]
+println(length(CC)-findn(CC.>=CC[end]/2)[1])
+
+## 7 day moving average
+Z = []
+CC = [count[1]; diff(count)];
+i = 7;
+while(true)
+	if(i > length(CC)) break; end;
+	#push!(Z, mean(CC[i:i+7]))
+	push!(Z, mean(CC[i-7+1:i]))
+	i = i + 1;
+	if(i > length(CC))
+		break;
+	end
+end
+clf()
+bar(1:length(Z), Z)
+suptitle("Seven day moving average")
+title("Confirmed new cases of COVID-19 in Kuwait")
+xlabel("Days since March 2nd")
+
+
