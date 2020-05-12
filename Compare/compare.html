@@ -175,6 +175,11 @@ body {
 
 <script>
 
+var min_cases_count = 50; 
+var min_length = 10; 
+var num_nearest = 3; 
+
+
 $(function() {
       $('#countrydata_').multiselect({
         includeSelectAllOption: true,
@@ -216,7 +221,6 @@ function makeplot(countries = ["Kuwait"], verticalLines = []) {
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
 
 function findNearestCountry(allRows, country){
-  var num_nearest = 3;
   var total_count = [];
   var locations = d3.keys(allRows[0])
   locations = locations.slice(1,locations.length+1);
@@ -225,7 +229,7 @@ function findNearestCountry(allRows, country){
   var country_norm_vec = []; 
   for(var j = 0; j < allRows.length; j++){
       var norm_count = allRows[j][country]; 
-      if(norm_count >= 20){
+      if(norm_count >= min_cases_count){
         country_norm_vec.push(norm_count);
       }
     };
@@ -246,11 +250,11 @@ function findNearestCountry(allRows, country){
     var y = []; 
     for(var j = 0; j < allRows.length; j++){
       var norm_count = allRows[j][unique_locations[i]]; 
-      if(norm_count >= 20){
+      if(norm_count >= min_cases_count){
         y.push(norm_count);
       }
     }; 
-    if(y.length < 20 || y.length < country_norm_vec.length){
+    if(y.length < min_length || y.length < country_norm_vec.length){
       continue; 
     }
     y = y.slice(0, country_norm_vec.length)
@@ -337,11 +341,11 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
     //y.push(0);
     for(var j = 0; j < dates.length; j++){
       var norm_count = allRows[j][unique_locations[i]]; 
-      if(norm_count >= 20){
+      if(norm_count >= min_cases_count){
         y.push(norm_count);
       }
     };
-    if(y.length < 20){
+    if(y.length < min_length){
       continue; 
     }
 
@@ -413,7 +417,7 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
 
     xaxis: {
     title: {
-      text: 'days since 20 cases per million',
+      text: 'days since 50 cases per million',
       font: {
         family: 'Arial',
         size: 18,
@@ -492,8 +496,8 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
 
 // Default with closest countries to Kuwait
 //makeplot(["Kuwait", "Bahrain", "United Arab Emirates", "Saudi Arabia", "Qatar", "Oman"]); 
-makeplot(["Kuwait", "Bahrain", "Oman"]); 
-
+//makeplot(["Kuwait", "Bahrain", "Oman"]); 
+findNearest(["Kuwait"])
 
 //selector = document.querySelector('.countrydata');
 //console.log(selector)
