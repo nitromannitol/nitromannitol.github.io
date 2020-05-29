@@ -33,6 +33,20 @@
 body { 
   margin-left: 20px;
 }
+.p_class { 
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid black ;
+}
+/* hides the svg dom element that has the click handler responsible for toggling */
+#plotdiv .legend .traces:nth-of-type(1) .legendtoggle {
+   display: none;
+}
+/* just for presentation: shows the default cursor insted of the text cursor */
+#plotdiv .legend .traces:nth-of-type(2) .legendtext {
+   cursor: default;
+}
 </style>
 
 
@@ -45,24 +59,17 @@ body {
 
 
 
+<p class = "p_class"> Updated May 29, 2020. 
+  Click the legend on the right to remove or display each forecast. 
+</p>
+
+
+
 <div class="plot" id="plotdiv">
 
 </div>
 
-<div> 
-<form id="form1">
-   <select class="countrydata" id = "countrydata_" multiple="multiple">
-        <option value="Ensemble">Ensemble</option>
-    <option value="Imperial">Imperial</option>
-        <option value="LANL">LANL</option>
-                <option value="MIT">MIT</option>
-                <option value="UCLA">UCLA</option>
-                <option value="Geneva">Geneva</option>
-                <option value="YYG">YYG</option>
-    </select>
-    <input type="button" id="btnget1" value="Plot selected forecasts" />
-</form>
-</div>
+
 
 
 
@@ -70,29 +77,6 @@ body {
 
 <script>
 
-var min_cases_count = 50; 
-var min_length = 10; 
-var num_nearest = 3; 
-
-
-$(function() {
-      $('#countrydata_').multiselect({
-        includeSelectAllOption: true,
-        enableCaseInsensitiveFiltering: true,
-      });
-
-      $('#btnget1').click(function(){
-
-        //console.log($('#countrydata_').val())
-       // alert($('#countrydata_').val());
-        makeplot($('#countrydata_').val())
-      });
-      $('#btnget2').click(function(){
-        findNearest($('#countrydata_').val())
-        //console.log($('#countrydata_').val())
-       // alert($('#countrydata_').val());
-      });
-  });
 
 
 
@@ -103,193 +87,137 @@ function unique ( array ) {
 }
 
 
-function findNearest(countries) {
- Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
-};
 
-
-function makeplot(countries = ["Kuwait"], verticalLines = []) {
-  //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
+function makeplot() {
+   Plotly.d3.csv("true_deaths_processed.csv", function(data1){ 
+    Plotly.d3.csv("death_forecasts.csv", function(data2){ 
+      processData(data1,data2)
+      });
+    });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
 
-function findNearestCountry(allRows, country){
-  var total_count = [];
-  var locations = d3.keys(allRows[0])
-  locations = locations.slice(1,locations.length+1);
-  unique_locations = unique(locations);
-  // first determine vector of normalized 20 counts per million 
-  var country_norm_vec = []; 
-  for(var j = 0; j < allRows.length; j++){
-      var norm_count = allRows[j][country]; 
-      if(norm_count >= min_cases_count){
-        country_norm_vec.push(norm_count);
-      }
-    };
-  x0 = country_norm_vec.length;
-  y1 = math.max(country_norm_vec);
-
-   // console.log(country_norm_vec)
-
-
-  // now determine all countries closest to it
-  var country_names = []; 
-  var msd_val = []; 
-  var max_vec = []; 
-
-  for(var i = 0; i < unique_locations.length; i++){
-    //fill out the array corresponding to the normalized count of country
-    //starting at first day
-    var y = []; 
-    for(var j = 0; j < allRows.length; j++){
-      var norm_count = allRows[j][unique_locations[i]]; 
-      if(norm_count >= min_cases_count){
-        y.push(norm_count);
-      }
-    }; 
-    if(y.length < min_length || y.length < country_norm_vec.length){
-      continue; 
-    }
-    y = y.slice(0, country_norm_vec.length)
-
-   // console.log(math.subtract(y, country_norm_vec))
-    msd_val.push(math.norm(math.subtract(y,country_norm_vec)))
-    country_names.push(unique_locations[i])
-    max_vec.push(math.max(y));
-  };
-
-  //console.log(msd_val)
-
-
-  var indices = new Array(msd_val.length);
-  for (var i = 0; i < msd_val.length; ++i) indices[i] = i;
-  indices = indices.sort(function (a, b) { return msd_val[a] < msd_val[b] ? -1 : msd_val[a] > msd_val[b] ? 1 : 0; });
-  //console.log(indices)
-
-  var nearest_countries = []
-  for(var i = 0; i < num_nearest; i++){
-    nearest_countries.push(country_names[indices[i]]);
-    y1 = math.max(y1, max_vec[indices[i]]);
-  }
-
-  return [nearest_countries,x0,y1];
-
-}
-
-
-
-function processFindNearest(allRows, countries){
-  //console.log("hello")
-  var nearest_countries = []; 
- // console.log(countries)
-  verticalLines = []; 
-   for(var i=0; i < countries.length;i++){
-    country = countries[i]; 
-    out_vec = findNearestCountry(allRows,country);
-    verticalLines.push([out_vec[1], out_vec[2]]);
-    nearest_countries.push(out_vec[0]);
-  }
-
-  console.log(verticalLines)
-  //console.log(nearest_countries.flat());
-  makeplot(nearest_countries.flat(), verticalLines);
-}
-
   
-function processData(allRows, countries, verticalLines) {
+function processData(data1, data2) {
   var dates = [];
   var total_count = [];
-  var locations = d3.keys(allRows[0])
+  var locations = d3.keys(data1[0])
   date_name = locations[0] 
-  locations = locations.slice(1,locations.length+1);
-
-  //console.log(allRows[0].Kuwait)
-
-  for (var i=0; i<allRows.length; i++) {
-    row = allRows[i];
+  death_name = locations.slice(1,locations.length+1);
+  for (var i=0; i<data1.length; i++) {
+    row = data1[i];
     dates.push( row[date_name] );
+    total_count.push(row[death_name])
   }
-  //console.log(allRows[])
-  makePlotly( dates,allRows, locations, countries,verticalLines);
+  //console.log(dates)
+  //console.log(total_count)
+
+  var forecast_dates  = [];
+  var forecast_titles = [];
+
+  var forecastTitles = d3.keys(data2[0])
+ // console.log(forecastTitles)
+  date_name = forecastTitles[0];
+  forecastTitles = forecastTitles.slice(1,forecastTitles.length+1);
+  //console.log(forecastTitles)
+  for (var i=0; i<data2.length; i++) {
+    row = data2[i];
+    forecast_dates.push(row[date_name])
+  }
+  //console.log(forecast_dates)
+
+  makePlotly(dates,total_count, forecastTitles, forecast_dates, data2);
+}
+
+function median(values){
+  if(values.length ===0) return 0;
+
+  values.sort(function(a,b){
+    return a-b;
+  });
+
+  var half = Math.floor(values.length / 2);
+
+  if (values.length % 2)
+    return values[half];
+
+  return (values[half - 1] + values[half]) / 2.0;
 }
 
 
-
-function makePlotly( dates, allRows, locations, countries,verticalLines){
+function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecast_data){
   var plotDiv = document.getElementById("plotdiv");
 
 
 
 
-  // each frame will be associated to a country
-  // exponential model fit  
-  // total cases per million up to that point in time 
-  var frames = [];
-  unique_locations = unique(locations);
-  //console.log(unique_locations)
-  for(var i = 0; i < unique_locations.length; i++){
-    //fill out the array corresponding to the normalized count of country
-    //starting at first day
-    var y = []; 
-    //y.push(0);
-    for(var j = 0; j < dates.length; j++){
-      var norm_count = allRows[j][unique_locations[i]]; 
-      if(norm_count >= min_cases_count){
-        y.push(norm_count);
-      }
-    };
-    if(y.length < min_length){
-      continue; 
-    }
-
-    //this doesn't work at the moment so need to do by hand 
-    // selector = document.querySelector('.countrydata');
-    // textArray = unique_locations[i]; 
-    // var currentOption = document.createElement('option');
-    // currentOption.text = textArray;
-    // currentOption.value = textArray;
-    // selector.appendChild(currentOption);
-    // console.log(currentOption)
-    // console.log(selector)
-
-    var x =[...Array(y.length).keys()];
-    x = math.add(x,1)
-    var curr_frame =  {data: [{x: [], y: []}], name: unique_locations[i]};
-
-    curr_frame.data[0].x = x;
-    curr_frame.data[0].y = y; 
-
-    frames.push(curr_frame);
-
-  };
-
-
 
   data = []; 
-  // build dataset using countries
-  for(var i = 0; i < countries.length; i++){
-    curr_country = countries[i]; 
-    for(var j = 0; j < frames.length; j++){
-      //console.log(j, frames[j].name)
-        if(frames[j].name==curr_country){
-             var trace1 = {
-                x: frames[j].data[0].x, 
-                y: frames[j].data[0].y,
-                name: frames[j].name,
-                mode: 'lines+markers',
-                type: 'scatter'
-            };
-            data.push(trace1);
-          }
-        }
+  var trace1 = {
+      x: dates,
+      y: total_count,
+      name: "Reported",
+      mode: 'lines',
+      type: 'scatter',
+        line: {
+     color: 'rgb(0, 0, 0)',
+     width: 3
+      }
   }
+  data.push(trace1);
+  console.log(forecast_data)
+  console.log(forecast_titles)
+
+
+   for(var i = 0; i<forecast_titles.length; i++){
+      curr_title = forecast_titles[i];
+      console.log(curr_title)
+      yy = []
+      for (var j = 0; j<forecast_data.length; j++){
+        row = forecast_data[j];
+        //console.log(row[curr_title])
+        yy.push(row[curr_title]);
+      };
+      var trace1 = {
+          x: forecast_dates, 
+          y: yy,
+          name: curr_title,
+          mode: 'lines+markers',
+          type: 'scatter'
+      };
+      console.log(yy)
+    // if(yy.length > 1){
+        data.push(trace1);
+    //  }
+   }
+
+   // build the ensemble
+   ensemble_y  = [];
+   for (var j = 0; j < forecast_data.length; j++){
+      row = forecast_data[j]; 
+      all_preds = []
+      for(var i = 0; i < forecast_titles.length; i++){
+        all_preds.push(row[forecast_titles[i]]);
+      };
+      ensemble_y.push(median(all_preds))
+    };
+    var trace1 = {
+          x: forecast_dates, 
+          y: ensemble_y,
+          name: "Ensemble",
+          mode: 'lines+markers',
+          type: 'scatter'
+      };
+      data.push(trace1);
+
+
+
 
 
   var layout = {
     title: {
-      text:'COVID-19 National Forecasts',
+      text:'COVID-19 Kuwait National Forecasts',
       font: {
         family: 'Arial',
         size: 24
@@ -309,17 +237,6 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
     bordercolor: '#FFFFFF',
     borderwidth: 2
     },
-
-    xaxis: {
-    title: {
-      text: 'days',
-      font: {
-        family: 'Arial',
-        size: 18,
-        color: '#7f7f7f'
-      }
-    },
-  },
   yaxis: {
     title: {
       text: 'confirmed deaths',
@@ -335,28 +252,22 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
 };
 
   
-  console.log(verticalLines.length)
 
-  for(var i = 0; i <verticalLines.length;i++){
-    row = verticalLines[i]; 
-    val1 = row[0]; 
-    val2 = row[1]; 
 
     val =  { type: 'line',
-      x0: val1,
+      x0: dates[dates.length-1],
       y0: 0,
-      x1: val1,
-      y1: val2,
+      x1: dates[dates.length-1],
+      y1: total_count[total_count.length-1],
       line: {
         color: 'rgb(1, 1, 1)',
         width: 2,
         dash: 'dashdot'
       }
     };
-
     layout.shapes.push(val)
+    //console.log(dates[dates.length-1])
 
-  }
 
 
 
@@ -364,23 +275,6 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
 
 
     
-
-
-  //console.log(layout.shapes[0].x0)
-  //layout.shapes[0].x0 = 40; 
-  //layout.shapes[0].x1 = 40; 
-
-  //layout.shapes.y1 = 40; 
-
-
-
-
-  
-
-
-
-   
-
 
    
 
@@ -391,8 +285,8 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
 
 // Default with closest countries to Kuwait
 //makeplot(["Kuwait", "Bahrain", "United Arab Emirates", "Saudi Arabia", "Qatar", "Oman"]); 
-//makeplot(["Kuwait", "Bahrain", "Oman"]); 
-findNearest(["Kuwait"])
+makeplot(["Kuwait"]); 
+//findNearest(["Kuwait"])
 
 //selector = document.querySelector('.countrydata');
 //console.log(selector)
@@ -404,8 +298,7 @@ findNearest(["Kuwait"])
 
 
 <hr>
-Select the forecast model from the dropdown bar and click the first button to plot the forecast. Models
-make various assumptions about levels of social distancing and other interventions. See model descriptions
+Models make various assumptions about levels of social distancing and other interventions. See model descriptions
 below for details. 
 
 
@@ -415,7 +308,7 @@ below for details.
 <h2><a id="what-forecasts-predict" class="onThisPageAnchor" title="What the Forecasts Aim to Predict"></a>What the Forecasts Aim to Predict</h2>
 
 <p>Forecasts based on statistical or mathematical models aim to predict changes in national level cumulative reported COVID-19 deaths for the next four weeks. Forecasting teams predict numbers of deaths using different types of data (e.g., COVID-19 data, demographic data, mobility data), methods (see below), and estimates of the impacts of interventions (e.g.&nbsp;social distancing, use of face coverings).</p>
-<h2><a id="working" class="onThisPageAnchor" title="Working to Bring Together Forecasts for COVID-19 Deaths in the US"></a>Working to Bring Together Forecasts for COVID-19 Deaths in the US</h2>
+<h2><a id="working" class="onThisPageAnchor" title="Working to Bring Together Forecasts for COVID-19 Deaths in Kuwait"></a>Working to Bring Together Forecasts for COVID-19 Deaths in Kuwait</h2>
 <p> These forecasts have been developed independently and shared publicly. It is important to bring these forecasts together to help understand how they compare with each other and how much uncertainty there is about what may happen in the upcoming four weeks.</p>
 
 
@@ -480,7 +373,6 @@ SEIS mechanistic model.</p>
 
 
 
-
 <hr>
       Last updated May 29th, 9:13 AM AST.  
 <hr>
@@ -490,6 +382,8 @@ SEIS mechanistic model.</p>
       Created by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
       <a href = "mailto: ahmedmb@gmail.com">here</a>.  
     </footer>
+
+
 
 
 
