@@ -59,7 +59,7 @@ body {
 
 
 
-<p class = "p_class"> Updated May 29, 2020. 
+<p class = "p_class"> Updated June 3, 2020. 
   Click the legend on the right to remove or display each forecast. 
 </p>
 
@@ -68,6 +68,7 @@ body {
 <div class="plot" id="plotdiv">
 
 </div>
+
 
 
 
@@ -166,13 +167,13 @@ function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecas
       }
   }
   data.push(trace1);
-  console.log(forecast_data)
-  console.log(forecast_titles)
+  //console.log(forecast_data)
+  //console.log(forecast_titles)
 
 
    for(var i = 0; i<forecast_titles.length; i++){
       curr_title = forecast_titles[i];
-      console.log(curr_title)
+      //console.log(curr_title)
       yy = []
       for (var j = 0; j<forecast_data.length; j++){
         row = forecast_data[j];
@@ -186,7 +187,7 @@ function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecas
           mode: 'lines+markers',
           type: 'scatter'
       };
-      console.log(yy)
+      //console.log(yy)
     // if(yy.length > 1){
         data.push(trace1);
     //  }
@@ -298,11 +299,76 @@ makeplot(["Kuwait"]);
 
 
 <hr>
-Models make various assumptions about levels of social distancing and other interventions. See model descriptions
-below for details. 
+Models make various assumptions about levels of social distancing and other interventions. 
+See model descriptions below for details. 
+We keep track of model performance week-to-week by computing the absolute normalized error of each prediction
+against the true number of deaths. 
 
 
 <hr>
+
+
+<div class="tablediv" id="tablediv">
+
+</div>
+
+
+
+
+<script>
+// create the table
+
+var values = [
+
+
+      [ "Imperial",
+ "YYG",
+ "LANL",
+ "Ensemble",
+ "Geneva",
+ "Auquan",
+ "MIT"],
+      [0.004,
+ 0.035,
+ 0.091,
+ 0.091,
+ 0.104,
+ 0.13,
+ 0.339],
+]
+
+var headerColor = "grey";
+var rowBestColor = "lightblue";
+var rowWorstColor = "red";
+var rowColor = "white";
+
+var data = [{
+  type: 'table',
+  header: {
+    values: [["<b>Model</b>"], ["<b>Prediction error</b>"]],
+        align: "center",
+    line: {width: 1, color: 'black'},
+    fill: {color: headerColor},
+    font: {family: "Arial", size: 13, color: "white"}
+  },
+  cells: {
+    values: values,
+    align: "center",
+    line: {color: "black", width: 1},
+    fill: {color: [[rowBestColor,rowColor,rowColor,rowColor,
+              rowColor,rowColor,rowWorstColor]]},
+    font: {family: "Arial", size: 12, color: ["black"]}
+  }
+}]
+
+var layout = {
+  title: "Past model prediction accuracy"
+}
+
+Plotly.newPlot('tablediv', data, layout);
+
+
+</script>
 
 
 <h2><a id="what-forecasts-predict" class="onThisPageAnchor" title="What the Forecasts Aim to Predict"></a>What the Forecasts Aim to Predict</h2>
@@ -362,7 +428,7 @@ Exponential and linear statistical models fit to the recent growth rate of cumul
 
 <h3><a href="http://covid19-projections.com/about/" class="tp-link-policy" data-domain-ext="com">Youyang Gu (COVID-Projections)<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
 <p><strong>Model name:</strong> YYG</p>
-<p><strong>Intervention assumptions:</strong> The model accounts for individual state-by-state re-openings and their impact on infections and deaths.</p>
+<p><strong>Intervention assumptions:</strong> The model accounts for reopenings and their impact on infections and deaths.</p>
 <p><strong>Methods</strong><br>
 SEIS mechanistic model.</p>
 </div></div><div class="row "><div class="col-md-12"><div class="row-fluid">
@@ -373,8 +439,11 @@ SEIS mechanistic model.</p>
 
 
 
+
+
+
 <hr>
-      Last updated May 29th, 9:13 AM AST.  
+      Last updated June 4th, 9:00 PM AST.  
 <hr>
 
 
