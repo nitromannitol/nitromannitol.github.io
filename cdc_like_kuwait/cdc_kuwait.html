@@ -59,7 +59,7 @@ body {
 
 
 
-<p class = "p_class"> Updated June 3, 2020. 
+<p class = "p_class"> Predictions updated June 3, 2020. 
   Click the legend on the right to remove or display each forecast. 
 </p>
 
@@ -192,6 +192,8 @@ function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecas
         data.push(trace1);
     //  }
    }
+  // console.log(forecast_data)
+   //console.log(forecast_titles)
 
    // build the ensemble
    ensemble_y  = [];
@@ -199,10 +201,15 @@ function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecas
       row = forecast_data[j]; 
       all_preds = []
       for(var i = 0; i < forecast_titles.length; i++){
-        all_preds.push(row[forecast_titles[i]]);
+        if(row[forecast_titles[i]].length > 0){
+          all_preds.push(parseInt(row[forecast_titles[i]]));
+        }
       };
+      console.log(all_preds)
+      console.log(median(all_preds))
       ensemble_y.push(median(all_preds))
     };
+
     var trace1 = {
           x: forecast_dates, 
           y: ensemble_y,
@@ -309,9 +316,10 @@ against the true number of deaths.
 
 
 <div class="tablediv" id="tablediv">
+
 </div>
 
-<hr>
+
 
 
 <script>
@@ -344,7 +352,7 @@ var rowColor = "white";
 var data = [{
   type: 'table',
   header: {
-    values: [["<b>Model</b>"], ["<b>Prediction error percent</b>"]],
+    values: [["<b>Model</b>"], ["<b>Prediction error</b>"]],
         align: "center",
     line: {width: 1, color: 'black'},
     fill: {color: headerColor},
@@ -361,7 +369,7 @@ var data = [{
 }]
 
 var layout = {
-  title: "Past model prediction accuracy"
+  title: "Past model prediction error percent"
 }
 
 Plotly.newPlot('tablediv', data, layout);
@@ -369,6 +377,8 @@ Plotly.newPlot('tablediv', data, layout);
 
 </script>
 
+
+<hr>
 
 <h2><a id="what-forecasts-predict" class="onThisPageAnchor" title="What the Forecasts Aim to Predict"></a>What the Forecasts Aim to Predict</h2>
 
@@ -393,6 +403,10 @@ Plotly.newPlot('tablediv', data, layout);
 
 
 
+<h3><a href="https://covid19.healthdata.org/united-states-of-america" class="tp-link-policy" data-domain-ext="org">Institute of Health Metrics and Evaluation<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
+<p><strong>Model name:</strong> IHME</p>
+<p><strong>Intervention assumptions: </strong>Projections are adjusted to reflect differences in aggregate population mobility and community mitigation policies.</p>
+<p><strong>Methods:</strong> Combination of a mechanistic disease transmission model and a curve-fitting approach</p>
 
 
 
@@ -442,7 +456,7 @@ SEIS mechanistic model.</p>
 
 
 <hr>
-      Last updated June 4th, 9:00 PM AST.  
+      Site last updated June 4th, 9:00 PM AST.  
 <hr>
 
 
