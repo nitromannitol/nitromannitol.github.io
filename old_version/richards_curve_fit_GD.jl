@@ -133,7 +133,7 @@ param_vec = [];
 
 num_iters1 = 100;
 num_iters2 = 100; 
-num_iters0= 5
+num_iters0= 8
 A[1,1] = y[1]; 
 
 B_prev = []

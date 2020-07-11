@@ -52,6 +52,9 @@ for DD in dates
 	if(mon == "May")
 		mon = "05"
 	end
+	if(mon == "Jun")
+		mon = "06"
+	end
 	push!(dates2, string(year, "-", mon, "-", day));
 end
 
@@ -68,6 +71,9 @@ for k in 1:num_iters
 	elseif(day == 30 && mon == 4)
 		day = 1
 		mon = 5
+	elseif(day == 31 && min == 5)
+		day = 1;
+		mon = 6;
 	else
 		day = day+1;
 	end
@@ -139,6 +145,10 @@ ylabel("Confirmed new cases")
 
 CC = counts[1:end-num_iters]
 println(length(CC)-findn(CC.>=CC[end]/2)[1])
+
+S01 = 1335712; 
+S02 = 3084398; 
+println(1e3*CC[end]/(S01+S02))
 
 ## 7 day moving average
 Z = []
