@@ -4,7 +4,7 @@
 <!-- load the plotly.js and math.js libraries -->      
 
 <head>
-  <title> COVID-19 across the world </title>
+  <title> COVID-19 in Kuwait </title>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
 <script>
@@ -61,10 +61,14 @@ p {
 //  Plotly.d3.csv("data_fit.csv", function(data){ processData(data) } );
 //};
 
-
 function makeplot() {
-   Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases.csv', function(data){ processData(data) });
+    Plotly.d3.csv("data_fit.csv", function(data1){ 
+    Plotly.d3.text("richard_fit.csv", function(data2){ 
+      processData(data1,data2)
+      });
+    });
 };
+
 
 
 
@@ -128,65 +132,55 @@ function fitLS(x_vec,y_vec){
 
 
 
-function processData(allRows) {
+function processData(allRows1, allRows2) {
   var dates = [];
   var total_count = [];
-  var locations = d3.keys(allRows[0])
-  date_name = locations[0] 
-  locations = locations.slice(1,locations.length+1);
-
-  //console.log(allRows[0].Kuwait)
-
-  for (var i=0; i<allRows.length; i++) {
-    row = allRows[i];
-    total_count.push(row["Kuwait"])
-   // console.log(row)
-    dates.push( row["date"] );
-  }
- // hack for now until code is updated 
- // to work for all countries
- dates = dates.slice(55,dates.length)
- total_count = total_count.slice(55,total_count.length)
-
-
- // get rid of all the empty entries
-   for (var i=0; i<total_count.length; i++) {
-    if(total_count[i] == ""){
-      total_count[i] = total_count[i-1]
-    }
+  for (var i=0; i<allRows1.length; i++) {
+    row = allRows1[i];
+    dates.push( row['date'] );
+    total_count.push( row['total_count'] );
   }
 
+  data2 = d3.csvParseRows(allRows2);
 
- // console.log(total_count)
-// console.log(dates)
+  //console.log(d3.csvParseRows(allRows2))
+  // process the second csv file
 
+  //console.log(data2)
 
-  makePlotly( dates, total_count);
+  //console.log(data2[0].slice(0,1))
+
+  makePlotly(dates,total_count,data2);
 }
 
 
-
-// test on the next 2 weeks
 const extra = 14; 
 
 
-
-
-function makePlotly(dates, total_count){
+function makePlotly( dates, total_count,data2){
   var plotDiv = document.getElementById("plot");
   var future_dates = Array.from(dates);
   dates = dates.slice(0,dates.length-extra)
- // console.log(total_count)
 
+
+  //console.log(data2)
   // each frame is going to correspond to a day and the model
   // fit up to that point 
   var frames = [];
+  //console.log(dates.slice(0,dates.length))
 
   for (var i = 0; i < dates.length; i++) {
-    frames[i] = {data: [{x: [], y: [], name:[]}, {x: [], y: [], name: []},{x: [], y: [], name: []},{x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]},
+    frames[i] = {data: [{x: [], y: [], name:[]}, {x: [], y: [], name: []}, {x: [], y: [], name: []},{x: [], y: [], name: []},{x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]},
     frames[i].data[0].x = dates.slice(0, i+1);
     frames[i].data[0].y = total_count.slice(0, i+1);
     frames[i].data[0].name = "Total Cases = " + total_count[i];
+
+
+    frames[i].data[3].x = future_dates.slice(0, i+1+extra);
+    frames[i].data[3].y = data2[i].slice(4, i+1+4+extra); // first 4 terms are parameters
+
+     var params = data2[i].slice(0,4);
+
 
 
   
@@ -200,6 +194,8 @@ function makePlotly(dates, total_count){
       frames[i].data[1].x = dates.slice(0, i+1);
       frames[i].data[1].y = total_count.slice(0, i+1);
       frames[i].data[1].name = "Exponential Fit"
+
+      frames[i].data[3].name = "Richard's Fit";
 
 
 
@@ -237,18 +233,22 @@ function makePlotly(dates, total_count){
       frames[i].data[1].y = exp_fit;
 
      // if(i+1+extra < dates.length){
-        frames[i].data[3].x = dates.slice(i+1, i+1+extra);
-        frames[i].data[3].y = total_count.slice(i+1, i+1+extra);
-        frames[i].data[3].name = "Future cases"
+        frames[i].data[4].x = dates.slice(i+1, i+1+extra);
+        frames[i].data[4].y = total_count.slice(i+1, i+1+extra);
+        frames[i].data[4].name = "Future cases"
      // }
 
      //console.log(dates.slice(i+1, i+1+extra));
 
-      frames[i].data[4].x = [dates[i], dates[i]];
-      frames[i].data[4].y = [0, total_count[i]];
+      frames[i].data[5].x = [dates[i], dates[i]];
+      frames[i].data[5].y = [0, total_count[i]];
 
 
 
+
+      c0 = +params[0]; c1 = +params[1]; c2 = +params[2]; c3 = +params[3]; 
+     // frames[i].data[3].name = math.round(String(c0)) + "(1-" + math.round(String(c1)) + " exp(-" + math.round(String(c2),2) + " day))^" + "(" + math.round(String(c3),2) + ")";
+frames[i].data[3].name = "(c0, c1, c2, c3) = " + "(" + math.round(String(c0)) + "," + math.round(String(c1)) + "," +  math.round(String(c2),1)  + "," + math.round(String(1/c3),2) + ")";
 
     }
 
@@ -299,10 +299,18 @@ function makePlotly(dates, total_count){
 
   };
   
-
     var trace4 = {
       x: frames[start_ind].data[3].x, 
       y: frames[start_ind].data[3].y,
+      mode: 'lines',
+      type: 'scatter',
+      name: frames[start_ind].data[3].name,
+      visible: 'legendonly'
+  };
+
+    var trace5 = {
+      x: frames[start_ind].data[4].x, 
+      y: frames[start_ind].data[4].y,
       mode: 'markers',
       type: 'scatter',
       name: 'Total Confirmed Cases',
@@ -311,9 +319,9 @@ function makePlotly(dates, total_count){
       opacity: 0.2
   };
 
-    var trace5 = {
-      x: frames[start_ind].data[4].x, 
-      y: frames[start_ind].data[4].y,
+    var trace6 = {
+      x: frames[start_ind].data[5].x, 
+      y: frames[start_ind].data[5].y,
       mode: 'lines',
       type: 'scatter',
       color: 'black',
@@ -329,7 +337,7 @@ function makePlotly(dates, total_count){
 
 
 
-  var data = [trace1,trace2,trace3, trace4, trace5];
+  var data = [trace1,trace2,trace3, trace4, trace5 ,trace6];
 
   // create the traces 
  // console.log(frames[dates.length-1].data[1].x[dates.length-1])
@@ -469,12 +477,17 @@ function makePlotly(dates, total_count){
 
 <hr>
 
+<br>
+Kuwait has just ended a strict 3 week country-wide lockdown. New cases are still appearing, although the rate of growth is lower than pre-lockdown among the non-Kuwaiti population.
+The rate of growth has increased among Kuwaitis, although this may be due to increased 
+testing.
+<hr>
 
 
 
 Each data point corresponds to daily, public updates by Kuwait's <a href = "https://twitter.com/KUWAIT_MOH"> Ministry of Health</a>
 or <a href = "https://twitter.com/MOInformation" > Ministry of Information</a> of the total number of confirmed COVID-19 cases in Kuwait.
-The <font color = '#fff000'>col</font><font color = "blue">ored</font> curves represent the closest function to all of the cases up to that day. 
+The <font color = '#fff000'>co</font><font color = "blue">lo</font><font color = "red">red</font> curves represent the closest function to all of the cases up to that day. 
 
 <br>
 <br>
@@ -484,19 +497,22 @@ The <font color = '#fff000'>col</font><font color = "blue">ored</font> curves re
 <font color = '#fff000' > Yellow </font> is linear, 
   \( \mbox{cases} = b_1 + b_2 \cdot \mbox{ day}\)
 <br></br>
+<font color = "red"> Red </font> is Richard's growth curve, 
+\( \mbox{cases} = c_0 \cdot (1-c_1 \exp(-c_2 \cdot \mbox{ day}))^{c_3} \)
+<br></br>
 The linear and exponential models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
-
+The <a href = "https://en.wikipedia.org/wiki/Generalised_logistic_function"> Richard's growth curve</a> is notoriously difficult to fit numerically; we determine the curve via <a href = "https://web.stanford.edu/class/ee364b/lectures/stoch_subgrad_slides.pdf"> gradient descent </a> with multiple random initial starting conditions.
 
 
 <hr>
 
 Observe the, sometimes extreme, day-to-day changes in the best fit models, despite visually not changing much. The reason for this is twofold. The number of reported 
-cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, and even sigmoid curves. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this page is to visualize Kuwait's data together with the similarites and differences between linear and exponential growth over time. 
+cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, or even Richard's curve. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this page is to visualize Kuwait's data together with the similarites and differences between linear, exponential, and logistic growth over time. 
 
 
 <hr>
-Data is updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
- <hr>
+      Last updated June 12th, 5:38 PM AST.  
+<hr>
 
 
    <footer>
