@@ -59,13 +59,20 @@ body {
 
 
 
-<p class = "p_class"> Predictions updated June 3, 2020. 
-  Click the legend on the right to remove or display each forecast. 
+<p class = "p_class"> Forecasts updated July 05, 2020. 
+  Click the legend on the right to remove or display each forecast.
+  Use the slider bars to see past forecasts and their performace. 
 </p>
 
 
 
-<div class="plot" id="plotdiv">
+<div class="plot" id="forecast_div">
+
+</div>
+
+
+
+<div class="plot" id="rt_div">
 
 </div>
 
@@ -90,26 +97,29 @@ function unique ( array ) {
 
 
 function makeplot() {
-   Plotly.d3.csv("true_deaths_processed.csv", function(data1){ 
-    Plotly.d3.csv("death_forecasts.csv", function(data2){ 
-      processData(data1,data2)
+   Plotly.d3.csv("model_forecasts.csv", function(data1){ 
+    Plotly.d3.csv("model_r.csv", function(data2){ 
+      Plotly.d3.csv("https://covid.ourworldindata.org/data/ecdc/total_deaths.csv", function(data3){
+      processData(data1,data2,data3)
       });
     });
+  });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
 
+// data3 is the total deaths repo
   
-function processData(data1, data2) {
+function processData(data1,data2,data3) {
   var dates = [];
   var total_count = [];
-  var locations = d3.keys(data1[0])
-  date_name = locations[0] 
-  death_name = locations.slice(1,locations.length+1);
-  for (var i=0; i<data1.length; i++) {
-    row = data1[i];
-    dates.push( row[date_name] );
-    total_count.push(row[death_name])
+  for (var i=0; i<data3.length; i++) {
+    row = data3[i];
+    if(row["Kuwait"] > 0){
+        total_count.push(row["Kuwait"])
+      // console.log(row)
+         dates.push( row["date"] );
+    };
   }
   //console.log(dates)
   //console.log(total_count)
@@ -128,7 +138,7 @@ function processData(data1, data2) {
   }
   //console.log(forecast_dates)
 
-  makePlotly(dates,total_count, forecastTitles, forecast_dates, data2);
+  makePlotly(dates,total_count, data1,data2);
 }
 
 function median(values){
@@ -146,89 +156,65 @@ function median(values){
   return (values[half - 1] + values[half]) / 2.0;
 }
 
+function generateRPlot(r_data){
+//  console.log(r_data)
 
-function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecast_data){
-  var plotDiv = document.getElementById("plotdiv");
-
-
-
-
-
-  data = []; 
-  var trace1 = {
-      x: dates,
-      y: total_count,
-      name: "Reported",
-      mode: 'lines',
-      type: 'scatter',
-        line: {
-     color: 'rgb(0, 0, 0)',
-     width: 3
-      }
-  }
-  data.push(trace1);
-  //console.log(forecast_data)
-  //console.log(forecast_titles)
+  curr_model = r_data[0]["model"]
+  yy = []
+  xx = []
+  val2 = 0; 
+  data = []; // will hold all the traces
 
 
-   for(var i = 0; i<forecast_titles.length; i++){
-      curr_title = forecast_titles[i];
-      //console.log(curr_title)
-      yy = []
-      for (var j = 0; j<forecast_data.length; j++){
-        row = forecast_data[j];
-        //console.log(row[curr_title])
-        yy.push(row[curr_title]);
-      };
-      var trace1 = {
-          x: forecast_dates, 
+  for(var i = 0; i < r_data.length; i++){
+    row = r_data[i]
+    model_name = row["model"]
+    if(model_name != curr_model){
+      //console.log(curr_model)
+      // append the data so far to the current frame
+       var trace1 = {
+          x: xx, 
           y: yy,
-          name: curr_title,
-          mode: 'lines+markers',
-          type: 'scatter'
-      };
-      //console.log(yy)
-    // if(yy.length > 1){
-        data.push(trace1);
-    //  }
-   }
-  // console.log(forecast_data)
-   //console.log(forecast_titles)
-
-   // build the ensemble
-   ensemble_y  = [];
-   for (var j = 0; j < forecast_data.length; j++){
-      row = forecast_data[j]; 
-      all_preds = []
-      for(var i = 0; i < forecast_titles.length; i++){
-        if(row[forecast_titles[i]].length > 0){
-          all_preds.push(parseInt(row[forecast_titles[i]]));
-        }
-      };
-      console.log(all_preds)
-      console.log(median(all_preds))
-      ensemble_y.push(median(all_preds))
-    };
-
-    var trace1 = {
-          x: forecast_dates, 
-          y: ensemble_y,
-          name: "Ensemble",
-          mode: 'lines+markers',
-          type: 'scatter'
+          name:  curr_model, 
+          mode: 'lines',
+          type: 'scatter',
+          line: {
+          dash: 'dot'
+        } 
       };
       data.push(trace1);
+      curr_model = model_name
+      yy = []
+      xx = []
+    };
+    val2 = Math.max(val2, row["point"])
+    yy.push(row["point"])
+    xx.push(row["date"])
+  };
 
-
-
+  // push the last model
+  var trace1 = {
+  x: xx, 
+  y: yy,
+  name:  curr_model,
+  mode: 'lines',
+  type: 'scatter',
+ line: {
+      dash: 'dot'
+    }
+  }
+  data.push(trace1);
+  val11 = xx[xx.length-1];
+  val10 = "2020-03-08"; // first day of reported Rt
+  //console.log(data)
 
 
   var layout = {
     title: {
-      text:'COVID-19 Kuwait National Forecasts',
+      text:'Reproduction number estimates',
       font: {
         family: 'Arial',
-        size: 24
+        size: 15
       },
       xref: 'paper',
     },
@@ -247,7 +233,7 @@ function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecas
     },
   yaxis: {
     title: {
-      text: 'confirmed deaths',
+      text: 'Estimated Rt',
       font: {
         family: 'Arial',
         size: 18,
@@ -257,48 +243,292 @@ function makePlotly(dates, total_count, forecast_titles, forecast_dates, forecas
   }, 
   shapes: [
   ]
-};
-
-  
+  };
 
 
-    val =  { type: 'line',
-      x0: dates[dates.length-1],
-      y0: 0,
-      x1: dates[dates.length-1],
-      y1: total_count[total_count.length-1],
+
+  // add vertical line corresponding to update day
+  val1 =  { type: 'line',
+    x0: val11,
+    y0: 0,
+    x1: val11,
+    y1: val2,
+    line: {
+      color: 'rgb(1, 1, 1)',
+      width: 1
+    }
+  };
+
+  // add horizontal line corresponding to Rt = 1
+  val2 =  { type: 'line',
+    x0: val10,
+    y0: 1,
+    x1: val11,
+    y1: 1,
+    line: {
+      color: 'rgb(0, 0, 1)',
+      width: 0.5
+    //  dash: 'dash'
+    }
+  };
+
+  layout.shapes.push(val1)
+  layout.shapes.push(val2)
+
+
+  Plotly.newPlot('rt_div', data, layout)
+}
+
+
+function makePlotly(dates, total_count, forecast_data, r_data){
+   generateRPlot(r_data)
+
+
+
+  // get all unique forecast dates
+  // get all unique models
+  forecast_dates = []
+  model_names = []
+  for(var i =0; i < forecast_data.length; i++){
+    row = forecast_data[i]; 
+    forecast_dates.push(row["forecast_date"]);
+    model_names.push(row["model"])
+  }
+  forecast_dates = unique(forecast_dates).sort()
+  model_names = unique(model_names)
+
+  //initialize the sliderSteps
+  var sliderSteps = [];
+    for (ii = 0; ii < forecast_dates.length; ii++) {
+      sliderSteps.push({
+        method: 'animate',
+        label: forecast_dates[ii],
+        args: [[forecast_dates[ii]], {
+          frame: {duration: 50, redraw: false, mode: "immediate"},
+        }]
+      });
+    }
+
+
+  // each frame corresponds to a forecast date
+  // with the 6 week future cases
+
+  var frames = [];
+  for(var ii = 0; ii < forecast_dates.length; ii++){
+
+
+    var max_pred = 0; // this will be our maximum range
+    data = []; // current frame data
+    forecast_date = forecast_dates[ii]; 
+
+    dates_prev = [];
+    y_prev = [];
+    y_future = [];
+    dates_future = [];
+
+
+    six_week_date = new Date(forecast_date)
+    six_week_date.setDate(six_week_date.getDate()+42)
+    six_week_date = six_week_date.toISOString();
+    res = six_week_date.split("T")
+    six_week_date = res[0]
+
+    six_week_date_pad = new Date(forecast_date)
+    six_week_date_pad.setDate(six_week_date_pad.getDate()+45)
+    six_week_date_pad = six_week_date_pad.toISOString();
+    res = six_week_date_pad.split("T")
+    six_week_date_pad = res[0]
+
+    for(jj = 0; jj < dates.length; jj++){
+      if(dates[jj] <= forecast_date){
+          dates_prev.push(dates[jj])
+          y_prev.push(total_count[jj])
+        }
+      else if (dates[jj] <= six_week_date){
+        dates_future.push(dates[jj])
+        y_future.push(total_count[jj]) 
+      };
+    }
+    max_pred = Math.max(max_pred, y_future[y_future.length-1])
+
+
+
+    // past cases
+    var trace1 = {
+      x: dates_prev,
+      y: y_prev,
+      name: "Reported",
+      showlegend: false,
+      type: 'scatter',
+      mode: 'lines',
       line: {
-        color: 'rgb(1, 1, 1)',
-        width: 2,
+        color: "black",
+        width: 3
+      }
+    }
+    data.push(trace1)
+
+    // future cases
+    var trace2 = {
+      x: dates_future,
+      y: y_future,
+      showlegend: false,
+      name: "Future reported",
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: "gray",
+        width: 1,
         dash: 'dashdot'
       }
     };
-    layout.shapes.push(val)
-    //console.log(dates[dates.length-1])
+    data.push(trace2)
+
+    // line marking current day
+    var trace3 = {
+      x: [forecast_date, forecast_date], 
+      y: [0, y_prev[y_prev.length-1]],
+      mode: 'lines',
+      type: 'scatter',
+      showlegend: false,
+      hoverinfo: 'skip',
+      line: {
+        color: "black",
+        width: 0.5
+      }
+    }
+    data.push(trace3)
+
+    curr_model = forecast_data[0]["model"]
+    yy = []
+    xx = []
+
+    for(var i = 0; i < forecast_data.length; i++){
+      row = forecast_data[i]; 
+      model_name = row["model"]
+      curr_forecast_date = row["forecast_date"]
+      if(curr_forecast_date != forecast_date){
+        continue;
+      }
+      target_date = row["target_week_end_date"]
+
+      if(model_name != curr_model){
+        // append the data so far to the current 
+        // frame
+        var trace1 = {
+          x: xx, 
+          y: yy,
+          name:  curr_model, 
+          mode: 'lines+markers',
+          type: 'scatter'
+        };
+        data.push(trace1);
+        if(yy.length > 0){
+          max_pred = Math.max(max_pred, yy[yy.length-1])
+        }
+        curr_model = model_name
+        yy = []
+        xx = []
+      };
+      yy.push(row["point"])
+      xx.push(target_date)
+    }
+
+       if(yy.length > 0){
+          max_pred = Math.max(max_pred, yy[yy.length-1])
+        }
+    // push the last model
+    var trace1 = {
+      x: xx, 
+      y: yy,
+      name:  curr_model, 
+      mode: 'lines+markers',
+      type: 'scatter'
+    };
+    data.push(trace1);
+
+    var layout = {
+    title: {
+        text:'COVID-19 Kuwait National Forecasts',
+        font: {
+          family: 'Arial',
+          size: 24
+        },
+        xref: 'paper',
+      },
+       legend: {
+          y: 0.5,
+          yref: 'paper',
+          font: {
+            family: 'Arial',
+            size: 15
+          },
+        bgcolor: '#E2E2E2',
+        bordercolor: '#FFFFFF',
+        borderwidth: 2
+      },
+       xaxis: {
+        type: 'date',
+        //autorange: true,
+        range: ["2020-04-05", six_week_date_pad],
+        showgrid: true
+      },
+      yaxis: {
+        range: [0, max_pred+20],
+        showgrid: true
+      },
+      sliders: [{
+      active:ii,
+      currentvalue: {
+        visible: true,
+        prefix: 'Forecast week: ',
+        xanchor: 'left',
+        font: {size: 20, color: '#666'}
+      },
+      steps: sliderSteps
+    }]
+    }
+    //console.log(forecast_date)
+   // console.log(max_pred)
+
+    curr_frame = {name:forecast_date, data:data, layout:layout}
+    // push the current frame to the frames vector
+    frames.push(curr_frame)
+};
+//console.log(frames)
 
 
 
+function copy(aObject) {
+  if (!aObject) {
+    return aObject;
+  }
+
+  let v;
+  let bObject = Array.isArray(aObject) ? [] : {};
+  for (const k in aObject) {
+    v = aObject[k];
+    bObject[k] = (typeof v === "object") ? copy(v) : v;
+  }
+
+  return bObject;
+}
 
 
-
-
-    
-
-   
-
-   Plotly.newPlot(plotDiv, data, layout)
+  // Create the plot starting at the 
+  // last slider must copy otherwise problems happen!
+  data_copy = copy(frames[frames.length-1].data)
+  layout_copy = copy(frames[frames.length-1].layout)
+  Plotly.newPlot('forecast_div', {
+    data: data_copy, 
+    layout: layout_copy,
+    frames: frames,
+    responsive: true, 
+  });
 
 };
 
-
-// Default with closest countries to Kuwait
-//makeplot(["Kuwait", "Bahrain", "United Arab Emirates", "Saudi Arabia", "Qatar", "Oman"]); 
-makeplot(["Kuwait"]); 
-//findNearest(["Kuwait"])
-
-//selector = document.querySelector('.countrydata');
-//console.log(selector)
-
+makeplot()
 
 </script>
 </body>
@@ -326,22 +556,10 @@ against the true number of deaths.
 // create the table
 
 var values = [
-
-
-      [ "Imperial",
- "YYG",
- "LANL",
- "Ensemble",
- "Geneva",
- "Auquan",
- "MIT"],
-      [  0.4,
-  3.5,
-  9.1,
-  9.1,
- 10.4,
- 13.0,
- 33.9],
+      ["Geneva","IHME", "Imperial","LANL","MIT", "USC", "YYG"],
+      [7.2,10.7,14.0,11.8,20.4,6.8,12.8],
+      [NaN,29.9,NaN,28.5,NaN,NaN,30.9],
+      [NaN,62.5,NaN,45,NaN,NaN,54.6]
 ]
 
 var headerColor = "grey";
@@ -352,8 +570,12 @@ var rowColor = "white";
 var data = [{
   type: 'table',
   header: {
-    values: [["<b>Model</b>"], ["<b>Prediction error</b>"]],
-        align: "center",
+    values: [["<b>Model</b>"], 
+    ["<b>One week ahead median prediction error</b>"],
+    ["<b>Three week ahead median prediction error</b>"], 
+    ["<b>Six week ahead median prediction error</b>"]
+    ],
+    align: "center",
     line: {width: 1, color: 'black'},
     fill: {color: headerColor},
     font: {family: "Arial", size: 13, color: "white"}
@@ -362,14 +584,14 @@ var data = [{
     values: values,
     align: "center",
     line: {color: "black", width: 1},
-    fill: {color: [[rowBestColor,rowColor,rowColor,rowColor,
-              rowColor,rowColor,rowWorstColor]]},
+    //fill: {color: [[rowBestColor,rowColor,rowColor,rowColor,
+    //          rowColor,rowColor,rowWorstColor]]},
     font: {family: "Arial", size: 12, color: ["black"]}
   }
 }]
 
 var layout = {
-  title: "Past model prediction error percent"
+  title: "Historic median prediction errors"
 }
 
 Plotly.newPlot('tablediv', data, layout);
@@ -388,18 +610,11 @@ Plotly.newPlot('tablediv', data, layout);
 
 
 
-<h3><a href="https://covid19-infection-model.auquan.com/" class="tp-link-policy" data-domain-ext="com">Auquan Data Science<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
-<p><strong>Model name:</strong> Auquan</p>
-<p><strong>Intervention assumptions:</strong> These projections do not make specific assumptions about which interventions have been implemented or will remain in place.</p>
-<p><strong>Methods:</strong> Fitted SEIR model</p>
-
-
-
-
 <h3><a id="imperial-college-london"></a><a href="https://mrc-ide.github.io/covid19-short-term-forecasts/index.html" class="tp-link-policy" data-domain-ext="io">Imperial College, London<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
 <p><strong>Model name:</strong> Imperial</p>
 <p><strong>Intervention Assumptions: </strong>These projections do not make specific assumptions about which interventions have been implemented or will remain in place.</p>
 <p><strong>Methods:</strong> Ensembles of mechanistic transmission models, fit to different parameter assumptions.</p>
+<p><strong>Output:</strong> 1 week ahead deaths, infections, Rt</p>
 
 
 
@@ -407,6 +622,7 @@ Plotly.newPlot('tablediv', data, layout);
 <p><strong>Model name:</strong> IHME</p>
 <p><strong>Intervention assumptions: </strong>Projections are adjusted to reflect differences in aggregate population mobility and community mitigation policies.</p>
 <p><strong>Methods:</strong> Combination of a mechanistic disease transmission model and a curve-fitting approach</p>
+<p><strong>Output:</strong> Deaths, infections, testing, hospital resource use, social distancing</p>
 
 
 
@@ -415,21 +631,24 @@ Plotly.newPlot('tablediv', data, layout);
 <p><strong>Intervention assumptions: </strong>This model assumes that currently implemented interventions and corresponding reductions in transmission will continue, resulting in an overall decrease in the growth rate of COVID-19. Over the course of the forecast, the model assumes that the rate of growth will decrease over time.</p>
 <p><strong>Methods</strong><br>
 Statistical dynamical growth model accounting for population susceptibility</p>
+<p><strong>Output:</strong> Deaths, infections</p>
+
+
 
 
 <h3><a id="mit"></a><a href="https://www.covidanalytics.io/projections" class="tp-link-policy" data-domain-ext="io">Massachusetts Institute of Technology<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
 <p><strong>Model name: </strong>MIT</p>
 <p><strong>Intervention Assumptions:</strong> The projections assume that current interventions will remain in place indefinitely.</p>
 <p><strong>Methods: </strong>SEIR model fit to reported death and case counts.</p>
+<p><strong>Output:</strong> Deaths, infections, active infections, hospitalizations, policy changes</p>
 
 
 
-
-<h3><a id="ucla"></a><a href="https://covid19.uclaml.org/" class="tp-link-policy" data-domain-ext="org">University of California, Los Angeles<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
-<p><strong>Model name:</strong> UCLA</p>
-<p><strong>Intervention assumptions:</strong> These projections assume that current interventions will not change during the forecasted period.</p>
-<p><strong>Methods:</strong> Modified SEIR model</p>
-
+<h3><a id="usc"></a><a href="https://scc-usc.github.io/ReCOVER-COVID-19/" class="tp-link-policy" data-domain-ext="io">University of Southern California<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
+<p><strong>Model name: </strong>USC</p>
+<p><strong>Intervention Assumptions:</strong> These projections assume that current interventions will remain unchanged during the forecasted period.</p>
+<p><strong>Methods:&nbsp;</strong>SIR Model.</p>
+<p><strong>Output:</strong> Deaths, infections, R_t</p>
 
 
 <h3><a id="geneva"></a><a href="https://renkulab.shinyapps.io/COVID-19-Epidemic-Forecasting/" class="tp-link-policy" data-domain-ext="io">University of Geneva / Swiss Data Science Center<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
@@ -437,9 +656,10 @@ Statistical dynamical growth model accounting for population susceptibility</p>
 <p><strong>Intervention assumptions: </strong>The projections assume that social distancing policies in place at the date of calibration are extended for the future weeks.</p>
 <p><strong>Methods</strong><br>
 Exponential and linear statistical models fit to the recent growth rate of cumulative deaths.</p>
+<p><strong>Output:</strong> Deaths, infections, R_t</p>
 
 
-<h3><a href="http://covid19-projections.com/about/" class="tp-link-policy" data-domain-ext="com">Youyang Gu (COVID-Projections)<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
+<h3><a id="yyg"></a><a href="http://covid19-projections.com/about/" class="tp-link-policy" data-domain-ext="com">Youyang Gu (COVID-Projections)<span class="sr-only">external icon</span><span class="fi cdc-icon-external x16 fill-external" aria-hidden="true"></span></a></h3>
 <p><strong>Model name:</strong> YYG</p>
 <p><strong>Intervention assumptions:</strong> The model accounts for reopenings and their impact on infections and deaths.</p>
 <p><strong>Methods</strong><br>
@@ -448,21 +668,20 @@ SEIS mechanistic model.</p>
   <div class="vc_empty_space col-12 pb-3"><span class="vc_empty_space_inner"></span></div>
 </div>
 </div></div></div>
-
-
+<p><strong>Output:</strong> Deaths, infections, R_t</p>
 
 
 
 
 
 <hr>
-      Site last updated June 4th, 9:00 PM AST.  
-<hr>
-
 
    <footer>
-      Created by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
-      <a href = "mailto: ahmedmb@gmail.com">here</a>.  
+    Please email 
+      <a href = "mailto: ahmedmb@gmail.com">here</a> if you would like 
+      your projections to be included weekly. Forecasts 
+      must be submitted by Sunday at 6 pm AST in order to be included
+      in the weekly update.
     </footer>
 
 
