@@ -86,6 +86,21 @@ body {
 <script>
 
 
+function copy(aObject) {
+  if (!aObject) {
+    return aObject;
+  }
+
+  let v;
+  let bObject = Array.isArray(aObject) ? [] : {};
+  for (const k in aObject) {
+    v = aObject[k];
+    bObject[k] = (typeof v === "object") ? copy(v) : v;
+  }
+
+  return bObject;
+}
+
 
 
 function unique ( array ) {
@@ -141,20 +156,7 @@ function processData(data1,data2,data3) {
   makePlotly(dates,total_count, data1,data2);
 }
 
-function median(values){
-  if(values.length ===0) return 0;
 
-  values.sort(function(a,b){
-    return a-b;
-  });
-
-  var half = Math.floor(values.length / 2);
-
-  if (values.length % 2)
-    return values[half];
-
-  return (values[half - 1] + values[half]) / 2.0;
-}
 
 function generateRPlot(r_data){
 //  console.log(r_data)
@@ -196,6 +198,7 @@ function generateRPlot(r_data){
   var trace1 = {
   x: xx, 
   y: yy,
+  id: 1,
   name:  curr_model,
   mode: 'lines',
   type: 'scatter',
@@ -284,7 +287,6 @@ function makePlotly(dates, total_count, forecast_data, r_data){
    generateRPlot(r_data)
 
 
-
   // get all unique forecast dates
   // get all unique models
   forecast_dates = []
@@ -297,29 +299,44 @@ function makePlotly(dates, total_count, forecast_data, r_data){
   forecast_dates = unique(forecast_dates).sort()
   model_names = unique(model_names)
 
-  //initialize the sliderSteps
-  var sliderSteps = [];
-    for (ii = 0; ii < forecast_dates.length; ii++) {
-      sliderSteps.push({
-        method: 'animate',
-        label: forecast_dates[ii],
-        args: [[forecast_dates[ii]], {
-          frame: {duration: 50, redraw: false, mode: "immediate"},
-        }]
-      });
+
+
+  // get Data by  model_name and forecast date
+  function getData(model_name, forecast_date,max_pred){
+    trace = {
+      x:[],
+      y:[],
+      name:(model_name)
     }
+    for(var i = 0; i < forecast_data.length; i++){
+      var row = forecast_data[i]
+      if(row["model"] == model_name && row["forecast_date"] == forecast_date){;
+        trace.x.push(row["target_week_end_date"])
+        trace.y.push(row["point"])
+        max_pred = Math.max(max_pred, row["point"])
+      }
+    }
+    return {max_pred: max_pred, trace: trace};
+  }
 
 
-  // each frame corresponds to a forecast date
-  // with the 6 week future cases
+ // console.log(getData("IHME", "2020-07-05"))
 
-  var frames = [];
+  var frames = [] 
   for(var ii = 0; ii < forecast_dates.length; ii++){
-
-
-    var max_pred = 0; // this will be our maximum range
-    data = []; // current frame data
-    forecast_date = forecast_dates[ii]; 
+    var forecast_date = forecast_dates[ii]
+    var traces = []
+    var max_pred = 0;
+    for(var jj = 0; jj < model_names.length; jj++){
+      model_name = model_names[jj]
+      res = getData(model_name, forecast_date, max_pred)
+      curr_trace = res.trace;
+       max_pred = Math.max(max_pred, res.max_pred)
+      traces.push(curr_trace)
+    }
+    //console.log(forecast_date)
+    //console.log(max_pred)
+    // push the data traces
 
     dates_prev = [];
     y_prev = [];
@@ -349,14 +366,13 @@ function makePlotly(dates, total_count, forecast_data, r_data){
         y_future.push(total_count[jj]) 
       };
     }
-    max_pred = Math.max(max_pred, y_future[y_future.length-1])
 
 
 
     // past cases
     var trace1 = {
-      x: dates_prev,
-      y: y_prev,
+      x: dates_prev.slice(),
+      y: y_prev.slice(),
       name: "Reported",
       showlegend: false,
       type: 'scatter',
@@ -366,12 +382,12 @@ function makePlotly(dates, total_count, forecast_data, r_data){
         width: 3
       }
     }
-    data.push(trace1)
+    traces.push(trace1)
 
     // future cases
     var trace2 = {
-      x: dates_future,
-      y: y_future,
+      x: dates_future.slice(),
+      y: y_future.slice(),
       showlegend: false,
       name: "Future reported",
       type: 'scatter',
@@ -382,12 +398,13 @@ function makePlotly(dates, total_count, forecast_data, r_data){
         dash: 'dashdot'
       }
     };
-    data.push(trace2)
+    traces.push(trace2)
+    max_pred = Math.max(max_pred, y_future[y_future.length-1])
 
     // line marking current day
     var trace3 = {
       x: [forecast_date, forecast_date], 
-      y: [0, y_prev[y_prev.length-1]],
+      y: [0, (y_prev.slice())[y_prev.length-1]],
       mode: 'lines',
       type: 'scatter',
       showlegend: false,
@@ -397,57 +414,12 @@ function makePlotly(dates, total_count, forecast_data, r_data){
         width: 0.5
       }
     }
-    data.push(trace3)
+    traces.push(trace3)
 
-    curr_model = forecast_data[0]["model"]
-    yy = []
-    xx = []
+    //console.log(forecast_date)
+    //console.log(max_pred)
 
-    for(var i = 0; i < forecast_data.length; i++){
-      row = forecast_data[i]; 
-      model_name = row["model"]
-      curr_forecast_date = row["forecast_date"]
-      if(curr_forecast_date != forecast_date){
-        continue;
-      }
-      target_date = row["target_week_end_date"]
-
-      if(model_name != curr_model){
-        // append the data so far to the current 
-        // frame
-        var trace1 = {
-          x: xx, 
-          y: yy,
-          name:  curr_model, 
-          mode: 'lines+markers',
-          type: 'scatter'
-        };
-        data.push(trace1);
-        if(yy.length > 0){
-          max_pred = Math.max(max_pred, yy[yy.length-1])
-        }
-        curr_model = model_name
-        yy = []
-        xx = []
-      };
-      yy.push(row["point"])
-      xx.push(target_date)
-    }
-
-       if(yy.length > 0){
-          max_pred = Math.max(max_pred, yy[yy.length-1])
-        }
-    // push the last model
-    var trace1 = {
-      x: xx, 
-      y: yy,
-      name:  curr_model, 
-      mode: 'lines+markers',
-      type: 'scatter'
-    };
-    data.push(trace1);
-
-    var layout = {
+     var layout = {
     title: {
         text:'COVID-19 Kuwait National Forecasts',
         font: {
@@ -467,15 +439,17 @@ function makePlotly(dates, total_count, forecast_data, r_data){
         bordercolor: '#FFFFFF',
         borderwidth: 2
       },
-       xaxis: {
-        type: 'date',
-        //autorange: true,
-        range: ["2020-04-05", six_week_date_pad],
-        showgrid: true
-      },
       yaxis: {
         range: [0, max_pred+20],
-        showgrid: true
+        showgrid: true,
+        title: {
+      text: 'Cumulative detected deaths',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
       },
       sliders: [{
       active:ii,
@@ -488,40 +462,88 @@ function makePlotly(dates, total_count, forecast_data, r_data){
       steps: sliderSteps
     }]
     }
-    //console.log(forecast_date)
-   // console.log(max_pred)
 
-    curr_frame = {name:forecast_date, data:data, layout:layout}
-    // push the current frame to the frames vector
+
+    curr_frame = {name:ii, data:traces, layout:layout};
     frames.push(curr_frame)
-};
-//console.log(frames)
-
-
-
-function copy(aObject) {
-  if (!aObject) {
-    return aObject;
   }
 
-  let v;
-  let bObject = Array.isArray(aObject) ? [] : {};
-  for (const k in aObject) {
-    v = aObject[k];
-    bObject[k] = (typeof v === "object") ? copy(v) : v;
-  }
 
-  return bObject;
-}
+
+
+  //initialize the sliderSteps
+  var sliderSteps = [];
+    for (ii = 0; ii < forecast_dates.length; ii++) {
+      sliderSteps.push({
+        method: 'animate',
+        label: forecast_dates[ii],
+        args: [[ii], {
+          frame: {duration: 100, redraw: true, mode: "immediate"},
+        }]
+      });
+    }
+
+//console.log(frames[0])
+
+
+
+
 
 
   // Create the plot starting at the 
   // last slider must copy otherwise problems happen!
   data_copy = copy(frames[frames.length-1].data)
   layout_copy = copy(frames[frames.length-1].layout)
+
+   var layout = {
+    title: {
+        text:'COVID-19 Kuwait National Forecasts',
+        font: {
+          family: 'Arial',
+          size: 24
+        },
+        xref: 'paper',
+      },
+       legend: {
+          y: 0.5,
+          yref: 'paper',
+          font: {
+            family: 'Arial',
+            size: 15
+          },
+        bgcolor: '#E2E2E2',
+        bordercolor: '#FFFFFF',
+        borderwidth: 2
+      },
+      yaxis: {
+        //range: [0, max_pred+20],
+        showgrid: true,
+        title: {
+      text: 'Cumulative detected deaths',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+      },
+      sliders: [{
+      active:sliderSteps.length-1,
+      currentvalue: {
+        visible: true,
+        prefix: 'Forecast week: ',
+        xanchor: 'left',
+        font: {size: 20, color: '#666'}
+      },
+      steps: sliderSteps
+    }]
+    }
+
+
+
   Plotly.newPlot('forecast_div', {
     data: data_copy, 
-    layout: layout_copy,
+    layout: layout,
     frames: frames,
     responsive: true, 
   });
@@ -536,11 +558,26 @@ makeplot()
 
 
 <hr>
-Models make various assumptions about levels of social distancing and other interventions. 
-See model descriptions below for details. 
-We keep track of model performance week-to-week by computing the absolute normalized error of each prediction
-against the true number of deaths. 
 
+<ul>
+
+
+<li> Models make various assumptions about levels of social distancing and other interventions. 
+See model descriptions below for details. </li>
+
+
+
+ <li> The ensemble model is the median of all other models. It typically performs better than individual models. </li>
+
+
+
+<li> We keep track of model performance week-to-week by computing the absolute normalized error of each prediction
+against the true number of deaths: (pred-actual)/actual. Displayed in the table below
+is the median prediction error for different forecast horizons (e.g. 1 week ahead).
+ Prediction error is only displayed if there are at least
+3 historic predictions made by that model team for the target horizion, otherwise the table
+value is shown as NaN.
+</li>
 
 <hr>
 
@@ -556,10 +593,10 @@ against the true number of deaths.
 // create the table
 
 var values = [
-      ["Geneva","IHME", "Imperial","LANL","MIT", "USC", "YYG"],
-      [7.2,10.7,14.0,11.8,20.4,6.8,12.8],
-      [NaN,29.9,NaN,28.5,NaN,NaN,30.9],
-      [NaN,62.5,NaN,45,NaN,NaN,54.6]
+["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
+[2.4, 3.3, 2.8, 1.3, 2.7, 13.5, NaN, 3.5],
+[4.1, NaN, 6.0, NaN, 3.5, NaN, NaN, 4.9],
+[11.8, NaN, NaN, NaN, 5.5, NaN, NaN, 13.0]
 ]
 
 var headerColor = "grey";
@@ -571,9 +608,9 @@ var data = [{
   type: 'table',
   header: {
     values: [["<b>Model</b>"], 
-    ["<b>One week ahead median prediction error</b>"],
-    ["<b>Three week ahead median prediction error</b>"], 
-    ["<b>Six week ahead median prediction error</b>"]
+    ["<b>1 week ahead median prediction error</b>"],
+    ["<b>2 week ahead median prediction error</b>"], 
+    ["<b>3 week ahead median prediction error</b>"]
     ],
     align: "center",
     line: {width: 1, color: 'black'},
@@ -678,7 +715,7 @@ SEIS mechanistic model.</p>
 
    <footer>
     Please email 
-      <a href = "mailto: ahmedmb@gmail.com">here</a> if you would like 
+      <a href = "mailto: ahmedmb@gmail.com">Ahmed Bou-Rabee</a> if you would like 
       your projections to be included weekly. Forecasts 
       must be submitted by Sunday at 6 pm AST in order to be included
       in the weekly update.
