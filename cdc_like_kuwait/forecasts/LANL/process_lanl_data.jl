@@ -27,7 +27,12 @@ curr_row = 1;
 for file_name in file_names
 	data = readdlm(file_name, ',')
 	arr = split(file_name,"_")
-	forecast_date = DateTime(arr[1]); 
+	f_d = arr[1]
+	if(f_d == "2020-06-13") ## LANL accidently released forecasts a day early
+		f_d = "2020-06-14"
+	end
+	println(f_d)
+	forecast_date = DateTime(f_d); 
 	b_ind = findall(data[1,:].=="q.05")[1]
 	p_ind = findall(data[1,:].=="q.50")[1]
 	w_ind = findall(data[1,:].=="q.95")[1]
@@ -44,7 +49,7 @@ for file_name in file_names
 		row = data[i,:]
 		if(row[date_ind] == t_date_str)
 			new_data[curr_row,1] = "LANL"
-			new_data[curr_row,2] = row[end]; #forecast date
+			new_data[curr_row,2] = f_d; #forecast date
 			new_data[curr_row,3] = string(curr_week, target_str); 
 			new_data[curr_row,4] = t_date_str;
 			new_data[curr_row,5] = round(Int,row[p_ind])
