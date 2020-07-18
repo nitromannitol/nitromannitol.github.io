@@ -1,0 +1,334 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"end",
+				"end"
+			],
+			[
+				"sta",
+				"stabilize4"
+			],
+			[
+				"st",
+				"stabilize3"
+			],
+			[
+				"A",
+				"A"
+			],
+			[
+				"gpu_t",
+				"gpu_topple2"
+			],
+			[
+				"one_",
+				"one_stabilize1"
+			],
+			[
+				"one_sta",
+				"one_stabilize0"
+			],
+			[
+				"one_top",
+				"one_topple2"
+			],
+			[
+				"one_topple",
+				"one_topple1"
+			],
+			[
+				"one",
+				"one_stabilize1"
+			],
+			[
+				"one_t",
+				"one_topple1"
+			],
+			[
+				"C",
+				"CartesianIndices"
+			],
+			[
+				"on",
+				"one_topple1"
+			],
+			[
+				"be",
+				"benchmark"
+			],
+			[
+				"str",
+				"str_dir"
+			],
+			[
+				"y_n",
+				"y_nk_train"
+			],
+			[
+				"date",
+				"date_vec_pred"
+			],
+			[
+				"dte",
+				"date_vec_pred"
+			],
+			[
+				"total_",
+				"total_contact_kuwait"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"auto",
+				"Toggle AutoSave: current file only"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/Compare/compare.html",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/cdc_kuwait.html",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/model_forecasts.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/process_forecasts.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/index.html",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/model_r.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/LANL/process_lanl_data.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/LANL/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/test.html",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/IHME/process_ihme.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/IHME/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/Geneva/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/process_lanl_data.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/YYG/yyg_aggeregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/USC/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/MIT/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/Imperial/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/test.html.html",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/process_lanl_data.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/process_yyg_data.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/YYG/yyg_aggeregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/old_data/death_forecasts_5_29.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/old_data/death_forecasts.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/Imperial/aggregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/LANL/lanl_aggeregate.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/data_fit.csv",
+		"/home/nitro/Desktop/Sandpile_GPU/Code Experiments/async_test.jl",
+		"/home/nitro/Desktop/Sandpile_GPU/sandpile_gpu_benchmarks.jl",
+		"/home/nitro/Desktop/Sandpile_GPU/learning_gpu.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Old_Files/COVID_KUWAIT/KUWAIT_COVID_SITE/death_forecasts_5_29.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Old_Files/COVID_KUWAIT/KUWAIT_COVID_SITE/death_forecasts.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Data/kuwaiti_data.csv",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/regression_functions.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/process_data.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/R0_plot.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/R0_est.r",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/weekly_report.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/run.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/Code/international_model_preds.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/weekly_report_small.tex",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/weekly_report.tex",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/compile_file.sh",
+		"/home/nitro/Desktop/COVID_Kuwait/Weekly_Report/weekly_report.sublime-project",
+		"/home/nitro/Desktop/COVID_Kuwait/Old_Files/Corona_Kuwait/SEIR_simulation/new_model/simple_fit/fit_neuralnet_quarantine_twotypes.jl",
+		"/home/nitro/Desktop/COVID_Kuwait/Old_Files/Corona_Kuwait/SEIR_simulation/new_model/simple_fit/fit_neural_net.jl"
+	],
+	"find":
+	{
+		"height": 33.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"console.log",
+			"next",
+			"copy",
+			"console.log",
+			"error",
+			"println",
+			"Click the legend",
+			"future",
+			"forecast_dates",
+			"trace2",
+			"reported",
+			"forecasts",
+			"COVID-19",
+			"YYG",
+			"console.log",
+			"makeplot()",
+			"forecast_data",
+			"shape",
+			"line",
+			"console.log",
+			"true",
+			"reported",
+			"Psat model ",
+			"Auquan",
+			"console.log",
+			"data2",
+			"min_cases",
+			"50",
+			"50 cases",
+			"vtk.compression_level",
+			"UInt32",
+			"xle",
+			"init_condition",
+			"topple_gpu!",
+			"num_threads",
+			"copyto",
+			"sparse"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 33.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "sublime_files..sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

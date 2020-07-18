@@ -175,7 +175,7 @@ body {
 
 <script>
 
-var min_cases_count = 50; 
+var min_cases_count = 1; 
 var min_length = 10; 
 var num_nearest = 3; 
 
@@ -209,13 +209,13 @@ function unique ( array ) {
 
 
 function findNearest(countries) {
- Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
+ Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_tests_smoothed_per_thousand.csv', function(data){ processFindNearest(data, countries)});
 };
 
 
 function makeplot(countries = ["Kuwait"], verticalLines = []) {
   //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
+  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_tests_smoothed_per_thousand.csv', function(data){ processData(data, countries, verticalLines) });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
@@ -417,7 +417,7 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
 
     xaxis: {
     title: {
-      text: 'days since 50 cases per million',
+      text: 'days since 1 daily new case per million',
       font: {
         family: 'Arial',
         size: 18,
@@ -427,7 +427,7 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
   },
   yaxis: {
     title: {
-      text: 'cases per million',
+      text: 'daily new cases per million',
       font: {
         family: 'Arial',
         size: 18,
@@ -439,7 +439,6 @@ function makePlotly( dates, allRows, locations, countries,verticalLines){
   ]
 };
 
-  
   console.log(verticalLines.length)
 
   for(var i = 0; i <verticalLines.length;i++){
@@ -509,7 +508,7 @@ findNearest(["Kuwait"])
 
 
 <hr>
-Select multiple countries from the dropdown bar and click the first button to plot the confirmed cases per million for
+Select multiple countries from the dropdown bar and click the first button to plot the daily confirmed cases per million for
 the different countries. To find other countries with curves similar to the selected countries, press the second button. For each 
 country selected, this displays two other countries with curves most similar to it. We measure 
 similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. Hence, this notion of similiarity

@@ -277,9 +277,10 @@ function generateRPlot(r_data){
 
   layout.shapes.push(val1)
   layout.shapes.push(val2)
+  var config = {responsive: true}
 
 
-  Plotly.newPlot('rt_div', data, layout)
+  Plotly.newPlot('rt_div', data, layout, config);
 }
 
 
@@ -540,12 +541,14 @@ function makePlotly(dates, total_count, forecast_data, r_data){
     }
 
 
+  var config = {responsive: true}
+
 
   Plotly.newPlot('forecast_div', {
     data: data_copy, 
     layout: layout,
     frames: frames,
-    responsive: true, 
+    config
   });
 
 };
@@ -631,7 +634,10 @@ var layout = {
   title: "Historic median prediction errors"
 }
 
-Plotly.newPlot('tablediv', data, layout);
+var config = {responsive: true}
+
+
+Plotly.newPlot('tablediv', data, layout, config);
 
 
 </script>
