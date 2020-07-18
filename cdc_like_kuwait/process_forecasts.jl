@@ -74,7 +74,7 @@ function computeMedianError(true_death_dict, model_arr, target)
 		if(row[3] == target && haskey(true_death_dict, row[4]))
 			pred = row[5]; 
 			actual = true_death_dict[row[4]]
-			println(row[2], " " , mm, " ", (pred, actual))
+			println(row[2], " " , row[1], " ", (pred, actual))
 			#push!(errors, 100*abs(pred-actual)/actual)
 			push!(errors, 100*abs(pred-actual)/actual)
 		end
@@ -101,7 +101,7 @@ two_week_model_errors[1] = computeMedianError(true_death_dict, ensemble_model, "
 for ii in 1:length(models)
 	mm = models[ii]
 	curr_data = readdlm(string(mm,"/aggregate.csv"),',')
-	six_week_model_errors[ii+1] = computeMedianError(true_death_dict, curr_data, "2 wk ahead cum death");
+	two_week_model_errors[ii+1] = computeMedianError(true_death_dict, curr_data, "2 wk ahead cum death");
 end
 
 
@@ -130,7 +130,7 @@ writedlm("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/c
 
 
 ## display the median prediction error for each forecast
-arr = [["Ensemble"; models] one_week_model_errors three_week_model_errors six_week_model_errors]
+arr = [["Ensemble"; models] one_week_model_errors two_week_model_errors three_week_model_errors]
 arr = ["Model" "One week error" "Two week error" "Three week error"; arr]
 display(arr)
 println(arr[2:end,1])
