@@ -1,6 +1,11 @@
 using DelimitedFiles,Dates
 
+#start_date = DateTime(2020,5,31)
+#end_date = Dates.today()
 
+
+
+f_len = length(readdir("."))
 
 ## only look at the monday updates
 file_names = [ "2020-05-31.csv",
@@ -18,13 +23,14 @@ function convertIHMEtoISO(input_date)
 end
 
 
+
 #new_data = []
 #push the header string
 header_str = "model,forecast_date,target,target_week_end_date,point,quantile_0.05,quantile_0.95";
 
 
 #push!(new_data, "model,forecast_date,target,target_week_end_date,point,quantile_0.025,quantile_0.975")
-new_data = Array{Any,2}(undef, length(file_names)*6,length(split(header_str,',')))
+new_data = Array{Any,2}(undef, f_len*6,length(split(header_str,',')))
 
 ## the first file is processed differently 
 
@@ -114,6 +120,79 @@ for file_name in file_names[2:length(file_names)]
 	println(new_data[curr_row-1,:])
 
 end
+
+
+## now append the rest of the files in the directory
+for f in readdir(".")
+	arr = split(f,"_")
+	#println(arr)
+	if(length(arr) == 3)
+		y = arr[1]
+		m = arr[2]
+		d = arr[3]
+		date = DateTime(parse(Int,y),parse(Int,m),parse(Int,d))
+
+		#round to nearest Sunday
+		curr_date = round(date,Dates.Week(1)) - Dates.Day(1)
+		#println(curr_date)
+		forecast_date = curr_date
+
+		f_date_str = split(string(curr_date),"T")[1]
+
+
+
+		println(date, " rounding to ", curr_date)
+
+
+
+		file_name = "$f/Reference_hospitalization_all_locs.csv"
+		F = readdlm(file_name,',')
+
+		loc_ind = findall(F[1,:].=="location_name")[1]
+		p_ind = findall(F[1,:].=="totdea_mean_smoothed")[1]
+		w_ind = findall(F[1,:].=="totdea_lower_smoothed")[1]
+		b_ind = findall(F[1,:].=="totdea_upper_smoothed")[1]
+		date_ind = findall(F[1,:].=="date")[1]
+
+
+		data = F[F[:,loc_ind].=="Kuwait",:]
+		target_date = forecast_date + Dates.Day(7)
+		t_date_str = split(string(target_date),"T")[1]
+		curr_week = 1
+
+
+
+
+		for i in 1:size(data,1)
+			row = data[i,:]
+			curr_date = row[date_ind];
+			if(occursin("/",curr_date))
+				curr_date = convertIHMEtoISO(curr_date); 
+			end
+			if(curr_date == t_date_str)
+				new_data[curr_row,1] = "IHME"
+				new_data[curr_row,2] = f_date_str; #forecast date
+				new_data[curr_row,3] = string(curr_week, target_str); 
+				new_data[curr_row,4] = t_date_str;
+				new_data[curr_row,5] = round(Int,row[p_ind])
+				new_data[curr_row,6] = round(Int,row[b_ind]);
+				new_data[curr_row,7] = round(Int,row[w_ind]);
+				target_date = target_date + Dates.Day(7)
+				t_date_str = split(string(target_date),"T")[1]
+				global curr_row+=1; 
+				curr_week+=1;
+			end
+			if(curr_week == 7) ## only keep track of 6 week forecasts for now
+				break;
+			end
+		end
+	end
+end
+new_data = new_data[1:curr_row-1,:]
+
+
+
+
 
 writedlm("aggregate.csv",new_data,',')
 
