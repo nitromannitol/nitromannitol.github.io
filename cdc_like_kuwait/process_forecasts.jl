@@ -34,11 +34,14 @@ for forecast_date in forecast_dates
 			row = aggregate_data[i,:]
 			#println(row[2], " ", forecast_dates)
 			if(row[2] == forecast_date && row[3] == target)
-				push!(forecasts, row[5])
+				if(row[5] != "")
+					push!(forecasts, row[5])
+				end
 				target_week_end_date = row[4]
 			end
 		end
-		if(length(forecasts) > 0)
+		if(length(forecasts) > 2) ## only compute ensemble of two forecasts
+			println(forecasts)
 			global ensemble_start = [ensemble_start; "Ensemble" forecast_date target target_week_end_date median(forecasts) "" ""]
 		end
 	end
