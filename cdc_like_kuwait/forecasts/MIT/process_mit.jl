@@ -56,7 +56,7 @@ while(curr_date <= end_date)
 		if(isfile(file_name)) 
 			#global ss+=1
 
-			#println(curr_date)
+			println(curr_date)
 			data = readdlm(file_name, ',')
 
 			kuwait_data = data[data[:,2].=="Kuwait",:]
