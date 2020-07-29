@@ -209,13 +209,13 @@ function unique ( array ) {
 
 
 function findNearest(countries) {
- Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_tests_smoothed_per_thousand.csv', function(data){ processFindNearest(data, countries)});
+ Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
 };
 
 
 function makeplot(countries = ["Kuwait"], verticalLines = []) {
   //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_tests_smoothed_per_thousand.csv', function(data){ processData(data, countries, verticalLines) });
+  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
