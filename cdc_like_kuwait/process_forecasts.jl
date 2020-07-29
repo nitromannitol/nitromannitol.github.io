@@ -137,7 +137,8 @@ arr = [["Ensemble"; models] one_week_model_errors two_week_model_errors three_we
 arr = ["Model" "One week error" "Two week error" "Three week error"; arr]
 display(arr)
 println(arr[2:end,1])
-println(round.(arr[2:end,2],digits=1))
-println(round.(arr[2:end,3],digits=1))
-println(round.(arr[2:end,4],digits=1))
+println(round.(arr[2:end,2],digits=1), ",", 
+	round.(arr[2:end,3],digits=1), 
+	",",
+round.(arr[2:end,4],digits=1))
 
