@@ -32,7 +32,14 @@ function makeplot() {
       });
     });
   });
+
+    Plotly.d3.csv("model_forecasts_cases.csv", function(data1){ 
+      Plotly.d3.csv("total_cases.csv", function(data2){
+      processCases(data1,data2)
+      });
+    });
 };
+
 
 
 function maketable() {
@@ -125,6 +132,24 @@ function processData(data1,data2,data3) {
 
 
 
+function processCases(data1,data2){
+    //console.log(data3)
+  var dates = [];
+  var total_count = [];
+  for (var i=0; i<data2.length; i++) {
+    row = data2[i];
+    if(row["Kuwait"] > 0){
+        total_count.push(row["Kuwait"])
+      // console.log(row)
+         dates.push( row["date"] );
+    };
+  }
+  makePlotly_cases(dates,total_count, data1);
+}
+
+
+
+
 
 function generateRPlot(r_data){
   //console.log(r_data)
@@ -207,7 +232,7 @@ function generateRPlot(r_data){
 
   var layout = {
     title: {
-      text:'Reproduction number estimates',
+      text:'Time-varying reproductive number estimates',
       font: {
         family: 'Arial',
         size: 15
@@ -275,6 +300,280 @@ function generateRPlot(r_data){
 
   Plotly.newPlot('rt_div', data, layout, config);
 }
+
+
+function makePlotly_cases(dates,total_count, forecast_data){
+  console.log(dates)
+  console.log(total_count)
+  console.log(forecast_data)
+
+  // get all unique forecast dates
+  // get all unique models
+  forecast_dates = []
+  model_names = []
+  for(var i =0; i < forecast_data.length; i++){
+    row = forecast_data[i]; 
+    forecast_dates.push(row["forecast_date"]);
+    model_names.push(row["model"])
+  }
+  forecast_dates = unique(forecast_dates).sort()
+  model_names = unique(model_names)
+
+  console.log(model_names)
+
+
+  // get Data by  model_name and forecast date
+  function getData(model_name, forecast_date,max_pred){
+    trace = {
+      x:[],
+      y:[],
+      error_y : {
+        type: 'data',
+        symmetric: false,
+        array: [],
+        arrayminus: []
+      },
+      name:(model_name)
+    }
+    for(var i = 0; i < forecast_data.length; i++){
+      var row = forecast_data[i]
+      if(row["model"] == model_name && row["forecast_date"] == forecast_date){;
+        trace.x.push(row["target_week_end_date"])
+        trace.y.push(row["point"])
+        if(row["quantile_0.95"] == ""){
+        trace.error_y.array.push("")
+        trace.error_y.arrayminus.push("")
+      }
+      else{
+        trace.error_y.array.push(row["quantile_0.95"] - row["point"])
+        trace.error_y.arrayminus.push(row["point"]-row["quantile_0.05"])
+        max_pred = Math.max(max_pred, row["quantile_0.95"])
+      }
+      }
+    }
+    return {max_pred: max_pred, trace: trace};
+  }
+
+
+ // console.log(getData("IHME", "2020-07-05"))
+
+  var frames = [] 
+  for(var ii = 0; ii < forecast_dates.length; ii++){
+    var forecast_date = forecast_dates[ii]
+    var traces = []
+    var max_pred = 0;
+    for(var jj = 0; jj < model_names.length; jj++){
+      model_name = model_names[jj]
+      res = getData(model_name, forecast_date, max_pred)
+      curr_trace = res.trace;
+       max_pred = Math.max(max_pred, res.max_pred)
+      traces.push(curr_trace)
+    }
+
+
+    //console.log(forecast_date)
+    //console.log(max_pred)
+    // push the data traces
+
+    dates_prev = [];
+    y_prev = [];
+    y_future = [];
+    dates_future = [];
+
+    //console.log(forecast_date)
+    six_week_date = new Date(forecast_date)
+    //console.log(forecast_date)
+    six_week_date.setDate(six_week_date.getDate()+42)
+    six_week_date = six_week_date.toISOString();
+    res = six_week_date.split("T")
+    six_week_date = res[0]
+
+    six_week_date_pad = new Date(forecast_date)
+    six_week_date_pad.setDate(six_week_date_pad.getDate()+45)
+    six_week_date_pad = six_week_date_pad.toISOString();
+    res = six_week_date_pad.split("T")
+    six_week_date_pad = res[0]
+
+    for(jj = 0; jj < dates.length; jj++){
+      if(dates[jj] <= forecast_date){
+          dates_prev.push(dates[jj])
+          y_prev.push(total_count[jj])
+        }
+      else if (dates[jj] <= six_week_date){
+        dates_future.push(dates[jj])
+        y_future.push(total_count[jj]) 
+      };
+    }
+
+
+
+    // past cases
+    var trace1 = {
+      x: dates_prev.slice(),
+      y: y_prev.slice(),
+      name: "Reported",
+      showlegend: false,
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: "black",
+        width: 3
+      }
+    }
+    traces.push(trace1)
+
+    // future cases
+    var trace2 = {
+      x: dates_future.slice(),
+      y: y_future.slice(),
+      showlegend: false,
+      name: "Future reported",
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: "gray",
+        width: 1,
+        dash: 'dashdot'
+      }
+    };
+    traces.push(trace2)
+    max_pred = Math.max(max_pred, y_future[y_future.length-1])
+
+    // line marking current day
+    var trace3 = {
+      x: [forecast_date, forecast_date], 
+      y: [0, (y_prev.slice())[y_prev.length-1]],
+      mode: 'lines',
+      type: 'scatter',
+      showlegend: false,
+      hoverinfo: 'skip',
+      line: {
+        color: "black",
+        width: 0.5
+      }
+    }
+    traces.push(trace3)
+
+    //console.log(forecast_date)
+    //console.log(max_pred)
+
+     var layout = {
+       legend: {
+          y: 0.5,
+          yref: 'paper',
+          font: {
+            family: 'Arial',
+            size: 15
+          },
+        bgcolor: '#E2E2E2',
+        bordercolor: '#FFFFFF',
+        borderwidth: 2
+      },
+      yaxis: {
+        range: [0, max_pred],
+        showgrid: true,
+        title: {
+      text: 'Cumulative detected infections',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+      },
+      sliders: [{
+      active:ii,
+      currentvalue: {
+        visible: true,
+        prefix: 'Forecast week: ',
+        xanchor: 'left',
+        font: {size: 20, color: '#666'}
+      },
+      steps: sliderSteps
+    }]
+    }
+
+
+    curr_frame = {name:ii, data:traces, layout:layout};
+    frames.push(curr_frame)
+  }
+
+
+
+
+  //initialize the sliderSteps
+  var sliderSteps = [];
+    for (ii = 0; ii < forecast_dates.length; ii++) {
+      sliderSteps.push({
+        method: 'animate',
+        label: forecast_dates[ii],
+        args: [[ii], {
+          frame: {duration: 100, redraw: true, mode: "immediate"},
+        }]
+      });
+    }
+
+//console.log(frames[0])
+
+
+
+  console.log(max_pred)
+
+
+  // Create the plot starting at the 
+  // last slider must copy otherwise problems happen!
+  data_copy = copy(frames[frames.length-1].data)
+  layout_copy = copy(frames[frames.length-1].layout)
+
+   var layout = {
+       legend: {
+          y: 0.5,
+          yref: 'paper',
+          font: {
+            family: 'Arial',
+            size: 15
+          },
+        bgcolor: '#E2E2E2',
+        bordercolor: '#FFFFFF',
+        borderwidth: 2
+      },
+      yaxis: {
+        range: [0, max_pred],
+        showgrid: true,
+        title: {
+      text: 'Cumulative detected cases',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+      },
+      sliders: [{
+      active:sliderSteps.length-1,
+      currentvalue: {
+        visible: true,
+        prefix: 'Forecast week: ',
+        xanchor: 'left',
+        font: {size: 20, color: '#666'}
+      },
+      steps: sliderSteps
+    }]
+    }
+
+
+  var config = {responsive: true}
+
+
+  Plotly.newPlot('forecastcases_div', {
+    data: data_copy, 
+    layout: layout,
+    frames: frames,
+    config
+  });
+
+  }
+
 
 
 function makePlotly(dates, total_count, forecast_data, r_data){

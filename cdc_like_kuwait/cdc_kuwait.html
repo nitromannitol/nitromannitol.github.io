@@ -42,7 +42,7 @@
 
 
 
-<p class = "p_class"> Forecasts updated July 26, 2020. 
+<p class = "p_class"> Forecasts updated August 2, 2020. 
   Click the legend on the right to remove or display each forecast.
   Use the slider bars to see past forecasts and their performace. 
 </p>
@@ -53,6 +53,10 @@
 
 </div>
 
+
+<div class="plot" id="forecastcases_div">
+
+</div>
 
 
 <div class="plot" id="rt_div">
@@ -85,12 +89,12 @@ See model descriptions below for details. </li>
 
 
 
-<li> We keep track of model performance week-to-week by computing the absolute normalized error of each prediction
+<li> We keep track of model performance week-to-week by computing the absolute normalized error of each prediction for deaths
 against the true number of deaths: (pred-actual)/actual. Displayed in the table below
 is the median prediction error for different forecast horizons (e.g. 1 week ahead).
  Prediction error is only displayed if there are at least
 3 historic predictions made by that model team for the target horizion, otherwise the table
-value is shown as NaN.
+value is shown as NaN. 
 </li>
 
 <hr>

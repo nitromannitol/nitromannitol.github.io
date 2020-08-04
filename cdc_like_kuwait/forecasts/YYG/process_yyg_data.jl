@@ -36,6 +36,15 @@ header_str = "model,forecast_date,target,target_week_end_date,point,quantile_0.0
 #push!(new_data, "model,forecast_date,target,target_week_end_date,point,quantile_0.025,quantile_0.975")
 new_data = Array{Any,2}(undef, num_mondays*6,length(split(header_str,',')))
 
+
+
+
+#push!(new_data, "model,forecast_date,target,target_week_end_date,point,quantile_0.025,quantile_0.975")
+new_data_cases = Array{Any,2}(undef, num_mondays*6,length(split(header_str,',')))
+
+
+
+
 curr_row = 1; 
 ss = 0
 while(curr_date <= end_date)
@@ -51,6 +60,11 @@ while(curr_date <= end_date)
 			b_ind = findall(data[1,:].=="predicted_total_deaths_lower")[1]
 			p_ind = findall(data[1,:].=="predicted_total_deaths_mean")[1]
 			w_ind = findall(data[1,:].=="predicted_total_deaths_upper")[1]
+
+			bc_ind = findall(data[1,:].=="predicted_total_infected_lower")[1]
+			pc_ind = findall(data[1,:].=="predicted_total_infected_mean")[1]
+			wc_ind = findall(data[1,:].=="predicted_total_infected_upper")[1]
+
 			date_ind = findall(data[1,:].=="date")[1]
 
 			target_date = forecast_date + Dates.Day(7)
@@ -68,6 +82,15 @@ while(curr_date <= end_date)
 					new_data[curr_row,5] = round(Int,row[p_ind])
 					new_data[curr_row,6] = round(Int,row[b_ind]);
 					new_data[curr_row,7] = round(Int,row[w_ind]);
+
+					new_data_cases[curr_row,1] = "YYG"
+					new_data_cases[curr_row,2] = f_date_str; #forecast date
+					new_data_cases[curr_row,3] = string(curr_week, " wk ahead cum infections"); 
+					new_data_cases[curr_row,4] = t_date_str;
+					new_data_cases[curr_row,5] = round(Int,row[pc_ind])
+					new_data_cases[curr_row,6] = round(Int,row[bc_ind]);
+					new_data_cases[curr_row,7] = round(Int,row[wc_ind]);
+
 					target_date = target_date + Dates.Day(7)
 					t_date_str = split(string(target_date),"T")[1]
 					global curr_row+=1; 
@@ -84,7 +107,10 @@ while(curr_date <= end_date)
 end
 
 new_data = new_data[1:curr_row-1,:]
+new_data_cases = new_data_cases[1:curr_row-1,:]
+
 
 writedlm("aggregate.csv",new_data,',')
 
+#writedlm("aggregate_cases.csv",new_data_cases,',')
 
