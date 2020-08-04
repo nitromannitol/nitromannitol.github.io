@@ -47,8 +47,8 @@ function maketable() {
 
   var values = [
   ["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
-[1.5, 1.3, 1.3, 0.3, 2.0, 14.2, 1.6, 2.2],[4.9, NaN, 5.5, NaN, 3.0, 38.3, NaN, 4.9],[15.6, NaN, NaN, NaN, 3.7, 75.6, NaN, 34.0]
-  ]
+[1.7, 1.3, 1.3, 0.3, 2.0, 14.2, 1.6, 2.2],[4.2, NaN, 2.2, NaN, 3.4, 29.5, NaN, 4.1],[4.9, NaN, 5.5, NaN, 3.0, 38.3, NaN, 4.9]
+]
 
   var headerColor = "grey";
   var rowBestColor = "lightblue";
@@ -438,6 +438,8 @@ function makePlotly_cases(dates,total_count, forecast_data){
     };
     traces.push(trace2)
     max_pred = Math.max(max_pred, y_future[y_future.length-1])
+
+
 
     // line marking current day
     var trace3 = {

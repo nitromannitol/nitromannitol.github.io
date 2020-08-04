@@ -41,7 +41,7 @@ for forecast_date in forecast_dates
 			end
 		end
 		if(length(forecasts) > 2) ## only compute ensemble of two forecasts
-			println(forecasts)
+			#println(forecasts)
 			global ensemble_start = [ensemble_start; "Ensemble" forecast_date target target_week_end_date median(forecasts) "" ""]
 		end
 	end
@@ -65,6 +65,7 @@ true_death_dict = Dict()
 for i in 1:size(true_data,1)
 	true_death_dict[true_data[i,1]]=true_data[i,2]
 end
+writedlm("total_deaths.csv",true_data,',')
 
 
 ## model_arr is the aggregation 2D array
@@ -99,22 +100,23 @@ for ii in 1:length(models)
 end
 
 
-two_week_model_errors = -1*ones(length(models)+1)
-two_week_model_errors[1] = computeMedianError(true_death_dict, ensemble_model, "2 wk ahead cum death");
-for ii in 1:length(models)
-	mm = models[ii]
-	curr_data = readdlm(string(mm,"/aggregate.csv"),',')
-	two_week_model_errors[ii+1] = computeMedianError(true_death_dict, curr_data, "2 wk ahead cum death");
-end
-
-
-
 three_week_model_errors = -1*ones(length(models)+1)
 three_week_model_errors[1] = computeMedianError(true_death_dict, ensemble_model, "3 wk ahead cum death");
 for ii in 1:length(models)
 	mm = models[ii]
 	curr_data = readdlm(string(mm,"/aggregate.csv"),',')
 	three_week_model_errors[ii+1] = computeMedianError(true_death_dict, curr_data, "3 wk ahead cum death");
+end
+
+
+
+
+six_week_model_errors = -1*ones(length(models)+1)
+six_week_model_errors[1] = computeMedianError(true_death_dict, ensemble_model, "6 wk ahead cum death");
+for ii in 1:length(models)
+	mm = models[ii]
+	curr_data = readdlm(string(mm,"/aggregate.csv"),',')
+	six_week_model_errors[ii+1] = computeMedianError(true_death_dict, curr_data, "6 wk ahead cum death");
 end
 
 
@@ -133,9 +135,9 @@ writedlm("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/c
 
 
 ## display the median prediction error for each forecast
-arr = [["Ensemble"; models] one_week_model_errors two_week_model_errors three_week_model_errors]
-arr = ["Model" "One week error" "Two week error" "Three week error"; arr]
-display(arr)
+#arr = [["Ensemble"; models] one_week_model_errors three_week_model_errors six_week_model_errors]
+#arr = ["Model" "One week error" "Three week error" "Six week error"; arr]
+#display(arr)
 println(arr[2:end,1])
 println(round.(arr[2:end,2],digits=1), ",", 
 	round.(arr[2:end,3],digits=1), 

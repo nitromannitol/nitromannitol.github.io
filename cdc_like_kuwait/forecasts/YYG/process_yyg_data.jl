@@ -56,6 +56,7 @@ while(curr_date <= end_date)
 		file_name = "$file_dir/$y-$m-$d/global/Kuwait_ALL.csv"
 		forecast_date = curr_date
 		if(isfile(file_name)) 
+			println(f_date_str)
 			data = readdlm(file_name, ',')
 			b_ind = findall(data[1,:].=="predicted_total_deaths_lower")[1]
 			p_ind = findall(data[1,:].=="predicted_total_deaths_mean")[1]

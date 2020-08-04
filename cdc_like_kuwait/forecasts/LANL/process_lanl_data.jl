@@ -158,6 +158,6 @@ new_data = new_data[1:curr_row1-1,:]
 new_data_cases = new_data_cases[1:curr_row2-1,:]
 
 
-writedlm("aggregate.csv",new_data,',')
-writedlm("aggregate_cases.csv",new_data_cases,',')
+writedlm("$file_dir/aggregate.csv",new_data,',')
+writedlm("$file_dir/aggregate_cases.csv",new_data_cases,',')
 
