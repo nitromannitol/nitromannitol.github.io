@@ -114,9 +114,39 @@ maketable()
 
 <h2><a id="what-forecasts-predict" class="onThisPageAnchor" title="What the Forecasts Aim to Predict"></a>What the Forecasts Aim to Predict</h2>
 
-<p>Forecasts based on statistical or mathematical models aim to predict changes in national level cumulative reported COVID-19 deaths for the next four weeks. Forecasting teams predict numbers of deaths using different types of data (e.g., COVID-19 data, demographic data, mobility data), methods (see below), and estimates of the impacts of interventions (e.g.&nbsp;social distancing, use of face coverings).</p>
-<h2><a id="working" class="onThisPageAnchor" title="Working to Bring Together Forecasts for COVID-19 Deaths in Kuwait"></a>Working to Bring Together Forecasts for COVID-19 Deaths in Kuwait</h2>
-<p> These forecasts have been developed independently and shared publicly. It is important to bring these forecasts together to help understand how they compare with each other and how much uncertainty there is about what may happen in the upcoming four weeks.</p>
+<p>Forecasts based on statistical or mathematical models aim to predict changes in national level cumulative reported COVID-19 deaths and cases for the next six weeks. Forecasting teams predict numbers of deaths and cases using different types of data (e.g., COVID-19 data, demographic data, mobility data), methods (see below), and estimates of the impacts of interventions (e.g.&nbsp;social distancing, use of face coverings).</p>
+
+
+<h2><a id="working" class="onThisPageAnchor" title="Working to Bring Together Modeling and Forecasts for COVID-19 in Kuwait"></a>Working to Bring Together Modeling and Forecasts for COVID-19 in Kuwait</h2>
+<p> These forecasts have been developed independently and shared publicly. It is important to bring these forecasts together to help understand how they compare with each other and how much uncertainty there is about what may happen in the upcoming six weeks.</p>
+
+
+
+
+<h3><a id ="KISR" </a><a href = "http://www.kisr.edu.kw/en/"> Kuwait Institute for Scientific Research </a> 
+</h3 >
+<h3><a id ="KU" </a><a href = "http://www.kisr.edu.kw/en/"> Kuwait University </a> 
+</h3 >
+<h3><a id ="MOH" </a><a href = "http://www.kisr.edu.kw/en/"> Kuwait Ministry of Health </a> 
+</h3 >
+<p><strong>Model name:</strong> MOH</p>
+<p><strong>Intervention Assumptions: </strong>The model makes no assumptions on the shape of the R-curve and therefore does not provide forecasts.</p>
+<p><strong>Methods:</strong> Implements the algorithm of Wallinga & Teunis (2004) 
+with a lognormal generation time distribution with mean and standard deviation of 4.7 and 2.9 days respectively. A correction is made based on the number of daily swabs.  </p>
+
+<p><strong>Output:</strong> Test adjusted estimate of time varying reproductive rate</p>
+
+
+<h3><a id ="KFAS" </a><a href = "https://kfas.com/"> Kuwait Foundation for the Advancement of Sciences </a> </h3>
+<p><strong>Model name:</strong> KFAS</p>
+<p><strong>Intervention Assumptions: </strong>The model does not provide forecasts.</p>
+<p><strong>Methods:</strong>  Algorithm used is Cori, Ferguson et. al (2013)
+with serial interval following a Gamma distribution with mean 6.48 days
+and standard deviation 3.83 days.</p>
+
+<p><strong>Output:</strong> Estimate of time varying reproductive rate</p>
+
+
 
 
 
@@ -158,7 +188,7 @@ Statistical dynamical growth model accounting for population susceptibility</p>
 <p><strong>Model name: </strong>USC</p>
 <p><strong>Intervention Assumptions:</strong> These projections assume that current interventions will remain unchanged during the forecasted period.</p>
 <p><strong>Methods:&nbsp;</strong>SIR Model.</p>
-<p><strong>Output:</strong> Deaths, infections, R_t</p>
+<p><strong>Output:</strong> Deaths, infections, Rt</p>
 
 
 <h3><a id="geneva"></a><a href="https://renkulab.shinyapps.io/COVID-19-Epidemic-Forecasting/" class="tp-link-policy" data-domain-ext="io">University of Geneva / Swiss Data Science Center</a></h3>
@@ -166,7 +196,7 @@ Statistical dynamical growth model accounting for population susceptibility</p>
 <p><strong>Intervention assumptions: </strong>The projections assume that social distancing policies in place at the date of calibration are extended for the future weeks.</p>
 <p><strong>Methods</strong><br>
 Exponential and linear statistical models fit to the recent growth rate of cumulative deaths.</p>
-<p><strong>Output:</strong> Deaths, infections, R_t</p>
+<p><strong>Output:</strong> Deaths, infections, Rt</p>
 
 
 <h3><a id="yyg"></a><a href="http://covid19-projections.com/about/" class="tp-link-policy" data-domain-ext="com">Youyang Gu (COVID-Projections)</a></h3>
@@ -178,7 +208,7 @@ SEIS mechanistic model.</p>
   <div class="vc_empty_space col-12 pb-3"><span class="vc_empty_space_inner"></span></div>
 </div>
 </div></div></div>
-<p><strong>Output:</strong> Deaths, infections, R_t</p>
+<p><strong>Output:</strong> Deaths, infections, Rt</p>
 
 
 
@@ -189,9 +219,7 @@ SEIS mechanistic model.</p>
    <footer>
     Please email 
       <a href = "mailto: ahmedmb@gmail.com">Ahmed Bou-Rabee</a> if you would like 
-      your projections to be included weekly. Forecasts 
-      must be submitted by Sunday at 6 pm AST in order to be included
-      in the weekly update.
+      your projections to be included weekly.
     </footer>
 
 
