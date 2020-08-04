@@ -4,6 +4,7 @@ using DelimitedFiles,Dates,HTTP
 #end_date = Dates.today()
 
 
+file_dir = "/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/IHME/"
 
 f_len = length(readdir("."))
 
@@ -42,7 +43,7 @@ daily_cases = []
 
 curr_row = 1; 
 file_name = file_names[1]
-data = readdlm(file_name, ',')
+data = readdlm(string(file_dir, file_name), ',')
 #extract jus the deaths
 data_cases = data[data[:,4].==21,:]
 data = data[data[:,4].==24,:]
@@ -100,7 +101,7 @@ end
 
 for file_name in file_names[2:length(file_names)]
 	println(file_name)
-	data = readdlm(file_name, ',')
+	data = readdlm(string(file_dir, file_name), ',')
 	arr = split(file_name,".")
 	f_date_str = arr[1]; 
 	forecast_date = DateTime(arr[1]); 
@@ -179,7 +180,7 @@ end
 
 bad_ind = copy(curr_row)
 ## now append the rest of the files in the directory
-for f in readdir(".")
+for f in readdir(file_dir)
 	arr = split(f,"_")
 	#println(arr)
 	if(length(arr) == 3)
@@ -201,7 +202,7 @@ for f in readdir(".")
 
 
 
-		file_name = "$f/Reference_hospitalization_all_locs.csv"
+		file_name = "$file_dir/$f/Reference_hospitalization_all_locs.csv"
 		F = readdlm(file_name,',')
 
 		loc_ind = findall(F[1,:].=="location_name")[1]
@@ -394,7 +395,7 @@ new_data_cases = new_data_cases[1:curr_row-1,:]
 
 
 
-writedlm("aggregate.csv",new_data,',')
+writedlm("$file_dir/aggregate.csv",new_data,',')
 
 
-writedlm("aggregate_cases.csv",new_data_cases,',')
+writedlm("$file_dir/aggregate_cases.csv",new_data_cases,',')
