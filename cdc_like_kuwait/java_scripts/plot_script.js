@@ -40,7 +40,7 @@ function maketable() {
 
   var values = [
   ["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
-  [2.0, 1.6, 1.0, 0.5, 2.6, 14.7, 1.0, 2.8],[4.9, NaN, 2.3, NaN, 3.3, 30.1, NaN, 4.9],[5.9, NaN, 6.3, NaN, 3.2, 39.5, NaN, 5.9]
+[1.5, 1.3, 1.3, 0.3, 2.0, 14.2, 1.6, 2.2],[4.9, NaN, 5.5, NaN, 3.0, 38.3, NaN, 4.9],[15.6, NaN, NaN, NaN, 3.7, 75.6, NaN, 34.0]
   ]
 
   var headerColor = "grey";
@@ -53,8 +53,8 @@ function maketable() {
     header: {
       values: [["<b>Model</b>"], 
       ["<b>1 week ahead median prediction error</b>"],
-      ["<b>2 week ahead median prediction error</b>"], 
-      ["<b>3 week ahead median prediction error</b>"]
+      ["<b>3 week ahead median prediction error</b>"], 
+      ["<b>6 week ahead median prediction error</b>"]
       ],
       align: "center",
       line: {width: 1, color: 'black'},
@@ -83,52 +83,6 @@ function maketable() {
 
 }
 
-function maketable(){
-  // create the table
-
-  var values = [
-  ["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
-  [2.0, 1.6, 1.0, 0.5, 2.6, 14.7, 1.0, 2.8],[4.9, NaN, 2.3, NaN, 3.3, 30.1, NaN, 4.9],[5.9, NaN, 6.3, NaN, 3.2, 39.5, NaN, 5.9]
-  ]
-
-  var headerColor = "grey";
-  var rowBestColor = "lightblue";
-  var rowWorstColor = "red";
-  var rowColor = "white";
-
-  var data = [{
-    type: 'table',
-    header: {
-      values: [["<b>Model</b>"], 
-      ["<b>1 week ahead median prediction error</b>"],
-      ["<b>2 week ahead median prediction error</b>"], 
-      ["<b>3 week ahead median prediction error</b>"]
-      ],
-      align: "center",
-      line: {width: 1, color: 'black'},
-      fill: {color: headerColor},
-      font: {family: "Arial", size: 13, color: "white"}
-    },
-    cells: {
-      values: values,
-      align: "center",
-      line: {color: "black", width: 1},
-      //fill: {color: [[rowBestColor,rowColor,rowColor,rowColor,
-      //          rowColor,rowColor,rowWorstColor]]},
-      font: {family: "Arial", size: 12, color: ["black"]}
-    }
-  }]
-
-  var layout = {
-    title: "Historic median prediction errors"
-  }
-
-  var config = {responsive: true}
-
-
-  Plotly.newPlot('tablediv', data, layout, config);
-
-};
 
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
@@ -136,6 +90,7 @@ function maketable(){
 // data3 is the total deaths repo
   
 function processData(data1,data2,data3) {
+  //console.log(data3)
   var dates = [];
   var total_count = [];
   for (var i=0; i<data3.length; i++) {
@@ -172,11 +127,13 @@ function processData(data1,data2,data3) {
 
 
 function generateRPlot(r_data){
-//  console.log(r_data)
+  //console.log(r_data)
 
   curr_model = r_data[0]["model"]
-  yy = []
-  xx = []
+  yy = [];
+  xx = [];
+  yplus = [];
+  yminus = [];
   val2 = 0; 
   data = []; // will hold all the traces
 
@@ -190,6 +147,12 @@ function generateRPlot(r_data){
        var trace1 = {
           x: xx, 
           y: yy,
+          error_y : {
+            type: 'data',
+            symmetric: false,
+            array: yplus,
+            arrayminus: yminus
+          },
           name:  curr_model, 
           mode: 'lines',
           type: 'scatter',
@@ -201,16 +164,33 @@ function generateRPlot(r_data){
       curr_model = model_name
       yy = []
       xx = []
+      yplus = []
+      yminus = []
     };
     val2 = Math.max(val2, row["point"])
     yy.push(row["point"])
     xx.push(row["date"])
+ //   console.log(row["upper"])
+    if(row["upper"] == ""){
+        yplus.push(row["upper"])
+        yminus.push(row["lower"])
+      }
+    else{
+      yplus.push(row["upper"]-row["point"])
+      yminus.push(row["point"]-row["lower"])
+    };
   };
 
   // push the last model
   var trace1 = {
   x: xx, 
   y: yy,
+   error_y : {
+            type: 'data',
+            symmetric: false,
+            array: yplus,
+            arrayminus: yminus
+          },
   id: 1,
   name:  curr_model,
   mode: 'lines',
@@ -264,16 +244,16 @@ function generateRPlot(r_data){
 
 
   // add vertical line corresponding to update day
-  val1 =  { type: 'line',
-    x0: val11,
-    y0: 0,
-    x1: val11,
-    y1: val2,
-    line: {
-      color: 'rgb(1, 1, 1)',
-      width: 1
-    }
-  };
+ // val1 =  { type: 'line',
+   // x0: val11,
+   // y0: 0,
+   // x1: val11,
+   // y1: val2,
+   // line: {
+     // color: 'rgb(1, 1, 1)',
+    //  width: 1
+   // }
+  //};
 
   // add horizontal line corresponding to Rt = 1
   val2 =  { type: 'line',
@@ -288,7 +268,7 @@ function generateRPlot(r_data){
     }
   };
 
-  layout.shapes.push(val1)
+ // layout.shapes.push(val1)
   layout.shapes.push(val2)
   var config = {responsive: true}
 
@@ -299,7 +279,8 @@ function generateRPlot(r_data){
 
 function makePlotly(dates, total_count, forecast_data, r_data){
    generateRPlot(r_data)
-
+   //console.log(total_count)
+   //console.log(dates)
 
   // get all unique forecast dates
   // get all unique models
@@ -320,6 +301,12 @@ function makePlotly(dates, total_count, forecast_data, r_data){
     trace = {
       x:[],
       y:[],
+      error_y : {
+        type: 'data',
+        symmetric: false,
+        array: [],
+        arrayminus: []
+      },
       name:(model_name)
     }
     for(var i = 0; i < forecast_data.length; i++){
@@ -327,7 +314,15 @@ function makePlotly(dates, total_count, forecast_data, r_data){
       if(row["model"] == model_name && row["forecast_date"] == forecast_date){;
         trace.x.push(row["target_week_end_date"])
         trace.y.push(row["point"])
-        max_pred = Math.max(max_pred, row["point"])
+        if(row["quantile_0.95"] == ""){
+        trace.error_y.array.push("")
+        trace.error_y.arrayminus.push("")
+      }
+      else{
+        trace.error_y.array.push(row["quantile_0.95"] - row["point"])
+        trace.error_y.arrayminus.push(row["point"]-row["quantile_0.05"])
+        max_pred = Math.max(max_pred, row["quantile_0.95"])
+      }
       }
     }
     return {max_pred: max_pred, trace: trace};
@@ -348,6 +343,8 @@ function makePlotly(dates, total_count, forecast_data, r_data){
        max_pred = Math.max(max_pred, res.max_pred)
       traces.push(curr_trace)
     }
+
+
     //console.log(forecast_date)
     //console.log(max_pred)
     // push the data traces
@@ -357,7 +354,7 @@ function makePlotly(dates, total_count, forecast_data, r_data){
     y_future = [];
     dates_future = [];
 
-
+    //console.log(forecast_date)
     six_week_date = new Date(forecast_date)
     six_week_date.setDate(six_week_date.getDate()+42)
     six_week_date = six_week_date.toISOString();
