@@ -65,7 +65,7 @@ true_death_dict = Dict()
 for i in 1:size(true_data,1)
 	true_death_dict[true_data[i,1]]=true_data[i,2]
 end
-writedlm("total_deaths.csv",true_data,',')
+writedlm("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/total_deaths.csv",true_data,',')
 
 
 ## model_arr is the aggregation 2D array
@@ -78,7 +78,7 @@ function computeMedianError(true_death_dict, model_arr, target)
 		if(row[3] == target && haskey(true_death_dict, row[4]))
 			pred = row[5]; 
 			actual = true_death_dict[row[4]]
-			println(row[2], " " , row[1], " ", (pred, actual))
+			#println(row[2], " " , row[1], " ", (pred, actual))
 			#push!(errors, 100*abs(pred-actual)/actual)
 			push!(errors, 100*abs(pred-actual)/actual)
 		end
@@ -135,9 +135,9 @@ writedlm("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/c
 
 
 ## display the median prediction error for each forecast
-#arr = [["Ensemble"; models] one_week_model_errors three_week_model_errors six_week_model_errors]
-#arr = ["Model" "One week error" "Three week error" "Six week error"; arr]
-#display(arr)
+arr = [["Ensemble"; models] one_week_model_errors three_week_model_errors six_week_model_errors]
+arr = ["Model" "One week error" "Three week error" "Six week error"; arr]
+display(arr)
 println(arr[2:end,1])
 println(round.(arr[2:end,2],digits=1), ",", 
 	round.(arr[2:end,3],digits=1), 

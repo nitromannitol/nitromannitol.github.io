@@ -47,7 +47,7 @@ function maketable() {
 
   var values = [
   ["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
-[1.7, 1.3, 1.3, 0.3, 2.0, 14.2, 1.6, 2.2],[4.2, NaN, 2.2, NaN, 3.4, 29.5, NaN, 4.1],[4.9, NaN, 5.5, NaN, 3.0, 38.3, NaN, 4.9]
+[1.4, 1.3, 1.8, 0.5, 1.4, 13.8, 1.0, 1.9],[4.9, NaN, 4.0, NaN, 3.2, 37.2, NaN, 4.9],[7.4, NaN, 15.6, NaN, 2.8, 58.6, NaN, 12.1]
 ]
 
   var headerColor = "grey";
