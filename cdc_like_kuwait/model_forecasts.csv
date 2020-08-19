@@ -61,6 +61,12 @@ Ensemble,2020-08-09,3 wk ahead cum death,2020-08-30,526.0,,
 Ensemble,2020-08-09,4 wk ahead cum death,2020-09-06,538.5,,
 Ensemble,2020-08-09,5 wk ahead cum death,2020-09-13,548.5,,
 Ensemble,2020-08-09,6 wk ahead cum death,2020-09-20,557.0,,
+Ensemble,2020-08-16,1 wk ahead cum death,2020-08-23,522.5,,
+Ensemble,2020-08-16,2 wk ahead cum death,2020-08-30,543.0,,
+Ensemble,2020-08-16,3 wk ahead cum death,2020-09-06,562.5,,
+Ensemble,2020-08-16,4 wk ahead cum death,2020-09-13,581.0,,
+Ensemble,2020-08-16,5 wk ahead cum death,2020-09-20,598.5,,
+Ensemble,2020-08-16,6 wk ahead cum death,2020-09-27,614.5,,
 Geneva,2020-05-24,1 wk ahead cum death,2020-05-31,169,,
 Geneva,2020-05-31,1 wk ahead cum death,2020-06-07,250,,
 Geneva,2020-06-07,1 wk ahead cum death,2020-06-14,279,,
@@ -73,6 +79,7 @@ Geneva,2020-07-19,1 wk ahead cum death,2020-07-26,425,,
 Geneva,2020-07-26,1 wk ahead cum death,2020-08-02,452,,
 Geneva,2020-08-02,1 wk ahead cum death,2020-08-09,468,,
 Geneva,2020-08-09,1 wk ahead cum death,2020-08-16,496,,
+Geneva,2020-08-16,1 wk ahead cum death,2020-08-23,514,,
 IHME,2020-05-31,1 wk ahead cum death,2020-06-07,288,251,340
 IHME,2020-05-31,2 wk ahead cum death,2020-06-14,372,292,514
 IHME,2020-05-31,3 wk ahead cum death,2020-06-21,450,330,678
@@ -134,6 +141,7 @@ Imperial,2020-07-19,1 wk ahead cum death,2020-07-26,428,418,442
 Imperial,2020-07-26,1 wk ahead cum death,2020-08-02,453,442,475
 Imperial,2020-08-02,1 wk ahead cum death,2020-08-09,477,466,489
 Imperial,2020-08-09,1 wk ahead cum death,2020-08-16,499,490,511
+Imperial,2020-08-16,1 wk ahead cum death,2020-08-23,500,489,520
 LANL,2020-05-31,1 wk ahead cum death,2020-06-07,264,235,312
 LANL,2020-05-31,2 wk ahead cum death,2020-06-14,312,255,423
 LANL,2020-05-31,3 wk ahead cum death,2020-06-21,356,268,547
@@ -194,6 +202,12 @@ LANL,2020-08-09,3 wk ahead cum death,2020-08-30,526,497,588
 LANL,2020-08-09,4 wk ahead cum death,2020-09-06,538,502,618
 LANL,2020-08-09,5 wk ahead cum death,2020-09-13,547,504,646
 LANL,2020-08-09,6 wk ahead cum death,2020-09-20,554,506,670
+LANL,2020-08-16,1 wk ahead cum death,2020-08-23,520,509,540
+LANL,2020-08-16,2 wk ahead cum death,2020-08-30,536,516,575
+LANL,2020-08-16,3 wk ahead cum death,2020-09-06,549,520,609
+LANL,2020-08-16,4 wk ahead cum death,2020-09-13,560,524,642
+LANL,2020-08-16,5 wk ahead cum death,2020-09-20,569,527,670
+LANL,2020-08-16,6 wk ahead cum death,2020-09-27,577,529,693
 MIT,2020-04-19,1 wk ahead cum death,2020-04-26,9,9,9
 MIT,2020-04-19,2 wk ahead cum death,2020-05-03,14,14,14
 MIT,2020-04-19,3 wk ahead cum death,2020-05-10,20,20,20
@@ -287,6 +301,12 @@ MIT,2020-08-09,3 wk ahead cum death,2020-08-30,517,517,517
 MIT,2020-08-09,4 wk ahead cum death,2020-09-06,520,520,520
 MIT,2020-08-09,5 wk ahead cum death,2020-09-13,522,522,522
 MIT,2020-08-09,6 wk ahead cum death,2020-09-20,523,523,523
+MIT,2020-08-16,1 wk ahead cum death,2020-08-23,528,528,528
+MIT,2020-08-16,2 wk ahead cum death,2020-08-30,535,535,535
+MIT,2020-08-16,3 wk ahead cum death,2020-09-06,539,539,539
+MIT,2020-08-16,4 wk ahead cum death,2020-09-13,541,541,541
+MIT,2020-08-16,5 wk ahead cum death,2020-09-20,543,543,543
+MIT,2020-08-16,6 wk ahead cum death,2020-09-27,544,544,544
 USC,2020-06-28,1 wk ahead cum death,2020-07-05,366,,
 USC,2020-07-05,1 wk ahead cum death,2020-07-12,392,,
 USC,2020-07-12,1 wk ahead cum death,2020-07-19,416,,
@@ -319,6 +339,12 @@ USC,2020-08-09,3 wk ahead cum death,2020-08-30,526,,
 USC,2020-08-09,4 wk ahead cum death,2020-09-06,539,,
 USC,2020-08-09,5 wk ahead cum death,2020-09-13,550,,
 USC,2020-08-09,6 wk ahead cum death,2020-09-20,560,,
+USC,2020-08-16,1 wk ahead cum death,2020-08-23,542,,
+USC,2020-08-16,2 wk ahead cum death,2020-08-30,566,,
+USC,2020-08-16,3 wk ahead cum death,2020-09-06,590,,
+USC,2020-08-16,4 wk ahead cum death,2020-09-13,635,,
+USC,2020-08-16,5 wk ahead cum death,2020-09-20,654,,
+USC,2020-08-16,6 wk ahead cum death,2020-09-27,680,,
 YYG,2020-05-31,1 wk ahead cum death,2020-06-07,267,254,284
 YYG,2020-05-31,2 wk ahead cum death,2020-06-14,323,294,357
 YYG,2020-05-31,3 wk ahead cum death,2020-06-21,380,335,434
@@ -385,3 +411,9 @@ YYG,2020-08-09,3 wk ahead cum death,2020-08-30,550,497,654
 YYG,2020-08-09,4 wk ahead cum death,2020-09-06,576,501,734
 YYG,2020-08-09,5 wk ahead cum death,2020-09-13,603,505,822
 YYG,2020-08-09,6 wk ahead cum death,2020-09-20,628,508,910
+YYG,2020-08-16,1 wk ahead cum death,2020-08-23,525,508,554
+YYG,2020-08-16,2 wk ahead cum death,2020-08-30,550,514,618
+YYG,2020-08-16,3 wk ahead cum death,2020-09-06,576,519,688
+YYG,2020-08-16,4 wk ahead cum death,2020-09-13,602,523,763
+YYG,2020-08-16,5 wk ahead cum death,2020-09-20,628,527,842
+YYG,2020-08-16,6 wk ahead cum death,2020-09-27,652,530,921
