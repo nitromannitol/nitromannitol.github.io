@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-
-<!-- load the plotly.js and math.jslibraries -->      
-
+<html>
 <head>
-  <title> COVID-19 data visualization </title>
+  <title>Ahmed Bou-Rabee</title>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
 <script>
@@ -14,496 +10,81 @@
 
   gtag('config', 'UA-53592269-3');
 </script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-<style> /* set the CSS */
-body { 
-  margin-left: 20px;
-}
-p { 
-  margin-top: 20px;
-  margin-left: 20px;
-  margin-right: 20px;
-  border: 1px solid black ;
-}
-</style>
 
 
+<meta name="keywords" content="Ahmed Bou-Rabee, Ahmed, A. Bou-Rabee, Bou-Rabee, Stanford, University of Chicago, Abelian sandpile">
 </head>
-
-
 <body>
+<h1>Ahmed Bou-Rabee</h1>
+<table>
+  <td> <img width=150px src="me.jpg"></td>
+  <td style="padding-left:50px;max-width:500px"> 
+    <br/> <br/> University of Chicago
+    <br/>  Department of Statistics
+    <br/>  Office: Jones 203/204
+    <br/> Email: &nbsp; <tt> ahmedb at uchicago dot edu </tt>
+  </td>
+</table>
+<br/>
+I am a Ph.D. candidate in <a href="https://stat.uchicago.edu" >statistics</a> at the <a href="https://www.uchicago.edu">University of Chicago</a>, studying probability and partial differential equations under the supervision of <a href="https://math.uchicago.edu/~smart/">Charles K. Smart</a>. Previously, I received a B.S. in mathematics and an M.S. in statistics from <a href="https://www.stanford.edu">Stanford University</a>.
+
+
+<h2>Preprints </h2>
+<ol reversed>
+     <li><em> Dynamic dimensional reduction in the Abelian sandpile</em>.
+      <a href="manuscripts/dynamic_dimension.pdf">[Preprint]</a>
+      <a href="https://github.com/nitromannitol/arbitrarydim_sandpiles">[Code]</a>
+   </a></li>
+
+  <li><em> Convergence of the random Abelian sandpile</em>. <a href="http://arxiv.org/abs/1909.07849">[arxiv:1909.07849]</a> 
+   </a>
+   <a href = "http://home.uchicago.edu/~ahmedb/sandpiles/sandpiles.html">[Pictures]</a>
+   </li>
+</ol>
+
+
+<h2>Invited talks</h2>
+<ul>
+  <li><a href="talks/cornell_probability.pdf">Cornell Probability Seminar, September 23, 2019 </a> </li>
+  <li><a href="talks/ccny_math.pdf">CCNY Mathematics Colloquium, September 19, 2019</a> </li>
+</ul>
+
+
+
+<h2>Javascript apps</h2>
+<ul>
+  <li><a href = "linear_exp_kuwait/linear_exp.html"> COVID-19 Data Visualization </a></li> 
+   <li><a href = "aggregate/kuwait_forecasts.html"> COVID-19 Aggregate Forecasts </a></li> 
+  <li><a href = "tomography-visualizer/tomography.html">Tomography</a></li>
+</ul>
+
+
+
+
+<h2>Teaching</h2>
+<ul>
+  <li> In Spring 2020 I was a teaching assistant for STAT 234 Statistical Models and Methods. </li>
+  <li> In Fall 2020 I was a teaching assistant for STAT 25150 Introduction to Mathematical Probability. </li>
+  <li> In Spring 2019 I was a teaching assistant for <a href="http://galton.uchicago.edu/~lalley/Courses/383/index.html">STAT 383 (Measure-Theoretic Probability 2)</a>. </li>
+  <li> In Fall 2017, 2018 I was a teaching assistant for  <a href="http://galton.uchicago.edu/~lalley/Courses/312/index.html">STAT 312 (Stochastic Processes)</a>.</li>
+  <li> In Winter and Spring 2017 I was a teaching assistant for STAT 220 (Statistical Methods and Applications).</li>
+  <li> In Summer 2016 I was a lecturer for <a href="http://web.stanford.edu/class/ee103/">Introduction to Matrix Methods</a> at Chinese University of Hong Kong Shenzhen.</li>
+  <li> In Fall 2014 and 2015 I was a teaching assistant for <a href="http://web.stanford.edu/class/ee103/">Introduction to Matrix Methods</a> at Stanford.</li>
+  <li> In Winter 2014 I was a teaching assistant for <a href="http://ee364a.stanford.edu/"> Convex Optimization </a> at Stanford.</li>
+</ul>
 
-
-
-
-<p> Click the legend on the right to remove or display each curve; press play to see the progression of the curves over time. Hover over the graph to see options for zooming in, rescaling, and downloading. The legend displays the function parameters for functions defined below. 
-</p>
-
-
-  <!-- load the plotly.js library -->      
-<div id="graph"></div>
-
-
-
-
-<script>
-
-
-
-//function makeplot() {
-//  Plotly.d3.csv("data_fit.csv", function(data){ processData(data) } );
-//};
-
-
-function makeplot() {
-   Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases.csv', function(data){ processData(data) });
-};
-
-
-
-
-
-// count_vec is vector of true counts
-// test range is range on which to test data,
-// out_range is range on which to output data
-function buildModels(test_range, out_range, count_vec){
-  //fit linear and exponential models 
-  var range_val = [...Array(count_vec.length).keys()];
-  var x_vec = math.add(range_val,1);
-
-  x_vec = x_vec.slice(0,test_range+1);
-  y_vec = count_vec.slice(0,test_range+1);
-  y_vec = math.matrix(y_vec)
-
-
-  // fit  y = b1 + b2 x 
-  const beta_hat_linear = fitLS(x_vec,y_vec);
-  const b1 = beta_hat_linear.subset(math.index(1));
-  const b2 = beta_hat_linear.subset(math.index(0));
-
-
-  // fit y = a1 *exp(a2 x)
-  const beta_hat_exp = fitLS(x_vec, math.log(y_vec))
-  const a1 = math.exp(beta_hat_exp.subset(math.index(1)));
-  const a2 = beta_hat_exp.subset(math.index(0));
-
-  //fill the prediction vectors 
-  x_vec = [...Array(out_range+1).keys()];
-  x_vec = math.add(x_vec,1)
-
-  var linear_fit = [];
-  var exp_fit = [];
-  for (var i=0; i<x_vec.length; i++) {
-    linear_fit.push(b1 + b2*x_vec[i])
-    exp_fit.push(a1*math.exp(a2*x_vec[i]))
-  }
-
-
-  return [b1,b2,a1,a2,linear_fit,exp_fit];
-
-
-}
-
-
-// fit y = b1 + b2 x  with least squares
-function fitLS(x_vec,y_vec){
-  const range_val = [...Array(x_vec.length).keys()];
-  var x_mat = math.ones(x_vec.length,2)
-  x_mat = math.subset(x_mat,math.index(range_val, 0), x_vec);
-  var pinv_mat = math.multiply(math.transpose(x_mat),x_mat);
-  var id_mat = math.identity(math.size(pinv_mat));
-  id_mat = math.multiply(id_mat,0.05);
-  pinv_mat = math.add(pinv_mat,id_mat);
-  pinv_mat = math.inv(pinv_mat);
-  pinv_mat = math.multiply(pinv_mat, math.transpose(x_mat))
-  return math.multiply(pinv_mat,y_vec);
-}
-
-
-
-function processData(allRows) {
-  var dates = [];
-  var total_count = [];
-  var locations = d3.keys(allRows[0])
-  date_name = locations[0] 
-  locations = locations.slice(1,locations.length+1);
-
-  //console.log(allRows[0].Kuwait)
-
-  for (var i=0; i<allRows.length; i++) {
-    row = allRows[i];
-    total_count.push(row["Kuwait"])
-   // console.log(row)
-    dates.push( row["date"] );
-  }
- // hack for now until code is updated 
- // to work for all countries
- dates = dates.slice(55,dates.length)
- total_count = total_count.slice(55,total_count.length)
-
-
- // get rid of all the empty entries
-   for (var i=0; i<total_count.length; i++) {
-    if(total_count[i] == ""){
-      total_count[i] = total_count[i-1]
-    }
-  }
-
-
- // console.log(total_count)
-// console.log(dates)
-
-
-  makePlotly( dates, total_count);
-}
-
-
-
-// test on the next 2 weeks
-const extra = 14; 
-
-
-
-
-function makePlotly(dates, total_count){
-  var plotDiv = document.getElementById("plot");
-  var future_dates = Array.from(dates);
-  dates = dates.slice(0,dates.length-extra)
- // console.log(total_count)
-
-  // each frame is going to correspond to a day and the model
-  // fit up to that point 
-  var frames = [];
-
-  for (var i = 0; i < dates.length; i++) {
-    frames[i] = {data: [{x: [], y: [], name:[]}, {x: [], y: [], name: []},{x: [], y: [], name: []},{x: [], y: [], name: []}, {x: [], y: [], name: []}], name: dates[i]},
-    frames[i].data[0].x = dates.slice(0, i+1);
-    frames[i].data[0].y = total_count.slice(0, i+1);
-    frames[i].data[0].name = "Total Cases = " + total_count[i];
-
-
-  
-    //console.log(dates.slice(0,i+1))
-    if(i == 0){
-      frames[i].data[2].x = dates.slice(0, i+1+4);
-      frames[i].data[2].y = total_count.slice(0, i+1);
-      frames[i].data[2].name = "Linear Fit"
-
-
-      frames[i].data[1].x = dates.slice(0, i+1);
-      frames[i].data[1].y = total_count.slice(0, i+1);
-      frames[i].data[1].name = "Exponential Fit"
-
-
-
-    } else {
-      // fit the linear and exponential models on this slice
-      count_vec = math.clone(total_count);
-     // const curr_day = 27;
-      var test_range = i;
-    //  var test_range = math.min(i+1,curr_day+1);
-      var out_range = i+extra;
-
-
-      out_vec = buildModels(test_range, out_range,count_vec);
-      b1 = out_vec[0];
-      b2 = out_vec[1];
-      a1 = out_vec[2];
-      a2 = out_vec[3];
-      linear_fit = out_vec[4];
-      exp_fit = out_vec[5];
-     // console.log(a2);
-
-
-      frames[i].data[2].x = future_dates.slice(0, i+1+extra);
-      frames[i].data[2].y = linear_fit;
-
-     // frames[i].data[2].name = math.round(String(b1),1) + " + " + math.round(String(b2),3) + " day"
-      //frames[i].data[1].name = math.round(String(a1),1) + " exp(" + math.round(String(a2),4) + " day)"
-
-      frames[i].data[2].name = "(b1, b2) = " + "(" + math.round(String(b1),1) + "," +  math.round(String(b2),1) + ")";
-      frames[i].data[1].name = "(a1, a2) = " + "(" +math.round(String(a1),1) + "," +   math.round(String(a2),4) + ")";
-
-
-
-      frames[i].data[1].x = future_dates.slice(0, i+1+extra);
-      frames[i].data[1].y = exp_fit;
-
-     // if(i+1+extra < dates.length){
-        frames[i].data[3].x = dates.slice(i+1, i+1+extra);
-        frames[i].data[3].y = total_count.slice(i+1, i+1+extra);
-        frames[i].data[3].name = "Future cases"
-     // }
-
-     //console.log(dates.slice(i+1, i+1+extra));
-
-      frames[i].data[4].x = [dates[i], dates[i]];
-      frames[i].data[4].y = [0, total_count[i]];
-
-
-
-
-    }
-
-  }
-
-  var sliderSteps = [];
-  for (i = 0; i < dates.length; i++) {
-    sliderSteps.push({
-      method: 'animate',
-      label: i,
-      args: [[dates[i]], {
-        mode: 'immediate',
-       // transition: {duration: 500},
-        frame: {duration: 500, redraw: true},
-      }]
-    });
-  }
-
-
-  const start_ind = dates.length-1;
-
-  var trace1 = {
-      x: frames[start_ind].data[0].x, 
-      y: frames[start_ind].data[0].y,
-      mode: 'markers',
-      type: 'scatter',
-     // name: 'Total Confirmed Cases',
-      name: frames[start_ind].data[0].name
-  };
-
-
-  var trace2 = {
-      x: frames[start_ind].data[1].x, 
-      y: frames[start_ind].data[1].y,
-      mode: 'lines',
-      type: 'scatter',
-      name: frames[start_ind].data[1].name,
-      visible: 'legendonly'
-  };
-
-   var trace3 = {
-      x: frames[start_ind].data[2].x, 
-      y: frames[start_ind].data[2].y,
-      mode: 'lines',
-      type: 'scatter',
-      name: frames[start_ind].data[2].name,
-      visible: 'legendonly'
-
-  };
-  
-
-    var trace4 = {
-      x: frames[start_ind].data[3].x, 
-      y: frames[start_ind].data[3].y,
-      mode: 'markers',
-      type: 'scatter',
-      name: 'Total Confirmed Cases',
-      name: frames[start_ind].data[0].name,
-      //visible: 'legendonly',
-      opacity: 0.19
-  };
-
-    var trace5 = {
-      x: frames[start_ind].data[4].x, 
-      y: frames[start_ind].data[4].y,
-      mode: 'lines',
-      type: 'scatter',
-      color: 'black',
-      showlegend: false,
-      line: {
-        color: 'rgb(1,1,1)',
-        dash: 'dot'
-      }
-  
-  };
-
-
-
-
-
-  var data = [trace1,trace2,trace3, trace4, trace5];
-
-  // create the traces 
- // console.log(frames[dates.length-1].data[1].x[dates.length-1])
-
-
-
-  var layout = {
-    title: {
-      text:'COVID-19 in Kuwait',
-      font: {
-        family: 'Arial',
-        size: 24
-      },
-      xref: 'paper',
-    },
-    xaxis: {
-      type: 'date',
-      //range: ["2020-02-22", "2020-04-21"],
-      //range: ["2020-02-23", frames[dates.length-1].data[1].x[dates.length-1]],
-      //range: ["2020-02-23", frames[dates.length-1].data[1].x],
-      autorange: true,
-      showgrid: true
-    },
-    yaxis: {
-      //range: [0, frames[dates.length-1].data[1].y[dates.length]+10],
-    //  range: [0, 4],
-     // range: [0, frames[dates.length-1].data[1].y+200],
-      autorange: true, 
-     // autorange: true, fixedrange: true,
-     // type: 'log',
-      showgrid: true
-    },
-    legend: {
-      //orientation: 'd',
-      y: 0.5,
-      yref: 'paper',
-      font: {
-        family: 'Arial',
-        size: 15
-      },
-    bgcolor: '#E2E2E2',
-    bordercolor: '#FFFFFF',
-    borderwidth: 2
-    },
-    colorway : ['#000000', '#0000ff','#fff000', '#ff0000'],
-
-
-     hovermode: 'closest',
-   // We'll use updatemenus (whose functionality includes menus as
-   // well as buttons) to create a play button and a pause button.
-   // The play button works by passing `null`, which indicates that
-   // Plotly should animat. The pause button works by
-   // passing `[null]`, which indicates we'd like to interrupt any
-   // currently running animations with a new list of frames. Here
-   // The new list of frames is empty, so it halts the animation.
-    updatemenus: [{
-      x: 0,
-      y: 0,
-      yanchor: 'top',
-      xanchor: 'left',
-      showactive: false,
-      direction: 'left',
-      type: 'buttons',
-      pad: {t: 87, r: 10},
-      buttons: [{
-        method: 'animate',
-        args: [null, {
-          mode: 'immediate',
-          fromcurrent: true,
-          transition: {duration: 500},
-          frame: {duration: 500, redraw: true}
-        }],
-        label: 'Play'
-      }, 
-      {
-        method: 'animate',
-        args: [[null], {
-          mode: 'immediate',
-          transition: {duration: 0},
-          frame: {duration: 0, redraw: true}
-        }],
-        label: 'Pause'
-      }]
-
-    }],
-
-    // Finally, add the slider and use `pad` to position it
-   // nicely next to the buttons.
-    sliders: [{
-      pad: {l: 130, t: 55},
-      currentvalue: {
-        visible: true,
-        prefix: 'Days since first confirmed case:',
-        xanchor: 'right',
-        font: {size: 20, color: '#666'}
-      },
-      steps: sliderSteps
-    }]
-  
-  
-  };
-
-
-  // Create the plot:
-  Plotly.newPlot('graph', {
-    data: data,
-    layout: layout,
-    frames: frames,
-    responsive: true, 
-  });
-
- // Plotly.newPlot('graph', data, layout, {responsive:true}).then(function() {
- //   Plotly.addFrames('graph', frames);
- // });
-
-
-
- // Plotly.newPlot('graph', data, layout, {responsive:true});
-
-
-};
-
-
-  makeplot();
-</script>
 
 
 </body>
+</html>
 
 
+<script>
+window.onload = choosePic;
+var myPix = new Array("sandpiles/enter_gallery_pictures/1.png","sandpiles/enter_gallery_pictures/2.png","sandpiles/enter_gallery_pictures/3.png","sandpiles/enter_gallery_pictures/4.png","sandpiles/enter_gallery_pictures/5.png","sandpiles/enter_gallery_pictures/6.png","sandpiles/enter_gallery_pictures/7.png","sandpiles/enter_gallery_pictures/8.png","sandpiles/enter_gallery_pictures/9.png","sandpiles/enter_gallery_pictures/10.png","sandpiles/enter_gallery_pictures/11.png","sandpiles/enter_gallery_pictures/12.png","sandpiles/enter_gallery_pictures/13.png","sandpiles/enter_gallery_pictures/14.png","sandpiles/enter_gallery_pictures/15.png","sandpiles/enter_gallery_pictures/16.png","sandpiles/enter_gallery_pictures/17.png","sandpiles/enter_gallery_pictures/18.png","sandpiles/enter_gallery_pictures/19.png","sandpiles/enter_gallery_pictures/20.png");
 
-<p>
- </font> <a href = "Compare/compare.html">Click here to compare cases across countries. </a> 
-
-</p>
-
-
-<hr>
-
-
-
-
-Each data point corresponds to daily, public updates by Kuwait's <a href = "https://twitter.com/KUWAIT_MOH"> Ministry of Health</a>
-or <a href = "https://twitter.com/MOInformation" > Ministry of Information</a> of the total number of confirmed COVID-19 cases in Kuwait.
-The <font color = '#fff000'>col</font><font color = "blue">ored</font> curves represent the closest function to all of the cases up to that day. 
-
-<br>
-<br>
-<font color = "blue"> Blue </font> is exponential,  
- \( \mbox{cases} = a_1 \cdot \exp(a_2 \cdot \mbox{ day})\)
-<br></br>
-<font color = '#fff000' > Yellow </font> is linear, 
-  \( \mbox{cases} = b_1 + b_2 \cdot \mbox{ day}\)
-<br></br>
-The linear and exponential models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
-
-
-
-<hr>
-
-Observe the sometimes extreme, day-to-day changes in the best fit models, despite visually not changing much. The reason for this is twofold. The number of reported 
-cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, and even sigmoid curves. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this page is to visualize Kuwait's data together with the similarites and differences between linear and exponential growth over time. 
-
-
-<hr>
-Data is updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
- <hr>
-
-
-   <footer>
-      Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
-      <a href = "mailto: ahmedmb@gmail.com">here</a>.  
-    </footer>
-
-
-
-
+function choosePic() {
+     var randomNum = Math.floor(Math.random() * myPix.length);
+     document.getElementById("enter_gallery").src = myPix[randomNum];
+ }
+ </script>
