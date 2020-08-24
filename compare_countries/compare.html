@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+
+<!-- load the plotly.js and math.js libraries -->      
+
+<head>
+  <title> COVID-19 across the world </title>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-53592269-3');
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+
+
+
+<style> /* set the CSS */
+body { 
+  margin-left: 20px;
+}
+</style>
+
+
+</head>
+
+
+
+
+<body>
+
+
+
+<div class="plot" id="plotdiv">
+
+</div>
+
+<div> 
+<form id="form1">
+   <select class="countrydata" id = "countrydata_" multiple="multiple">
+<option value="World">World</option>
+<option value="Albania">Albania</option>
+<option value="Andorra">Andorra</option>
+<option value="Anguilla">Anguilla</option>
+<option value="Antigua and Barbuda">Antigua and Barbuda</option>
+<option value="Argentina">Argentina</option>
+<option value="Armenia">Armenia</option>
+<option value="Aruba">Aruba</option>
+<option value="Australia">Australia</option>
+<option value="Austria">Austria</option>
+<option value="Azerbaijan">Azerbaijan</option>
+<option value="Bahamas">Bahamas</option>
+<option value="Bahrain">Bahrain</option>
+<option value="Barbados">Barbados</option>
+<option value="Belgium">Belgium</option>
+<option value="Bermuda">Bermuda</option>
+<option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+<option value="Brazil">Brazil</option>
+<option value="British Virgin Islands">British Virgin Islands</option>
+<option value="Brunei">Brunei</option>
+<option value="Bulgaria">Bulgaria</option>
+<option value="Canada">Canada</option>
+<option value="Cayman Islands">Cayman Islands</option>
+<option value="Chile">Chile</option>
+<option value="China">China</option>
+<option value="Costa Rica">Costa Rica</option>
+<option value="Croatia">Croatia</option>
+<option value="Curacao">Curacao</option>
+<option value="Cyprus">Cyprus</option>
+<option value="Czech Republic">Czech Republic</option>
+<option value="Denmark">Denmark</option>
+<option value="Djibouti">Djibouti</option>
+<option value="Dominica">Dominica</option>
+<option value="Dominican Republic">Dominican Republic</option>
+<option value="Ecuador">Ecuador</option>
+<option value="Estonia">Estonia</option>
+<option value="Faeroe Islands">Faeroe Islands</option>
+<option value="Finland">Finland</option>
+<option value="France">France</option>
+<option value="French Polynesia">French Polynesia</option>
+<option value="Georgia">Georgia</option>
+<option value="Germany">Germany</option>
+<option value="Gibraltar">Gibraltar</option>
+<option value="Greece">Greece</option>
+<option value="Greenland">Greenland</option>
+<option value="Grenada">Grenada</option>
+<option value="Guam">Guam</option>
+<option value="Hungary">Hungary</option>
+<option value="Iceland">Iceland</option>
+<option value="Iran">Iran</option>
+<option value="Ireland">Ireland</option>
+<option value="Isle of Man">Isle of Man</option>
+<option value="Israel">Israel</option>
+<option value="Italy">Italy</option>
+<option value="Jordan">Jordan</option>
+<option value="Kosovo">Kosovo</option>
+<option value="Kuwait">Kuwait</option>
+<option value="Latvia">Latvia</option>
+<option value="Lebanon">Lebanon</option>
+<option value="Liechtenstein">Liechtenstein</option>
+<option value="Lithuania">Lithuania</option>
+<option value="Luxembourg">Luxembourg</option>
+<option value="Macedonia">Macedonia</option>
+<option value="Malaysia">Malaysia</option>
+<option value="Maldives">Maldives</option>
+<option value="Malta">Malta</option>
+<option value="Mauritius">Mauritius</option>
+<option value="Moldova">Moldova</option>
+<option value="Monaco">Monaco</option>
+<option value="Montenegro">Montenegro</option>
+<option value="Montserrat">Montserrat</option>
+<option value="Netherlands">Netherlands</option>
+<option value="New Caledonia">New Caledonia</option>
+<option value="New Zealand">New Zealand</option>
+<option value="Northern Mariana Islands">Northern Mariana Islands</option>
+<option value="Norway">Norway</option>
+<option value="Oman">Oman</option>
+<option value="Palestine">Palestine</option>
+<option value="Panama">Panama</option>
+<option value="Peru">Peru</option>
+<option value="Poland">Poland</option>
+<option value="Portugal">Portugal</option>
+<option value="Puerto Rico">Puerto Rico</option>
+<option value="Qatar">Qatar</option>
+<option value="Romania">Romania</option>
+<option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+<option value="Saint Lucia">Saint Lucia</option>
+<option value="San Marino">San Marino</option>
+<option value="Saudi Arabia">Saudi Arabia</option>
+<option value="Serbia">Serbia</option>
+<option value="Seychelles">Seychelles</option>
+<option value="Singapore">Singapore</option>
+<option value="Sint Maarten (Dutch part)">Sint Maarten (Dutch part)</option>
+<option value="Slovakia">Slovakia</option>
+<option value="Slovenia">Slovenia</option>
+<option value="South Africa">South Africa</option>
+<option value="South Korea">South Korea</option>
+<option value="Spain">Spain</option>
+<option value="Sweden">Sweden</option>
+<option value="Switzerland">Switzerland</option>
+<option value="Thailand">Thailand</option>
+<option value="Trinidad and Tobago">Trinidad and Tobago</option>
+<option value="Tunisia">Tunisia</option>
+<option value="Turkey">Turkey</option>
+<option value="Turks and Caicos Islands">Turks and Caicos Islands</option>
+<option value="United Arab Emirates">United Arab Emirates</option>
+<option value="United Kingdom">United Kingdom</option>
+<option value="United States">United States</option>
+<option value="United States Virgin Islands">United States Virgin Islands</option>
+<option value="Uruguay">Uruguay</option>
+<option value="Vatican">Vatican</option>
+    </select>
+    <input type="button" id="btnget1" value="Plot selected countries" />
+    <input type="button" id="btnget2" value="Plot countries with curves closest to selected countries" />
+</form>
+</div>
+
+
+
+
+
+<script>
+
+var min_cases_count = 1; 
+var min_length = 10; 
+var num_nearest = 3; 
+
+
+$(function() {
+      $('#countrydata_').multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+      });
+
+      $('#btnget1').click(function(){
+
+        //console.log($('#countrydata_').val())
+       // alert($('#countrydata_').val());
+        makeplot($('#countrydata_').val())
+      });
+      $('#btnget2').click(function(){
+        findNearest($('#countrydata_').val())
+        //console.log($('#countrydata_').val())
+       // alert($('#countrydata_').val());
+      });
+  });
+
+
+
+function unique ( array ) {
+    return array.filter(function(a){
+        return !this[a] ? this[a] = true : false;
+    }, {});
+}
+
+
+function findNearest(countries) {
+ Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
+};
+
+
+function makeplot(countries = ["Kuwait"], verticalLines = []) {
+  //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
+  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
+};
+
+//https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
+
+function findNearestCountry(allRows, country){
+  var total_count = [];
+  var locations = d3.keys(allRows[0])
+  locations = locations.slice(1,locations.length+1);
+  unique_locations = unique(locations);
+  // first determine vector of normalized 20 counts per million 
+  var country_norm_vec = []; 
+  for(var j = 0; j < allRows.length; j++){
+      var norm_count = allRows[j][country]; 
+      if(norm_count >= min_cases_count){
+        country_norm_vec.push(norm_count);
+      }
+    };
+  x0 = country_norm_vec.length;
+  y1 = math.max(country_norm_vec);
+
+   // console.log(country_norm_vec)
+
+
+  // now determine all countries closest to it
+  var country_names = []; 
+  var msd_val = []; 
+  var max_vec = []; 
+
+  for(var i = 0; i < unique_locations.length; i++){
+    //fill out the array corresponding to the normalized count of country
+    //starting at first day
+    var y = []; 
+    for(var j = 0; j < allRows.length; j++){
+      var norm_count = allRows[j][unique_locations[i]]; 
+      if(norm_count >= min_cases_count){
+        y.push(norm_count);
+      }
+    }; 
+    if(y.length < min_length || y.length < country_norm_vec.length){
+      continue; 
+    }
+    y = y.slice(0, country_norm_vec.length)
+
+   // console.log(math.subtract(y, country_norm_vec))
+    msd_val.push(math.norm(math.subtract(y,country_norm_vec)))
+    country_names.push(unique_locations[i])
+    max_vec.push(math.max(y));
+  };
+
+  //console.log(msd_val)
+
+
+  var indices = new Array(msd_val.length);
+  for (var i = 0; i < msd_val.length; ++i) indices[i] = i;
+  indices = indices.sort(function (a, b) { return msd_val[a] < msd_val[b] ? -1 : msd_val[a] > msd_val[b] ? 1 : 0; });
+  //console.log(indices)
+
+  var nearest_countries = []
+  for(var i = 0; i < num_nearest; i++){
+    nearest_countries.push(country_names[indices[i]]);
+    y1 = math.max(y1, max_vec[indices[i]]);
+  }
+
+  return [nearest_countries,x0,y1];
+
+}
+
+
+
+function processFindNearest(allRows, countries){
+  //console.log("hello")
+  var nearest_countries = []; 
+ // console.log(countries)
+  verticalLines = []; 
+   for(var i=0; i < countries.length;i++){
+    country = countries[i]; 
+    out_vec = findNearestCountry(allRows,country);
+    verticalLines.push([out_vec[1], out_vec[2]]);
+    nearest_countries.push(out_vec[0]);
+  }
+
+  console.log(verticalLines)
+  //console.log(nearest_countries.flat());
+  makeplot(nearest_countries.flat(), verticalLines);
+}
+
+  
+function processData(allRows, countries, verticalLines) {
+  var dates = [];
+  var total_count = [];
+  var locations = d3.keys(allRows[0])
+  date_name = locations[0] 
+  locations = locations.slice(1,locations.length+1);
+
+  //console.log(allRows[0].Kuwait)
+
+  for (var i=0; i<allRows.length; i++) {
+    row = allRows[i];
+    dates.push( row[date_name] );
+  }
+  //console.log(allRows[])
+  makePlotly( dates,allRows, locations, countries,verticalLines);
+}
+
+
+
+function makePlotly( dates, allRows, locations, countries,verticalLines){
+  var plotDiv = document.getElementById("plotdiv");
+
+
+
+
+  // each frame will be associated to a country
+  // exponential model fit  
+  // total cases per million up to that point in time 
+  var frames = [];
+  unique_locations = unique(locations);
+  //console.log(unique_locations)
+  for(var i = 0; i < unique_locations.length; i++){
+    //fill out the array corresponding to the normalized count of country
+    //starting at first day
+    var y = []; 
+    //y.push(0);
+    for(var j = 0; j < dates.length; j++){
+      var norm_count = allRows[j][unique_locations[i]]; 
+      if(norm_count >= min_cases_count){
+        y.push(norm_count);
+      }
+    };
+    if(y.length < min_length){
+      continue; 
+    }
+
+    //this doesn't work at the moment so need to do by hand 
+    // selector = document.querySelector('.countrydata');
+    // textArray = unique_locations[i]; 
+    // var currentOption = document.createElement('option');
+    // currentOption.text = textArray;
+    // currentOption.value = textArray;
+    // selector.appendChild(currentOption);
+    // console.log(currentOption)
+    // console.log(selector)
+
+    var x =[...Array(y.length).keys()];
+    x = math.add(x,1)
+    var curr_frame =  {data: [{x: [], y: []}], name: unique_locations[i]};
+
+    curr_frame.data[0].x = x;
+    curr_frame.data[0].y = y; 
+
+    frames.push(curr_frame);
+
+  };
+
+
+
+  data = []; 
+  // build dataset using countries
+  for(var i = 0; i < countries.length; i++){
+    curr_country = countries[i]; 
+    for(var j = 0; j < frames.length; j++){
+      //console.log(j, frames[j].name)
+        if(frames[j].name==curr_country){
+             var trace1 = {
+                x: frames[j].data[0].x, 
+                y: frames[j].data[0].y,
+                name: frames[j].name,
+                mode: 'lines+markers',
+                type: 'scatter'
+            };
+            data.push(trace1);
+          }
+        }
+  }
+
+
+  var layout = {
+    title: {
+      text:'COVID-19 across the world',
+      font: {
+        family: 'Arial',
+        size: 24
+      },
+      xref: 'paper',
+    },
+
+     legend: {
+      //orientation: 'd',
+      y: 0.5,
+      yref: 'paper',
+      font: {
+        family: 'Arial',
+        size: 15
+      },
+    bgcolor: '#E2E2E2',
+    bordercolor: '#FFFFFF',
+    borderwidth: 2
+    },
+
+    xaxis: {
+    title: {
+      text: 'days since 1 daily new case per million',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    },
+  },
+  yaxis: {
+    title: {
+      text: 'daily new cases per million',
+      font: {
+        family: 'Arial',
+        size: 18,
+        color: '#7f7f7f'
+      }
+    }
+  }, 
+  shapes: [
+  ]
+};
+
+  console.log(verticalLines.length)
+
+  for(var i = 0; i <verticalLines.length;i++){
+    row = verticalLines[i]; 
+    val1 = row[0]; 
+    val2 = row[1]; 
+
+    val =  { type: 'line',
+      x0: val1,
+      y0: 0,
+      x1: val1,
+      y1: val2,
+      line: {
+        color: 'rgb(1, 1, 1)',
+        width: 2,
+        dash: 'dashdot'
+      }
+    };
+
+    layout.shapes.push(val)
+
+  }
+
+
+
+
+
+
+    
+
+
+  //console.log(layout.shapes[0].x0)
+  //layout.shapes[0].x0 = 40; 
+  //layout.shapes[0].x1 = 40; 
+
+  //layout.shapes.y1 = 40; 
+
+
+
+
+  
+
+
+
+   
+
+
+   
+
+   Plotly.newPlot(plotDiv, data, layout)
+
+};
+
+
+// Default with closest countries to Kuwait
+//makeplot(["Kuwait", "Bahrain", "United Arab Emirates", "Saudi Arabia", "Qatar", "Oman"]); 
+//makeplot(["Kuwait", "Bahrain", "Oman"]); 
+findNearest(["Kuwait"])
+
+//selector = document.querySelector('.countrydata');
+//console.log(selector)
+
+
+</script>
+</body>
+
+
+
+<hr>
+Select multiple countries from the dropdown bar and click the first button to plot the daily confirmed cases per million for
+the different countries. To find other countries with curves similar to the selected countries, press the second button. For each 
+country selected, this displays two other countries with curves most similar to it. We measure 
+similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. Hence, this notion of similiarity
+is not symmetric. The nearest countries appear in sorted order in the legend on the right.
+
+
+
+<hr>
+Data is updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
+<hr>
+ <a href = "https://nitromannitol.github.io"> Click to go back to the Kuwait curve</a>.
+<hr>
+
+
+ <footer>
+    Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a>   
+  </footer>
+
+
+
+
+
+
