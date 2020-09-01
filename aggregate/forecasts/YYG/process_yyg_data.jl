@@ -4,7 +4,7 @@ using DelimitedFiles,Dates
 ## only look at monday updates
 start_date = DateTime(2020,4,17)
 end_date = Dates.today()
-file_dir = "/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/YYG/covid19_projections/projections"
+file_dir = "/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts/YYG/covid19_projections/projections"
 
 
 curr_date = start_date;
@@ -111,7 +111,7 @@ new_data = new_data[1:curr_row-1,:]
 new_data_cases = new_data_cases[1:curr_row-1,:]
 
 
-writedlm("aggregate.csv",new_data,',')
+writedlm("/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts/YYG/aggregate.csv",new_data,',')
 
 #writedlm("aggregate_cases.csv",new_data_cases,',')
 

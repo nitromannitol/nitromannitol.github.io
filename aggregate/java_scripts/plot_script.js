@@ -46,8 +46,8 @@ function maketable() {
     // create the table
 
   var values = [
-  ["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
-[1.2, 1.1, 1.8, 0.3, 1.2, 13.6, 1.0, 1.7],[4.4, NaN, 3.0, NaN, 3.3, 28.4, 3.8, 4.9],[0.9, NaN, 13.5, NaN, 3.1, 41.5, NaN, 8.1]
+["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
+[1.2, 0.9, 2.2, 0.5, 1.2, 13.5, 1.3, 1.7],[3.4, NaN, 4.2, NaN, 3.2, 16.7, 3.3, 4.9],[2.5, NaN, 7.4, NaN, 6.4, 18.2, NaN, 5.0]
 ]
   var headerColor = "grey";
   var rowBestColor = "lightblue";

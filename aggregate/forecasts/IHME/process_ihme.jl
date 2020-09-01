@@ -4,7 +4,7 @@ using DelimitedFiles,Dates,HTTP
 #end_date = Dates.today()
 
 
-file_dir = "/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/IHME/"
+file_dir = "/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts/IHME/"
 
 f_len = length(readdir("."))
 
