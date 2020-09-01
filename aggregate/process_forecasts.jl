@@ -2,7 +2,7 @@
 ## and median prediction errors
 using DelimitedFiles,HTTP,Statistics
 
-cd("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts")
+cd("/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts")
 
 ## all folders in this directory hold an aggregate.csv whihc
 ## we can use to build the model_forecasts
@@ -65,7 +65,7 @@ true_death_dict = Dict()
 for i in 1:size(true_data,1)
 	true_death_dict[true_data[i,1]]=true_data[i,2]
 end
-writedlm("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/total_deaths.csv",true_data,',')
+writedlm("/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/total_deaths.csv",true_data,',')
 
 
 ## model_arr is the aggregation 2D array
@@ -130,7 +130,7 @@ end
 ## at the very end write this
 aggregate_data = [ensemble_start; aggregate_data]
 #display(aggregate_data)
-writedlm("/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/model_forecasts.csv",aggregate_data, ',')
+writedlm("/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/model_forecasts.csv",aggregate_data, ',')
 
 
 

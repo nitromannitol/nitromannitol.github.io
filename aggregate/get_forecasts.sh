@@ -11,10 +11,10 @@ firefox https://renkulab.shinyapps.io/COVID-19-Epidemic-Forecasting/
 
 
 ## YYG
-cd /home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/YYG/covid19_projections
+cd /home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts/YYG/covid19_projections
 git pull 
 
 ## MIT
-cd /home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/MIT/website
+cd /home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts/MIT/website
 git pull
 

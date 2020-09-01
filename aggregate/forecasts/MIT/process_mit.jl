@@ -4,7 +4,7 @@ using DelimitedFiles,Dates
 ## only look at monday updates
 start_date = DateTime(2020,4,17)
 end_date = today()
-file_dir = "/home/nitro/Desktop/COVID_Kuwait/Public_Site/nitromannitol.github.io/cdc_like_kuwait/forecasts/MIT/website/data/predicted/"
+file_dir = "/home/nitro/Desktop/Public_Site/nitromannitol.github.io/aggregate/forecasts/MIT/"
 
 curr_date = start_date;
 Dates.dayofweek(end_date)
