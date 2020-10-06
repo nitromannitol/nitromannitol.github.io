@@ -27,14 +27,14 @@ function unique ( array ) {
 function makeplot() {
    Plotly.d3.csv("model_forecasts.csv", function(data1){ 
     Plotly.d3.csv("model_r.csv", function(data2){ 
-      Plotly.d3.csv("total_deaths.csv", function(data3){
+      Plotly.d3.csv("https://covid.ourworldindata.org/data/ecdc/total_deaths.csv", function(data3){
       processData(data1,data2,data3)
       });
     });
   });
 
     Plotly.d3.csv("model_forecasts_cases.csv", function(data1){ 
-      Plotly.d3.csv("total_cases.csv", function(data2){
+      Plotly.d3.csv("https://covid.ourworldindata.org/data/ecdc/total_cases.csv", function(data2){
       processCases(data1,data2)
       });
     });
@@ -47,7 +47,7 @@ function maketable() {
 
   var values = [
 ["Ensemble", "Geneva", "IHME", "Imperial", "LANL", "MIT", "USC", "YYG"],
-[1.0, 0.8, 1.8, 0.6, 1.1, 13.5, 1.0, 1.2],[3.4, NaN, 5.5, NaN, 3.0, 13.8, 3.6, 4.9],[2.5, NaN, 7.4, NaN, 6.4, 8.1, 7.1, 6.9]]
+[1.1, 0.9, 1.4, 0.6, 1.0, 9.3, 0.9, 1.1],[3.0, NaN, 4.4, NaN, 2.4, 9.6, 2.4, 3.8],[2.7, NaN, 7.9, NaN, 5.4, 8.5, 7.1, 7.8]]
   var headerColor = "grey";
   var rowBestColor = "lightblue";
   var rowWorstColor = "red";
