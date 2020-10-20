@@ -91,6 +91,12 @@ Ensemble,2020-10-11,3 wk ahead cum death,2020-11-01,713.5,,
 Ensemble,2020-10-11,4 wk ahead cum death,2020-11-08,728.0,,
 Ensemble,2020-10-11,5 wk ahead cum death,2020-11-15,743.0,,
 Ensemble,2020-10-11,6 wk ahead cum death,2020-11-22,758.0,,
+Ensemble,2020-10-18,1 wk ahead cum death,2020-10-25,741.0,,
+Ensemble,2020-10-18,2 wk ahead cum death,2020-11-01,756.0,,
+Ensemble,2020-10-18,3 wk ahead cum death,2020-11-08,777.0,,
+Ensemble,2020-10-18,4 wk ahead cum death,2020-11-15,795.0,,
+Ensemble,2020-10-18,5 wk ahead cum death,2020-11-22,808.0,,
+Ensemble,2020-10-18,6 wk ahead cum death,2020-11-29,820.0,,
 Ensemble,2020-08-23,1 wk ahead cum death,2020-08-30,538.5,,
 Ensemble,2020-08-23,2 wk ahead cum death,2020-09-06,559.5,,
 Ensemble,2020-08-23,3 wk ahead cum death,2020-09-13,578.5,,
@@ -131,6 +137,7 @@ Geneva,2020-08-30,1 wk ahead cum death,2020-09-06,540,,
 Geneva,2020-09-13,1 wk ahead cum death,2020-09-20,576,,
 Geneva,2020-10-04,1 wk ahead cum death,2020-10-11,647,,
 Geneva,2020-10-11,1 wk ahead cum death,2020-10-18,696,,
+Geneva,2020-10-18,1 wk ahead cum death,2020-10-25,750,,
 IHME,2020-05-31,1 wk ahead cum death,2020-06-07,288,251,340
 IHME,2020-05-31,2 wk ahead cum death,2020-06-14,372,292,514
 IHME,2020-05-31,3 wk ahead cum death,2020-06-21,450,330,678
@@ -246,6 +253,7 @@ Imperial,2020-09-13,1 wk ahead cum death,2020-09-20,579,569,592
 Imperial,2020-09-20,1 wk ahead cum death,2020-09-27,609,597,632
 Imperial,2020-10-04,1 wk ahead cum death,2020-10-11,646,636,667
 Imperial,2020-10-11,1 wk ahead cum death,2020-10-18,695,680,737
+Imperial,2020-10-18,1 wk ahead cum death,2020-10-25,743,727,762
 LANL,2020-05-31,1 wk ahead cum death,2020-06-07,264,235,312
 LANL,2020-05-31,2 wk ahead cum death,2020-06-14,312,255,423
 LANL,2020-05-31,3 wk ahead cum death,2020-06-21,356,268,547
@@ -360,6 +368,12 @@ LANL,2020-10-11,3 wk ahead cum death,2020-11-01,704,676,763
 LANL,2020-10-11,4 wk ahead cum death,2020-11-08,714,680,789
 LANL,2020-10-11,5 wk ahead cum death,2020-11-15,723,683,813
 LANL,2020-10-11,6 wk ahead cum death,2020-11-22,729,685,835
+LANL,2020-10-18,1 wk ahead cum death,2020-10-25,731,713,766
+LANL,2020-10-18,2 wk ahead cum death,2020-11-01,756,723,825
+LANL,2020-10-18,3 wk ahead cum death,2020-11-08,777,731,884
+LANL,2020-10-18,4 wk ahead cum death,2020-11-15,795,737,935
+LANL,2020-10-18,5 wk ahead cum death,2020-11-22,808,742,976
+LANL,2020-10-18,6 wk ahead cum death,2020-11-29,820,745,1018
 MIT,2020-04-19,1 wk ahead cum death,2020-04-26,9,9,9
 MIT,2020-04-19,2 wk ahead cum death,2020-05-03,14,14,14
 MIT,2020-04-19,3 wk ahead cum death,2020-05-10,20,20,20
@@ -507,6 +521,12 @@ MIT,2020-10-11,3 wk ahead cum death,2020-11-01,723,723,723
 MIT,2020-10-11,4 wk ahead cum death,2020-11-08,728,728,728
 MIT,2020-10-11,5 wk ahead cum death,2020-11-15,732,732,732
 MIT,2020-10-11,6 wk ahead cum death,2020-11-22,734,734,734
+MIT,2020-10-18,1 wk ahead cum death,2020-10-25,707,707,707
+MIT,2020-10-18,2 wk ahead cum death,2020-11-01,719,719,719
+MIT,2020-10-18,3 wk ahead cum death,2020-11-08,728,728,728
+MIT,2020-10-18,4 wk ahead cum death,2020-11-15,733,733,733
+MIT,2020-10-18,5 wk ahead cum death,2020-11-22,737,737,737
+MIT,2020-10-18,6 wk ahead cum death,2020-11-29,739,739,739
 USC,2020-06-28,1 wk ahead cum death,2020-07-05,366,,
 USC,2020-07-05,1 wk ahead cum death,2020-07-12,392,,
 USC,2020-07-12,1 wk ahead cum death,2020-07-19,416,,
@@ -569,6 +589,12 @@ USC,2020-10-11,3 wk ahead cum death,2020-11-01,752,,
 USC,2020-10-11,4 wk ahead cum death,2020-11-08,789,,
 USC,2020-10-11,5 wk ahead cum death,2020-11-15,828,,
 USC,2020-10-11,6 wk ahead cum death,2020-11-22,867,,
+USC,2020-10-18,1 wk ahead cum death,2020-10-25,741,,
+USC,2020-10-18,2 wk ahead cum death,2020-11-01,790,,
+USC,2020-10-18,3 wk ahead cum death,2020-11-08,845,,
+USC,2020-10-18,4 wk ahead cum death,2020-11-15,904,,
+USC,2020-10-18,5 wk ahead cum death,2020-11-22,964,,
+USC,2020-10-18,6 wk ahead cum death,2020-11-29,1000,,
 YYG,2020-05-31,1 wk ahead cum death,2020-06-07,267,254,284
 YYG,2020-05-31,2 wk ahead cum death,2020-06-14,323,294,357
 YYG,2020-05-31,3 wk ahead cum death,2020-06-21,380,335,434
