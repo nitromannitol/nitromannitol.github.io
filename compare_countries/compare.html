@@ -209,13 +209,18 @@ function unique ( array ) {
 
 
 function findNearest(countries) {
- Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
+ //Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processFindNearest(data, countries)});
+
+   Plotly.d3.csv('new_cases_per_million.csv', function(data){ processFindNearest(data, countries) });
+
 };
 
 
 function makeplot(countries = ["Kuwait"], verticalLines = []) {
-  //Plotly.d3.csv("total_cases_per_million.csv", function(data){ processData(data, countries) } );
-  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
+
+
+//  Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/new_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
+  Plotly.d3.csv('new_cases_per_million.csv', function(data){ processData(data, countries, verticalLines) });
 };
 
 //https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/total_cases_per_million.csv
@@ -517,14 +522,13 @@ is not symmetric. The nearest countries appear in sorted order in the legend on 
 
 
 <hr>
-Data is updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
+Data (used to be) updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
 <hr>
- <a href = "https://nitromannitol.github.io"> Click to go back to the Kuwait curve</a>.
 <hr>
 
 
  <footer>
-    Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a>   
+    Created and maintained by <a href = "https://nitromannitol.github.io"> Ahmed Bou-Rabee.</a>   
   </footer>
 
 
