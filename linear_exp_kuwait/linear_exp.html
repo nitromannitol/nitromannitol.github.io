@@ -63,7 +63,9 @@ p {
 
 
 function makeplot() {
-   Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases.csv', function(data){ processData(data) });
+  // Plotly.d3.csv('https://covid.ourworldindata.org/data/ecdc/total_cases.csv', function(data){ processData(data) });
+     Plotly.d3.csv('total_cases.csv', function(data){ processData(data) });
+
 };
 
 
@@ -495,13 +497,12 @@ cases per day varies in an unknown fashion and cannot be captured by nice functi
 
 
 <hr>
-Data is updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
+Data (used to be) updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
  <hr>
 
 
    <footer>
-      Created and maintained by <a href = "https://home.uchicago.edu/~ahmedb/"> Ahmed Bou-Rabee.</a> Please email feedback and suggestions 
-      <a href = "mailto: ahmedmb@gmail.com">here</a>.  
+      Created and maintained by <a href = "https://nitromannitol.github.io"> Ahmed Bou-Rabee.</a> 
     </footer>
 
 
