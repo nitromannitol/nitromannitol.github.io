@@ -1,0 +1,268 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Profile Section */
+.profile {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    align-items: flex-start;
+}
+
+.profile img {
+    max-width: 250px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.contact-info {
+    font-size: 1.1em;
+    line-height: 1.8;
+}
+
+/* Main Content */
+main {
+    font-size: 1.1em;
+}
+
+/* Collapsible Sections */
+.collapsible {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    cursor: pointer;
+    padding: 15px 20px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: background-color 0.3s ease;
+    font-size: 1.4em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.collapsible .indicator {
+    transition: transform 0.3s ease;
+}
+
+.collapsible[aria-expanded="true"] .indicator {
+    transform: rotate(180deg);
+}
+
+.collapsible:hover {
+    background-color: #d0d7de;
+}
+
+.collapsible .indicator i {
+    font-size: 0.8em;
+}
+
+/* Content Sections */
+.content {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+    background-color: #ffffff;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.content.show {
+    padding: 18px;
+    max-height: 10000px; /* Sufficiently large to accommodate content */
+}
+
+/* Publications */
+.publications-container {
+    position: relative;
+}
+
+.publication {
+    display: flex;
+    align-items: flex-start; /* Align items to the top */
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.pub-content {
+    flex: 1; /* Allow the content to take up the remaining space */
+}
+
+.pub-content h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.pub-content p {
+    margin-bottom: 15px;
+}
+
+/* Thumbnail Images */
+.publication a.thumbnail-link img.pub-thumbnail {
+    width: 140; /* Adjust size as needed */
+    height: 140px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 15px;
+    flex-shrink: 0; /* Prevent image from shrinking */
+    transition: transform 0.2s;
+}
+
+.publication a.thumbnail-link img.pub-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+/* Buttons */
+.abstract-btn, .resource-btn {
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.abstract-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.abstract-btn i {
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.abstract-btn:hover {
+    background-color: #45a049;
+}
+
+.resource-btn {
+    background-color: white;
+    color: #008CBA;
+    border: 1px solid #008CBA;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.resource-btn i {
+    margin-right: 5px;
+}
+
+.resource-btn:hover {
+    background-color: #008CBA;
+    color: white;
+}
+
+.sub-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Abstract Content */
+.abstract-content {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+    background-color: #f9f9f9;
+    border-left: 4px solid #4CAF50;
+    border-radius: 4px;
+    margin: 0;
+    padding: 0 15px;
+}
+
+.abstract-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+}
+
+.abstract-content.show {
+    max-height: 1000px; /* Sufficiently large to accommodate content */
+    opacity: 1;
+    margin: 15px 0 0 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile {
+        flex-direction: column;
+    }
+    
+    .profile img {
+        max-width: 100%;
+    }
+    
+    .collapsible {
+        font-size: 1.2em;
+    }
+    
+    .publication {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .publication a.thumbnail-link img.pub-thumbnail {
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    
+    .pub-content h3 {
+        font-size: 1.2em;
+    }
+    
+    .abstract-btn, .resource-btn {
+        font-size: 0.85em;
+    }
+}
+
+/* Additional Styles */
+.title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.title-wrapper h3 {
+    margin: 0;
+}
