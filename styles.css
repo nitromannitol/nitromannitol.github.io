@@ -2,21 +2,21 @@
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
-    color: #333;
+    color: #404040; /* Dark Gray for better readability */
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #f2f2f2; /* Light Gray for a subtle background */
 }
 
 h1 {
     font-size: 2.5em;
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: #57068c; /* NYU Violet for strong brand presence */
 }
 
 a {
-    color: #3498db;
+    color: #8900e1; /* Ultra Violet for distinct links */
     text-decoration: none;
 }
 
@@ -36,7 +36,7 @@ a:hover {
     max-width: 250px;
     height: auto;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle Black shadow for depth */
 }
 
 .contact-info {
@@ -51,8 +51,8 @@ main {
 
 /* Collapsible Sections */
 .collapsible {
-    background-color: #ecf0f1;
-    color: #2c3e50;
+    background-color: #b8b8b8; /* Medium Gray 3 for neutral sections */
+    color: #57068c; /* NYU Violet for text */
     cursor: pointer;
     padding: 15px 20px;
     width: 100%;
@@ -77,7 +77,7 @@ main {
 }
 
 .collapsible:hover {
-    background-color: #d0d7de;
+    background-color: #6d6d6d; /* Medium Gray 2 for hover state */
 }
 
 .collapsible .indicator i {
@@ -90,9 +90,9 @@ main {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s ease, padding 0.5s ease;
-    background-color: #fff;
+    background-color: #ffffff; /* White for content background */
     border-radius: 0 0 5px 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 .content.show {
@@ -110,10 +110,10 @@ main {
     align-items: flex-start; /* Align items to the top */
     margin-bottom: 20px;
     padding: 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #b8b8b8; /* Medium Gray 3 for borders */
     border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 .pub-content {
@@ -123,7 +123,7 @@ main {
 .pub-content h3 {
     font-size: 1.3em;
     margin-bottom: 10px;
-    color: #2c3e50;
+    color: #57068c; /* NYU Violet for headings */
 }
 
 .pub-content p {
@@ -156,8 +156,8 @@ main {
 }
 
 .abstract-btn {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #57068c; /* NYU Violet */
+    color: #ffffff; /* White text */
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
@@ -171,13 +171,13 @@ main {
 }
 
 .abstract-btn:hover {
-    background-color: #45a049;
+    background-color: #45057a; /* Darker NYU Violet for hover */
 }
 
 .resource-btn {
-    background-color: white;
-    color: #008CBA;
-    border: 1px solid #008CBA;
+    background-color: #ffffff; /* White background */
+    color: #8900e1; /* Ultra Violet text */
+    border: 1px solid #8900e1; /* Ultra Violet border */
     padding: 8px 15px;
     border-radius: 5px;
     font-weight: bold;
@@ -188,8 +188,8 @@ main {
 }
 
 .resource-btn:hover {
-    background-color: #008CBA;
-    color: white;
+    background-color: #8900e1; /* Ultra Violet background on hover */
+    color: #ffffff; /* White text on hover */
 }
 
 .sub-buttons {
@@ -204,8 +204,8 @@ main {
     opacity: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
-    background-color: #f9f9f9;
-    border-left: 4px solid #4CAF50;
+    background-color: #f2f2f2; /* Light Gray background */
+    border-left: 4px solid #57068c; /* NYU Violet border */
     border-radius: 4px;
     margin: 0;
     padding: 0 15px;
