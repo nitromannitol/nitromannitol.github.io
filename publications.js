@@ -85,12 +85,14 @@ abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949
       { name: "Ahmed Bou-Rabee", url: "#" },
       { name: "Ewain Gwynne", url: "https://math.uchicago.edu/~ewain/" }
     ],
+      journal: "Proceedings of the London Mathematical Society", 
+      status: "to appear",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2208.11795" }
     ],
     abstract: 'We prove the well-posedness of Hele-Shaw flow on Liouville Quantum Gravity (LQG) surfaces and then use this to construct LQG harmonic balls, domains that satisfy the mean value property on LQG surfaces. LQG harmonic balls are the conjectured scaling limit of internal diffusion-limited aggregation on random planar maps, and our results show that they are a novel mathematical object: they are not <a href = "https://arxiv.org/abs/2109.01252">LQG metric balls</a> and exhibit significant irregularity: we prove they are not Lipschitz domains, and the argument indicates they are not even <a href="references/Jerison-DirichletProblemNonSmooth-1981.pdf">non-tangentially accessible</a>. There are many interesting properties of LQG harmonic balls to explore, such as their Hausdorff dimension and the structure of their induced geodesics.',
     thumbnail: "images/harmonic_ball.png",
-    year: 2022
+    year: 2024
   },
   {
     id: "integer-superharmonic-matrices",
