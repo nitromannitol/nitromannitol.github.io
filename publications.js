@@ -24,7 +24,9 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
     ],
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2404.01115" },
+      { type: "Quanta", url: "https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/" },
       { type: "Blog", url: "https://www.scottnarmstrong.com/2024/04/superdiffusive-CLT/" }
+
     ],
 abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In this paper, we consider the critical case and show that under the superdiffusive scaling of (√log(t)·t), in the long-time limit, the particle converges, in a quenched sense, to ordinary Brownian motion. This problem has been considered heuristically by physicists <a href="references/sdphys1.pdf">since</a> <a href="references/sdphys2.pdf">at</a> <a href="references/sdphys3.pdf">least</a> <a href="references/sdphys4.pdf">1983</a>, where the (√log(t)·t) rate was predicted using heuristic renormalization group arguments. Our proof makes these renormalization group arguments rigorous using ideas from stochastic homogenization. To the best of our knowledge, this is the first critical, infinite-scale, random model that has been shown to homogenize. We hope to apply these ideas to other critical models with an infinite number of length scales. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> for a more detailed summary.',
     thumbnail: "images/sd.png",

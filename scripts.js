@@ -283,6 +283,7 @@ function getLinkIconClass(type) {
     const iconMap = {
         arxiv: 'fa-file-alt',
         blog: 'fa-blog',
+        quanta: 'fa-newspaper',
         code: 'fa-code',
         journal: 'fa-book',
         appendix: 'fa-scroll',
