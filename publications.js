@@ -7,6 +7,8 @@ const publications = [
       { name: "Ahmed Bou-Rabee", url: "#" },
       { name: "Ewain Gwynne", url: "https://math.uchicago.edu/~ewain/" }
     ],
+    journal: "Proceedings of the London Mathematical Society", 
+    status: "to appear",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2405.11673" }
     ],
@@ -40,6 +42,8 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
       { name: "Bill Cooperman", url: "https://cprmn.org/" },
       { name: "Shirshendu Ganguly", url: "https://www.stat.berkeley.edu/~sganguly/" }
     ],
+  journal: "Discrete Analysis", 
+  status: "to appear",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2309.13728" }
     ],
@@ -56,13 +60,14 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
       { name: "Paul Dario", url: "https://www.math.ens.psl.eu/~dario/index.html" }
     ],
     journal: "Transactions of the American Mathematical Society",
-    status: "to appear",
+    volume: "378(06)",
+    pages: "3823-3896",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2303.04736" }
     ],
-abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949 that the dimension of the space of discrete harmonic polynomials on Z<sup>d</sup> coincides with that of R<sup>d</sup>. This theorem holds for any periodic lattice and was recently extended by <a href="https://arxiv.org/abs/1609.09431">Scott Armstrong and Paul Dario</a> to the supercritical percolation cluster, where their proof used the fact that, on large scales, the cluster resembles R<sup>d</sup>. However, in models such as the <a href="https://arxiv.org/abs/1109.0449?context=math">Ising model</a>, the <a href="https://arxiv.org/abs/1012.4809">Abelian sandpile</a>, and <a href="https://arxiv.org/abs/1508.04284">Anderson localization</a>, small-scale changes in the graph induce qualitatively distinct global behavior. Motivated by this, we prove three theorems on the supercritical cluster that do not hold on Z<sup>d</sup>. Using quantitative homogenization, we show the absence of Lipschitz harmonic functions, the absence of integer-valued harmonic functions with polynomial growth, and, in dimension 2, the absence of functions with integer-valued graph Laplacians decaying faster than 1/|x| at infinity. We expect these results and our techniques will help in understanding other models on the cluster. (The final section includes many conjectures and partial results regarding the Abelian sandpile on the cluster.)',
+  abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949 that the dimension of the space of discrete harmonic polynomials on Z<sup>d</sup> coincides with that of R<sup>d</sup>. This theorem holds for any periodic lattice and was recently extended by <a href="https://arxiv.org/abs/1609.09431">Scott Armstrong and Paul Dario</a> to the supercritical percolation cluster, where their proof used the fact that, on large scales, the cluster resembles R<sup>d</sup>. However, in models such as the <a href="https://arxiv.org/abs/1109.0449?context=math">Ising model</a>, the <a href="https://arxiv.org/abs/1012.4809">Abelian sandpile</a>, and <a href="https://arxiv.org/abs/1508.04284">Anderson localization</a>, small-scale changes in the graph induce qualitatively distinct global behavior. Motivated by this, we prove three theorems on the supercritical cluster that do not hold on Z<sup>d</sup>. Using quantitative homogenization, we show the absence of Lipschitz harmonic functions, the absence of integer-valued harmonic functions with polynomial growth, and, in dimension 2, the absence of functions with integer-valued graph Laplacians decaying faster than 1/|x| at infinity. We expect these results and our techniques will help in understanding other models on the cluster. (The final section includes many conjectures and partial results regarding the Abelian sandpile on the cluster.)',
     thumbnail: "images/lipschitz-percolation-harmonic.png",
-    year: 2024
+    year: 2025
   },
   {
     id: "internal-dla-mated-crt-maps",
@@ -72,7 +77,8 @@ abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949
       { name: "Ewain Gwynne", url: "https://math.uchicago.edu/~ewain/" }
     ],
     journal: "Annals of Probability",
-    status: "to appear",
+    volume: "52(6)",
+    pages: "2173-2237",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2211.04891" }
     ],
@@ -88,13 +94,14 @@ abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949
       { name: "Ewain Gwynne", url: "https://math.uchicago.edu/~ewain/" }
     ],
       journal: "Proceedings of the London Mathematical Society", 
-      status: "to appear",
+      volume: "130",
+      pages: "e70018",
+      year: 2025,
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2208.11795" }
     ],
     abstract: 'We prove the well-posedness of Hele-Shaw flow on Liouville Quantum Gravity (LQG) surfaces and then use this to construct LQG harmonic balls, domains that satisfy the mean value property on LQG surfaces. LQG harmonic balls are the conjectured scaling limit of internal diffusion-limited aggregation on random planar maps, and our results show that they are a novel mathematical object: they are not <a href = "https://arxiv.org/abs/2109.01252">LQG metric balls</a> and exhibit significant irregularity: we prove they are not Lipschitz domains, and the argument indicates they are not even <a href="references/Jerison-DirichletProblemNonSmooth-1981.pdf">non-tangentially accessible</a>. There are many interesting properties of LQG harmonic balls to explore, such as their Hausdorff dimension and the structure of their induced geodesics.',
     thumbnail: "images/harmonic_ball.png",
-    year: 2024
   },
   {
     id: "integer-superharmonic-matrices",
