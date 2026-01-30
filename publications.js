@@ -10,7 +10,7 @@ const publications = [
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
     links: [
-      { type: "arXiv", url: "" },
+      { type: "arXiv", url: "https://arxiv.org/abs/2601.22142" },
       { type: "Blog", url: "https://www.scottnarmstrong.com/2026/01/superdiffusivity-anomalous-regularization/" }
     ],
 abstract: 'A Brownian particle advected by an incompressible random drift undergoes enhanced diffusion. When the drift has long-range correlations—specifically, when the stream matrix has positive Hurst exponent γ > 0—physicists <a href="references/sdphys1.pdf">predicted</a> <a href="references/sdphys2.pdf">since</a> <a href="references/sdphys3.pdf">the</a> <a href="references/sdphys4.pdf">1980s</a> that the particle should be superdiffusive, with mean squared displacement growing like t<sup>2/(2-γ)</sup>. We prove this prediction in the perturbative regime γ ≪ 1. In <a href="https://arxiv.org/abs/2404.01115">previous work</a>, we treated the critical case γ = 0 and proved convergence to Brownian motion under superdiffusive scaling; here the power-law growth is too fast for Gaussian behavior, and we show the particle has tails inconsistent with any Brownian limit. We also prove anomalous regularization: solutions of the associated elliptic equation are Hölder continuous with exponent 1 - Cγ<sup>1/2</sup>, uniformly in the molecular diffusivity. See this <a href="https://www.scottnarmstrong.com/2026/01/superdiffusivity-anomalous-regularization/">blog post</a> for more.', 
