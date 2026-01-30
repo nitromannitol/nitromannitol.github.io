@@ -1,5 +1,21 @@
 
 const publications = [
+{
+  id: "algebraic-sd",
+  title: "Superdiffusion and anomalous regularization in self-similar random incompressible flows",
+  thumbnail: "images/algebraic-sd.png",
+  authors: [
+      { name: "Ahmed Bou-Rabee", url: "#" },
+      { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
+      { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
+    ],
+    links: [
+      { type: "arXiv", url: "" },
+      { type: "Blog", url: "https://www.scottnarmstrong.com/2026/01/superdiffusivity-anomalous-regularization/" }
+    ],
+abstract: 'A Brownian particle advected by an incompressible random drift undergoes enhanced diffusion. When the drift has long-range correlations—specifically, when the stream matrix has positive Hurst exponent γ > 0—physicists <a href="references/sdphys1.pdf">predicted</a> <a href="references/sdphys2.pdf">since</a> <a href="references/sdphys3.pdf">the</a> <a href="references/sdphys4.pdf">1980s</a> that the particle should be superdiffusive, with mean squared displacement growing like t<sup>2/(2-γ)</sup>. We prove this prediction in the perturbative regime γ ≪ 1. In <a href="https://arxiv.org/abs/2404.01115">previous work</a>, we treated the critical case γ = 0 and proved convergence to Brownian motion under superdiffusive scaling; here the power-law growth is too fast for Gaussian behavior, and we show the particle has tails inconsistent with any Brownian limit. We also prove anomalous regularization: solutions of the associated elliptic equation are Hölder continuous with exponent 1 - Cγ<sup>1/2</sup>, uniformly in the molecular diffusivity. See this <a href="https://www.scottnarmstrong.com/2026/01/superdiffusivity-anomalous-regularization/">blog post</a> for more.', 
+  year: 2026
+ },
   {
     id: "random-walk-sphere-packings",
     title: "Random walk on sphere packings and Delaunay triangulations in arbitrary dimension",
@@ -49,7 +65,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     ],
     abstract: 'Bounded harmonic functions are constant. However, there are non-constant harmonic functions on R<sup>d</sup> that are bounded on all but a tiny fraction of space (see, <a href="https://link.springer.com/book/10.1007/978-3-642-61983-0">[Ch 3, Problems 158-160]</a>). These functions have no immediate discrete analogue, and, it turns out, cannot exist on periodic planar graphs. We prove that for any periodic planar graph G, there exists a constant &alpha;(G) such that any discrete harmonic function which is bounded on a (1 - &alpha;(G))-density of the graph is constant. A key aspect of the argument is a new unique continuation result for periodic planar graphs. Our proof is based on the maximum principle and elementary geometric arguments. It generalizes and simplifies earlier work by <a href="https://projecteuclid.org/journals/duke-mathematical-journal/volume-171/issue-6/A-discrete-harmonic-function-bounded-on-a-large-portion-of/10.1215/00127094-2021-0037.short">Lev Buhovsky, Alexander Logunov, Eugenia Malinnikova, and Mikhail Sodin</a>, who established this result on the square lattice using techniques specific to that setting. The ideas in Buhovsky-Logunov-Malinnikova-Sodin were later applied by <a href="https://link.springer.com/article/10.1007/s00222-019-00910-4">Charles Smart and Jian Ding</a> to establish localization near the edge for the Anderson-Bernoulli model on the square lattice. We are currently exploring the implications of our new proof technique to Anderson localization.',
     thumbnail: "images/unique_continuation.png",
-    year: 2023
+    year: 2025
   },
   {
     id: "rigidity-harmonic-functions",
