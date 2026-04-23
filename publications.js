@@ -7,7 +7,7 @@ const publications = [
     altText: "Sample path of a critical long-range random walk on the two-dimensional integer lattice, showing fractal-like clustering punctuated by long jumps.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Paul Dario", url: "https://www.math.ens.psl.eu/~dario/index.html" }
+      { name: "Paul Dario", url: "https://pauldario.pages.math.cnrs.fr/webpage-of-paul-dario/" }
     ],
     links: [
       { type: "arXiv", url: "#" }
@@ -22,8 +22,8 @@ const publications = [
     altText: "Sample of an IDLA cluster on a cylinder whose base is the Nauru graph; each occupied site is drawn as a prism over its Voronoi cell.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Vittoria Silvestri", url: "https://sites.google.com/view/vittoriasilvestri/home" },
-      { name: "Ariel Yadin", url: "https://www.math.bgu.ac.il/~yadina/" }
+      { name: "Vittoria Silvestri", url: "https://vittoriasilvestri.wordpress.com/" },
+      { name: "Ariel Yadin", url: "https://www.math.bgu.ac.il/en/people/users/yadina" }
     ],
     links: [
       { type: "arXiv", url: "#" }
@@ -38,8 +38,8 @@ const publications = [
     altText: "Approximation of the divisible sandpile odometer on a tree-of-pipes graph embedded in the Poincaré disk; edge color and width are proportional to the odometer.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Yuval Peres", url: "https://yuval-peres-16.webself.net/" },
-      { name: "Ecaterina Sava-Huss", url: "https://www.uibk.ac.at/mathematik/personal/sava-huss/" }
+      { name: "Yuval Peres", url: "https://yuvalperes.com/" },
+      { name: "Ecaterina Sava-Huss", url: "https://www.math.tugraz.at/~sava/" }
     ],
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2604.13968" }
@@ -128,7 +128,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Bill Cooperman", url: "https://cprmn.org/" },
-      { name: "Paul Dario", url: "https://www.math.ens.psl.eu/~dario/index.html" }
+      { name: "Paul Dario", url: "https://pauldario.pages.math.cnrs.fr/webpage-of-paul-dario/" }
     ],
     journal: "Transactions of the American Mathematical Society",
     volume: "378(06)",
