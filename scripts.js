@@ -23,7 +23,8 @@ function initializeCollapsibles() {
         }
         const toggle = () => {
             const isExpanded = collapsible.getAttribute('aria-expanded') === 'true';
-            setCollapsibleOpen(collapsible, !isExpanded);
+            const p = setCollapsibleOpen(collapsible, !isExpanded);
+            if (p) p.catch(() => { /* superseded */ });
         };
         collapsible.addEventListener('click', toggle);
         collapsible.addEventListener('keydown', (e) => {
@@ -38,39 +39,110 @@ function initializeCollapsibles() {
 function setCollapsibleOpen(collapsible, open) {
     collapsible.setAttribute('aria-expanded', String(open));
     const content = document.getElementById(collapsible.getAttribute('aria-controls'));
-    if (content) {
-        content.classList.toggle('show', open);
-    }
+    if (!content) return Promise.resolve();
+    return animateExpand(content, open);
+}
+
+const animState = new WeakMap();
+
+function animateExpand(el, open) {
+    // Supersede any in-flight animation on the same element.
+    const prev = animState.get(el);
+    if (prev) prev.abort();
+
+    return new Promise((resolve, reject) => {
+        // Short-circuit when already at the requested state.
+        const fullyOpen = el.classList.contains('show') && el.style.maxHeight === 'none';
+        const fullyClosed = !el.classList.contains('show') && !el.style.maxHeight;
+        if (open && fullyOpen) { resolve(); return; }
+        if (!open && fullyClosed) { resolve(); return; }
+
+        let onEnd;
+        let timeoutId;
+
+        const finalize = () => {
+            if (animState.get(el) !== state) return; // superseded
+            animState.delete(el);
+            el.removeEventListener('transitionend', onEnd);
+            clearTimeout(timeoutId);
+            if (open && el.classList.contains('show')) {
+                // Lift the max-height cap so the content can grow (images
+                // loading, nested expansion) without clipping on mobile.
+                el.style.maxHeight = 'none';
+            }
+            resolve();
+        };
+
+        // Reject on abort so dependent flows (e.g. deep-link scroll) can
+        // opt out when the animation they're waiting on has been superseded.
+        const abort = () => {
+            if (animState.get(el) !== state) return;
+            animState.delete(el);
+            el.removeEventListener('transitionend', onEnd);
+            clearTimeout(timeoutId);
+            reject(new Error('animation superseded'));
+        };
+
+        onEnd = (e) => {
+            if (e.propertyName !== 'max-height' || e.target !== el) return;
+            finalize();
+        };
+
+        const state = { abort };
+        animState.set(el, state);
+
+        if (open) {
+            if (!el.classList.contains('show')) el.classList.add('show');
+            el.style.maxHeight = el.scrollHeight + 'px';
+        } else {
+            el.style.maxHeight = el.scrollHeight + 'px';
+            void el.offsetHeight; // flush the freeze so the next change transitions
+            el.classList.remove('show');
+            el.style.maxHeight = '';
+        }
+
+        el.addEventListener('transitionend', onEnd);
+        const duration = parseTransitionDurationMs(el);
+        timeoutId = setTimeout(finalize, duration + 120);
+    });
+}
+
+function parseTransitionDurationMs(el) {
+    const dur = getComputedStyle(el).transitionDuration.split(',')[0].trim();
+    let ms = 0;
+    if (dur.endsWith('ms')) ms = parseFloat(dur);
+    else if (dur.endsWith('s')) ms = parseFloat(dur) * 1000;
+    return Number.isFinite(ms) && ms > 0 ? ms : 500;
 }
 
 function openSectionById(sectionId) {
     const section = document.getElementById(sectionId);
-    if (!section) return false;
+    if (!section) return null;
     const collapsible = section.querySelector('.collapsible');
-    if (collapsible && collapsible.getAttribute('aria-expanded') !== 'true') {
-        setCollapsibleOpen(collapsible, true);
-    }
-    return true;
+    if (!collapsible) return Promise.resolve();
+    return setCollapsibleOpen(collapsible, true);
 }
 
 function handleDeepLink() {
     const hash = (location.hash || '').replace(/^#/, '');
     if (!hash) return;
 
+    const scrollTo = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    const onOpened = () => scrollTo(hash);
+    const ignoreAbort = () => { /* animation was superseded; skip scroll */ };
+
     if (hash.startsWith('pub-')) {
-        openSectionById('publications');
-        requestAnimationFrame(() => {
-            const el = document.getElementById(hash);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
+        const done = openSectionById('publications');
+        if (done) done.then(onOpened, ignoreAbort);
         return;
     }
 
-    if (openSectionById(hash)) {
-        requestAnimationFrame(() => {
-            document.getElementById(hash).scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    }
+    const done = openSectionById(hash);
+    if (done) done.then(onOpened, ignoreAbort);
 }
 
 function renderPublications() {
@@ -163,7 +235,8 @@ function createPermalinkButton(pub) {
     btn.title = 'Copy permalink';
     btn.innerHTML = '<i class="fas fa-link"></i>';
     btn.addEventListener('click', () => {
-        const url = `${location.origin}${location.pathname}#pub-${pub.id}`;
+        const base = location.href.split('#')[0];
+        const url = `${base}#pub-${pub.id}`;
         copyToClipboard(url, btn, 'Link copied');
         history.replaceState(null, '', `#pub-${pub.id}`);
     });
@@ -274,8 +347,9 @@ function appendAbstract(wrapper, abstract) {
     wrapper.appendChild(abstractContent);
 
     abstractBtn.addEventListener('click', () => {
-        const isShown = abstractContent.classList.toggle('show');
-        abstractBtn.setAttribute('aria-expanded', String(isShown));
+        const willShow = !abstractContent.classList.contains('show');
+        abstractBtn.setAttribute('aria-expanded', String(willShow));
+        animateExpand(abstractContent, willShow).catch(() => { /* superseded */ });
     });
 }
 
