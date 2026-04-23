@@ -163,7 +163,7 @@ main {
 
 .content.show {
     padding: 18px;
-    max-height: 10000px;
+    max-height: 200000px;
 }
 
 .content-placeholder {
@@ -357,7 +357,7 @@ main {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out;
     background-color: var(--surface-muted);
     border-left: 4px solid var(--heading);
     border-radius: 4px;
@@ -372,9 +372,10 @@ main {
 }
 
 .abstract-content.show {
-    max-height: 1000px;
     opacity: 1;
     margin: 15px 0 0 0;
+    padding: 15px;
+    /* max-height is set dynamically in JS so content never clips */
 }
 
 /* Responsive Design */
