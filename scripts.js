@@ -1,52 +1,78 @@
-/**
- * Configuration object for the script
- * @type {Object}
- */
 const CONFIG = {
     userName: 'Ahmed Bou-Rabee',
     defaultThumbnail: 'images/publications/default_thumbnail.jpg'
 };
 
-/**
- * Initializes the page when the DOM is fully loaded
- */
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initializeCollapsibles();
         renderPublications();
+        handleDeepLink();
     } catch (error) {
         console.error('Error initializing page:', error);
     }
 });
 
-/**
- * Initializes all collapsible sections with event listeners.
- * @throws {Error} If there's an issue with DOM manipulation
- */
+window.addEventListener('hashchange', handleDeepLink);
+
 function initializeCollapsibles() {
-    const collapsibles = document.querySelectorAll('.collapsible');
-    
-    collapsibles.forEach(collapsible => {
-        collapsible.addEventListener('click', () => {
+    document.querySelectorAll('.collapsible').forEach(collapsible => {
+        collapsible.setAttribute('role', 'button');
+        if (!collapsible.hasAttribute('tabindex')) {
+            collapsible.setAttribute('tabindex', '0');
+        }
+        const toggle = () => {
             const isExpanded = collapsible.getAttribute('aria-expanded') === 'true';
-            collapsible.setAttribute('aria-expanded', String(!isExpanded));
-            
-            const contentId = collapsible.getAttribute('aria-controls');
-            const content = document.getElementById(contentId);
-            
-            if (!content) {
-                throw new Error(`Content element not found for id: ${contentId}`);
+            setCollapsibleOpen(collapsible, !isExpanded);
+        };
+        collapsible.addEventListener('click', toggle);
+        collapsible.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle();
             }
-            
-            content.classList.toggle('show', !isExpanded);
         });
     });
 }
 
-/**
- * Renders the publications dynamically from the publications data.
- * @throws {Error} If there's an issue with DOM manipulation
- */
+function setCollapsibleOpen(collapsible, open) {
+    collapsible.setAttribute('aria-expanded', String(open));
+    const content = document.getElementById(collapsible.getAttribute('aria-controls'));
+    if (content) {
+        content.classList.toggle('show', open);
+    }
+}
+
+function openSectionById(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return false;
+    const collapsible = section.querySelector('.collapsible');
+    if (collapsible && collapsible.getAttribute('aria-expanded') !== 'true') {
+        setCollapsibleOpen(collapsible, true);
+    }
+    return true;
+}
+
+function handleDeepLink() {
+    const hash = (location.hash || '').replace(/^#/, '');
+    if (!hash) return;
+
+    if (hash.startsWith('pub-')) {
+        openSectionById('publications');
+        requestAnimationFrame(() => {
+            const el = document.getElementById(hash);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        return;
+    }
+
+    if (openSectionById(hash)) {
+        requestAnimationFrame(() => {
+            document.getElementById(hash).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+}
+
 function renderPublications() {
     const container = document.getElementById('publications-content');
     if (!container) {
@@ -54,33 +80,24 @@ function renderPublications() {
     }
 
     const fragment = document.createDocumentFragment();
-    
-    publications.forEach(pub => {
-        const pubDiv = createPublicationElement(pub);
-        fragment.appendChild(pubDiv);
-    });
-    
-    container.innerHTML = ''; // Clear existing content
+    publications.forEach(pub => fragment.appendChild(createPublicationElement(pub)));
+
+    container.innerHTML = '';
     container.appendChild(fragment);
 }
 
-/**
- * Creates a DOM element for a single publication
- * @param {Object} pub - The publication object
- * @returns {HTMLElement} The created publication element
- */
 function createPublicationElement(pub) {
     const pubDiv = document.createElement('div');
     pubDiv.classList.add('publication');
+    pubDiv.id = `pub-${pub.id}`;
 
     const primaryLink = getPrimaryLink(pub.links);
-    const thumbnailLink = createThumbnailLink(pub, primaryLink);
-    pubDiv.appendChild(thumbnailLink);
+    pubDiv.appendChild(createThumbnailLink(pub, primaryLink));
 
     const contentWrapper = document.createElement('div');
     contentWrapper.classList.add('pub-content');
 
-    appendTitle(contentWrapper, pub.title);
+    appendTitle(contentWrapper, pub);
     appendAuthors(contentWrapper, pub.authors);
     appendJournalInfo(contentWrapper, pub);
     appendAbstract(contentWrapper, pub.abstract);
@@ -90,195 +107,239 @@ function createPublicationElement(pub) {
     return pubDiv;
 }
 
-/**
- * Gets the primary link for a publication
- * @param {Array} links - Array of link objects
- * @returns {string} The URL of the primary link
- */
-function getPrimaryLink(links) {
-    const arxivLink = links.find(link => link.type.toLowerCase() === 'arxiv');
-    const journalLink = links.find(link => link.type.toLowerCase() === 'journal');
-    return (arxivLink || journalLink || { url: '#' }).url;
+function isRealUrl(url) {
+    return typeof url === 'string' && url.length > 0 && url !== '#';
 }
 
-/**
- * Creates a thumbnail link element
- * @param {Object} pub - The publication object
- * @param {string} primaryLink - The primary link URL
- * @returns {HTMLElement} The created thumbnail link element
- */
+function getPrimaryLink(links) {
+    const arxivLink = links.find(l => l.type.toLowerCase() === 'arxiv' && isRealUrl(l.url));
+    const journalLink = links.find(l => l.type.toLowerCase() === 'journal' && isRealUrl(l.url));
+    const firstReal = links.find(l => isRealUrl(l.url));
+    return (arxivLink || journalLink || firstReal || { url: '#' }).url;
+}
+
 function createThumbnailLink(pub, primaryLink) {
-    const thumbnailLink = document.createElement('a');
-    thumbnailLink.href = primaryLink;
-    thumbnailLink.target = '_blank';
-    thumbnailLink.rel = 'noopener noreferrer';
-    thumbnailLink.classList.add('thumbnail-link');
+    const hasLink = isRealUrl(primaryLink);
+    const container = document.createElement(hasLink ? 'a' : 'span');
+    container.classList.add('thumbnail-link');
+    if (hasLink) {
+        container.href = primaryLink;
+        container.target = '_blank';
+        container.rel = 'noopener noreferrer';
+    }
 
     const imgEl = document.createElement('img');
     imgEl.src = pub.thumbnail || CONFIG.defaultThumbnail;
-    imgEl.alt = `${pub.title} Thumbnail`;
+    imgEl.alt = pub.altText || `Figure for: ${pub.title}`;
     imgEl.classList.add('pub-thumbnail');
     imgEl.loading = 'lazy';
 
-    thumbnailLink.appendChild(imgEl);
-    return thumbnailLink;
+    container.appendChild(imgEl);
+    return container;
 }
 
-/**
- * Appends the title to the content wrapper
- * @param {HTMLElement} wrapper - The content wrapper element
- * @param {string} title - The publication title
- */
-function appendTitle(wrapper, title) {
+function appendTitle(wrapper, pub) {
+    const titleRow = document.createElement('div');
+    titleRow.classList.add('pub-title-row');
+
     const titleEl = document.createElement('h3');
-    titleEl.innerHTML = `<em>${title}</em>`;
-    wrapper.appendChild(titleEl);
+    titleEl.innerHTML = `<em>${pub.title}</em>`;
+    titleRow.appendChild(titleEl);
+
+    const meta = document.createElement('div');
+    meta.classList.add('pub-meta-buttons');
+    meta.appendChild(createPermalinkButton(pub));
+    meta.appendChild(createBibtexButton(pub));
+    titleRow.appendChild(meta);
+
+    wrapper.appendChild(titleRow);
 }
 
-/**
- * Appends the authors to the content wrapper
- * @param {HTMLElement} wrapper - The content wrapper element
- * @param {Array} authors - Array of author objects
- */
+function createPermalinkButton(pub) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('icon-btn');
+    btn.setAttribute('aria-label', 'Copy link to this publication');
+    btn.title = 'Copy permalink';
+    btn.innerHTML = '<i class="fas fa-link"></i>';
+    btn.addEventListener('click', () => {
+        const url = `${location.origin}${location.pathname}#pub-${pub.id}`;
+        copyToClipboard(url, btn, 'Link copied');
+        history.replaceState(null, '', `#pub-${pub.id}`);
+    });
+    return btn;
+}
+
+function createBibtexButton(pub) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add('icon-btn');
+    btn.setAttribute('aria-label', 'Copy BibTeX for this publication');
+    btn.title = 'Copy BibTeX';
+    btn.innerHTML = '<i class="fas fa-quote-right"></i>';
+    btn.addEventListener('click', () => {
+        copyToClipboard(buildBibtex(pub), btn, 'BibTeX copied');
+    });
+    return btn;
+}
+
+function buildBibtex(pub) {
+    const authorStr = pub.authors.map(a => a.name).join(' and ');
+    const arxivLink = (pub.links || []).find(l => l.type.toLowerCase() === 'arxiv' && isRealUrl(l.url));
+    const arxivId = arxivLink ? arxivLink.url.replace(/.*arxiv\.org\/abs\//i, '').replace(/\/$/, '') : null;
+
+    const isPublished = !!pub.journal && !pub.status;
+    const entryType = isPublished ? 'article' : 'unpublished';
+
+    const lines = [`@${entryType}{${pub.id.replace(/-/g, '_')},`];
+    lines.push(`  author  = {${authorStr}},`);
+    lines.push(`  title   = {${pub.title}},`);
+    if (pub.journal) lines.push(`  journal = {${pub.journal}},`);
+    if (pub.volume) lines.push(`  volume  = {${pub.volume}},`);
+    if (pub.pages) lines.push(`  pages   = {${pub.pages}},`);
+    if (pub.year) lines.push(`  year    = {${pub.year}},`);
+    if (pub.status) lines.push(`  note    = {${pub.status}},`);
+    if (arxivId) lines.push(`  eprint  = {${arxivId}},\n  archivePrefix = {arXiv},`);
+    lines.push('}');
+    return lines.join('\n');
+}
+
+function copyToClipboard(text, btn, successMsg) {
+    const done = () => flashButton(btn, successMsg);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    } else {
+        fallbackCopy(text, done);
+    }
+}
+
+function fallbackCopy(text, done) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'absolute';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) { /* noop */ }
+    document.body.removeChild(ta);
+    done();
+}
+
+function flashButton(btn, msg) {
+    const existing = btn.querySelector('.copy-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('span');
+    toast.className = 'copy-toast';
+    toast.textContent = msg;
+    btn.appendChild(toast);
+    setTimeout(() => toast.remove(), 1500);
+}
+
 function appendAuthors(wrapper, authors) {
     if (authors && authors.length) {
         const authorsEl = document.createElement('p');
-        const authorsHTML = formatAuthors(authors, CONFIG.userName);
-        authorsEl.innerHTML = authorsHTML;
+        authorsEl.innerHTML = formatAuthors(authors, CONFIG.userName);
         wrapper.appendChild(authorsEl);
     }
 }
 
-/**
- * Appends the journal info to the content wrapper
- * @param {HTMLElement} wrapper - The content wrapper element
- * @param {Object} pub - The publication object
- */
 function appendJournalInfo(wrapper, pub) {
-    if (pub.journal || pub.year) {
-        const journalInfo = document.createElement('p');
-        if (pub.journal) {
-            journalInfo.innerHTML = `<strong>${pub.journal}</strong>`;
-        }
-        if (pub.volume || pub.pages || pub.year) {
-            journalInfo.innerHTML += ` ${pub.volume || ''}${pub.pages ? ': ' + pub.pages : ''} (${pub.year || ''})`;
-        }
-        journalInfo.innerHTML += '.';
-        wrapper.appendChild(journalInfo);
-    }
+    if (!pub.journal && !pub.year && !pub.status) return;
+    const journalInfo = document.createElement('p');
+    const parts = [];
+    if (pub.journal) parts.push(`<strong>${pub.journal}</strong>`);
+    const locator = [];
+    if (pub.volume) locator.push(pub.volume);
+    if (pub.pages) locator.push(pub.pages);
+    if (locator.length) parts.push(locator.join(': '));
+    if (pub.year) parts.push(`(${pub.year})`);
+    if (pub.status) parts.push(pub.status);
+    journalInfo.innerHTML = parts.join(' ') + '.';
+    wrapper.appendChild(journalInfo);
 }
 
-/**
- * Appends the abstract to the content wrapper
- * @param {HTMLElement} wrapper - The content wrapper element
- * @param {string} abstract - The publication abstract
- */
 function appendAbstract(wrapper, abstract) {
-    if (abstract) {
-        const abstractBtn = document.createElement('button');
-        abstractBtn.classList.add('abstract-btn');
-        abstractBtn.innerHTML = '<i class="fas fa-book-open"></i> Summary';
-        abstractBtn.setAttribute('aria-expanded', 'false');
-        wrapper.appendChild(abstractBtn);
+    if (!abstract) return;
 
-        const abstractContent = document.createElement('div');
-        abstractContent.classList.add('abstract-content');
-        abstractContent.innerHTML = abstract;
-        wrapper.appendChild(abstractContent);
+    const abstractBtn = document.createElement('button');
+    abstractBtn.classList.add('abstract-btn');
+    abstractBtn.innerHTML = '<i class="fas fa-book-open"></i> Summary';
+    abstractBtn.setAttribute('aria-expanded', 'false');
+    wrapper.appendChild(abstractBtn);
 
-        abstractBtn.addEventListener('click', () => {
-            const isShown = abstractContent.classList.toggle('show');
-            abstractBtn.setAttribute('aria-expanded', String(isShown));
-        });
-    }
+    const abstractContent = document.createElement('div');
+    abstractContent.classList.add('abstract-content');
+    abstractContent.innerHTML = abstract;
+    wrapper.appendChild(abstractContent);
+
+    abstractBtn.addEventListener('click', () => {
+        const isShown = abstractContent.classList.toggle('show');
+        abstractBtn.setAttribute('aria-expanded', String(isShown));
+    });
 }
 
-/**
- * Appends the links to the content wrapper
- * @param {HTMLElement} wrapper - The content wrapper element
- * @param {Array} links - Array of link objects
- */
 function appendLinks(wrapper, links) {
-    if (links && links.length) {
-        const linksDiv = document.createElement('div');
-        linksDiv.classList.add('sub-buttons');
-        
-        links.forEach(link => {
-            const linkBtn = document.createElement('button');
-            linkBtn.classList.add('resource-btn');
-            
-            const iconClass = getLinkIconClass(link.type);
-            linkBtn.innerHTML = `<i class="fas ${iconClass}"></i> ${capitalizeFirstLetter(link.type)}`;
-            linkBtn.setAttribute('aria-label', `${link.type} link`);
+    if (!links || !links.length) return;
+
+    const linksDiv = document.createElement('div');
+    linksDiv.classList.add('sub-buttons');
+
+    links.forEach(link => {
+        const typeKey = link.type.toLowerCase();
+        const placeholder = !isRealUrl(link.url);
+
+        const linkBtn = document.createElement('button');
+        linkBtn.classList.add('resource-btn', `resource-btn--${typeKey}`);
+        if (placeholder) {
+            linkBtn.classList.add('resource-btn--placeholder');
+            linkBtn.disabled = true;
+            linkBtn.title = 'Link not yet available';
+        }
+
+        const iconClass = getLinkIconClass(link.type);
+        linkBtn.innerHTML = `<i class="fas ${iconClass}"></i> ${capitalizeFirstLetter(link.type)}`;
+        linkBtn.setAttribute('aria-label', `${link.type} link`);
+        if (!placeholder) {
             linkBtn.addEventListener('click', () => window.open(link.url, '_blank', 'noopener noreferrer'));
-            linksDiv.appendChild(linkBtn);
-        });
-        wrapper.appendChild(linksDiv);
-    }
+        }
+        linksDiv.appendChild(linkBtn);
+    });
+    wrapper.appendChild(linksDiv);
 }
 
-/**
- * Formats the authors' list based on the number of authors and the user's name.
- * @param {Array} authors - Array of author objects with 'name' and 'url'.
- * @param {string} userName - The name to ignore
- * @returns {string} - The formatted authors' string.
- */
 function formatAuthors(authors, userName) {
-    if (authors.length === 0) {
-        return '';
-    }
-    if (authors.length === 1) {
-        return `${formatAuthor(authors[0])}.`;
-    }
+    if (authors.length === 0) return '';
+    if (authors.length === 1) return `${formatAuthor(authors[0])}.`;
 
-    const userIndex = authors.findIndex(author => author.name === userName);
-
+    const userIndex = authors.findIndex(a => a.name === userName);
     if (userIndex === 0) {
         const otherAuthors = authors.slice(1);
         return otherAuthors.length === 1
             ? `${formatAuthor(authors[0])} with ${formatAuthor(otherAuthors[0])}.`
             : `${formatAuthor(authors[0])} with ${formatAuthorList(otherAuthors, true)}.`;
-    } else {
-        return `${formatAuthorList(authors)}.`;
     }
+    return `${formatAuthorList(authors)}.`;
 }
 
-/**
- * Formats a list of authors, adding 'and' before the last author if specified.
- * @param {Array} authors - Array of author objects with 'name' and 'url'.
- * @param {boolean} [addAnd=false] - Whether to add 'and' before the last author.
- * @returns {string} - The formatted authors' string.
- */
 function formatAuthorList(authors, addAnd = false) {
-    if (authors.length === 1) {
-        return formatAuthor(authors[0]);
-    } else if (authors.length === 2) {
+    if (authors.length === 1) return formatAuthor(authors[0]);
+    if (authors.length === 2) {
         return addAnd
             ? `${formatAuthor(authors[0])} and ${formatAuthor(authors[1])}`
             : `${formatAuthor(authors[0])}, ${formatAuthor(authors[1])}`;
-    } else {
-        const allButLast = authors.slice(0, -1).map(formatAuthor).join(', ');
-        const lastAuthor = formatAuthor(authors[authors.length - 1]);
-        return `${allButLast}, and ${lastAuthor}`;
     }
+    const allButLast = authors.slice(0, -1).map(formatAuthor).join(', ');
+    const lastAuthor = formatAuthor(authors[authors.length - 1]);
+    return `${allButLast}, and ${lastAuthor}`;
 }
 
-/**
- * Formats a single author.
- * @param {Object} author - An author object with 'name' and 'url'.
- * @returns {string} - The formatted author string, possibly with a link.
- */
 function formatAuthor(author) {
     return author.url
         ? `<a href="${author.url}" target="_blank" rel="noopener noreferrer">${author.name}</a>`
         : author.name;
 }
 
-/**
- * Returns the appropriate Font Awesome icon class based on the link type.
- * @param {string} type - The type of the link.
- * @returns {string} - The corresponding Font Awesome icon class.
- */
 function getLinkIconClass(type) {
     const iconMap = {
         arxiv: 'fa-file-alt',
@@ -290,21 +351,13 @@ function getLinkIconClass(type) {
         video: 'fa-video',
         notebook: 'fa-code',
         picture: 'fa-image',
+        pictures: 'fa-image',
     };
     return iconMap[type.toLowerCase()] || 'fa-external-link-alt';
 }
 
-/**
- * Capitalizes the first letter of a string, except for specific exceptions.
- * @param {string} string - The string to capitalize.
- * @returns {string} - The formatted string.
- */
 function capitalizeFirstLetter(string) {
-    const exceptions = {
-        arxiv: 'arXiv'
-    };
-    
-    const lowerCaseString = string.toLowerCase();
-    
-    return exceptions[lowerCaseString] || (string.charAt(0).toUpperCase() + string.slice(1));
+    const exceptions = { arxiv: 'arXiv' };
+    const lower = string.toLowerCase();
+    return exceptions[lower] || (string.charAt(0).toUpperCase() + string.slice(1));
 }
