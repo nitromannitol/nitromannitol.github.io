@@ -10,7 +10,7 @@ const publications = [
       { name: "Paul Dario", url: "https://pauldario.pages.math.cnrs.fr/webpage-of-paul-dario/" }
     ],
     links: [
-      { type: "arXiv", url: "#" }
+      { type: "arXiv", url: "https://arxiv.org/abs/2604.21143" }
     ],
     abstract: 'Consider a random walk on Z<sup>d</sup> that jumps from x to y at rate a(x,y) |x-y|<sup>-(d+&alpha;)</sup>, where the conductances a(x,y) are i.i.d. and uniformly elliptic. The exponent &alpha; controls the large-scale behavior: for &alpha; &lt; 2, <a href="https://arxiv.org/abs/1805.04344">the walk converges to an &alpha;-stable process</a>; for &alpha; &gt; 2, <a href="https://arxiv.org/abs/2004.01971">it converges to Brownian motion</a> under the usual diffusive scaling. At the critical exponent &alpha; = 2 the second moment of the jump kernel diverges logarithmically, and the walk sits between these two regimes. We prove quantitative homogenization of the associated nonlocal elliptic equation to the Laplacian at the rate 1/&radic;|log &epsilon;|, and, as a consequence, deduce quenched convergence of the random walk to Brownian motion under the anomalous &radic;(t log t) scaling. A feature of the critical regime is that the effective diffusivity is determined by the mean conductance alone, with no corrector contribution at leading order — in contrast to the classical homogenization setting. Our proof proceeds by a two-scale expansion, adapting the <a href="https://arxiv.org/abs/1705.05300">quantitative homogenization program of Armstrong, Kuusi, and Mourrat</a> to the nonlocal critical setting via a new Poincaré inequality for the critical kernel.',
     year: 2026
@@ -26,7 +26,7 @@ const publications = [
       { name: "Ariel Yadin", url: "https://www.math.bgu.ac.il/en/people/users/yadina" }
     ],
     links: [
-      { type: "arXiv", url: "#" }
+      { type: "arXiv", url: "https://arxiv.org/abs/2604.21142" }
     ],
     abstract: 'Internal DLA is a random growth model whose limit shape and fluctuations are well understood on the lattice Z<sup>d</sup> and on the cylinder Z<sub>N</sub> &times; Z. On Z<sup>d</sup>, <a href="https://arxiv.org/abs/1101.0596">David Jerison, Lionel Levine, and Scott Sheffield</a> showed that the average fluctuations converge to a variant of the Gaussian free field (GFF); in a <a href="https://arxiv.org/abs/1310.5063">companion paper</a> the same authors considered IDLA on the cylinder Z<sub>N</sub> &times; Z and proved that space-time averages of the fluctuations converge to the ordinary GFF. In this note we establish universality of the GFF limit across cylinder geometries: for any vertex-transitive base graph V<sub>N</sub> whose rescaled low spectrum converges and whose spectral gap vanishes, the average fluctuations of IDLA on V<sub>N</sub> &times; Z converge to a GFF on the corresponding half-cylinder. The prototypical case is V<sub>N</sub> = Z<sub>n</sub><sup>d</sup>, where the limit lives on T<sup>d</sup> &times; R<sub>+</sub>. Along the way we present an improved maximal-fluctuation bound, which is of independent interest and which implies a shape theorem for IDLA on V<sub>N</sub> &times; Z for any vertex-transitive base. Our proof extends the martingale strategy of Jerison, Levine, and Sheffield to arbitrary vertex-transitive bases, the main new input being an Efron–Stein variance inequality that exploits the abelian property of IDLA.',
     year: 2026
