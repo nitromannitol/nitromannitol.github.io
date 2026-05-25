@@ -1,6 +1,21 @@
 
 const publications = [
   {
+    id: "einstein-relation",
+    title: "Quantitative Einstein relation for reversible diffusions in a random environment",
+    thumbnail: "images/einstein_paths.png",
+    altText: "Sample paths of diffusions in a random potential with varying drift strength, colored from blue (no drift) to red (maximum drift), showing the Einstein relation.",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Ruizhe Xu" }
+    ],
+    links: [
+      { type: "arXiv", url: "https://arxiv.org/abs/2505.XXXXX" }
+    ],
+    abstract: 'A Brownian particle in a random environment, when pushed by a small constant force, acquires a deterministic asymptotic velocity. The <a href="https://doi.org/10.1002/andp.19053220806">Einstein relation</a> predicts that the velocity-to-force ratio converges to the diffusivity of the unforced particle as the force vanishes &mdash; equating the particle\'s linear response to its equilibrium fluctuations. This is one of the most basic instances of the <a href="https://en.wikipedia.org/wiki/Fluctuation-dissipation_theorem">fluctuation&ndash;dissipation principle</a> in statistical physics. For reversible diffusions in stationary random environments, <a href="https://doi.org/10.1002/cpa.20389">Gantert, Mathieu, and Piatnitski</a> proved this identity as a qualitative limit. We prove a quantitative version: the mobility error decays as an explicit power of the force magnitude &lambda;, in a quenched sense. The key observation is that under a force of magnitude &lambda;, the drift &lambda;t and the diffusive spread &radic;t balance at spatial scale &lambda;<sup>-1</sup>; at this scale the problem becomes one of <a href="https://arxiv.org/abs/2210.06488">quantitative homogenization</a>. Our rate is not expected to be optimal: we conjecture that the sharp rate is &lambda; in d &ge; 3 and &lambda;&radic;(log(1/&lambda;)) in d = 2, reflecting the <a href="https://arxiv.org/abs/1705.05300">growth of the corrector</a> in the two regimes. It would be particularly interesting to prove this conjecture, which we expect will require understanding how the steady state of the environment seen from the particle expands to second order in &lambda;.',
+    year: 2026
+  },
+  {
     id: "critical-long-range-rcm",
     title: "Quantitative homogenization for the critical long-range random conductance model",
     thumbnail: "images/critical_long_range_rw.png",
