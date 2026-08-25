@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-
-
-<!-- load the plotly.js plotting script libraries -->      
-
+<html lang="en">
 <head>
-  <title> Kuwait COVID-19 Aggregate Forecasts </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kuwait COVID-19 Aggregate Forecasts</title>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
@@ -20,9 +18,6 @@
 <script src="plotly-latest.min.js"></script>
 <script src="d3.v5.min.js"></script>
 <script src="plot_script.js"></script>
-
-
-</head>
 
 <style>
   body { 
@@ -43,17 +38,14 @@
    cursor: default;
 }
 </style>
-
-
-
-
+</head>
 <body>
 
 
 
-<p class = "p_class"> Forecasts updated October 18th, 2020. 
+<p class="p_class"> Forecasts updated October 18th, 2020.
   Click the legend on the right to remove or display each forecast.
-  Use the slider bars to see past forecasts and their performace. 
+  Use the slider bars to see past forecasts and their performance.
 </p>
 
 
@@ -80,16 +72,12 @@
 
 
 
-</body>
-
-
-
 <hr>
 
 <ul>
 
 
-<li> Models make various assumptions about levels of social distancing and other interventions. 
+<li> Models make various assumptions about levels of social distancing and other interventions.
 See model descriptions below for details. </li>
 
 
@@ -102,9 +90,10 @@ See model descriptions below for details. </li>
 against the true number of deaths: (pred-actual)/actual. Displayed in the table below
 is the median prediction error for different forecast horizons (e.g. 1 week ahead).
  Prediction error is only displayed if there are at least
-3 historic predictions made by that model team for the target horizion, otherwise the table
-value is shown as NaN. 
+3 historic predictions made by that model team for the target horizon, otherwise the table
+value is shown as NaN.
 </li>
+</ul>
 
 <hr>
 
@@ -190,10 +179,6 @@ Exponential and linear statistical models fit to the recent growth rate of cumul
 <p><strong>Intervention assumptions:</strong> The model accounts for reopenings and their impact on infections and deaths.</p>
 <p><strong>Methods</strong><br>
 SEIS mechanistic model.</p>
-</div></div><div class="row "><div class="col-md-12"><div class="row-fluid">
-  <div class="vc_empty_space col-12 pb-3"><span class="vc_empty_space_inner"></span></div>
-</div>
-</div></div></div>
 <p><strong>Output:</strong> Deaths, infections, Rt</p>
 
 
@@ -201,9 +186,5 @@ SEIS mechanistic model.</p>
 
 
 <hr>
-
-
-
-
-
-
+</body>
+</html>

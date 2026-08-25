@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-
-
-<!-- load the plotly.js and math.js libraries -->      
-
+<html lang="en">
 <head>
-  <title> COVID-19 across the world </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COVID-19 across the world</title>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
 <script>
@@ -15,10 +13,8 @@
 
   gtag('config', 'UA-53592269-3');
 </script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-1.58.5.min.js"></script>
 <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
@@ -49,9 +45,9 @@ body {
 
 </div>
 
-<div> 
-<form id="form1">
-   <select class="countrydata" id = "countrydata_" multiple="multiple">
+<div id="form1">
+   <label for="countrydata_">Countries</label>
+   <select class="countrydata" id="countrydata_" multiple>
 <option value="World">World</option>
 <option value="Albania">Albania</option>
 <option value="Andorra">Andorra</option>
@@ -164,9 +160,8 @@ body {
 <option value="Uruguay">Uruguay</option>
 <option value="Vatican">Vatican</option>
     </select>
-    <input type="button" id="btnget1" value="Plot selected countries" />
-    <input type="button" id="btnget2" value="Plot countries with curves closest to selected countries" />
-</form>
+    <button type="button" id="btnget1">Plot selected countries</button>
+    <button type="button" id="btnget2">Plot countries with curves closest to selected countries</button>
 </div>
 
 
@@ -508,31 +503,26 @@ findNearest(["Kuwait"])
 
 
 </script>
-</body>
 
 
 
 <hr>
 Select multiple countries from the dropdown bar and click the first button to plot the daily confirmed cases per million for
-the different countries. To find other countries with curves similar to the selected countries, press the second button. For each 
-country selected, this displays two other countries with curves most similar to it. We measure 
-similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. Hence, this notion of similiarity
+the different countries. To find other countries with curves similar to the selected countries, press the second button. For each
+country selected, this displays two other countries with curves most similar to it. We measure
+similarity by computing the mean squared difference between all other countries who have had outbreaks at least as long as the selected country. Hence, this notion of similarity
 is not symmetric. The nearest countries appear in sorted order in the legend on the right.
 
 
 
 <hr>
-Data (used to be) updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
+Data (used to be) updated in real-time with <a href="https://ourworldindata.org/coronavirus">the most recent COVID-19 data</a>.
 <hr>
 <hr>
 
 
  <footer>
-    Created and maintained by <a href = "https://nitromannitol.github.io"> Ahmed Bou-Rabee.</a>   
+    Created and maintained by <a href="https://nitromannitol.github.io">Ahmed Bou-Rabee</a>.
   </footer>
-
-
-
-
-
-
+</body>
+</html>

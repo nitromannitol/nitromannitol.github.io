@@ -1,6 +1,6 @@
 const CONFIG = {
     userName: 'Ahmed Bou-Rabee',
-    defaultThumbnail: 'images/publications/default_thumbnail.jpg'
+    defaultThumbnail: 'images/default_thumbnail.svg'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,22 +17,24 @@ window.addEventListener('hashchange', handleDeepLink);
 
 function initializeCollapsibles() {
     document.querySelectorAll('.collapsible').forEach(collapsible => {
-        collapsible.setAttribute('role', 'button');
-        if (!collapsible.hasAttribute('tabindex')) {
-            collapsible.setAttribute('tabindex', '0');
+        const content = document.getElementById(collapsible.getAttribute('aria-controls'));
+        const startsOpen = collapsible.getAttribute('aria-expanded') === 'true';
+        if (content) {
+            content.hidden = !startsOpen;
+            content.inert = !startsOpen;
+            content.setAttribute('aria-hidden', String(!startsOpen));
+            if (startsOpen) {
+                content.classList.add('show');
+                content.style.maxHeight = 'none';
+            }
         }
+
         const toggle = () => {
             const isExpanded = collapsible.getAttribute('aria-expanded') === 'true';
             const p = setCollapsibleOpen(collapsible, !isExpanded);
             if (p) p.catch(() => { /* superseded */ });
         };
         collapsible.addEventListener('click', toggle);
-        collapsible.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggle();
-            }
-        });
     });
 }
 
@@ -52,8 +54,8 @@ function animateExpand(el, open) {
 
     return new Promise((resolve, reject) => {
         // Short-circuit when already at the requested state.
-        const fullyOpen = el.classList.contains('show') && el.style.maxHeight === 'none';
-        const fullyClosed = !el.classList.contains('show') && !el.style.maxHeight;
+        const fullyOpen = !el.hidden && el.classList.contains('show') && el.style.maxHeight === 'none';
+        const fullyClosed = el.hidden && !el.classList.contains('show') && !el.style.maxHeight;
         if (open && fullyOpen) { resolve(); return; }
         if (!open && fullyClosed) { resolve(); return; }
 
@@ -69,6 +71,8 @@ function animateExpand(el, open) {
                 // Lift the max-height cap so the content can grow (images
                 // loading, nested expansion) without clipping on mobile.
                 el.style.maxHeight = 'none';
+            } else if (!open && !el.classList.contains('show')) {
+                el.hidden = true;
             }
             resolve();
         };
@@ -92,9 +96,14 @@ function animateExpand(el, open) {
         animState.set(el, state);
 
         if (open) {
+            el.hidden = false;
+            el.inert = false;
+            el.setAttribute('aria-hidden', 'false');
             if (!el.classList.contains('show')) el.classList.add('show');
             el.style.maxHeight = el.scrollHeight + 'px';
         } else {
+            el.inert = true;
+            el.setAttribute('aria-hidden', 'true');
             el.style.maxHeight = el.scrollHeight + 'px';
             void el.offsetHeight; // flush the freeze so the next change transitions
             el.classList.remove('show');
@@ -129,7 +138,8 @@ function handleDeepLink() {
 
     const scrollTo = (id) => {
         const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (el) el.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
     };
 
     const onOpened = () => scrollTo(hash);
@@ -172,7 +182,7 @@ function createPublicationElement(pub) {
     appendTitle(contentWrapper, pub);
     appendAuthors(contentWrapper, pub.authors);
     appendJournalInfo(contentWrapper, pub);
-    appendAbstract(contentWrapper, pub.abstract);
+    appendAbstract(contentWrapper, pub.id, pub.abstract);
     appendLinks(contentWrapper, pub.links);
 
     pubDiv.appendChild(contentWrapper);
@@ -184,9 +194,10 @@ function isRealUrl(url) {
 }
 
 function getPrimaryLink(links) {
-    const arxivLink = links.find(l => l.type.toLowerCase() === 'arxiv' && isRealUrl(l.url));
-    const journalLink = links.find(l => l.type.toLowerCase() === 'journal' && isRealUrl(l.url));
-    const firstReal = links.find(l => isRealUrl(l.url));
+    const safeLinks = links || [];
+    const arxivLink = safeLinks.find(l => l.type.toLowerCase() === 'arxiv' && isRealUrl(l.url));
+    const journalLink = safeLinks.find(l => l.type.toLowerCase() === 'journal' && isRealUrl(l.url));
+    const firstReal = safeLinks.find(l => isRealUrl(l.url));
     return (arxivLink || journalLink || firstReal || { url: '#' }).url;
 }
 
@@ -233,7 +244,7 @@ function createPermalinkButton(pub) {
     btn.classList.add('icon-btn');
     btn.setAttribute('aria-label', 'Copy link to this publication');
     btn.title = 'Copy permalink';
-    btn.innerHTML = '<i class="fas fa-link"></i>';
+    btn.innerHTML = '<span class="btn-mark" aria-hidden="true">#</span>';
     btn.addEventListener('click', () => {
         const base = location.href.split('#')[0];
         const url = `${base}#pub-${pub.id}`;
@@ -249,7 +260,7 @@ function createBibtexButton(pub) {
     btn.classList.add('icon-btn');
     btn.setAttribute('aria-label', 'Copy BibTeX for this publication');
     btn.title = 'Copy BibTeX';
-    btn.innerHTML = '<i class="fas fa-quote-right"></i>';
+    btn.innerHTML = '<span class="btn-mark" aria-hidden="true">@</span>';
     btn.addEventListener('click', () => {
         copyToClipboard(buildBibtex(pub), btn, 'BibTeX copied');
     });
@@ -266,7 +277,8 @@ function buildBibtex(pub) {
 
     const lines = [`@${entryType}{${pub.id.replace(/-/g, '_')},`];
     lines.push(`  author  = {${authorStr}},`);
-    lines.push(`  title   = {${pub.title}},`);
+    const bibtexTitle = pub.bibtexTitle || htmlToPlainText(pub.title);
+    lines.push(`  title   = {${bibtexTitle}},`);
     if (pub.journal) lines.push(`  journal = {${pub.journal}},`);
     if (pub.volume) lines.push(`  volume  = {${pub.volume}},`);
     if (pub.pages) lines.push(`  pages   = {${pub.pages}},`);
@@ -277,16 +289,23 @@ function buildBibtex(pub) {
     return lines.join('\n');
 }
 
+function htmlToPlainText(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    return (template.content.textContent || '').trim();
+}
+
 function copyToClipboard(text, btn, successMsg) {
     const done = () => flashButton(btn, successMsg);
+    const failed = () => flashButton(btn, 'Copy failed');
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+        navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text) ? done() : failed());
     } else {
-        fallbackCopy(text, done);
+        fallbackCopy(text) ? done() : failed();
     }
 }
 
-function fallbackCopy(text, done) {
+function fallbackCopy(text) {
     const ta = document.createElement('textarea');
     ta.value = text;
     ta.setAttribute('readonly', '');
@@ -294,9 +313,10 @@ function fallbackCopy(text, done) {
     ta.style.left = '-9999px';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); } catch (_) { /* noop */ }
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch (_) { /* noop */ }
     document.body.removeChild(ta);
-    done();
+    return copied;
 }
 
 function flashButton(btn, msg) {
@@ -332,22 +352,29 @@ function appendJournalInfo(wrapper, pub) {
     wrapper.appendChild(journalInfo);
 }
 
-function appendAbstract(wrapper, abstract) {
+function appendAbstract(wrapper, publicationId, abstract) {
     if (!abstract) return;
 
     const abstractBtn = document.createElement('button');
+    const abstractId = `abstract-${publicationId}`;
+    abstractBtn.type = 'button';
     abstractBtn.classList.add('abstract-btn');
-    abstractBtn.innerHTML = '<i class="fas fa-book-open"></i> Summary';
+    abstractBtn.textContent = 'Summary';
     abstractBtn.setAttribute('aria-expanded', 'false');
+    abstractBtn.setAttribute('aria-controls', abstractId);
     wrapper.appendChild(abstractBtn);
 
     const abstractContent = document.createElement('div');
+    abstractContent.id = abstractId;
     abstractContent.classList.add('abstract-content');
     abstractContent.innerHTML = abstract;
+    abstractContent.hidden = true;
+    abstractContent.inert = true;
+    abstractContent.setAttribute('aria-hidden', 'true');
     wrapper.appendChild(abstractContent);
 
     abstractBtn.addEventListener('click', () => {
-        const willShow = !abstractContent.classList.contains('show');
+        const willShow = abstractContent.hidden || !abstractContent.classList.contains('show');
         abstractBtn.setAttribute('aria-expanded', String(willShow));
         animateExpand(abstractContent, willShow).catch(() => { /* superseded */ });
     });
@@ -363,20 +390,21 @@ function appendLinks(wrapper, links) {
         const typeKey = link.type.toLowerCase();
         const placeholder = !isRealUrl(link.url);
 
-        const linkBtn = document.createElement('button');
+        const linkBtn = document.createElement(placeholder ? 'button' : 'a');
         linkBtn.classList.add('resource-btn', `resource-btn--${typeKey}`);
         if (placeholder) {
+            linkBtn.type = 'button';
             linkBtn.classList.add('resource-btn--placeholder');
             linkBtn.disabled = true;
             linkBtn.title = 'Link not yet available';
+        } else {
+            linkBtn.href = link.url;
+            linkBtn.target = '_blank';
+            linkBtn.rel = 'noopener noreferrer';
         }
 
-        const iconClass = getLinkIconClass(link.type);
-        linkBtn.innerHTML = `<i class="fas ${iconClass}"></i> ${capitalizeFirstLetter(link.type)}`;
+        linkBtn.textContent = capitalizeFirstLetter(link.type);
         linkBtn.setAttribute('aria-label', `${link.type} link`);
-        if (!placeholder) {
-            linkBtn.addEventListener('click', () => window.open(link.url, '_blank', 'noopener noreferrer'));
-        }
         linksDiv.appendChild(linkBtn);
     });
     wrapper.appendChild(linksDiv);
@@ -412,23 +440,6 @@ function formatAuthor(author) {
     return author.url
         ? `<a href="${author.url}" target="_blank" rel="noopener noreferrer">${author.name}</a>`
         : author.name;
-}
-
-function getLinkIconClass(type) {
-    const iconMap = {
-        arxiv: 'fa-file-alt',
-        pdf: 'fa-file-pdf',
-        blog: 'fa-blog',
-        quanta: 'fa-newspaper',
-        code: 'fa-code',
-        journal: 'fa-book',
-        appendix: 'fa-scroll',
-        video: 'fa-video',
-        notebook: 'fa-code',
-        picture: 'fa-image',
-        pictures: 'fa-image',
-    };
-    return iconMap[type.toLowerCase()] || 'fa-external-link-alt';
 }
 
 function capitalizeFirstLetter(string) {

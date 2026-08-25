@@ -3,6 +3,7 @@ const publications = [
   {
     id: "eulerian-walkers",
     title: "Eulerian walkers on Z<sup>2</sup> have range exponent 2/3",
+    bibtexTitle: "Eulerian walkers on {$\\mathbb{Z}^2$} have range exponent 2/3",
     thumbnail: "images/eulerian_walkers.png",
     altText: "One excursion of an Eulerian walker on the square lattice sweeping around the previously visited region, drawn as a colorful trail over evenly spaced gray growth rings that reflect the t to the one-third growth of the range.",
     authors: [
@@ -22,7 +23,7 @@ const publications = [
     altText: "Sample paths of diffusions in a random potential with varying drift strength, colored from blue (no drift) to red (maximum drift), showing the Einstein relation.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Ruizhe Xu" }
+      { name: "Ruizhe Xu", url: "https://arxiv.org/search/?query=%22Ruizhe+Xu%22&searchtype=author&abstracts=show&order=-announced_date_first&size=50" }
     ],
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2605.26082" }
@@ -219,7 +220,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     year: 2024,
     links: [
       { type: "Journal", url: "https://doi.org/10.1016/j.aim.2023.109400" },
-      { type: "arXiv", url: "http://arxiv.org/abs/2110.07556" },
+      { type: "arXiv", url: "https://arxiv.org/abs/2110.07556" },
       { type: "Appendix", url: "manuscripts/appendix.pdf" },
       { type: "Code", url: "https://github.com/nitromannitol/f-lattice-recursion" }
     ],
@@ -233,7 +234,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
     title: "Hamilton-Jacobi scaling limits of Pareto peeling in 2D",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Peter S. Morfe", url: "https://personal-homepages.mis.mpg.de/morfe/" }
+      { name: "Peter S. Morfe", url: "https://sites.google.com/view/pmorfe/home" }
     ],
     journal: "Probability Theory and Related Fields",
     volume: "188",
@@ -257,7 +258,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
     journal: "Annals of Applied Probability",
     volume: "34(1A)",
     pages: "714-742",
-    year: 2022,
+    year: 2024,
     links: [
       { type: "Journal", url: "https://doi.org/10.1214/23-AAP1976" },
       { type: "arXiv", url: "https://arxiv.org/abs/2102.04422" },
@@ -297,8 +298,8 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
     pages: "3168-3196",
     year: 2021,
     links: [
-      { type: "Journal", url: "http://dx.doi.org/10.1214/21-AOP1528" },
-      { type: "arXiv", url: "http://arxiv.org/abs/1909.07849" },
+      { type: "Journal", url: "https://doi.org/10.1214/21-AOP1528" },
+      { type: "arXiv", url: "https://arxiv.org/abs/1909.07849" },
       { type: "Pictures", url: "https://twitter.com/sandpileofthed1" }
     ],
         abstract:"I show that the Abelian sandpile, started with a random initial configuration on any periodic lattice, approximates the solution of a deterministic, fully nonlinear elliptic PDE at large scales. The PDE is implicitly identified through the ergodic theorem, using ideas from non-divergence form stochastic homogenization. Although the exact form of the PDE remains unknown, it is definitively non-universal: it depends on the fine, local structure of both the initial lattice and randomness.",
@@ -306,4 +307,3 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
     altText: "A simulation of a random Abelian sandpile on a periodic lattice, approximating the scaling limit of a fully nonlinear elliptic PDE."
   }
 ];
-
