@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-
-<!-- load the plotly.js and math.jslibraries -->      
-
+<html lang="en">
 <head>
-  <title> COVID-19 data visualization </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COVID-19 data visualization</title>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-53592269-3"></script>
 <script>
@@ -14,9 +13,8 @@
 
   gtag('config', 'UA-53592269-3');
 </script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.plot.ly/plotly-1.58.5.min.js"></script>
+<script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
@@ -32,6 +30,14 @@ p {
   margin-right: 20px;
   border: 1px solid black ;
 }
+.exp-model {
+  color: blue;
+  font-weight: bold;
+}
+.linear-model {
+  color: #806600;
+  font-weight: bold;
+}
 </style>
 
 
@@ -43,11 +49,11 @@ p {
 
 
 
-<p> Click the legend on the right to remove or display each curve; press play to see the progression of the curves over time. Hover over the graph to see options for zooming in, rescaling, and downloading. The legend displays the function parameters for functions defined below. 
+<p> Click the legend on the right to remove or display each curve; press play to see the progression of the curves over time. Hover over the graph to see options for zooming in, rescaling, and downloading. The legend displays the function parameters for functions defined below.
 </p>
 
 
-  <!-- load the plotly.js library -->      
+  <!-- load the plotly.js library -->
 <div id="graph"></div>
 
 
@@ -459,12 +465,9 @@ function makePlotly(dates, total_count){
 </script>
 
 
-</body>
-
-
 
 <p>
- </font> <a href = "../compare_countries/compare.html">Click here to compare cases across countries. </a> 
+ <a href="../compare_countries/compare.html">Click here to compare cases across countries.</a>
 
 </p>
 
@@ -474,37 +477,35 @@ function makePlotly(dates, total_count){
 
 
 
-Each data point corresponds to daily, public updates by Kuwait's <a href = "https://twitter.com/KUWAIT_MOH"> Ministry of Health</a>
-or <a href = "https://twitter.com/MOInformation" > Ministry of Information</a> of the total number of confirmed COVID-19 cases in Kuwait.
-The <font color = '#fff000'>col</font><font color = "blue">ored</font> curves represent the closest function to all of the cases up to that day. 
+Each data point corresponds to daily, public updates by Kuwait's <a href="https://twitter.com/KUWAIT_MOH">Ministry of Health</a>
+or <a href="https://twitter.com/MOInformation">Ministry of Information</a> of the total number of confirmed COVID-19 cases in Kuwait.
+The colored curves represent the closest function to all of the cases up to that day.
 
 <br>
 <br>
-<font color = "blue"> Blue </font> is exponential,  
+<span class="exp-model">Blue</span> is exponential,
  \( \mbox{cases} = a_1 \cdot \exp(a_2 \cdot \mbox{ day})\)
-<br></br>
-<font color = '#fff000' > Yellow </font> is linear, 
+<br>
+<span class="linear-model">Yellow</span> is linear,
   \( \mbox{cases} = b_1 + b_2 \cdot \mbox{ day}\)
-<br></br>
-The linear and exponential models are fit with <a href = "http://web.stanford.edu/class/ee103/lectures/regression_slides.pdf"> regression</a>. 
+<br>
+The linear and exponential models are fit with <a href="https://web.stanford.edu/class/ee103/lectures/regression_slides.pdf">regression</a>.
 
 
 
 <hr>
 
-Observe the sometimes extreme, day-to-day changes in the best fit models, despite visually not changing much. The reason for this is twofold. The number of reported 
-cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, and even sigmoid curves. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href = "http://ee104.stanford.edu/lectures/validation.pdf"> overfit the data</a>. <b> Hence, this simple approach is not suitable for forecasting. </b> The only purpose of this page is to visualize Kuwait's data together with the similarites and differences between linear and exponential growth over time. 
+Observe the sometimes extreme, day-to-day changes in the best fit models, despite visually not changing much. The reason for this is twofold. The number of reported
+cases per day varies in an unknown fashion and cannot be captured by nice functions including linear, exponential, and even sigmoid curves. Each curve is the nearest function to the available data up to that day. This doesn't change the following day only if the number of confirmed cases the next day follows that exact same nice curve - even though it doesn't. In machine learning terminology, we <a href="https://ee104.stanford.edu/lectures/validation.pdf">overfit the data</a>. <b>Hence, this simple approach is not suitable for forecasting.</b> The only purpose of this page is to visualize Kuwait's data together with the similarities and differences between linear and exponential growth over time.
 
 
 <hr>
-Data (used to be) updated in real-time with <a href="https://ourworldindata.org/coronavirus"> the most recent COVID-19 data</a>. 
+Data (used to be) updated in real-time with <a href="https://ourworldindata.org/coronavirus">the most recent COVID-19 data</a>.
  <hr>
 
 
-   <footer>
-      Created and maintained by <a href = "https://nitromannitol.github.io"> Ahmed Bou-Rabee.</a> 
-    </footer>
-
-
-
-
+	   <footer>
+	      Created and maintained by <a href="https://nitromannitol.github.io">Ahmed Bou-Rabee</a>.
+	    </footer>
+</body>
+</html>

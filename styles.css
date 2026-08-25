@@ -12,6 +12,9 @@
     --link-hover: #45057a;
     --shadow: rgba(0, 0, 0, 0.1);
     --focus-ring: #8900e1;
+    --button-text: #ffffff;
+    --pill-hover-text: #ffffff;
+    --pill-quanta-text: #1f2937;
 
     /* Link type accents */
     --pill-arxiv: #b31b1b;
@@ -41,6 +44,9 @@
         --link-hover: #e4cdff;
         --shadow: rgba(0, 0, 0, 0.4);
         --focus-ring: #c8a2ff;
+        --button-text: #141418;
+        --pill-hover-text: #141418;
+        --pill-quanta-text: #141418;
 
         --pill-arxiv: #f87171;
         --pill-journal: #34d399;
@@ -57,6 +63,12 @@
 }
 
 /* General Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -75,7 +87,8 @@ h1 {
 
 a {
     color: var(--link);
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
 }
 
 a:hover {
@@ -114,6 +127,10 @@ main {
 }
 
 /* Collapsible Sections */
+.section-heading {
+    margin: 0.83em 0 0;
+}
+
 .collapsible {
     background-color: var(--collapsible-bg);
     color: var(--heading);
@@ -130,14 +147,24 @@ main {
     border-radius: 5px;
     margin-bottom: 10px;
     transition: background-color 0.3s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-weight: bold;
 }
 
 .collapsible .indicator {
+    width: 0.55em;
+    height: 0.55em;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
     transition: transform 0.3s ease;
+    flex: 0 0 auto;
+    margin: 0 0.2em 0.25em 1em;
 }
 
 .collapsible[aria-expanded="true"] .indicator {
-    transform: rotate(180deg);
+    transform: rotate(225deg);
 }
 
 .collapsible:hover,
@@ -146,24 +173,28 @@ main {
     color: #ffffff;
 }
 
-.collapsible .indicator i {
-    font-size: 0.8em;
-}
-
 /* Content Sections */
 .content {
-    padding: 0 18px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease, padding 0.5s ease;
+    padding: 18px;
     background-color: var(--surface);
     border-radius: 0 0 5px 5px;
     box-shadow: 0 2px 5px var(--shadow);
 }
 
-.content.show {
+.js .content {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+}
+
+.js .content.show {
     padding: 18px;
     max-height: 200000px;
+}
+
+html:not(.js) .content-placeholder {
+    display: none;
 }
 
 .content-placeholder {
@@ -249,6 +280,14 @@ main {
     transition: background-color 0.15s ease, opacity 0.15s ease, color 0.15s ease;
 }
 
+.btn-mark {
+    display: inline-block;
+    min-width: 1em;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    text-align: center;
+}
+
 .icon-btn:hover,
 .icon-btn:focus-visible {
     opacity: 1;
@@ -289,17 +328,12 @@ main {
 
 .abstract-btn {
     background-color: var(--heading);
-    color: #ffffff;
+    color: var(--button-text);
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
     margin-bottom: 10px;
     font-weight: bold;
-}
-
-.abstract-btn i {
-    margin-right: 5px;
-    font-size: 0.9em;
 }
 
 .abstract-btn:hover {
@@ -316,22 +350,22 @@ main {
     font-weight: 600;
     letter-spacing: 0.01em;
     font-size: 0.85em;
-}
-
-.resource-btn i {
-    margin-right: 5px;
-    font-size: 0.9em;
+    text-decoration: none;
 }
 
 .resource-btn:hover:not(:disabled) {
     background-color: var(--pill-color, var(--pill-default));
-    color: #ffffff;
+    color: var(--pill-text-on-color, var(--pill-hover-text));
+    text-decoration: none;
 }
 
 .resource-btn--arxiv      { --pill-color: var(--pill-arxiv); }
 .resource-btn--journal    { --pill-color: var(--pill-journal); }
 .resource-btn--blog       { --pill-color: var(--pill-blog); }
-.resource-btn--quanta     { --pill-color: var(--pill-quanta); }
+.resource-btn--quanta     {
+    --pill-color: var(--pill-quanta);
+    --pill-text-on-color: var(--pill-quanta-text);
+}
 .resource-btn--code       { --pill-color: var(--pill-code); }
 .resource-btn--notebook   { --pill-color: var(--pill-notebook); }
 .resource-btn--appendix   { --pill-color: var(--pill-appendix); }
@@ -376,6 +410,17 @@ main {
     margin: 15px 0 0 0;
     padding: 15px;
     /* max-height is set dynamically in JS so content never clips */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }
 
 /* Responsive Design */
