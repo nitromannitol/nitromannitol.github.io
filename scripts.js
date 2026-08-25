@@ -417,6 +417,7 @@ function formatAuthor(author) {
 function getLinkIconClass(type) {
     const iconMap = {
         arxiv: 'fa-file-alt',
+        pdf: 'fa-file-pdf',
         blog: 'fa-blog',
         quanta: 'fa-newspaper',
         code: 'fa-code',

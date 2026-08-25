@@ -1,6 +1,21 @@
 
 const publications = [
   {
+    id: "eulerian-walkers",
+    title: "Eulerian walkers on Z<sup>2</sup> have range exponent 2/3",
+    thumbnail: "images/eulerian_walkers.png",
+    altText: "One excursion of an Eulerian walker on the square lattice sweeping around the previously visited region, drawn as a colorful trail over evenly spaced gray growth rings that reflect the t to the one-third growth of the range.",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Yuval Peres", url: "https://yuvalperes.com/" }
+    ],
+    links: [
+      { type: "arXiv", url: "https://arxiv.org/abs/2608.23545" }
+    ],
+    abstract: 'In the Eulerian walker model (also known as rotor walk), each site of the square lattice begins with an arrow pointing to one of its four neighbors. A walker that starts at the origin repeatedly turns the arrow at its current site clockwise by 90&deg; and steps in the new direction. <a href="https://arxiv.org/abs/cond-mat/9611019">Priezzhev, Dhar, Dhar, and Krishnamurthy (1996)</a> introduced this as a model of self-organized criticality and conjectured that, for independent uniform initial directions, the region explored in the first t steps has radius of order t<sup>1/3</sup>. We establish this conjecture and further show that the walker visits every lattice site infinitely often, and that the region it has visited by time t, rescaled by t<sup>1/3</sup>, converges to a convex body.',
+    year: 2026
+  },
+  {
     id: "einstein-relation",
     title: "Quantitative Einstein relation for reversible diffusions in a random environment",
     thumbnail: "images/einstein_paths.png",
