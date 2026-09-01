@@ -122,6 +122,8 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
+    journal: "Inventiones Mathematicae",
+    status: "to appear",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2404.01115" },
       { type: "Quanta", url: "https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/" },
