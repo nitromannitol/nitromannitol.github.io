@@ -43,7 +43,7 @@ const PAGE_MAKERS = {
     'random-sandpile':   ['randomintro', 'randombg', 'explosionproof'],
     'divisible':         ['divisibleintro', 'divisiblepanels', 'mcrtbuild', 'matedcrt',
                           'matedidla', 'lqgball'],
-    'idla-cylinder':     ['cylinderintro', 'cylinder'],
+    'idla-cylinder':     ['cylinderintro', 'cylinder', 'cylinder3d'],
     'idla':              ['idlaintro', 'aggregation'],
     'rotor-aggregation': ['rotoraggintro', 'rotoraggregation'],
     'dla':               ['dlaintro', 'dla'],
@@ -75,6 +75,7 @@ const MAKER_TARGETS = {
     mcrtbuild: '#build-divisible', matedcrt: '#mcrt-canvas',
     matedidla: '#mcrt-idla-canvas', lqgball: '#lqg-ball-canvas',
     cylinderintro: '#rule-idla-cylinder', cylinder: '#cylinder-canvas',
+    cylinder3d: '#cylinder3d-canvas',
     idlaintro: '#rule-idla', aggregation: '#idla-canvas',
     rotoraggintro: '#rule-rotor-aggregation', rotoraggregation: '#rotoragg-canvas',
     dlaintro: '#rule-dla', dla: '#dla-canvas',
@@ -6372,6 +6373,290 @@ const Instruments = (function () {
         });
         reset(); userPaused = REDUCED; if (!REDUCED) start();
         else clock.start();
+        return {
+            pause: function () { pageAwake = false; clock.stop(); },
+            resume: function () { pageAwake = true; draw(); if (!userPaused) start(); }
+        };
+    };
+
+    /* IDLA on Z_15^2 x Z, rendered in the prism convention used for the
+       cylinder figures in the paper.  A downward move from height zero is
+       accelerated by sampling the exact return displacement.  For a base
+       eigenvalue lambda, the multiplier of that return law is
+       rho = 2-lambda-sqrt((2-lambda)^2-1); the two-dimensional inverse DFT
+       below turns those multipliers into a probability distribution. */
+    makers.cylinder3d = function () {
+        const canvas = $('#cylinder3d-canvas');
+        if (!canvas) return null;
+        const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+        const SIDE = 15, BASE = SIDE * SIDE, TARGET = BASE * 18;
+        const outCount = $('#cylinder3d-count'), outMean = $('#cylinder3d-mean'),
+              outSpan = $('#cylinder3d-span'), outOuter = $('#cylinder3d-outer'),
+              note = $('#cylinder3d-note');
+        const ramp = rampOf([[50,70,145], [48,194,183], [226,92,151], [255,202,96]]);
+        let seed, occupied, settled, layers, particle, count, outer, inner;
+        let yaw = -Math.PI / 4, userPaused = false, pageAwake = true;
+        let done = false, completionSince = 0, budget = 0, lastFrame = 0;
+        let drag = null;
+
+        function random() {
+            seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
+            return (seed >>> 0) / 4294967296;
+        }
+        function wrap(a) { return (a + SIDE) % SIDE; }
+        function key(x, y, z) { return z * BASE + y * SIDE + x; }
+        function has(x, y, z) { return z <= 0 || occupied.has(key(wrap(x), wrap(y), z)); }
+
+        const returnCdf = (function () {
+            const rho = new Float64Array(BASE), p = new Float64Array(BASE);
+            for (let ky = 0; ky < SIDE; ky++) for (let kx = 0; kx < SIDE; kx++) {
+                const lambda = .5 + .25 * (Math.cos(2 * Math.PI * kx / SIDE)
+                                            + Math.cos(2 * Math.PI * ky / SIDE));
+                const q = 2 - lambda;
+                rho[ky * SIDE + kx] = q - Math.sqrt(q * q - 1);
+            }
+            let total = 0;
+            for (let dy = 0; dy < SIDE; dy++) for (let dx = 0; dx < SIDE; dx++) {
+                let s = 0;
+                for (let ky = 0; ky < SIDE; ky++) for (let kx = 0; kx < SIDE; kx++) {
+                    const phase = 2 * Math.PI * (kx * dx + ky * dy) / SIDE;
+                    s += rho[ky * SIDE + kx] * Math.cos(phase);
+                }
+                const j = dy * SIDE + dx;
+                p[j] = Math.max(0, s / BASE); total += p[j];
+            }
+            let sum = 0;
+            for (let j = 0; j < BASE; j++) { sum += p[j] / total; p[j] = sum; }
+            p[BASE - 1] = 1;
+            return p;
+        })();
+        function returnDisplacement() {
+            const u = random();
+            let lo = 0, hi = BASE - 1;
+            while (lo < hi) {
+                const m = (lo + hi) >>> 1;
+                if (returnCdf[m] < u) lo = m + 1; else hi = m;
+            }
+            return { x: lo % SIDE, y: (lo / SIDE) | 0 };
+        }
+        function release() {
+            particle = { x: Math.floor(random() * SIDE),
+                         y: Math.floor(random() * SIDE), z: 0 };
+        }
+        function walkToSettlement() {
+            if (!particle) release();
+            let guard = 0;
+            while (guard++ < 180000) {
+                const u = random();
+                if (u < .25) particle.z++;
+                else if (u < .5) {
+                    if (particle.z === 0) {
+                        const d = returnDisplacement();
+                        particle.x = wrap(particle.x + d.x);
+                        particle.y = wrap(particle.y + d.y);
+                    } else particle.z--;
+                } else if (u < .75) {
+                    /* horizontal holding: P(x,x)/2 = 1/4 */
+                } else if (u < .8125) particle.x = wrap(particle.x + 1);
+                else if (u < .875) particle.x = wrap(particle.x - 1);
+                else if (u < .9375) particle.y = wrap(particle.y + 1);
+                else particle.y = wrap(particle.y - 1);
+
+                if (!has(particle.x, particle.y, particle.z)) {
+                    count++;
+                    occupied.add(key(particle.x, particle.y, particle.z));
+                    settled.push({ x: particle.x, y: particle.y,
+                                   z: particle.z, t: count });
+                    layers[particle.z]++;
+                    outer = Math.max(outer, particle.z);
+                    while (layers[inner + 1] === BASE) inner++;
+                    particle = null;
+                    if (count >= TARGET) done = true;
+                    return true;
+                }
+            }
+            return false;
+        }
+        function reset() {
+            seed = 0x7f4a7c15; occupied = new Set(); settled = [];
+            layers = new Uint16Array(128); particle = null;
+            count = 0; outer = 0; inner = 0; done = false;
+            completionSince = 0; budget = 0; lastFrame = 0;
+            if (note) note.textContent = '15 × 15 square torus';
+            draw(); update(); sync();
+        }
+        function project(x, y, z) {
+            const ux = x - SIDE / 2, uy = y - SIDE / 2;
+            const c = Math.cos(yaw), s = Math.sin(yaw);
+            const rx = c * ux - s * uy, ry = s * ux + c * uy;
+            return { x: W / 2 + rx * (W / 30),
+                     y: H * .775 + ry * (H / 60) - z * (H / 42.857142857) };
+        }
+        function polygon(points, fill, stroke) {
+            ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+            ctx.closePath();
+            if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+            if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.15; ctx.stroke(); }
+        }
+        function colour(t, shade) {
+            const j = Math.max(0, Math.min(255, Math.round(255 * t / TARGET))) * 3;
+            const lift = shade > 1 ? 12 : 0;
+            const r = Math.min(255, Math.round(ramp[j] * shade + lift));
+            const g = Math.min(255, Math.round(ramp[j + 1] * shade + lift));
+            const b = Math.min(255, Math.round(ramp[j + 2] * shade + lift));
+            return 'rgb(' + r + ',' + g + ',' + b + ')';
+        }
+        function depth(q) {
+            return Math.sin(yaw) * (q.x + .5 - SIDE / 2)
+                 + Math.cos(yaw) * (q.y + .5 - SIDE / 2);
+        }
+        function frontDirections() {
+            return [[Math.sin(yaw) >= 0 ? 1 : -1, 0],
+                    [0, Math.cos(yaw) >= 0 ? 1 : -1]];
+        }
+        function sideExposed(q, d) {
+            const x = q.x + d[0], y = q.y + d[1];
+            if (x < 0 || x >= SIDE || y < 0 || y >= SIDE) return true;
+            return !has(x, y, q.z);
+        }
+        function cubeCorners(q, z) {
+            return [project(q.x, q.y, z), project(q.x + 1, q.y, z),
+                    project(q.x + 1, q.y + 1, z), project(q.x, q.y + 1, z)];
+        }
+        function drawCube(q, dirs) {
+            const top = cubeCorners(q, q.z), bottom = cubeCorners(q, q.z - 1);
+            for (let k = 0; k < dirs.length; k++) {
+                const d = dirs[k];
+                if (!sideExposed(q, d)) continue;
+                let a, b;
+                if (d[0] === 1) { a = 1; b = 2; }
+                else if (d[0] === -1) { a = 3; b = 0; }
+                else if (d[1] === 1) { a = 2; b = 3; }
+                else { a = 0; b = 1; }
+                polygon([top[a], top[b], bottom[b], bottom[a]],
+                        colour(q.t, k === 0 ? .66 : .52), 'rgba(7,8,14,.42)');
+            }
+            if (!has(q.x, q.y, q.z + 1))
+                polygon(top, colour(q.t, 1.08), 'rgba(7,8,14,.46)');
+        }
+        function drawBase() {
+            const corners = [project(0, 0, 0), project(SIDE, 0, 0),
+                             project(SIDE, SIDE, 0), project(0, SIDE, 0)];
+            polygon(corners, '#121722', 'rgba(110,221,215,.42)');
+            ctx.strokeStyle = 'rgba(137,151,174,.14)'; ctx.lineWidth = 1;
+            for (let i = 1; i < SIDE; i++) {
+                let a = project(i, 0, 0), b = project(i, SIDE, 0);
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+                a = project(0, i, 0); b = project(SIDE, i, 0);
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+            }
+        }
+        function draw() {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.fillStyle = '#080A10'; ctx.fillRect(0, 0, W, H);
+            drawBase();
+            const dirs = frontDirections(), visible = [];
+            for (let i = 0; i < settled.length; i++) {
+                const q = settled[i];
+                if (!has(q.x, q.y, q.z + 1)
+                    || sideExposed(q, dirs[0]) || sideExposed(q, dirs[1])) visible.push(q);
+            }
+            visible.sort(function (a, b) { return depth(a) - depth(b) || a.z - b.z; });
+            for (let i = 0; i < visible.length; i++) drawCube(visible[i], dirs);
+        }
+        function deviation() {
+            const h = count / BASE;
+            return Math.max(Math.abs(outer - h), Math.abs(inner - h));
+        }
+        function update() {
+            if (outCount) outCount.textContent = nf.format(count);
+            if (outMean) outMean.textContent = (count / BASE).toFixed(1);
+            if (outSpan) outSpan.textContent = deviation().toFixed(1);
+            if (outOuter) outOuter.textContent = String(outer);
+        }
+        function addParticles(quota) {
+            let added = 0;
+            while (!done && added < quota) {
+                if (!walkToSettlement()) break;
+                added++;
+            }
+            draw(); update(); sync();
+            return added;
+        }
+        function advance() {
+            const now = performance.now();
+            if (done) {
+                if (!completionSince) completionSince = now;
+                if (note) note.textContent = '4,050 particles';
+                if (now - completionSince > 1800) reset();
+                else { draw(); update(); sync(); }
+                return true;
+            }
+            if (!lastFrame) lastFrame = now;
+            budget += Math.min(120, now - lastFrame) * 1.2;
+            lastFrame = now;
+            const quota = Math.max(1, Math.min(28, Math.floor(budget)));
+            budget = Math.max(0, budget - quota);
+            addParticles(quota);
+            return true;
+        }
+        const clock = paced({
+            watch: 0, every: 30,
+            tick: function () { return true; }, frame: advance,
+            finish: function () {
+                let guard = 0;
+                while (!done && guard++ < TARGET * 4) {
+                    if (!walkToSettlement()) continue;
+                }
+                draw(); update(); sync();
+            }
+        });
+        function start() {
+            clock.stop(); lastFrame = 0;
+            if (!REDUCED && pageAwake && !userPaused) clock.start();
+            sync();
+        }
+        function sync() {
+            const b = $('[data-cyl3d-run="pause"]');
+            if (b) {
+                const on = !REDUCED && clock.running();
+                b.textContent = on ? 'Pause' : 'Play';
+                b.classList.toggle('is-on', on);
+            }
+        }
+        $$('[data-cyl3d-run]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                const action = b.dataset.cyl3dRun;
+                if (action === 'pause') {
+                    if (clock.running()) { userPaused = true; clock.stop(); }
+                    else { userPaused = false; start(); }
+                } else if (action === 'step') {
+                    userPaused = true; clock.stop(); addParticles(12);
+                } else if (action === 'replay') {
+                    clock.stop(); reset(); userPaused = false; start();
+                }
+                sync();
+            });
+        });
+        canvas.addEventListener('pointerdown', function (e) {
+            drag = { x: e.clientX, yaw: yaw };
+            canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener('pointermove', function (e) {
+            if (!drag) return;
+            yaw = drag.yaw + (e.clientX - drag.x) * .006;
+            draw();
+        });
+        function endDrag(e) {
+            drag = null;
+            if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+        }
+        canvas.addEventListener('pointerup', endDrag);
+        canvas.addEventListener('pointercancel', endDrag);
+
+        reset(); userPaused = REDUCED;
+        if (!REDUCED) start(); else clock.start();
         return {
             pause: function () { pageAwake = false; clock.stop(); },
             resume: function () { pageAwake = true; draw(); if (!userPaused) start(); }
