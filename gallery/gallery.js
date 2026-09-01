@@ -2537,59 +2537,58 @@ const Instruments = (function () {
         }, .30);
     };
     makers.cylinderintro = function () {
-        const path = [[10,0], [10,1], [11,1], [12,1], [12,2], [13,2], [13,3]];
-        return loopingRule('idla-cylinder', 5600, function (ctx, W, p) {
-            const n = 12, left = 96, right = W - 96;
-            const cell = (right - left) / n, base = 500;
-            function sx(x) { return left + ((((x % n) + n) % n) + .5) * cell; }
+        const walk = [[4,0],[4,-1],[5,-1],[5,0],[5,1],
+                      [6,1],[6,2],[7,2],[7,3],[7,4]];
+        return loopingRule('idla-cylinder', 6200, function (ctx, W, p) {
+            const n = 14, left = 62, right = W - 62, cell = (right-left)/n;
+            const base = 568, top = 154, bottom = 650;
+            const heights = [2,2,3,3,2,2,3,3,4,3,2,3,2,2];
+            const colours = ['#397F9A','#557CB4','#7667A8','#9A5F91','#C36A72','#D88A3A'];
+            function sx(x) { return left + (x + .5) * cell; }
             function sy(y) { return base - (y + .5) * cell; }
 
-            ctx.fillStyle = '#1D1A24';
-            ctx.fillRect(left, base, right - left, 150);
-            ctx.strokeStyle = 'rgba(168,216,232,.28)'; ctx.lineWidth = 2;
+            /* R_0: every layer at height at most zero is already occupied. */
+            ctx.fillStyle = '#27242D';
+            ctx.fillRect(left, sy(0)-cell/2, right-left, bottom-(sy(0)-cell/2));
+            ctx.strokeStyle = 'rgba(110,103,122,.28)'; ctx.lineWidth = 1.5;
             for (let x = 0; x <= n; x++) {
-                ctx.beginPath(); ctx.moveTo(left + x * cell, 190);
-                ctx.lineTo(left + x * cell, 650); ctx.stroke();
+                const xx = left + x*cell;
+                ctx.beginPath(); ctx.moveTo(xx, top); ctx.lineTo(xx, bottom); ctx.stroke();
             }
-            ctx.strokeStyle = 'rgba(240,228,188,.42)';
-            ctx.beginPath(); ctx.moveTo(left, base); ctx.lineTo(right, base); ctx.stroke();
-
-            const occupied = [[10,1],[11,1],[0,1],[0,2],[1,2]];
-            occupied.forEach(function (q, i) {
-                const cols = ['#A8D8E8','#8D7ED1','#8E4257','#D98282','#E69F00'];
-                ctx.fillStyle = cols[i];
-                ctx.fillRect(sx(q[0]) - cell * .43, sy(q[1]) - cell * .43,
-                             cell * .86, cell * .86);
-            });
-
-            const u = ruleEase((p - .12) / .68) * (path.length - 1);
-            const leg = Math.min(path.length - 2, Math.floor(u));
-            const f = u - leg;
-            for (let i = 0; i < leg; i++) {
-                if (Math.abs(sx(path[i + 1][0]) - sx(path[i][0])) >
-                        (right - left) * .5) continue;
-                ctx.beginPath(); ctx.moveTo(sx(path[i][0]), sy(path[i][1]));
-                ctx.lineTo(sx(path[i + 1][0]), sy(path[i + 1][1]));
-                ctx.strokeStyle = 'rgba(86,180,233,.76)'; ctx.lineWidth = 7; ctx.stroke();
+            for (let y = -2; y <= 7; y++) {
+                const yy = sy(y)-cell/2;
+                ctx.beginPath(); ctx.moveTo(left, yy); ctx.lineTo(right, yy); ctx.stroke();
             }
-            const a = path[leg], b = path[leg + 1];
-            let wx = ruleMix(a[0], b[0], f), wy = ruleMix(a[1], b[1], f);
-            if (b[0] >= n && a[0] < n) {
-                const flash = Math.sin(Math.PI * f);
-                ctx.strokeStyle = 'rgba(240,228,66,' + (.25 + .7 * flash) + ')';
-                ctx.lineWidth = 7;
-                ctx.beginPath(); ctx.moveTo(left, 205); ctx.lineTo(left, 620);
-                ctx.moveTo(right, 205); ctx.lineTo(right, 620); ctx.stroke();
-            }
-            ruleParticle(ctx, sx(wx), sy(wy), 14, '#FFF8E8');
+            ctx.strokeStyle = 'rgba(0,114,178,.48)'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(left, top); ctx.lineTo(left, bottom);
+            ctx.moveTo(right, top); ctx.lineTo(right, bottom); ctx.stroke();
+            ctx.strokeStyle = 'rgba(240,228,188,.64)'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(left, sy(0)-cell/2);
+            ctx.lineTo(right, sy(0)-cell/2); ctx.stroke();
 
-            if (p > .82) {
-                const a2 = ruleEase((p - .82) / .12);
-                ctx.globalAlpha = a2; ctx.fillStyle = '#F0E442';
-                ctx.fillRect(sx(1) - cell * .43, sy(3) - cell * .43,
-                             cell * .86, cell * .86);
+            for (let x = 0; x < n; x++) for (let y = 1; y <= heights[x]; y++) {
+                ctx.fillStyle = colours[Math.min(colours.length-1, y-1 + (x%3))];
+                ctx.fillRect(sx(x)-cell*.43, sy(y)-cell*.43, cell*.86, cell*.86);
+            }
+
+            /* Uniform source layer: one of the equally marked sites is selected. */
+            for (let x = 0; x < n; x++) {
+                ctx.beginPath(); ctx.arc(sx(x), sy(0), 4.5, 0, Math.PI*2);
+                ctx.fillStyle = x === walk[0][0] ? '#FFF8E8' : 'rgba(255,248,232,.42)';
+                ctx.fill();
+            }
+
+            const points = walk.map(function (q) { return [sx(q[0]), sy(q[1])]; });
+            const travel = ruleEase((p-.14)/.68), pos = rulePathPoint(points, travel);
+            if (p >= .10) ruleTrace(ctx, points, pos, '#0072B2', 4);
+
+            const settle = ruleEase((p-.82)/.10);
+            if (settle > 0) {
+                ctx.globalAlpha = settle; ctx.fillStyle = '#F0E442';
+                ctx.fillRect(sx(7)-cell*.43, sy(4)-cell*.43, cell*.86, cell*.86);
                 ctx.globalAlpha = 1;
             }
+            if (p < .90) ruleParticle(ctx, pos.x, pos.y, 12, '#FFF8E8');
         }, .91);
     };
 
@@ -6103,8 +6102,7 @@ const Instruments = (function () {
         const N = 48, TARGET = N * 36;
         const left = 80, right = W - 80, cell = (right - left) / N, base = 1300;
         const outCount = $('#cylinder-count'), outMean = $('#cylinder-mean'),
-              outSpan = $('#cylinder-span'), outMode = $('#cylinder-mode'),
-              note = $('#cylinder-note');
+              outSpan = $('#cylinder-span'), outMode = $('#cylinder-mode');
         const arrivalRamp = rampOf([[86,180,233], [145,116,204],
                                     [204,121,167], [230,159,0]]);
         let seed, occupied, settled, particle, trail, count, modeSum;
@@ -6157,14 +6155,12 @@ const Instruments = (function () {
         function release() {
             particle = { x: Math.floor(random() * N), y: 0 };
             trail = []; pushTrail(particle.x, particle.y, 'release');
-            if (note) note.textContent = 'Uniform starting site; random walk';
         }
         function settle() {
             count++;
             occupied.add(key(particle.x, particle.y));
             settled.push({ x: particle.x, y: particle.y, t: count });
             modeSum += Math.SQRT2 * Math.cos(2 * Math.PI * particle.x / N);
-            if (note) note.textContent = 'Settles at the first empty site';
             if (count >= TARGET) { done = true; particle = null; return; }
             release();
         }
@@ -6179,7 +6175,6 @@ const Instruments = (function () {
                     const d = returnDisplacement();
                     particle.x = (particle.x + d) % N;
                     pushTrail(particle.x, 0, 'deep', from);
-                    if (note) note.textContent = 'Excursion below the source layer; exact return';
                     return true;
                 }
                 particle.y--;
@@ -6294,7 +6289,6 @@ const Instruments = (function () {
             if (outMean) outMean.textContent = (count / N).toFixed(1);
             if (outSpan) outSpan.textContent = b.span.toFixed(1);
             if (outMode) outMode.textContent = (modeSum / N).toFixed(2);
-            if (done && note) note.textContent = 'Finite run complete';
         }
         function advanceWalk() { const live = step(); draw(); update(); sync(); return live; }
         function advanceGrowth() {
@@ -6379,69 +6373,232 @@ const Instruments = (function () {
         };
     };
 
-    /* IDLA on Z_15^2 x Z, rendered in the prism convention used for the
-       cylinder figures in the paper.  A downward move from height zero is
-       accelerated by sampling the exact return displacement.  For a base
-       eigenvalue lambda, the multiplier of that return law is
-       rho = 2-lambda-sqrt((2-lambda)^2-1); the two-dimensional inverse DFT
-       below turns those multipliers into a probability distribution. */
+    /* The three bases in Figure 1 of the cylinder paper.  A downward move
+       from height zero is accelerated by the exact spectral return kernel.
+       For a base eigenvalue lambda its multiplier is
+       rho(lambda)=2-lambda-sqrt((2-lambda)^2-1). */
     makers.cylinder3d = function () {
         const canvas = $('#cylinder3d-canvas');
         if (!canvas) return null;
         const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
-        const SIDE = 15, BASE = SIDE * SIDE, TARGET = BASE * 18;
         const outCount = $('#cylinder3d-count'), outMean = $('#cylinder3d-mean'),
-              outSpan = $('#cylinder3d-span'), outOuter = $('#cylinder3d-outer'),
-              note = $('#cylinder3d-note');
+              outSpan = $('#cylinder3d-span'), outOuter = $('#cylinder3d-outer');
         const ramp = rampOf([[50,70,145], [48,194,183], [226,92,151], [255,202,96]]);
+        let spec, baseName = 'square', BASE, TARGET;
         let seed, occupied, settled, layers, particle, count, outer, inner;
         let yaw = -Math.PI / 4, userPaused = false, pageAwake = true;
         let done = false, completionSince = 0, budget = 0, lastFrame = 0;
         let drag = null;
 
+        function mod(a, n) { return (a % n + n) % n; }
+        function torusReturn(side, eigenvalue, indexOf) {
+            const size = side * side, rho = new Float64Array(size);
+            const p = new Float64Array(size);
+            for (let ky = 0; ky < side; ky++) for (let kx = 0; kx < side; kx++) {
+                const lambda = eigenvalue(2 * Math.PI * kx / side,
+                                          2 * Math.PI * ky / side);
+                const q = 2 - lambda;
+                rho[ky * side + kx] = q - Math.sqrt(q * q - 1);
+            }
+            let total = 0;
+            for (let dy = 0; dy < side; dy++) for (let dx = 0; dx < side; dx++) {
+                let sum = 0;
+                for (let ky = 0; ky < side; ky++) for (let kx = 0; kx < side; kx++) {
+                    const phase = 2 * Math.PI * (kx * dx + ky * dy) / side;
+                    sum += rho[ky * side + kx] * Math.cos(phase);
+                }
+                const j = dy * side + dx;
+                p[j] = Math.max(0, sum / size); total += p[j];
+            }
+            let sum = 0;
+            for (let j = 0; j < size; j++) { sum += p[j] / total; p[j] = sum; }
+            p[size - 1] = 1;
+            return function (v, u, lattice) {
+                let lo = 0, hi = size - 1;
+                while (lo < hi) {
+                    const m = (lo + hi) >>> 1;
+                    if (p[m] < u) lo = m + 1; else hi = m;
+                }
+                const q = lattice[v], dx = lo % side, dy = (lo / side) | 0;
+                return indexOf(mod(q.i + dx, side), mod(q.j + dy, side));
+            };
+        }
+        function squareSpec() {
+            const side = 15, cells = [], graph = [], lattice = [];
+            const index = function (i, j) { return mod(j, side) * side + mod(i, side); };
+            for (let j = 0; j < side; j++) for (let i = 0; i < side; i++) {
+                const x = i - side / 2, y = j - side / 2;
+                lattice.push({ i: i, j: j });
+                cells.push({
+                    center: { x: x + .5, y: y + .5 },
+                    poly: [{x:x,y:y}, {x:x+1,y:y}, {x:x+1,y:y+1}, {x:x,y:y+1}],
+                    edges: [j ? index(i,j-1) : -1, i < side-1 ? index(i+1,j) : -1,
+                            j < side-1 ? index(i,j+1) : -1, i ? index(i-1,j) : -1]
+                });
+                graph.push([index(i+1,j), index(i-1,j), index(i,j+1), index(i,j-1)]);
+            }
+            return {
+                title: '15 × 15 square torus', cells: cells, graph: graph, lattice: lattice,
+                sampleReturn: torusReturn(side, function (a, b) {
+                    return .5 + .25 * (Math.cos(a) + Math.cos(b));
+                }, index), seed: 0x7f4a7c15
+            };
+        }
+        function triangularSpec() {
+            const side = 9, root3 = Math.sqrt(3), cells = [], graph = [], lattice = [];
+            const index = function (i, j) { return mod(j, side) * side + mod(i, side); };
+            const meanX = 6, meanY = 2 * root3, radius = 1 / root3;
+            const edgeDirs = [[0,1],[-1,1],[-1,0],[0,-1],[1,-1],[1,0]];
+            const graphDirs = [[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
+            for (let j = 0; j < side; j++) for (let i = 0; i < side; i++) {
+                const cx = i + .5 * j - meanX, cy = root3 * .5 * j - meanY;
+                const poly = [];
+                for (let k = 0; k < 6; k++) {
+                    const a = Math.PI / 6 + k * Math.PI / 3;
+                    poly.push({ x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a) });
+                }
+                lattice.push({ i: i, j: j });
+                cells.push({ center: {x:cx,y:cy}, poly: poly,
+                    edges: edgeDirs.map(function (d) {
+                        const ni = i + d[0], nj = j + d[1];
+                        return ni < 0 || ni >= side || nj < 0 || nj >= side ? -1 : index(ni,nj);
+                    }) });
+                graph.push(graphDirs.map(function (d) { return index(i+d[0], j+d[1]); }));
+            }
+            return {
+                title: '9 × 9 triangular torus', cells: cells, graph: graph, lattice: lattice,
+                sampleReturn: torusReturn(side, function (a, b) {
+                    return .5 + (Math.cos(a) + Math.cos(b) + Math.cos(a-b)) / 6;
+                }, index), seed: 0x51633e2d
+            };
+        }
+        function clipHalfPlane(poly, nx, ny, c) {
+            const out = [];
+            for (let i = 0; i < poly.length; i++) {
+                const a = poly[i], b = poly[(i + 1) % poly.length];
+                const da = nx * a.x + ny * a.y - c;
+                const db = nx * b.x + ny * b.y - c;
+                const ina = da <= 1e-9, inb = db <= 1e-9;
+                if (ina) out.push(a);
+                if (ina !== inb) {
+                    const t = da / (da - db);
+                    out.push({ x: a.x + t * (b.x - a.x), y: a.y + t * (b.y - a.y) });
+                }
+            }
+            return out;
+        }
+        function jacobiKernel(graph) {
+            const n = graph.length, a = new Float64Array(n * n), v = new Float64Array(n * n);
+            for (let i = 0; i < n; i++) {
+                a[i*n+i] = .5; v[i*n+i] = 1;
+                const w = .5 / graph[i].length;
+                graph[i].forEach(function (j) { a[i*n+j] = w; });
+            }
+            for (let sweep = 0; sweep < 80; sweep++) {
+                let changed = false;
+                for (let p = 0; p < n-1; p++) for (let q = p+1; q < n; q++) {
+                    const apq = a[p*n+q];
+                    if (Math.abs(apq) < 1e-13) continue;
+                    changed = true;
+                    const app = a[p*n+p], aqq = a[q*n+q];
+                    const tau = (aqq - app) / (2 * apq);
+                    const t = (tau >= 0 ? 1 : -1) /
+                              (Math.abs(tau) + Math.sqrt(1 + tau * tau));
+                    const cs = 1 / Math.sqrt(1 + t*t), sn = t * cs;
+                    for (let k = 0; k < n; k++) if (k !== p && k !== q) {
+                        const akp = a[k*n+p], akq = a[k*n+q];
+                        a[k*n+p] = a[p*n+k] = cs*akp - sn*akq;
+                        a[k*n+q] = a[q*n+k] = sn*akp + cs*akq;
+                    }
+                    a[p*n+p] = app - t*apq; a[q*n+q] = aqq + t*apq;
+                    a[p*n+q] = a[q*n+p] = 0;
+                    for (let k = 0; k < n; k++) {
+                        const vkp = v[k*n+p], vkq = v[k*n+q];
+                        v[k*n+p] = cs*vkp - sn*vkq;
+                        v[k*n+q] = sn*vkp + cs*vkq;
+                    }
+                }
+                if (!changed) break;
+            }
+            const rows = [];
+            for (let i = 0; i < n; i++) {
+                const cdf = new Float64Array(n); let total = 0;
+                for (let j = 0; j < n; j++) {
+                    let x = 0;
+                    for (let k = 0; k < n; k++) {
+                        const lambda = Math.max(0, Math.min(1, a[k*n+k]));
+                        const q = 2 - lambda, rho = q - Math.sqrt(q*q - 1);
+                        x += v[i*n+k] * rho * v[j*n+k];
+                    }
+                    cdf[j] = Math.max(0, x); total += cdf[j];
+                }
+                let sum = 0;
+                for (let j = 0; j < n; j++) { sum += cdf[j] / total; cdf[j] = sum; }
+                cdf[n-1] = 1; rows.push(cdf);
+            }
+            return function (start, u) {
+                const cdf = rows[start]; let lo = 0, hi = n - 1;
+                while (lo < hi) {
+                    const m = (lo + hi) >>> 1;
+                    if (cdf[m] < u) lo = m + 1; else hi = m;
+                }
+                return lo;
+            };
+        }
+        function nauruSpec() {
+            const n = 24, points = [], graph = Array.from({length:n}, function () { return []; });
+            function edge(a, b) { graph[a].push(b); graph[b].push(a); }
+            for (let i = 0; i < 12; i++) {
+                const a = 2 * Math.PI * i / 12 - Math.PI / 2;
+                points.push({ x: 6.2 * Math.cos(a), y: 6.2 * Math.sin(a) });
+            }
+            for (let i = 0; i < 12; i++) {
+                const a = 2 * Math.PI * i / 12 - Math.PI / 2;
+                points.push({ x: 3.05 * Math.cos(a), y: 3.05 * Math.sin(a) });
+            }
+            for (let i = 0; i < 12; i++) {
+                edge(i, (i + 1) % 12); edge(i, 12 + i);
+            }
+            for (let i = 0; i < 12; i++) if (i < mod(i + 5, 12)) edge(12+i, 12+mod(i+5,12));
+            /* The i<i+5 test omits wrapped star edges; add any missing cubic edges. */
+            for (let i = 0; i < 12; i++) {
+                const j = mod(i + 5, 12);
+                if (graph[12+i].indexOf(12+j) < 0) edge(12+i, 12+j);
+            }
+            const cells = [];
+            for (let i = 0; i < n; i++) {
+                let poly = [{x:-7.5,y:-7.5},{x:7.5,y:-7.5},{x:7.5,y:7.5},{x:-7.5,y:7.5}];
+                for (let j = 0; j < n && poly.length; j++) if (j !== i) {
+                    const nx = points[j].x - points[i].x, ny = points[j].y - points[i].y;
+                    const c = (points[j].x*points[j].x + points[j].y*points[j].y
+                              - points[i].x*points[i].x - points[i].y*points[i].y) / 2;
+                    poly = clipHalfPlane(poly, nx, ny, c);
+                }
+                const edges = poly.map(function (a, k) {
+                    const b = poly[(k+1)%poly.length], mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+                    const di = (mx-points[i].x)*(mx-points[i].x)+(my-points[i].y)*(my-points[i].y);
+                    let hit = -1, err = Infinity;
+                    for (let j = 0; j < n; j++) if (j !== i) {
+                        const dj = (mx-points[j].x)*(mx-points[j].x)+(my-points[j].y)*(my-points[j].y);
+                        if (Math.abs(dj-di) < err) { err = Math.abs(dj-di); hit = j; }
+                    }
+                    return err < 1e-5 ? hit : -1;
+                });
+                cells.push({ center: points[i], poly: poly, edges: edges });
+            }
+            return { title: 'Nauru graph  GP(12,5)', cells: cells, graph: graph,
+                     lattice: null, sampleReturn: jacobiKernel(graph), seed: 0x2c1b3c6d };
+        }
+        const specs = { square: squareSpec(), triangular: triangularSpec(), nauru: nauruSpec() };
+
         function random() {
             seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
             return (seed >>> 0) / 4294967296;
         }
-        function wrap(a) { return (a + SIDE) % SIDE; }
-        function key(x, y, z) { return z * BASE + y * SIDE + x; }
-        function has(x, y, z) { return z <= 0 || occupied.has(key(wrap(x), wrap(y), z)); }
-
-        const returnCdf = (function () {
-            const rho = new Float64Array(BASE), p = new Float64Array(BASE);
-            for (let ky = 0; ky < SIDE; ky++) for (let kx = 0; kx < SIDE; kx++) {
-                const lambda = .5 + .25 * (Math.cos(2 * Math.PI * kx / SIDE)
-                                            + Math.cos(2 * Math.PI * ky / SIDE));
-                const q = 2 - lambda;
-                rho[ky * SIDE + kx] = q - Math.sqrt(q * q - 1);
-            }
-            let total = 0;
-            for (let dy = 0; dy < SIDE; dy++) for (let dx = 0; dx < SIDE; dx++) {
-                let s = 0;
-                for (let ky = 0; ky < SIDE; ky++) for (let kx = 0; kx < SIDE; kx++) {
-                    const phase = 2 * Math.PI * (kx * dx + ky * dy) / SIDE;
-                    s += rho[ky * SIDE + kx] * Math.cos(phase);
-                }
-                const j = dy * SIDE + dx;
-                p[j] = Math.max(0, s / BASE); total += p[j];
-            }
-            let sum = 0;
-            for (let j = 0; j < BASE; j++) { sum += p[j] / total; p[j] = sum; }
-            p[BASE - 1] = 1;
-            return p;
-        })();
-        function returnDisplacement() {
-            const u = random();
-            let lo = 0, hi = BASE - 1;
-            while (lo < hi) {
-                const m = (lo + hi) >>> 1;
-                if (returnCdf[m] < u) lo = m + 1; else hi = m;
-            }
-            return { x: lo % SIDE, y: (lo / SIDE) | 0 };
-        }
+        function key(v, z) { return z * BASE + v; }
+        function has(v, z) { return z <= 0 || occupied.has(key(v, z)); }
         function release() {
-            particle = { x: Math.floor(random() * SIDE),
-                         y: Math.floor(random() * SIDE), z: 0 };
+            particle = { v: Math.floor(random() * BASE), z: 0 };
         }
         function walkToSettlement() {
             if (!particle) release();
@@ -6451,22 +6608,19 @@ const Instruments = (function () {
                 if (u < .25) particle.z++;
                 else if (u < .5) {
                     if (particle.z === 0) {
-                        const d = returnDisplacement();
-                        particle.x = wrap(particle.x + d.x);
-                        particle.y = wrap(particle.y + d.y);
+                        particle.v = spec.sampleReturn(particle.v, random(), spec.lattice);
                     } else particle.z--;
                 } else if (u < .75) {
                     /* horizontal holding: P(x,x)/2 = 1/4 */
-                } else if (u < .8125) particle.x = wrap(particle.x + 1);
-                else if (u < .875) particle.x = wrap(particle.x - 1);
-                else if (u < .9375) particle.y = wrap(particle.y + 1);
-                else particle.y = wrap(particle.y - 1);
+                } else {
+                    const nb = spec.graph[particle.v];
+                    particle.v = nb[Math.floor(random() * nb.length)];
+                }
 
-                if (!has(particle.x, particle.y, particle.z)) {
+                if (!has(particle.v, particle.z)) {
                     count++;
-                    occupied.add(key(particle.x, particle.y, particle.z));
-                    settled.push({ x: particle.x, y: particle.y,
-                                   z: particle.z, t: count });
+                    occupied.add(key(particle.v, particle.z));
+                    settled.push({ v: particle.v, z: particle.z, t: count });
                     layers[particle.z]++;
                     outer = Math.max(outer, particle.z);
                     while (layers[inner + 1] === BASE) inner++;
@@ -6478,17 +6632,16 @@ const Instruments = (function () {
             return false;
         }
         function reset() {
-            seed = 0x7f4a7c15; occupied = new Set(); settled = [];
+            spec = specs[baseName]; BASE = spec.cells.length; TARGET = BASE * 18;
+            seed = spec.seed; occupied = new Set(); settled = [];
             layers = new Uint16Array(128); particle = null;
             count = 0; outer = 0; inner = 0; done = false;
             completionSince = 0; budget = 0; lastFrame = 0;
-            if (note) note.textContent = '15 × 15 square torus';
             draw(); update(); sync();
         }
         function project(x, y, z) {
-            const ux = x - SIDE / 2, uy = y - SIDE / 2;
             const c = Math.cos(yaw), s = Math.sin(yaw);
-            const rx = c * ux - s * uy, ry = s * ux + c * uy;
+            const rx = c * x - s * y, ry = s * x + c * y;
             return { x: W / 2 + rx * (W / 30),
                      y: H * .775 + ry * (H / 60) - z * (H / 42.857142857) };
         }
@@ -6508,62 +6661,55 @@ const Instruments = (function () {
             return 'rgb(' + r + ',' + g + ',' + b + ')';
         }
         function depth(q) {
-            return Math.sin(yaw) * (q.x + .5 - SIDE / 2)
-                 + Math.cos(yaw) * (q.y + .5 - SIDE / 2);
+            const p = spec.cells[q.v].center;
+            return Math.sin(yaw) * p.x + Math.cos(yaw) * p.y;
         }
-        function frontDirections() {
-            return [[Math.sin(yaw) >= 0 ? 1 : -1, 0],
-                    [0, Math.cos(yaw) >= 0 ? 1 : -1]];
+        function edgeFront(cell, i) {
+            const a = cell.poly[i], b = cell.poly[(i + 1) % cell.poly.length];
+            return Math.sin(yaw) * (b.y - a.y) - Math.cos(yaw) * (b.x - a.x);
         }
-        function sideExposed(q, d) {
-            const x = q.x + d[0], y = q.y + d[1];
-            if (x < 0 || x >= SIDE || y < 0 || y >= SIDE) return true;
-            return !has(x, y, q.z);
+        function sideExposed(q, cell, i) {
+            const nb = cell.edges[i];
+            return nb < 0 || !has(nb, q.z);
         }
         function cubeCorners(q, z) {
-            return [project(q.x, q.y, z), project(q.x + 1, q.y, z),
-                    project(q.x + 1, q.y + 1, z), project(q.x, q.y + 1, z)];
+            return spec.cells[q.v].poly.map(function (p) { return project(p.x, p.y, z); });
         }
-        function drawCube(q, dirs) {
+        function drawCube(q) {
+            const cell = spec.cells[q.v];
             const top = cubeCorners(q, q.z), bottom = cubeCorners(q, q.z - 1);
-            for (let k = 0; k < dirs.length; k++) {
-                const d = dirs[k];
-                if (!sideExposed(q, d)) continue;
-                let a, b;
-                if (d[0] === 1) { a = 1; b = 2; }
-                else if (d[0] === -1) { a = 3; b = 0; }
-                else if (d[1] === 1) { a = 2; b = 3; }
-                else { a = 0; b = 1; }
-                polygon([top[a], top[b], bottom[b], bottom[a]],
-                        colour(q.t, k === 0 ? .66 : .52), 'rgba(7,8,14,.42)');
+            for (let i = 0; i < cell.poly.length; i++) {
+                const front = edgeFront(cell, i);
+                if (front <= 1e-8 || !sideExposed(q, cell, i)) continue;
+                const j = (i + 1) % cell.poly.length;
+                const a = cell.poly[i], b = cell.poly[j];
+                const length = Math.max(1e-6, Math.hypot(b.x-a.x, b.y-a.y));
+                const shade = .48 + .18 * Math.min(1, front / length);
+                polygon([top[i], top[j], bottom[j], bottom[i]],
+                        colour(q.t, shade), 'rgba(7,8,14,.42)');
             }
-            if (!has(q.x, q.y, q.z + 1))
+            if (!has(q.v, q.z + 1))
                 polygon(top, colour(q.t, 1.08), 'rgba(7,8,14,.46)');
         }
         function drawBase() {
-            const corners = [project(0, 0, 0), project(SIDE, 0, 0),
-                             project(SIDE, SIDE, 0), project(0, SIDE, 0)];
-            polygon(corners, '#121722', 'rgba(110,221,215,.42)');
-            ctx.strokeStyle = 'rgba(137,151,174,.14)'; ctx.lineWidth = 1;
-            for (let i = 1; i < SIDE; i++) {
-                let a = project(i, 0, 0), b = project(i, SIDE, 0);
-                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-                a = project(0, i, 0); b = project(SIDE, i, 0);
-                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-            }
+            spec.cells.forEach(function (cell) {
+                polygon(cell.poly.map(function (p) { return project(p.x,p.y,0); }),
+                        '#121722', 'rgba(137,151,174,.18)');
+            });
         }
         function draw() {
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.fillStyle = '#080A10'; ctx.fillRect(0, 0, W, H);
             drawBase();
-            const dirs = frontDirections(), visible = [];
+            const visible = [];
             for (let i = 0; i < settled.length; i++) {
-                const q = settled[i];
-                if (!has(q.x, q.y, q.z + 1)
-                    || sideExposed(q, dirs[0]) || sideExposed(q, dirs[1])) visible.push(q);
+                const q = settled[i], cell = spec.cells[q.v]; let show = !has(q.v, q.z + 1);
+                for (let k = 0; !show && k < cell.poly.length; k++)
+                    show = edgeFront(cell,k) > 1e-8 && sideExposed(q,cell,k);
+                if (show) visible.push(q);
             }
             visible.sort(function (a, b) { return depth(a) - depth(b) || a.z - b.z; });
-            for (let i = 0; i < visible.length; i++) drawCube(visible[i], dirs);
+            for (let i = 0; i < visible.length; i++) drawCube(visible[i]);
         }
         function deviation() {
             const h = count / BASE;
@@ -6588,15 +6734,15 @@ const Instruments = (function () {
             const now = performance.now();
             if (done) {
                 if (!completionSince) completionSince = now;
-                if (note) note.textContent = '4,050 particles';
                 if (now - completionSince > 1800) reset();
                 else { draw(); update(); sync(); }
                 return true;
             }
             if (!lastFrame) lastFrame = now;
-            budget += Math.min(120, now - lastFrame) * 1.2;
+            budget += Math.min(120, now - lastFrame) * (.34 * BASE / 225);
             lastFrame = now;
-            const quota = Math.max(1, Math.min(28, Math.floor(budget)));
+            const quota = Math.min(Math.max(2, Math.ceil(28 * BASE / 225)), Math.floor(budget));
+            if (quota < 1) return true;
             budget = Math.max(0, budget - quota);
             addParticles(quota);
             return true;
@@ -6618,6 +6764,10 @@ const Instruments = (function () {
             sync();
         }
         function sync() {
+            $$('[data-cyl3d-base]').forEach(function (b) {
+                const on = b.dataset.cyl3dBase === baseName;
+                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+            });
             const b = $('[data-cyl3d-run="pause"]');
             if (b) {
                 const on = !REDUCED && clock.running();
@@ -6625,6 +6775,13 @@ const Instruments = (function () {
                 b.classList.toggle('is-on', on);
             }
         }
+        $$('[data-cyl3d-base]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                if (b.dataset.cyl3dBase === baseName) return;
+                clock.stop(); baseName = b.dataset.cyl3dBase; reset();
+                userPaused = false; start();
+            });
+        });
         $$('[data-cyl3d-run]').forEach(function (b) {
             b.addEventListener('click', function () {
                 const action = b.dataset.cyl3dRun;
@@ -6632,7 +6789,7 @@ const Instruments = (function () {
                     if (clock.running()) { userPaused = true; clock.stop(); }
                     else { userPaused = false; start(); }
                 } else if (action === 'step') {
-                    userPaused = true; clock.stop(); addParticles(12);
+                    userPaused = true; clock.stop(); addParticles(Math.max(1, Math.round(BASE / 18)));
                 } else if (action === 'replay') {
                     clock.stop(); reset(); userPaused = false; start();
                 }
