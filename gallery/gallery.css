@@ -181,8 +181,6 @@ a:hover { text-decoration-thickness: 1.5px; }
 
 .titlepage .rule { margin-bottom: clamp(22px, 3.4vh, 38px); }
 
-.lead { font-size: var(--t-lead); line-height: 1.5; }
-
 .enter {
     display: inline-flex; align-items: baseline; gap: .8em;
     margin-top: clamp(24px, 4vh, 42px);
@@ -867,6 +865,7 @@ a:hover { text-decoration-thickness: 1.5px; }
 }
 .instrument[data-model-theme="dimensional-reduction"],
 .instrument[data-model-theme="idla-cylinder"],
+.instrument[data-model-theme="idla-cylinder-3d"],
 .instrument[data-model-theme="long-range-walk"] {
     --model-ground: #090A10;
     --model-surface: #14141D;
@@ -889,6 +888,14 @@ a:hover { text-decoration-thickness: 1.5px; }
 .cylinder-key .model-age-ramp {
     background: linear-gradient(90deg, #56B4E9 0%, #9B78CF 34%, #CC79A7 66%, #E69F00 100%);
 }
+.cylinder3d-key .model-age-ramp {
+    background: linear-gradient(90deg, #4056A6 0%, #3EC7C2 36%, #E46AA2 68%, #FFD166 100%);
+}
+.cylinder3d-stage canvas {
+    cursor: grab;
+    touch-action: none;
+}
+.cylinder3d-stage canvas:active { cursor: grabbing; }
 .longrange-key .model-age-ramp {
     background: linear-gradient(90deg, #56B4E9 0%, #CC79A7 54%, #E69F00 100%);
 }
@@ -1328,68 +1335,6 @@ a:hover { text-decoration-thickness: 1.5px; }
 .swap img:last-child { opacity: 0; }
 
 /* =========================================================================
-   THE ARROW
-   The one emblem on the site, and it is load-bearing: the label is the
-   scaling, and the shaft says whether the statement is a theorem (solid) or
-   an observation from simulation (dashed).
-   ========================================================================= */
-
-.arrow {
-    position: relative;
-    display: block;
-    min-width: 7.5em;
-    height: 1.65em;
-    flex: 0 0 auto;
-    color: var(--on-paper-quiet);
-}
-
-.arrow::before {
-    content: "";
-    position: absolute;
-    left: 0; right: .34em; top: 1.16em;
-    border-top: 1px solid currentColor;
-}
-
-.arrow--obs::before { border-top-style: dashed; }
-
-.arrow::after {
-    content: "";
-    position: absolute;
-    right: .04em; top: 1.16em;
-    width: .34em; height: .34em;
-    border-top: 1px solid currentColor;
-    border-right: 1px solid currentColor;
-    transform: translateY(-50%) rotate(45deg);
-}
-
-.arrow-label {
-    position: absolute;
-    left: 0; right: 0; top: 0;
-    text-align: center;
-    font-size: var(--t-micro);
-    font-style: italic;
-    line-height: 1;
-    letter-spacing: .01em;
-    white-space: nowrap;
-}
-
-.arrow-label .rad {
-    border-top: 1px solid currentColor;
-    padding-top: .04em;
-}
-
-.arrow--mini {
-    display: inline-block;
-    min-width: 3.4em;
-    height: .8em;
-    vertical-align: middle;
-}
-.arrow--mini::before { top: .38em; }
-.arrow--mini::after  { top: .38em; }
-
-.band--void .arrow, .study .arrow { color: var(--on-void-quiet); }
-
-/* =========================================================================
    THE SHEET
    Research and adjacent models on one hairline system: four columns for the
    research sheet, five equal columns for Other on wide screens, and two on a
@@ -1543,12 +1488,6 @@ a:hover { text-decoration-thickness: 1.5px; }
     margin-bottom: clamp(20px, 3vh, 34px);
 }
 
-.band--head .limits {
-    padding-bottom: clamp(24px, 3.4vh, 40px);
-    margin-bottom: clamp(24px, 3.4vh, 40px);
-    border-bottom: 1px solid var(--rule-paper);
-}
-
 .def, .statement { font-size: var(--t-body); }
 
 .def b, .statement b {
@@ -1656,8 +1595,6 @@ a:hover { text-decoration-thickness: 1.5px; }
     }
     .row-limits { grid-column: 1 / -1; }
     .row-rule { display: none; }
-    .limit { grid-template-columns: 6.2em minmax(0, 1fr); }
-    .arrow { min-width: 6.2em; }
 }
 
 /* =========================================================================
@@ -1748,8 +1685,7 @@ a:hover { text-decoration-thickness: 1.5px; }
     font-size: 1.04em;
 }
 .dataline .katex,
-.card-name .katex,
-.limit-text .katex {
+.card-name .katex {
     font-size: 1em;
 }
 /* An expression must be able to wrap out of a narrow column rather than

@@ -10,9 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=0a7c9557">
+<link rel="stylesheet" href="gallery.css?v=73b8cadd">
 <meta property="og:title" content="A Gallery of Mathematical Research">
-<meta property="og:description" content="A catalogue of discrete models and the continuum objects they converge to.">
+<meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
 </head>
 <body>
@@ -26,7 +26,6 @@
         <h1>A Gallery of<br><em>Mathematical Research</em></h1>
         <p class="byline">Probability and statistical mechanics</p>
         <hr class="rule">
-        <p class="lead">Discrete models, and the continuum objects they converge to.</p>
     </div>
 
     <figure class="frontispiece">
@@ -255,9 +254,6 @@
         <div class="col">
             <p class="family">Sandpiles</p>
             <h2 id="t-random-sandpile">Sandpile on a random background</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(n^{1/d}\)</span></span><span class="limit-text">a deterministic obstacle problem with an implicitly defined effective operator</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(d\ge2\), a background \(\eta:\mathbb Z^d\to\mathbb Z\), and \(n\in\mathbb Z_{\ge0}\). Starting from \(\eta+n\delta_0\), a legal toppling at a site \(x\) of height at least \(2d\) subtracts \(2d\) grains at \(x\) and adds one grain at each \(x\pm e_i\). The configuration stabilizes if every site topples finitely often. The background \(\eta\) is explosive if \(\eta+m\delta_0\) is not stabilizable for some integer \(m\ge1\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -347,9 +343,6 @@
         <div class="col">
             <p class="family">Sandpiles</p>
             <h2 id="t-dimensional-reduction">Dynamic dimensional reduction</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">every round</span></span><span class="limit-text">the central plane fires exactly where the pile one dimension down fires</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(d\ge2\) and \(N\ge1\). For integers \(k\ge0\), set \(\mathcal C_{2k+1}^{(d)}=\{x+\mathbf1:x\in\mathbb Z^d,\ |x_i|\le k\}\); for \(k\ge1\), set \(\mathcal C_{2k}^{(d)}=\{x-k\mathbf1:x\in\mathbb Z^d,\ 1\le x_i\le2k\}\). Put \(M=\lceil N/2\rceil\) and \(\mathcal S_M^{(d)}=\{M\ge x_1\ge\cdots\ge x_d\ge1\}\). Start every site of \(\mathcal C_N^{(d)}\) at height \(2d\), use a sink outside the box, and let \(v_t^{(d,N)}\) count topplings during the first \(t\) parallel updates. Then, for every \(t\ge1\) and \(x\in\mathcal S_M^{(d-1)}\), \(v_t^{(d,N)}(x,1)=v_t^{(d-1,N)}(x)\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -439,9 +432,6 @@
         <div class="col">
             <p class="family">Peeling</p>
             <h2 id="t-pareto-peeling">Pareto peeling</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(\sqrt{n}\)</span></span><span class="limit-text">a deterministic Hamilton&ndash;Jacobi equation, interpreted in the viscosity sense</span></div>
-            </div>
             <p class="def"><b>Definition.</b> For a compact set \(A\subset\mathbb R^2\) and a norm \(\varphi\), the Pareto hull is \(P(A)=\{x\in\mathbb R^2:\text{ for every }y\ne x\text{ there is }a\in A\text{ with }\varphi(a-x)&lt;\varphi(a-y)\}\). Set \(E_1(A)=P(A)\) and \(E_{k+1}(A)=P(A\cap\operatorname{int}E_k(A))\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -511,9 +501,6 @@
         <div class="col">
             <p class="family">Sandpiles</p>
             <h2 id="t-f-lattice">Integer superharmonic matrices on the F-lattice</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">classification</span></span><span class="limit-text">the integer-superharmonic set is a union of downward positive-semidefinite cones; fixed-height sections of the individual cones are congruent disks</span></div>
-            </div>
             <p class="def"><b>Definition.</b> For \(x=(x_1,x_2)\in\mathbb Z^2\), if \(x_1+x_2\) is even, the outgoing edges are \(x\to x\pm e_2\); if \(x_1+x_2\) is odd, they are \(x\to x\pm e_1\). A toppling at height at least 2 sends one grain along each outgoing edge, so the stable heights are 0 and 1.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -616,9 +603,6 @@
         <div class="col">
             <p class="family">Sandpiles</p>
             <h2 id="t-divisible">Divisible sandpile on a mated-CRT map</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(\varepsilon \to 0\)</span></span><span class="limit-text">an LQG harmonic ball; for almost every mass, that ball is neither Lipschitz nor an LQG metric ball</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(\gamma\in(0,2)\) and \(\varepsilon&gt;0\). Let \((L,R)\) be a two-sided planar Brownian motion normalized so that, for \(s,t\in\mathbb R\), \(\operatorname{Var}(L_t-L_s)=\operatorname{Var}(R_t-R_s)=|t-s|\) and \(\operatorname{Cov}(L_t-L_s,R_t-R_s)=-\cos(\pi\gamma^2/4)|t-s|\). The \(\varepsilon\)-mated-CRT map has vertex set \(\varepsilon\mathbb Z\). Consecutive vertices are joined by one edge. For nonconsecutive \(a_1&lt;a_2\), each coordinate \(Z\in\{L,R\}\) contributes an edge when \[\max\!\left\{\inf_{[a_1-\varepsilon,a_1]}Z,\inf_{[a_2-\varepsilon,a_2]}Z\right\}\le\inf_{[a_1,a_2-\varepsilon]}Z.\] Thus a nonconsecutive pair has two edges when both coordinates satisfy the condition. Start the divisible sandpile from \(t\varepsilon^{-1}\delta_0\); a vertex retains mass 1 and distributes its excess equally among its incident edges. If \(s_t^\varepsilon\) and \(v_t^\varepsilon\) are the stabilized mass and odometer, then \(D^\varepsilon(t\varepsilon^{-1})=\{s_t^\varepsilon&gt;0\}=\operatorname{cl}\{v_t^\varepsilon&gt;0\}\), where \(\operatorname{cl}S=S\cup\{v\notin S:v\sim w\text{ for some }w\in S\}\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -757,9 +741,6 @@
         <div class="col">
             <p class="family">Sandpiles</p>
             <h2 id="t-sandpile-rwrs">Divisible sandpiles via random walks in random scenery</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">phase transition</span></span><span class="limit-text">stabilization below mean one under a moment condition; explosion at and above mean one under the stated hypotheses</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Let \(G\) be infinite, connected, locally finite, and of bounded degree, and let \(\sigma(v)\) be i.i.d. initial masses. At each parallel step, a vertex of mass above 1 retains 1 and sends an equal share of its excess to every neighbour. The odometer \(u_n(v)\) is the mass sent from \(v\) to each neighbour through step \(n\). Thus \(\deg(v)u_n(v)\) is the total mass emitted by \(v\) through step \(n\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -823,11 +804,6 @@
         <div class="col">
             <p class="family">Percolation</p>
             <h2 id="t-percolation">Rigidity of harmonic functions on the supercritical percolation cluster</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">Lipschitz</span></span><span class="limit-text">every graph-harmonic function that is Lipschitz in graph distance is constant</span></div>
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">integer-valued \(O(|x|)\)</span></span><span class="limit-text">every integer-valued graph-harmonic function with \(u(x)=O(|x|)\) is constant</span></div>
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(d=2\), finite forcing</span></span><span class="limit-text">if \(-\Delta_{\mathcal C_\infty}u=f|_{\mathcal C_\infty}\) for a finitely supported \(f:\mathbb Z^2\to\mathbb Z\) and \(\limsup_{R\to\infty}R\sup_{B_R\setminus B_{R/2}}|u|=0\), then \(u\) is finitely supported</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(d\ge2\). In Bernoulli bond percolation on \(\mathbb Z^d\), retain each edge independently with probability \(p&gt;p_c(d)\), and let \(\mathcal C_\infty\) be the almost surely unique infinite cluster. Its graph Laplacian is \(\Delta_{\mathcal C_\infty}u(x)=\sum_{y\sim x}(u(y)-u(x))\), and \(B_R=\{x\in\mathcal C_\infty:|x|_2&lt;R\}\). A function is Lipschitz in the cluster graph distance \(d_{\mathcal C_\infty}\) if \(|u(x)-u(y)|\le Ld_{\mathcal C_\infty}(x,y)\) for some \(L&lt;\infty\) and all \(x,y\in\mathcal C_\infty\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -935,9 +911,6 @@
         <div class="col">
             <p class="family">Harmonic functions</p>
             <h2 id="t-unique-continuation">Unique continuation on planar graphs</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">density at least \(1-\varepsilon\)</span></span><span class="limit-text">for some \(\varepsilon&gt;0\), if \(\lim_{n\to\infty}|\{|f|\le1\}\cap B_n|/|B_n|\ge1-\varepsilon\), then \(f\) is constant</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Let \(\mathcal G=(\mathcal V,\mathcal E)\) be a connected planar graph embedded periodically in \(\mathbb R^2\), invariant under a rank-two lattice \(L\), and let the positive conductances \(\mathbf a\) be \(L\)-periodic. Fix an origin and let \(B_n\) be its graph-metric ball. The weighted Laplacian is \(\Delta f(u)=\sum_{w\sim u}\mathbf a(u,w)(f(u)-f(w))\); \(f\) is harmonic when \(\Delta f=0\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -999,9 +972,6 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-superdiffusion">Brownian motion in an incompressible random drift</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(\sqrt{t}\,(\log\,t)^{1/4}\)</span></span><span class="limit-text">if \(M_f(t)=\mathbf E_0^f|X_t|^2\), then \(M_f(t)^{1/2}/[\sqrt t(\log t)^{1/4}]\to\sqrt{2/\pi}\) in probability over the field; the quenched rescaled path converges to Brownian motion</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix a smooth radial mollifier \(\rho\in C_c^\infty(B_1)\) with \(\int_{\mathbb R^2}\rho=1\). Let \(\Phi\) be a whole-plane Gaussian free field modulo additive constants, set \(\psi=\rho*\Phi\), and let \(f=\nabla^\perp\psi=(\partial_2\psi,-\partial_1\psi)\). For \(\nu&gt;0\), the diffusion solves \(dX_t=f(X_t)\,dt+\sqrt{2\nu}\,dW_t\) with \(X_0=0\), where \(W\) is standard two-dimensional Brownian motion. Since \(f\cdot\nabla\psi=0\), the drift is tangent to the level sets of \(\psi\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1127,9 +1097,6 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-einstein-relation">Quantitative Einstein relation</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(\lambda\downarrow0\)</span></span><span class="limit-text">\(\lvert\ell_X(\lambda)/\lambda-\Sigma_Xe_1\rvert\le\lambda^{\beta_*}\) below a quenched random scale</span></div>
-            </div>
             <p class="def"><b>Definition.</b> On a probability space \((\Omega,\mathcal F,\mathbb Q)\), let \(d\ge2\), \(\Lambda,r_0\ge1\), let \(\mathbf a\) be a symmetric positive-definite matrix field, and let \(V\) be a scalar field. Assume \((\mathbf a,V)\) is stationary with range of dependence \(r_0\), \(\Lambda^{-1}|\xi|^2\le\xi\cdot\mathbf a(x)\xi\le\Lambda|\xi|^2\), \(|V(x)|\le\Lambda\), and both fields are \(\Lambda\)-Lipschitz. The unforced generator is \(\mathcal Lf=\tfrac12e^{2V}\nabla\!\cdot(e^{-2V}\mathbf a\nabla f)\). For \(\mathbb Q\)-almost every environment, \(\varepsilon X_{t/\varepsilon^2}\Rightarrow W_t\), where \(\mathbf E[W_t\otimes W_t]=t\Sigma_X\). Adding force \(\lambda e_1\) gives \(\mathcal L^\lambda f=\mathcal Lf+\lambda\mathbf a e_1\!\cdot\nabla f\); define the deterministic velocity \(\ell_X(\lambda)\) by \(X_t^\lambda/t\to\ell_X(\lambda)\) almost surely.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1191,9 +1158,6 @@
         <div class="col">
             <p class="family">Random geometry</p>
             <h2 id="t-sphere-packing">Random walk on orthogonal tilings</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">mesh \(\to0\)</span></span><span class="limit-text">the stopped interpolated trace converges in law to Brownian trace in the curve metric modulo increasing time reparametrisation, uniformly in the starting point</span></div>
-            </div>
             <p class="def"><b>Definition.</b> An orthogonal tiling of \(D\subseteq\mathbb R^d\) is a locally finite cover by closed convex polytopes \(P_v\) with disjoint interiors and marked points \(v\in\operatorname{int}P_v\). Declare \(v\sim w\) exactly when \(P_v\cap P_w\) is a \((d-1)\)-dimensional facet, and require \(w-v\) to be orthogonal to its affine hull. Put \(a(v,w)=\operatorname{vol}_{d-1}(P_v\cap P_w)/\lVert v-w\rVert\), \(a(v)=\sum_{w\sim v}a(v,w)\), and \(p(v,w)=a(v,w)/a(v)\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1258,10 +1222,7 @@
         <div class="col">
             <p class="family">Aggregation</p>
             <h2 id="t-idla-cylinder">Internal DLA on cylinders</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(N\to\infty\)</span></span><span class="limit-text">finite collections of rescaled low eigenmodes of the lazy base kernel converge to the corresponding centred half-cylinder GFF marginals</span></div>
-            </div>
-            <p class="def"><b>Definition.</b> Let \(V_N\) be a finite connected vertex-transitive graph with a lazy transition kernel \(P_N\). Initially occupy \(V_N\times\mathbb Z_{\le0}\). Each particle starts uniformly on \(V_N\times\{0\}\); from \((x,y)\) it moves to \((x,y+1)\) or \((x,y-1)\), each with probability \(1/4\), and otherwise moves to \((x^{\prime},y)\) with probability \(P_N(x,x^{\prime})/2\). It settles at the first unoccupied vertex.</p>
+            <p class="def"><b>Definition.</b> Let \(V_N\) be a finite connected vertex-transitive graph and let \(P_N\) be its lazy simple-random-walk kernel. Initially occupy \(V_N\times\mathbb Z_{\le0}\). Each particle starts uniformly on \(V_N\times\{0\}\); from \((x,y)\) it moves to \((x,y+1)\) or \((x,y-1)\), each with probability \(1/4\), and otherwise moves to \((x^{\prime},y)\) with probability \(P_N(x,x^{\prime})/2\). It settles at the first unoccupied vertex.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
                     <canvas id="rule-idla-cylinder" width="1080" height="1080" data-rule-anim="idla-cylinder" role="img" aria-label="walk from a uniform point on the base layer until the first unoccupied site"></canvas>
@@ -1292,12 +1253,35 @@
             <div class="model-key cylinder-key"><span>Growth: settlement order · Field: rose = occupied above \(n/N\), cyan = hole below \(n/N\)</span><span class="model-age-ramp" aria-hidden="true"></span></div>
             <p class="caption"><b>Finite cylinder computation.</b> On \(V_{48}=\mathbb Z_{48}\), \(P_{48}(x,x)=1/2\) and \(P_{48}(x,x\pm1)=1/4\). Each of 1,728 walks starts uniformly at height zero and uses the product kernel defined above; negative excursions are sampled from their exact return law. If \(A_n\) is the occupied set after \(n\) particles, put \(h_{\mathrm{out}}=\max\{y:(x,y)\in A_n\}\) and \(h_{\mathrm{in}}=\max\{h:V_{48}\times\{1,\ldots,h\}\subset A_n\}\), with \(h_{\mathrm{in}}=0\) when the set is empty. The deviation readout is \(\max\{h_{\mathrm{out}}-n/48,n/48-h_{\mathrm{in}}\}\). Field shows the signed discrepancy from \(\{y\le n/48\}\); the last readout is \(48^{-1}\sum_{(x,y)\in A_n,\ y&gt;0}\sqrt2\cos(2\pi x/48)\).</p>
         </div>
+</section>
+
+
+    <section class="band band--void band--model-live">
+        <div class="instrument instrument--model instrument--cylinder3d" data-model-theme="idla-cylinder-3d">
+            <div class="model-control-shelf" aria-label="Three-dimensional cylinder IDLA controls">
+                <div class="model-control-groups">
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-cyl3d-run="pause">Pause</button><button type="button" class="btn" data-cyl3d-run="step">Step</button><button type="button" class="btn" data-cyl3d-run="replay">Replay</button></div></div>
+                </div>
+            </div>
+            <div class="stage model-stage cylinder3d-stage" style="--stage-max:840px">
+                <canvas id="cylinder3d-canvas" width="1680" height="1400" role="img" aria-label="Internal DLA on the three-dimensional discrete cylinder Z_15 squared times Z. The occupied vertices above height zero are rendered as prisms, with color recording settlement order. Drag horizontally to rotate the projection."></canvas>
+                <span class="model-phase-chip" id="cylinder3d-note">15 &times; 15 square torus</span>
+            </div>
+            <dl class="readout model-readout">
+                <div><dt>Particles \(n\)</dt><dd id="cylinder3d-count">0</dd></div>
+                <div><dt>Flat-interface height \(n/225\)</dt><dd id="cylinder3d-mean">0.0</dd></div>
+                <div><dt>Maximum inner/outer deviation from \(n/225\)</dt><dd id="cylinder3d-span">0.0</dd></div>
+                <div><dt>Highest occupied layer</dt><dd id="cylinder3d-outer">0</dd></div>
+            </dl>
+            <div class="model-key cylinder3d-key"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
+            <p class="caption"><b>Square-torus cylinder.</b> Here \(V_N=\mathbb Z_{15}^{2}\), \(N=225\), and \(P_N\) is lazy nearest-neighbour walk: \(P_N(x,x)=1/2\) and \(P_N(x,x\pm e_i)=1/8\) for \(i=1,2\). Each occupied vertex of \(V_N\times\mathbb Z_{&gt;0}\) is represented by a prism, as in the paper&rsquo;s cylinder figures. The simulation uses the transition kernel in the definition; an excursion below height zero is replaced by its exact spectral return displacement on \(V_N\). Color records settlement order. Drag horizontally to rotate the projection.</p>
+        </div>
     </section>
 
 
     <section class="band band--paper">
         <div class="col">
-            <p class="statement"><b>Theorem.</b> Let \(P_N\) be the lazy base kernel on a finite connected vertex-transitive graph \(V_N\), \(|V_N|=N\), and let \((f_k^N,\lambda_k(N))\) be eigenpairs satisfying \(P_Nf_k^N=\lambda_k(N)f_k^N\) and \(N^{-1}\sum_x f_j^N(x)f_k^N(x)=\delta_{jk}\). Put \(R_h=V_N\times\{y\in\mathbb Z:y\le h\}\), and let \(A(T)\) be the IDLA cluster after \(T\) particles, started from \(A(0)=R_0\). Set \(D_T=\mathbf1_{A(T)}-\mathbf1_{R_{T/N}}\) and, for finitely supported \(D\), \(\langle\!\langle D,\phi\rangle\!\rangle=\sum_{(x,y)\in V_N\times\mathbb Z}D(x,y)\phi(x,y)\). Fix \(y_0&gt;0\), an integer \(K\ge2\) independent of \(N\), and functions \(\alpha_k\), independent of \(N\), that are differentiable with bounded derivative near \(y_0\). Define \(\log_+s=\max\{\log s,0\}\). Suppose \(a_N&gt;0\), \(a_N/(\log N+\log_+a_N)\to\infty\), and \(a_N\sqrt{2(1-\lambda_k(N))}\to\gamma_k\in(0,\infty)\) for \(2\le k\le K\). For \(T=N\lfloor y_0a_N\rfloor\) and \(\phi_N(x,y)=\sum_{k=2}^K\alpha_k(y/a_N)f_k^N(x)\), \[(Na_N)^{-1/2}\langle\!\langle D_T,\phi_N\rangle\!\rangle\Rightarrow\mathcal N\!\left(0,\sum_{k=2}^K\alpha_k(y_0)^2\frac{1-e^{-2\gamma_k y_0}}{2\gamma_k}\right).\] This variance is exactly that of the corresponding \(K-1\) eigenmodes in the height-\(y_0\) slice of a Dirichlet GFF on a half-cylinder whose horizontal eigenvalues are \(\gamma_k^2\). <span class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.9)</span></p>
+            <p class="statement"><b>Theorem.</b> Let \(P_N\) be the lazy simple-random-walk kernel on a finite connected vertex-transitive graph \(V_N\), \(|V_N|=N\), and let \((f_k^N,\lambda_k(N))\) be eigenpairs satisfying \(P_Nf_k^N=\lambda_k(N)f_k^N\) and \(N^{-1}\sum_x f_j^N(x)f_k^N(x)=\delta_{jk}\). Put \(R_h=V_N\times\{y\in\mathbb Z:y\le h\}\), and let \(A(T)\) be the IDLA cluster after \(T\) particles, started from \(A(0)=R_0\). Set \(D_T=\mathbf1_{A(T)}-\mathbf1_{R_{T/N}}\) and, for finitely supported \(D\), \(\langle\!\langle D,\phi\rangle\!\rangle=\sum_{(x,y)\in V_N\times\mathbb Z}D(x,y)\phi(x,y)\). Fix \(y_0&gt;0\), an integer \(K\ge2\) independent of \(N\), and functions \(\alpha_k\), independent of \(N\), that are differentiable with bounded derivative near \(y_0\). Define \(\log_+s=\max\{\log s,0\}\). Suppose \(a_N&gt;0\), \(a_N/(\log N+\log_+a_N)\to\infty\), and \(a_N\sqrt{2(1-\lambda_k(N))}\to\gamma_k\in(0,\infty)\) for \(2\le k\le K\). For \(T=N\lfloor y_0a_N\rfloor\) and \(\phi_N(x,y)=\sum_{k=2}^K\alpha_k(y/a_N)f_k^N(x)\), \[(Na_N)^{-1/2}\langle\!\langle D_T,\phi_N\rangle\!\rangle\Rightarrow\mathcal N\!\left(0,\sum_{k=2}^K\alpha_k(y_0)^2\frac{1-e^{-2\gamma_k y_0}}{2\gamma_k}\right).\] When \(V_N=\mathbb Z_n^d\) with \(N=n^d\), the displayed variance agrees, up to the constant spatial normalization induced by the laziness of \(P_N\), with the variance at height \(y_0\) of the Dirichlet GFF on \(\mathbb T^d\times\mathbb R_+\). The same mode-by-mode identification holds when the base graphs converge spectrally to a compact Riemannian manifold. <span class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.9)</span></p>
             <p class="statement"><b>Theorem.</b> For every \(\nu&gt;0\) and \(m\ge1\), there is \(C=C(\nu,m)&lt;\infty\) such that, with \(\tau_{\mathrm{mix}}\) the \(1/4\)-mixing time, \(T^\#=N\sqrt{\tau_{\mathrm{mix}}}(\log N)^2\), and \(\Delta_N(T)=C\max\!\left\{\log N,\sqrt{\frac{T\wedge T^\#}{N}\left(\log N+\log_+(T/N)\right)}\right\}\), \[\mathbb P\!\left(R_{\lfloor T/N-\Delta_N(T)\rfloor}\subset A(T)\subset R_{T/N+\Delta_N(T)}\right)\ge1-N^{-\nu}\] uniformly for integers \(1\le T\le N^m\), for all sufficiently large \(N\). <span class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.1)</span></p>
             <details class="deeper"><summary>Details</summary>
             <p><b>Proof idea.</b> Pair the discrepancy with a finite sum of base-kernel eigenfunctions and replace the test function by its discrete harmonic extension. The resulting observable is a martingale. A maximal-fluctuation estimate controls the replacement error, while conditional-variance convergence and a martingale central limit theorem give the displayed Gaussian variance.</p>
@@ -1325,9 +1309,6 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-long-range-walk">Critical long-range random conductance walk</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(\varepsilon\downarrow0\)</span></span><span class="limit-text">\(\varepsilon X_{t/(\varepsilon^2\kappa_\varepsilon)}\) converges to Brownian motion with covariance \((\mathbf E[a(0,e_1)]/d)I\); the leading coefficient depends only on the mean conductance</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(d\ge1\) and \(\lambda\in(0,1]\). Assign i.i.d. conductances to unordered pairs, with \(a(x,y)=a(y,x)\) and \(\lambda\le a(x,y)\le\lambda^{-1}\). The continuous-time walk jumps from \(x\) to \(y\) at rate \(a(x,y)|x-y|^{-(d+2)}\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1392,9 +1373,6 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-rotor-walk">Rotor walk</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(t\to\infty\)</span></span><span class="limit-text">almost surely, \(t^{-1/3}R_t\) converges in Hausdorff distance to \(\kappa B\) for a deterministic compact convex set \(B\), and \(t^{-2/3}|R_t|\) converges to a constant in \((0,\infty)\)</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Every site initially stores an independent uniform random arrow. Start the walker at \(X_0=0\). At each step, turn the arrow at the walker&rsquo;s site 90 degrees clockwise, move one edge in its new direction, and leave it turned. Once the arrows are sampled, the walk is deterministic. Let \(R_t=\{X_0,\ldots,X_t\}\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1460,9 +1438,6 @@
         <div class="col">
             <p class="family">Aggregation</p>
             <h2 id="t-dla">Diffusion-limited aggregation</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--obs"><span class="arrow-label">1.695219</span></span><span class="limit-text">the ordinary least-squares slope of \(\log|A_{60000}\cap B_r|\) on \(\log r\) over the 26 retained radii</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Let \(A_1=\{0\}\subset\mathbb Z^2\). Conditional on \(A_n\), sample \(Z_{n+1}\) from harmonic measure viewed from infinity on the outer vertex boundary of \(A_n\), and set \(A_{n+1}=A_n\cup\{Z_{n+1}\}\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1526,9 +1501,6 @@
         <div class="col">
             <p class="family">Aggregation &middot; Classical model</p>
             <h2 id="t-idla">Internal DLA</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(r_n=(n/\omega_d)^{1/d}\)</span></span><span class="limit-text">\(r_n^{-1}A_n\) converges to the unit Euclidean ball; in dimension two, averaged lateness fluctuations converge to the augmented Gaussian free field</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(d\ge2\) and set \(A_0=\varnothing\subset\mathbb Z^d\). Given independent simple random walks \(S^{(n)}\) on \(\mathbb Z^d\), each started at the origin, let \(\tau_n=\inf\{k\ge0:S_k^{(n)}\notin A_{n-1}\}\) and \(A_n=A_{n-1}\cup\{S_{\tau_n}^{(n)}\}\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1593,9 +1565,6 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-ust">Uniform spanning tree</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">mesh \(\to0\)</span></span><span class="limit-text">Schramm&ndash;Loewner evolution: chordal \(\mathrm{SLE}_{8}\) for a mixed-boundary Peano curve, radial \(\mathrm{SLE}_{2}\) for loop-erased walk</span></div>
-            </div>
             <p class="def"><b>Definition.</b> On a finite connected unweighted graph, fix a root and initialize the tree to the singleton root. Fix an ordering of the remaining vertices. From each vertex not yet in the tree, run simple random walk until it hits the tree, erase loops chronologically, and add the loop-erased path. Wilson&rsquo;s theorem states that the final spanning tree is uniform and its law is independent of the prescribed ordering.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1662,9 +1631,6 @@
         <div class="col">
             <p class="family">Aggregation</p>
             <h2 id="t-rotor-aggregation">Rotor-router aggregation</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">\(r=(n/\omega_d)^{1/d}\)</span></span><span class="limit-text">a Euclidean ball, with inner error \(O(\log r)\) and outer error \(O(r^{1-1/d}\log r)\)</span></div>
-            </div>
             <p class="def"><b>Definition.</b> Fix \(d\ge2\), a cyclic order of \(\{\pm e_1,\ldots,\pm e_d\}\), and an initial rotor at every site of \(\mathbb Z^d\). Set \(A_0=\varnothing\). For \(n\ge1\), release a particle at the origin; while it is in \(A_{n-1}\), advance the rotor at its current site to the next direction and follow that edge. At the first site \(z_n\notin A_{n-1}\), stop the particle and set \(A_n=A_{n-1}\cup\{z_n\}\). The displayed run has \(d=2\), clockwise rotor order, and all rotors initially east.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1731,9 +1697,6 @@
         <div class="col">
             <p class="family">Sandpiles</p>
             <h2 id="t-apollonian">Integer superharmonic matrices on \(\mathbb{Z}^{2}\)</h2>
-            <div class="limits">
-              <div class="limit"><span class="arrow arrow--thm"><span class="arrow-label">classification</span></span><span class="limit-text">each circle \(C\) in an Apollonian band packing gives a maximal admissible matrix \(A_C\), an odometer with periodic Laplacian, and a fundamental tile of area equal to the curvature of \(C\)</span></div>
-            </div>
             <p class="def"><b>Definition.</b> For \(k\in\mathbb Z\), let \(\mathcal B_k\) be the minimal collection of general circles containing the lines \(x_1=2k\), \(x_1=2k+2\) and the unit circle centred at \((2k+1,0)\), and closed under adjoining both Soddy circles of every pairwise-tangent triple; set \(\mathcal B=\bigcup_{k\in\mathbb Z}\mathcal B_k\). With \(\Delta g(x)=\sum_{y\sim x}(g(y)-g(x))\), a symmetric matrix \(A\) is integer superharmonic (admissible) when an integer-valued \(g\) satisfies \(\Delta g\le1\) and \(g(x)=\tfrac12x\cdot Ax+o(|x|^2)\). Write \(A\preccurlyeq B\) when \(B-A\) is positive semidefinite. If \(C\in\mathcal B\) has centre \((x_1,x_2)\) and radius \(r\), then \(A_C=\tfrac12\bigl(\begin{smallmatrix}r+x_1&amp;x_2\\x_2&amp;r-x_1\end{smallmatrix}\bigr)\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
@@ -1825,6 +1788,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=6cebaeff"></script>
+<script defer src="gallery.js?v=e858a93a"></script>
 </body>
 </html>
