@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=73b8cadd">
+<link rel="stylesheet" href="gallery.css?v=04d597de">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -1242,12 +1242,11 @@
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
                 <canvas id="cylinder-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on a periodic cylinder. Each walk starts uniformly on height zero, follows the exact lazy cylinder kernel, and settles at the first unoccupied site. Growth colors record settlement time; Field shows signed discrepancy from the flat shape."></canvas>
-                <span class="model-phase-chip" id="cylinder-note">Periodic seam</span>
             </div>
             <dl class="readout model-readout">
                 <div><dt>Particles</dt><dd id="cylinder-count">0</dd></div>
-                <div><dt>Flat-interface height \(n/N\)</dt><dd id="cylinder-mean">0</dd></div>
-                <div><dt>Maximum inner/outer deviation from \(n/N\)</dt><dd id="cylinder-span">0</dd></div>
+                <div><dt>Reference height</dt><dd id="cylinder-mean">0</dd></div>
+                <div><dt>Maximum interface error</dt><dd id="cylinder-span">0</dd></div>
                 <div><dt>\(N^{-1}\sum_{\mathrm{settled}}\sqrt2\cos(2\pi x/N)\)</dt><dd id="cylinder-mode">0.00</dd></div>
             </dl>
             <div class="model-key cylinder-key"><span>Growth: settlement order · Field: rose = occupied above \(n/N\), cyan = hole below \(n/N\)</span><span class="model-age-ramp" aria-hidden="true"></span></div>
@@ -1259,30 +1258,76 @@
     <section class="band band--void band--model-live">
         <div class="instrument instrument--model instrument--cylinder3d" data-model-theme="idla-cylinder-3d">
             <div class="model-control-shelf" aria-label="Three-dimensional cylinder IDLA controls">
-                <div class="model-control-groups">
+                <div class="model-control-groups model-control-groups--two">
+                    <div class="model-control-group"><span class="model-control-label">Base</span><div class="model-segmented model-segmented--three"><button type="button" class="btn is-on" data-cyl3d-base="square" aria-pressed="true">Square</button><button type="button" class="btn" data-cyl3d-base="triangular" aria-pressed="false">Triangular</button><button type="button" class="btn" data-cyl3d-base="nauru" aria-pressed="false">Nauru</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-cyl3d-run="pause">Pause</button><button type="button" class="btn" data-cyl3d-run="step">Step</button><button type="button" class="btn" data-cyl3d-run="replay">Replay</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage cylinder3d-stage" style="--stage-max:840px">
-                <canvas id="cylinder3d-canvas" width="1680" height="1400" role="img" aria-label="Internal DLA on the three-dimensional discrete cylinder Z_15 squared times Z. The occupied vertices above height zero are rendered as prisms, with color recording settlement order. Drag horizontally to rotate the projection."></canvas>
-                <span class="model-phase-chip" id="cylinder3d-note">15 &times; 15 square torus</span>
+                <canvas id="cylinder3d-canvas" width="1680" height="1400" role="img" aria-label="Internal DLA on three-dimensional discrete cylinders over a square torus, a triangular torus, or the Nauru graph. Occupied vertices above height zero are rendered as prisms, with color recording settlement order. Drag horizontally to rotate the projection."></canvas>
             </div>
             <dl class="readout model-readout">
-                <div><dt>Particles \(n\)</dt><dd id="cylinder3d-count">0</dd></div>
-                <div><dt>Flat-interface height \(n/225\)</dt><dd id="cylinder3d-mean">0.0</dd></div>
-                <div><dt>Maximum inner/outer deviation from \(n/225\)</dt><dd id="cylinder3d-span">0.0</dd></div>
+                <div><dt>Particles</dt><dd id="cylinder3d-count">0</dd></div>
+                <div><dt>Reference height</dt><dd id="cylinder3d-mean">0.0</dd></div>
+                <div><dt>Maximum interface error</dt><dd id="cylinder3d-span">0.0</dd></div>
                 <div><dt>Highest occupied layer</dt><dd id="cylinder3d-outer">0</dd></div>
             </dl>
             <div class="model-key cylinder3d-key"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption"><b>Square-torus cylinder.</b> Here \(V_N=\mathbb Z_{15}^{2}\), \(N=225\), and \(P_N\) is lazy nearest-neighbour walk: \(P_N(x,x)=1/2\) and \(P_N(x,x\pm e_i)=1/8\) for \(i=1,2\). Each occupied vertex of \(V_N\times\mathbb Z_{&gt;0}\) is represented by a prism, as in the paper&rsquo;s cylinder figures. The simulation uses the transition kernel in the definition; an excursion below height zero is replaced by its exact spectral return displacement on \(V_N\). Color records settlement order. Drag horizontally to rotate the projection.</p>
+            <p class="caption"><b>Three cylinder bases.</b> The selectable graphs are the three bases in Figure 1 of the paper: the \(15\times15\) square torus (\(N=225\), degree 4), the \(9\times9\) triangular torus (\(N=81\), degree 6), and the Nauru graph \(\mathrm{GP}(12,5)\) (\(N=24\), degree 3). In every case \(P_N(x,x)=1/2\) and \(P_N(x,y)=1/(2\deg x)\) for \(x\sim y\). Each occupied vertex of \(V_N\times\mathbb Z_{&gt;0}\) is represented by a prism whose cross-section is determined by the displayed embedding. The simulation uses the cylinder kernel in the definition; excursions below height zero are sampled from the spectral return kernel on \(V_N\). If \(h_{\mathrm{out}}\) is the highest occupied layer and \(h_{\mathrm{in}}\) is the largest completely occupied layer, the interface-error readout is \(\max\{h_{\mathrm{out}}-n/N,n/N-h_{\mathrm{in}}\}\). Color records settlement order. Drag horizontally to rotate the projection.</p>
         </div>
     </section>
 
 
     <section class="band band--paper">
         <div class="col">
-            <p class="statement"><b>Theorem.</b> Let \(P_N\) be the lazy simple-random-walk kernel on a finite connected vertex-transitive graph \(V_N\), \(|V_N|=N\), and let \((f_k^N,\lambda_k(N))\) be eigenpairs satisfying \(P_Nf_k^N=\lambda_k(N)f_k^N\) and \(N^{-1}\sum_x f_j^N(x)f_k^N(x)=\delta_{jk}\). Put \(R_h=V_N\times\{y\in\mathbb Z:y\le h\}\), and let \(A(T)\) be the IDLA cluster after \(T\) particles, started from \(A(0)=R_0\). Set \(D_T=\mathbf1_{A(T)}-\mathbf1_{R_{T/N}}\) and, for finitely supported \(D\), \(\langle\!\langle D,\phi\rangle\!\rangle=\sum_{(x,y)\in V_N\times\mathbb Z}D(x,y)\phi(x,y)\). Fix \(y_0&gt;0\), an integer \(K\ge2\) independent of \(N\), and functions \(\alpha_k\), independent of \(N\), that are differentiable with bounded derivative near \(y_0\). Define \(\log_+s=\max\{\log s,0\}\). Suppose \(a_N&gt;0\), \(a_N/(\log N+\log_+a_N)\to\infty\), and \(a_N\sqrt{2(1-\lambda_k(N))}\to\gamma_k\in(0,\infty)\) for \(2\le k\le K\). For \(T=N\lfloor y_0a_N\rfloor\) and \(\phi_N(x,y)=\sum_{k=2}^K\alpha_k(y/a_N)f_k^N(x)\), \[(Na_N)^{-1/2}\langle\!\langle D_T,\phi_N\rangle\!\rangle\Rightarrow\mathcal N\!\left(0,\sum_{k=2}^K\alpha_k(y_0)^2\frac{1-e^{-2\gamma_k y_0}}{2\gamma_k}\right).\] When \(V_N=\mathbb Z_n^d\) with \(N=n^d\), the displayed variance agrees, up to the constant spatial normalization induced by the laziness of \(P_N\), with the variance at height \(y_0\) of the Dirichlet GFF on \(\mathbb T^d\times\mathbb R_+\). The same mode-by-mode identification holds when the base graphs converge spectrally to a compact Riemannian manifold. <span class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.9)</span></p>
-            <p class="statement"><b>Theorem.</b> For every \(\nu&gt;0\) and \(m\ge1\), there is \(C=C(\nu,m)&lt;\infty\) such that, with \(\tau_{\mathrm{mix}}\) the \(1/4\)-mixing time, \(T^\#=N\sqrt{\tau_{\mathrm{mix}}}(\log N)^2\), and \(\Delta_N(T)=C\max\!\left\{\log N,\sqrt{\frac{T\wedge T^\#}{N}\left(\log N+\log_+(T/N)\right)}\right\}\), \[\mathbb P\!\left(R_{\lfloor T/N-\Delta_N(T)\rfloor}\subset A(T)\subset R_{T/N+\Delta_N(T)}\right)\ge1-N^{-\nu}\] uniformly for integers \(1\le T\le N^m\), for all sufficiently large \(N\). <span class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.1)</span></p>
+            <div class="theorem-suite">
+                <section class="theorem-common">
+                    <p class="theorem-kicker">Common setup</p>
+                    <p>For each \(N\ge2\), let \(V_N\) be a finite connected vertex-transitive graph with \(|V_N|=N\), and let \(P_N\) be its lazy simple-random-walk kernel. On \(\mathbb G_N=V_N\times\mathbb Z\), put \(R_h=V_N\times\{y\in\mathbb Z:y\le h\}\). Start IDLA from \(A(0)=R_0\), and write \(A(T)\) for the cluster after \(T\) particles.</p>
+                </section>
+
+                <article class="theorem-card">
+                    <p class="theorem-kicker">Theorem 1.1 &middot; maximal fluctuations</p>
+                    <h3>Uniform shape bound at polynomial times</h3>
+                    <div class="theorem-setup">
+                        <p><b>Parameters.</b> Fix \(\nu&gt;0\) and \(m\ge1\). Let \(\tau_{\mathrm{mix}}\) be the total-variation mixing time of \(P_N\) at threshold \(1/4\), and consider integers \(1\le T\le N^m\).</p>
+                        <p><b>Scales.</b> Write \(\log_+s=\max\{\log s,0\}\). For a constant \(C=C(\nu,m)\), set
+                        \[T^\#=N\sqrt{\tau_{\mathrm{mix}}}(\log N)^2,\]
+                        \[B_N(T)=\frac{T\wedge T^\#}{N}\left(\log N+\log_+(T/N)\right),\]
+                        \[\Delta_N(T)=C\max\!\left\{\log N,\sqrt{B_N(T)}\right\}.\]
+                        Finally put \(\ell_N(T)=\lfloor T/N-\Delta_N(T)\rfloor\) and \(u_N(T)=T/N+\Delta_N(T)\).</p>
+                    </div>
+                    <div class="theorem-result">
+                        <p class="theorem-result-label">Conclusion</p>
+                        \[\mathbb P\!\left(R_{\ell_N(T)}\subset A(T)\subset R_{u_N(T)}\right)
+                        \ge1-N^{-\nu}.\]
+                        <p>The estimate holds uniformly over \(1\le T\le N^m\), for every sufficiently large \(N\).</p>
+                    </div>
+                    <p class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.1)</p>
+                </article>
+
+                <article class="theorem-card">
+                    <p class="theorem-kicker">Theorem 1.9 &middot; Gaussian fluctuations</p>
+                    <h3>Central limit theorem for finitely many low modes</h3>
+                    <div class="theorem-setup">
+                        <p><b>Eigenmodes.</b> Let \(P_Nf_k^N=\lambda_k(N)f_k^N\), normalized by \(N^{-1}\sum_x f_j^N(x)f_k^N(x)=\delta_{jk}\).</p>
+                        <p><b>Discrepancy.</b> Set \(D_T=\mathbf1_{A(T)}-\mathbf1_{R_{T/N}}\) and \(\langle\!\langle D,\phi\rangle\!\rangle=\sum_{(x,y)\in\mathbb G_N}D(x,y)\phi(x,y)\).</p>
+                        <p><b>Test function and scaling.</b> Fix \(y_0&gt;0\) and an integer \(K\ge2\) independent of \(N\). For \(2\le k\le K\), let \(\alpha_k\), independent of \(N\), be differentiable with bounded derivative near \(y_0\). Assume
+                        \[\frac{a_N}{\log N+\log_+a_N}\longrightarrow\infty,\]
+                        \[a_N\sqrt{2(1-\lambda_k(N))}\longrightarrow\gamma_k\in(0,\infty).\]
+                        Put \(T=N\lfloor y_0a_N\rfloor\), define \(\phi_N(x,r)=\sum_{k=2}^K\alpha_k(r)f_k^N(x)\), and let \(\varphi_N(x,y)=\phi_N(x,y/a_N)\). Define
+                        \[\sigma^2(\phi)=\sum_{k=2}^K\alpha_k(y_0)^2
+                        \frac{1-e^{-2\gamma_k y_0}}{2\gamma_k}.\]</p>
+                    </div>
+                    <div class="theorem-result">
+                        <p class="theorem-result-label">Conclusion</p>
+                        \[\frac{\langle\!\langle D_T,\varphi_N\rangle\!\rangle}{\sqrt{Na_N}}
+                        \Rightarrow\mathcal N\!\left(0,\sigma^2(\phi)\right).\]
+                    </div>
+                    <p class="theorem-note">When \(V_N=\mathbb Z_n^d\), \(N=n^d\), this variance matches the height-\(y_0\) slice of the Dirichlet GFF on \(\mathbb T^d\times\mathbb R_+\), up to the constant rescaling induced by the lazy kernel. The same mode-by-mode identification applies to bases converging spectrally to a compact Riemannian manifold.</p>
+                    <p class="src">(Bou-Rabee&ndash;Silvestri&ndash;Yadin, <a href="https://arxiv.org/abs/2604.21142">arXiv:2604.21142</a>, Theorem 1.9)</p>
+                </article>
+            </div>
             <details class="deeper"><summary>Details</summary>
             <p><b>Proof idea.</b> Pair the discrepancy with a finite sum of base-kernel eigenfunctions and replace the test function by its discrete harmonic extension. The resulting observable is a martingale. A maximal-fluctuation estimate controls the replacement error, while conditional-variance convergence and a martingale central limit theorem give the displayed Gaussian variance.</p>
             <p>The displayed base graph is a cycle, whose eigenfunctions are Fourier modes; the readout records the normalized first cosine mode. Negative excursions below the source layer are sampled through their exact return distribution.</p>
@@ -1788,6 +1833,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=e858a93a"></script>
+<script defer src="gallery.js?v=8c197da7"></script>
 </body>
 </html>

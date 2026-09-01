@@ -1500,6 +1500,71 @@ a:hover { text-decoration-thickness: 1.5px; }
 .src { color: var(--on-paper-quiet); font-size: var(--t-small); }
 .src a { text-decoration-color: var(--rule-paper); }
 
+.theorem-suite {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(18px, 3vh, 30px);
+}
+.theorem-common,
+.theorem-card {
+    min-width: 0;
+    padding: clamp(20px, 3.6vw, 34px);
+    border: 1px solid var(--rule-paper);
+}
+.theorem-common {
+    border-left: 4px solid var(--on-paper-faint);
+    background: color-mix(in srgb, var(--paper-deep) 24%, var(--paper));
+}
+.theorem-common p:last-child { margin-bottom: 0; }
+.theorem-card {
+    background: color-mix(in srgb, var(--paper-deep) 38%, var(--paper));
+}
+.theorem-kicker,
+.theorem-result-label {
+    color: var(--rose);
+    font: 500 var(--t-micro)/1.25 var(--mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+.theorem-kicker { margin-bottom: 10px; }
+.theorem-card h3 {
+    margin-bottom: clamp(18px, 2.7vh, 26px);
+    font-size: var(--t-h3);
+    line-height: 1.16;
+}
+.theorem-setup {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    gap: 12px;
+    color: var(--on-paper-quiet);
+    font-size: var(--t-small);
+    line-height: 1.58;
+}
+.theorem-setup p { margin: 0; }
+.theorem-setup b { color: var(--on-paper); font-weight: 600; }
+.theorem-result {
+    min-width: 0;
+    margin: clamp(20px, 3vh, 28px) 0 16px;
+    padding: clamp(16px, 2.8vw, 24px);
+    border-left: 4px solid var(--rose);
+    background: color-mix(in srgb, var(--rose) 7%, transparent);
+    color: var(--on-paper);
+}
+.theorem-result-label { margin-bottom: 10px; }
+.theorem-result p:last-child {
+    margin: 10px 0 0;
+    color: var(--on-paper-quiet);
+    font-size: var(--t-small);
+}
+.theorem-note {
+    margin: 0 0 16px;
+    color: var(--on-paper-quiet);
+    font-size: var(--t-small);
+    line-height: 1.58;
+}
+.theorem-card .src { display: block; margin-top: 14px; }
+
 .caption {
     max-width: var(--measure);
     margin: clamp(18px, 2.4vh, 28px) auto 0;
