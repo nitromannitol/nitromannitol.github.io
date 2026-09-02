@@ -9583,12 +9583,12 @@ const Instruments = (function () {
         if (!canvas) return null;
         const ctx = canvas.getContext('2d');
         const W = canvas.width, H = canvas.height;
-        const WATCH = 0x3fffffff, EVERY = 280, CAP = 56, BAND = 18, FRONT_AGE = 4;
+        const WATCH = 0x3fffffff, EVERY = 180, CAP = 800, BAND = 18, FRONT_AGE = 4;
         /* the three arrival bands, the same three the key beneath the stage
            shows */
         const CYCLE = [[86, 180, 233], [204, 121, 167], [230, 159, 0]];
-        /* the bake's cells are in a 960 by 820 frame; the stage is larger */
-        const SX = W / 960, SY = H / 820;
+        /* the bake's cells are in a square 960 by 960 Tutte-disc frame */
+        const SX = W / 960, SY = H / 960;
 
         const elSweeps = $('#mcrt-sweeps'), elCells = $('#mcrt-cells'),
               elArea = $('#mcrt-area'), elExcess = $('#mcrt-excess'),
@@ -9601,17 +9601,23 @@ const Instruments = (function () {
         const rctx = recC.getContext('2d');
 
         let DATA = null, G = null, key = 'sqrt2', underImg = {};
-        let m, e, seen, deg, off, nbr, interior, cells, ppm, odo;
+        let m, e, seen, deg, off, nbr, interior, cells, xy, ppm, odo;
         let arrived, sweeps, hiNow, totNow, ppmSum, done, front, toppled;
         let ready = false, pace = 'watch', userPaused = false, pageAwake = true;
 
         function cellPath(c, i) {
-            const v = cells[i];
-            if (!v || v.length < 6) return false;
+            const raw = cells[i];
+            if (!raw || !raw.length) return false;
+            const pieces = typeof raw[0] === 'number' ? [raw] : raw;
             c.beginPath();
-            c.moveTo(v[0] * SX, v[1] * SY);
-            for (let k = 2; k < v.length; k += 2) c.lineTo(v[k] * SX, v[k + 1] * SY);
-            c.closePath();
+            for (let q = 0; q < pieces.length; q++) {
+                const v = pieces[q];
+                if (!v || v.length < 6) continue;
+                c.moveTo(v[0] * SX, v[1] * SY);
+                for (let k = 2; k < v.length; k += 2)
+                    c.lineTo(v[k] * SX, v[k + 1] * SY);
+                c.closePath();
+            }
             return true;
         }
 
@@ -9619,9 +9625,8 @@ const Instruments = (function () {
            dim; it takes its arrival colour only when it first topples, so the
            vivid region on screen is exactly {u~ > 0}, the harmonic ball, and
            the dim rim around it is the mass that arrived and stayed under 1.
-           In the two current 60,000-vertex computations with source mass 600,
-           the positive-mass/toppled counts are 810/495 for gamma=sqrt(2) and
-           873/487 for gamma=sqrt(8/3). */
+           In the current 10,000-vertex disk computation with source mass
+           2,000, 2,214 vertices have positive mass and 1,879 topple. */
         function paintFill(i, atSweep, dim) {
             const band = (atSweep / BAND) | 0;
             const rgb = CYCLE[band % 3];
@@ -9637,6 +9642,19 @@ const Instruments = (function () {
                 rctx.strokeStyle = 'rgba(8,7,11,.72)';
                 rctx.lineWidth = 2;
                 rctx.stroke();
+            } else if (xy && xy[i]) {
+                /* Cut vertices in a dangling tree have no bounded-face area,
+                   but they are genuine states of the walk and sandpile. A
+                   small embedded vertex mark keeps the beginning of the
+                   growth visible without inventing a two-dimensional cell. */
+                const p = xy[i];
+                rctx.beginPath();
+                rctx.arc(p[0] * SX, p[1] * SY, dim ? 2.5 * SX : 3.2 * SX,
+                         0, 2 * Math.PI);
+                rctx.fillStyle = dim
+                    ? 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',.46)'
+                    : 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+                rctx.fill();
             }
         }
 
@@ -9709,7 +9727,7 @@ const Instruments = (function () {
             /* Yellow is reserved for the moving arrival front. Outlining
                every unstable cell would swamp the record once the pile
                enters its long drain, when almost every toppler is active. */
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 1.5;
             for (let q = 0; q < front.length; q++) {
                 const f = front[q];
                 ctx.strokeStyle = 'rgba(240,228,66,' + (0.95 * (1 - f.age / FRONT_AGE)).toFixed(3) + ')';
@@ -9745,24 +9763,31 @@ const Instruments = (function () {
             return true;
         }
 
-        /* a frame: sweeps until enough new cells arrive, or the cap --
-           every frame while the cluster grows lands new cells unless more
-           than 56 sweeps separate two arrivals, which the bake counts at
-           most twice per map. Once the cluster is complete, sweeps until
-           the largest excess falls 30 per cent, so the drain stays short */
+        /* A visible frame advances many algebraic sweeps.  The disk map has
+           long intervals between arrivals, so exposing one sweep per screen
+           frame would make the mathematically active process look frozen. */
         function frame() {
             if (done) return false;
             ageFront();
             const complete = arrived >= G.n;
-            const target = complete ? Infinity : Math.max(1, Math.ceil(0.005 * arrived));
+            const target = complete ? Infinity : Math.max(1, Math.ceil(0.015 * arrived));
+            /* A long tree-like branch can collapse to one point under the
+               Tutte embedding. Do not spend many display frames advancing
+               through states that are distinct on the graph but identical
+               on screen: require a small increment of embedded cell area as
+               well as new graph vertices. Step still exposes one exact sweep. */
+            const areaTarget = complete ? Infinity
+                : Math.max(250, Math.ceil(0.015 * Math.max(1, ppmSum)));
             const drop = complete ? 0.70 : 0;
             const hi0 = hiNow > 0 ? hiNow : Infinity;
-            const was = arrived;
+            const was = arrived, areaWas = ppmSum;
             let sw = 0, ok = true;
             do {
                 ok = sweep();
                 sw++;
-            } while (ok && arrived - was < target && hiNow > drop * hi0 && sw < CAP);
+            } while (ok &&
+                     (arrived - was < target || ppmSum - areaWas < areaTarget) &&
+                     hiNow > drop * hi0 && sw < CAP);
             draw(); syncControls();
             if (!ok || hiNow < G.tol) { halt(); return false; }
             if (note) note.textContent = complete
@@ -9785,7 +9810,7 @@ const Instruments = (function () {
             halt();
         }
 
-        const clock = paced({ watch: WATCH, every: EVERY, tick: tick,
+        const clock = paced({ watch: WATCH, every: EVERY, tick: frame,
                               frame: frame, finish: finishNow });
 
         function replay(autoplay) {
@@ -9801,7 +9826,7 @@ const Instruments = (function () {
                holding mass: a cell can receive and never reach 1. */
             odo = new Float64Array(n);
             deg = G.degA; off = G.offA; nbr = G.nbrA;
-            interior = G.intA; cells = G.cells; ppm = G.ppm;
+            interior = G.intA; cells = G.cells; xy = G.xy; ppm = G.ppm;
             m[G.source] = G.mass;
             seen[G.source] = 1;
             arrived = 1; sweeps = 0; hiNow = G.mass - 1; totNow = G.mass - 1;
@@ -9861,20 +9886,15 @@ const Instruments = (function () {
             fetch((window.galleryAssets && window.galleryAssets.mcrtRun)
                 || 'plates/p-mcrt-run.json').then(function (r) { return r.json(); }),
             loadImage((window.galleryAssets && window.galleryAssets.mcrtMeshSqrt2)
-                || 'plates/p-mcrt-mesh-sqrt2-void.png'),
-            loadImage((window.galleryAssets && window.galleryAssets.mcrtMeshUniform)
-                || 'plates/p-mcrt-mesh-uniform-void.png')
+                || 'plates/p-mcrt-mesh-sqrt2-void.png')
         ]).then(function (got) {
             DATA = got[0];
             underImg.sqrt2 = got[1];
-            underImg.uniform = got[2];
-            ['sqrt2', 'uniform'].forEach(function (k) {
-                const g = DATA[k];
-                g.degA = Int32Array.from(g.deg);
-                g.offA = Int32Array.from(g.off);
-                g.nbrA = Int32Array.from(g.nbr);
-                g.intA = Uint8Array.from(g.interior);
-            });
+            const g = DATA.sqrt2;
+            g.degA = Int32Array.from(g.deg);
+            g.offA = Int32Array.from(g.off);
+            g.nbrA = Int32Array.from(g.nbr);
+            g.intA = Uint8Array.from(g.interior);
             ready = true; replay(!REDUCED);
             if (REDUCED) finishNow(); else startForPace();
         }).catch(function (err) {
@@ -12143,7 +12163,7 @@ const Instruments = (function () {
         /* settled cells take the site's attachment ramp by settlement order,
            as the key under the stage says */
         const ORDER_RAMP = rampOf([[111,94,224], [204,121,167], [150,205,240], [255,248,232]]);
-        const EDGE_RATE = 46, SPAWN_HOLD = .12, LOOP_HOLD = 2.2;
+        const EDGE_RATE = 110, SPAWN_HOLD = .10, LOOP_HOLD = 2.2;
         /* the first walks are slow enough to be followed edge by edge; the
            pace then rises to the rate that fills the cluster */
         function edgeRate() {
@@ -12152,7 +12172,7 @@ const Instruments = (function () {
         const ghost = document.createElement('canvas'); ghost.width = W; ghost.height = H;
         const ghostCtx = ghost.getContext('2d');
 
-        let DATA = null, G = null, key = 'sqrt2', ready = false;
+        let DATA = null, G = null, key = 'sqrt2', mesh = null, ready = false;
         let occupied, order, distance, centres, target = 0, particles = 0, steps = 0;
         let radius = 0, active = null, spawnClock = 0, doneAt = 0, ghostAlpha = 0;
         let runSeed = 0x617e3b29, seed = runSeed;
@@ -12163,19 +12183,34 @@ const Instruments = (function () {
             return (seed >>> 0) / 4294967296;
         }
         function cellPath(c, i) {
-            const p = G.cells[i]; if (!p || p.length < 6) return false;
-            c.beginPath(); c.moveTo(p[0] * W / 960, p[1] * H / 820);
-            for (let k = 2; k < p.length; k += 2)
-                c.lineTo(p[k] * W / 960, p[k + 1] * H / 820);
-            c.closePath(); return true;
+            const raw = G.cells[i]; if (!raw || !raw.length) return false;
+            const pieces = typeof raw[0] === 'number' ? [raw] : raw;
+            c.beginPath();
+            for (let q = 0; q < pieces.length; q++) {
+                const p = pieces[q]; if (!p || p.length < 6) continue;
+                c.moveTo(p[0] * W / 960, p[1] * H / 960);
+                for (let k = 2; k < p.length; k += 2)
+                    c.lineTo(p[k] * W / 960, p[k + 1] * H / 960);
+                c.closePath();
+            }
+            return true;
         }
         function buildGeometry() {
             const n = G.n;
             centres = new Array(n);
             for (let i = 0; i < n; i++) {
-                const p = G.cells[i]; let x = 0, y = 0, m = 0;
-                for (let k = 0; k + 1 < p.length; k += 2) { x += p[k]; y += p[k + 1]; m++; }
-                centres[i] = [x / m * W / 960, y / m * H / 820];
+                const raw = G.cells[i];
+                const pieces = typeof raw[0] === 'number' ? [raw] : raw;
+                let x = 0, y = 0, m = 0;
+                for (let q = 0; q < pieces.length; q++) {
+                    const p = pieces[q];
+                    for (let k = 0; k + 1 < p.length; k += 2) {
+                        x += p[k]; y += p[k + 1]; m++;
+                    }
+                }
+                centres[i] = m
+                    ? [x / m * W / 960, y / m * H / 960]
+                    : [G.xy[i][0] * W / 960, G.xy[i][1] * H / 960];
             }
             distance = new Int16Array(n); distance.fill(-1); distance[G.source] = 0;
             const q = new Int32Array(n); let head = 0, tail = 1; q[0] = G.source;
@@ -12194,7 +12229,7 @@ const Instruments = (function () {
         function resetState() {
             occupied = new Uint8Array(G.n); order = new Int16Array(G.n); order.fill(-1);
             particles = 0; steps = 0; radius = 0; active = null; spawnClock = 0; doneAt = 0;
-            seed = runSeed; target = Math.min(128, Math.max(72, Math.floor(.16 * G.n)));
+            seed = runSeed; target = Math.min(360, Math.max(180, Math.floor(.18 * G.n)));
             settle(G.source);             // the first particle starts and settles at the source
             if (!REDUCED) beginParticle();
         }
@@ -12268,10 +12303,22 @@ const Instruments = (function () {
                 if (note) note.textContent = 'Loading exact finite graph';
                 return;
             }
-            for (let i = 0; i < G.n; i++) if (cellPath(ctx, i)) {
-                ctx.fillStyle = occupied[i] ? colour(i) : 'rgba(74,74,94,.24)'; ctx.fill();
-                ctx.strokeStyle = occupied[i] ? 'rgba(8,7,11,.76)' : 'rgba(201,191,168,.17)';
-                ctx.lineWidth = occupied[i] ? 1.15 : .65; ctx.stroke();
+            if (mesh) {
+                ctx.globalAlpha = .34;
+                ctx.drawImage(mesh, 0, 0, W, H);
+                ctx.globalAlpha = 1;
+            }
+            for (let i = 0; i < G.n; i++) if (occupied[i] && cellPath(ctx, i)) {
+                ctx.fillStyle = colour(i); ctx.fill();
+                ctx.strokeStyle = 'rgba(8,7,11,.76)';
+                ctx.lineWidth = 1.15; ctx.stroke();
+            }
+            /* Vertices not incident to a bounded face have no cell to fill.
+               Draw only the occupied ones, at their actual Tutte position. */
+            for (let i = 0; i < G.n; i++) if (occupied[i] && (!G.cells[i] || !G.cells[i].length)) {
+                const p = centres[i];
+                ctx.beginPath(); ctx.arc(p[0], p[1], 2.6 * W / 960, 0, 2 * Math.PI);
+                ctx.fillStyle = colour(i); ctx.fill();
             }
             if (active && active.path.length) {
                 const first = Math.max(0, active.path.length - 100);
@@ -12354,10 +12401,15 @@ const Instruments = (function () {
             running = true; sync(); raf = requestAnimationFrame(frame);
         }
 
-        fetch((window.galleryAssets && window.galleryAssets.mcrtRun) || 'plates/p-mcrt-run.json')
-            .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-            .then(function (data) {
-                DATA = data;
+        Promise.all([
+            fetch((window.galleryAssets && window.galleryAssets.mcrtRun)
+                || 'plates/p-mcrt-run.json').then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status); return r.json();
+                }),
+            loadImage((window.galleryAssets && window.galleryAssets.mcrtMeshSqrt2)
+                || 'plates/p-mcrt-mesh-sqrt2-void.png')
+        ]).then(function (got) {
+                DATA = got[0]; mesh = got[1];
                 Object.keys(DATA).forEach(function (k) {
                     const g = DATA[k];
                     g.off = Int32Array.from(g.off); g.nbr = Int32Array.from(g.nbr);
