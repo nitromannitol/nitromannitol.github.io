@@ -40,7 +40,7 @@ const PAGE_MAKERS = {
     'dimensional-reduction': ['dimredintro', 'dimredlive', 'dimredscale'],
     'apollonian':        ['apollointro', 'apollo'],
     'f-lattice':         ['flatticeintro', 'flattice', 'fareytree'],
-    'random-sandpile':   ['randomintro', 'randombg', 'explosionproof'],
+    'random-sandpile':   ['randomintro', 'randombg', 'explosive', 'explosionproof'],
     'divisible':         ['divisibleintro', 'divisiblepanels', 'mcrtbuild', 'matedcrt',
                           'matedidla', 'lqgball'],
     'idla-cylinder':     ['cylinderintro', 'cylinder', 'cylinder3d'],
@@ -69,7 +69,7 @@ const MAKER_TARGETS = {
     dimredscale: '#dimred-scale-canvas',
     apollointro: '#rule-apollonian', apollo: '#apollo-canvas',
     flatticeintro: '#rule-f-lattice', flattice: '#flattice-canvas', fareytree: '#ft-tree',
-    randomintro: '#rule-random-sandpile', randombg: '#p6-canvas',
+    randomintro: '#rule-random-sandpile', randombg: '#p6-canvas', explosive: '#p6x-canvas',
     explosionproof: '#explosion-proof-canvas',
     divisibleintro: '#rule-divisible', divisiblepanels: '#div-def-canvas',
     mcrtbuild: '#build-divisible', matedcrt: '#mcrt-canvas',
@@ -105,7 +105,7 @@ const TITLES = {
     'rotor-aggregation': 'Rotor-router aggregation',
     'dla': 'Diffusion-limited aggregation',
     'ust': 'Uniform spanning tree',
-    'rotor-walk': 'Rotor walk',
+    'rotor-walk': 'Eulerian walkers on Z²',
     'superdiffusion': 'Brownian motion in an incompressible random drift',
     'long-range-walk': 'Critical long-range random conductance walk',
     'sphere-packing': 'Random walk on a sphere packing',
@@ -119,6 +119,18 @@ const TITLES = {
 const nf = new Intl.NumberFormat('en-US');
 
 function $(sel, root) { return (root || document).querySelector(sel); }
+/* A status line is set in capitals by its style sheet; a Greek letter in it
+   must keep its case, so runs of Greek are wrapped in a no-transform span. */
+function setNote(el, text) {
+    if (!el) return;
+    if (!/[\u0370-\u03ff]/.test(text)) { el.textContent = text; return; }
+    el.textContent = '';
+    text.split(/([\u0370-\u03ff][\u0370-\u03ff\u207b\u00b2\u2070-\u209f]*)/).forEach(function (part, i) {
+        if (!part) return;
+        if (i % 2) { const s = document.createElement('span'); s.className = 'nocase'; s.textContent = part; el.appendChild(s); }
+        else el.appendChild(document.createTextNode(part));
+    });
+}
 function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
 function loadImage(src) {
@@ -331,14 +343,18 @@ const Instruments = (function () {
         }
         const byNode = new Map();
         pairs.forEach(function (p) { byNode.set(p.node, p.k); });
+        /* An instrument runs once a third of it is on screen, not when its
+           first pixel crosses a generous margin: a finite model used to be
+           half over before the reader had scrolled down to it. */
         const io = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 const k = byNode.get(entry.target);
                 if (!k) return;
-                visible[k] = entry.isIntersecting;
-                setActive(k, running[id] && !document.hidden && entry.isIntersecting);
+                const seen = entry.isIntersecting && entry.intersectionRatio >= .3;
+                visible[k] = seen;
+                setActive(k, running[id] && !document.hidden && seen);
             });
-        }, { root: study, rootMargin: '96px 0px', threshold: .01 });
+        }, { root: study, rootMargin: '0px', threshold: [0, .3] });
         pairs.forEach(function (p) { io.observe(p.node); });
         observers[id] = io;
     }
@@ -1613,7 +1629,7 @@ const Instruments = (function () {
         ];
         const homeCamera = { x: 0, y: 0, z: 1 };
         const DURATION = 3100;
-        let mode = 'tour', scene = 0, phase = REDUCED ? 1 : 0;
+        let mode = 'tour', scene = 0, phase = REDUCED ? 1 : 0, endedAt = 0;
         let selected = tour[0], scale = H / 2.55, ox = W / 2, oy = H / 2;
         let userPaused = REDUCED, running = false, raf = 0, last = 0;
         let dragging = false, lx = 0, ly = 0, moved = 0;
@@ -1684,8 +1700,10 @@ const Instruments = (function () {
             ctx.moveTo(0, sy(-1)); ctx.lineTo(W, sy(-1));
             ctx.stroke();
 
-            const colours = ['113,91,176', '204,87,146', '35,148,184',
-                             '217,121,52', '57,151,121'];
+            /* faint tints of the site's own palette by curvature octave; the
+               strokes carry the structure */
+            const colours = ['118,103,168', '204,121,167', '86,180,233',
+                             '230,159,0', '150,205,240'];
             for (let i = 0; i < packing.length; i++) {
                 const c = packing[i], r = c.r * scale;
                 const x = sx(c.x), y = sy(c.y);
@@ -1695,7 +1713,7 @@ const Instruments = (function () {
                 const rgb = colours[Math.min(colours.length - 1,
                     Math.floor(Math.log2(Math.max(1, c.k))) % colours.length)];
                 if (r > 2.4) {
-                    ctx.fillStyle = 'rgba(' + rgb + ',' + (r > 16 ? .16 : .08) + ')';
+                    ctx.fillStyle = 'rgba(' + rgb + ',' + (r > 16 ? .09 : .05) + ')';
                     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
                 }
                 ctx.strokeStyle = 'rgba(' + rgb + ',' + (r > 5 ? .68 : .40) + ')';
@@ -1705,9 +1723,9 @@ const Instruments = (function () {
 
             /* Cyan is exactly the current Descartes triple. The fading rose
                object is the member of the quadruple replaced by reflection. */
-            focus.par.forEach(function (a) { highlight(a, '#A8D8E8', 7, .96, null, 1); });
+            focus.par.forEach(function (a) { highlight(a, '#A8D8E8', 4, .96, null, 1); });
             if (mode === 'tour' && reveal < .98) {
-                highlight(focus.other, '#8E4257', 5, .72 * (1 - reveal), [14, 13], 1);
+                highlight(focus.other, '#8E4257', 3, .72 * (1 - reveal), [14, 13], 1);
             }
 
             if (!isWall(focus.W)) {
@@ -1718,23 +1736,23 @@ const Instruments = (function () {
                     const d = Math.hypot(dx, dy) || 1;
                     const tx = cx(focus.W) + radius(focus.W) * dx / d;
                     const ty = cy(focus.W) + radius(focus.W) * dy / d;
-                    ctx.strokeStyle = 'rgba(86,180,233,.42)'; ctx.lineWidth = 2;
+                    ctx.strokeStyle = 'rgba(255,248,232,.55)'; ctx.lineWidth = 1.5;
                     ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(sx(tx), sy(ty)); ctx.stroke();
                 });
                 const rr = Math.abs(radius(focus.W) * scale) * Math.max(.04, reveal);
                 ctx.save();
                 ctx.fillStyle = 'rgba(240,228,66,.12)';
-                ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 8;
+                ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 4;
                 ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                 ctx.restore();
             }
 
             if (elNote) {
-                if (mode === 'explore') elNote.textContent = 'Select a circle; drag to pan; scroll to zoom';
-                else if (phase < .28) elNote.textContent = 'Three tangent parent objects';
-                else if (phase < .67) elNote.textContent =
-                    'Descartes reflection: ' + curvature(focus.other) + ' → ' + curvature(focus.W);
-                else elNote.textContent = 'κ = ' + curvature(focus.W);
+                if (mode === 'explore') setNote(elNote, 'Explore \u00b7 click a circle, drag, scroll');
+                else if (phase < .28) setNote(elNote, 'Three tangent parents');
+                else if (phase < .67) setNote(elNote,
+                    'Reflection \u03ba ' + curvature(focus.other) + ' \u2192 ' + curvature(focus.W));
+                else setNote(elNote, '\u03ba = ' + curvature(focus.W));
             }
         }
 
@@ -1744,14 +1762,13 @@ const Instruments = (function () {
                 b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
             });
             const play = $('[data-apollo-run="pause"]');
-            const ended = scene === tour.length - 1 && phase >= 1;
             if (play) {
                 play.textContent = running ? 'Pause' : 'Play';
                 play.classList.toggle('is-on', running);
-                play.disabled = mode !== 'tour' || ended;
+                play.disabled = mode !== 'tour';
             }
             const step = $('[data-apollo-run="step"]');
-            if (step) step.disabled = mode !== 'tour' || ended;
+            if (step) step.disabled = mode !== 'tour';
         }
 
         function stop(markPaused) {
@@ -1768,22 +1785,26 @@ const Instruments = (function () {
                 if (scene < tour.length - 1) {
                     scene++; phase = 0; selected = tour[scene]; report(selected);
                 } else {
-                    phase = 1; draw(); stop(false); return;
+                    /* hold the last reflection, then go round again */
+                    phase = 1;
+                    if (!endedAt) endedAt = now;
+                    if (now - endedAt > 2600) {
+                        endedAt = 0; scene = 0; phase = 0; selected = tour[0]; report(selected);
+                    }
                 }
             }
             draw();
             raf = requestAnimationFrame(animate);
         }
         function start(markPlaying) {
-            if (mode !== 'tour' || REDUCED ||
-                (scene === tour.length - 1 && phase >= 1)) return;
+            if (mode !== 'tour' || REDUCED) return;
             cancelAnimationFrame(raf);
             if (markPlaying) userPaused = false;
             running = true; last = 0; sync();
             raf = requestAnimationFrame(animate);
         }
         function replay() {
-            stop(false);
+            stop(false); endedAt = 0;
             mode = 'tour'; scene = 0; phase = REDUCED ? 1 : 0;
             selected = tour[0]; userPaused = REDUCED;
             report(selected); draw(); sync();
@@ -1961,13 +1982,16 @@ const Instruments = (function () {
             alt: 'A sandpile on the F-lattice.' }
     });
 
-    makers.randombg = function () {
-        const canvas = $('#p6-canvas');
+    /* One maker serves two panels: the compact-growth backgrounds (empty and
+       random holes) and, in its own panel, the explosive background. */
+    function randomBackgroundMaker(cfg) {
+        const P = cfg.prefix;
+        const canvas = $('#' + P + '-canvas');
         if (!canvas) return null;
-        const note = $('#p6-note'), outRound = $('#p6-round'),
-              roundLabel = $('#p6-round-label'), outFired = $('#p6-fired'),
-              keyTitle = $('#p6-key-title'), timeItems = $('#p6-time-items'),
-              heightItems = $('#p6-height-items');
+        const note = $('#' + P + '-note'), outRound = $('#' + P + '-round'),
+              roundLabel = $('#' + P + '-round-label'), outFired = $('#' + P + '-fired'),
+              keyTitle = $('#' + P + '-key-title'), timeItems = $('#' + P + '-time-items'),
+              heightItems = $('#' + P + '-height-items');
         const assets = window.galleryAssets || {};
         const plates = {
             empty: {
@@ -1990,7 +2014,7 @@ const Instruments = (function () {
             }
         };
         const metadataUrl = assets.randomFrontMetadata || 'plates/p6-fronts.json';
-        let mode = 'random', metadata = null, model = null, textures = [];
+        let mode = cfg.mode, metadata = null, model = null, textures = [];
         let phase = REDUCED ? .88 : 0, ready = false, failed = false;
         let pageAwake = true, userPaused = REDUCED, raf = 0, lastNow = 0;
         let loadToken = 0, imageSize = 1505;
@@ -2014,14 +2038,14 @@ const Instruments = (function () {
                     ctx.imageSmoothingEnabled = false;
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 });
-                $$('[data-p6-mode]').forEach(function (b) {
-                    const on = b.dataset.p6Mode === name;
+                $$('[data-' + P + '-mode]').forEach(function (b) {
+                    const on = b.getAttribute('data-' + P + '-mode') === name;
                     b.classList.toggle('is-on', on);
                     b.setAttribute('aria-pressed', String(on));
                 });
             }
-            $$('[data-p6-mode]').forEach(function (b) {
-                b.addEventListener('click', function () { showStatic(b.dataset.p6Mode); });
+            $$('[data-' + P + '-mode]').forEach(function (b) {
+                b.addEventListener('click', function () { showStatic(b.getAttribute('data-' + P + '-mode')); });
             });
             showStatic(mode);
             return { pause: function () {}, resume: function () {} };
@@ -2048,34 +2072,40 @@ const Instruments = (function () {
             'uniform float u_source_alpha;',
             'uniform float u_image_size;',
             'uniform float u_blackout;',
+            'uniform float u_contour;',
+            /* has the site at q toppled by the current sweep? */
+            'float toppled(vec2 q){',
+            '  float mm=floor(texture2D(u_mask,q).r*255.0+0.5);',
+            '  return step(0.5,mm)*step(mm,u_threshold+0.5)*step(mm,u_band_max+0.5);',
+            '}',
             'void main(){',
             '  vec2 uv=u_rect.xy+v_uv*u_rect.zw;',
-            '  vec3 ground=vec3(0.027,0.031,0.051);',
+            '  vec3 ground=vec3(0.040,0.044,0.064);',
             '  float b=floor(texture2D(u_background,uv).r*255.0+0.5);',
+            /* The background is the ground: holes and heavy sites are read as
+               tones of the same dark grey, not as a second coloured picture. */
             '  vec3 base=ground;',
             '  if(u_kind>0.5&&u_kind<1.5){',
-            '    base=b<0.5?vec3(0.055,0.220,0.320):vec3(0.100,0.090,0.140);',
+            '    base=b<0.5?vec3(0.160,0.168,0.205):vec3(0.058,0.062,0.086);',
             '  }else if(u_kind>1.5){',
-            '    base=b>2.5?vec3(0.350,0.120,0.220):vec3(0.070,0.200,0.260);',
+            '    base=b>2.5?vec3(0.190,0.225,0.280):vec3(0.080,0.090,0.125);',
             '  }',
             '  base=mix(ground,base,u_bg_alpha);',
             '  float m=floor(texture2D(u_mask,uv).r*255.0+0.5);',
             '  float fired=step(0.5,m)*step(m,u_threshold+0.5)*step(m,u_band_max+0.5);',
-            /* Square-root display scaling preserves the exact first-fire
-               order while separating early bands that otherwise occupy only
-               a few percent of the 8-bit range. */
-            '  float age=sqrt(clamp((m-1.0)/max(1.0,u_band_max-1.0),0.0,1.0));',
-            '  vec3 early=vec3(0.220,0.760,0.890);',
-            '  vec3 recent=vec3(0.880,0.300,0.525);',
-            '  vec3 chronology=mix(early,recent,smoothstep(0.08,0.92,age));',
-            '  float band_line=fired*(1.0-step(0.5,mod(m,8.0)));',
-            '  float behind=max(0.0,u_threshold-m);',
-            '  float front=fired*(1.0-smoothstep(1.0,5.0,behind));',
-            '  vec3 colour=mix(base,chronology,fired);',
-            '  colour=mix(colour,vec3(0.820,0.880,0.920),0.24*band_line);',
-            '  colour=mix(colour,vec3(1.0,0.940,0.650),front);',
+            /* The pattern itself grows: every site that has toppled by the
+               current sweep shows its stable height, so the reader watches the
+               final picture spread outward from the origin. A thin cream edge
+               marks the sites toppling now. */
+            /* the front is the one-site-thick edge of the toppled region */
+            '  vec2 tx=vec2(1.0/u_image_size,0.0), ty=vec2(0.0,1.0/u_image_size);',
+            '  float inside=toppled(uv+tx)*toppled(uv-tx)*toppled(uv+ty)*toppled(uv-ty);',
+            '  float front=fired*(1.0-inside)*(1.0-u_settle);',
+            '  vec3 colour=mix(base,texture2D(u_final,uv).rgb,fired);',
             '  float touched=step(0.5,m);',
             '  colour=mix(colour,texture2D(u_final,uv).rgb,u_settle*touched);',
+            '  colour=mix(colour,vec3(0.965,0.925,0.780),front);',
+            '  colour=colour+0.0*u_contour;',
             '  vec2 site=abs((uv-vec2(0.5))*u_image_size);',
             '  float source=(1.0-step(0.55,max(site.x,site.y)))*u_source_alpha;',
             '  colour=mix(colour,vec3(1.0,0.940,0.650),source);',
@@ -2115,7 +2145,7 @@ const Instruments = (function () {
         gl.vertexAttribPointer(aUv, 2, gl.FLOAT, false, 16, 8);
         const uniform = {};
         ['final','mask','background','rect','threshold','band_max','settle','kind','bg_alpha',
-         'source_alpha','image_size','blackout'].forEach(function (name) {
+         'source_alpha','image_size','blackout','contour'].forEach(function (name) {
             uniform[name] = gl.getUniformLocation(program, 'u_' + name);
         });
         gl.uniform1i(uniform.final, 0);
@@ -2172,13 +2202,18 @@ const Instruments = (function () {
             const camera = ease((p - .12) / .58);
             const width = Math.exp(Math.log(112) * (1 - camera) +
                                    Math.log(imageSize) * camera);
-            const backgroundAlpha = ease(p / .055);
+            /* the background speckle is shown while the pile grows and fades
+               as it settles, so the final frame is the toppled set alone on
+               the plain ground, as in the plates */
+            const backgroundAlpha = ease(p / .055) * (stable ? 1 - ease((p - .70) / .10) : 1);
             const sourceAlpha = ease((p - .075) / .025) *
                                 (1 - ease((p - .16) / .025));
             const blackout = ease((p - .955) / .04);
+            /* the frozen contours outlive the settle by a beat, then fade */
+            const contour = stable ? 1 - ease((p - .86) / .07) : 1;
             return { q: q, settle: settle, width: width,
                      backgroundAlpha: backgroundAlpha,
-                     sourceAlpha: sourceAlpha, blackout: blackout };
+                     sourceAlpha: sourceAlpha, blackout: blackout, contour: contour };
         }
 
         function report(v, band) {
@@ -2193,10 +2228,9 @@ const Instruments = (function () {
             if (outFired) outFired.textContent = nf.format(n || 0);
             if (roundLabel) roundLabel.textContent = mode === 'exploding'
                 ? 'Parallel round' : 'Toppling sweep';
-            if (keyTitle) keyTitle.textContent = v.settle > .55
-                ? 'Stable height' : 'First toppling';
-            if (timeItems) timeItems.hidden = v.settle > .55;
-            if (heightItems) heightItems.hidden = v.settle <= .55;
+            if (keyTitle) keyTitle.textContent = 'Stable height';
+            if (timeItems) timeItems.hidden = true;
+            if (heightItems) heightItems.hidden = false;
 
             if (phase < .075) {
                 note.textContent = mode === 'empty' ? 'Background η = 0'
@@ -2206,7 +2240,7 @@ const Instruments = (function () {
                 note.textContent = mode === 'exploding'
                     ? 'Add 2 grains at the origin' : 'Add 4,200,000 grains at the origin';
             } else if (v.q < .999) {
-                note.textContent = 'First-toppling time';
+                note.textContent = 'Toppling';
             } else if (mode === 'exploding') {
                 note.textContent = 'Still active at round 1,858';
             } else if (v.settle < .9) {
@@ -2217,12 +2251,13 @@ const Instruments = (function () {
         }
 
         function paint() {
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            gl.clearColor(.027, .031, .051, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+            /* while a background's assets load the last picture stays up */
             if (!ready || !model) {
                 note.textContent = failed ? 'Data unavailable' : 'Loading data';
                 return;
             }
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.clearColor(.040, .044, .064, 1); gl.clear(gl.COLOR_BUFFER_BIT);
             const v = valuesAt(phase);
             const bandMax = model.display_band_max || 254;
             const bandFloat = Math.max(0, Math.min(bandMax, v.q * bandMax));
@@ -2243,18 +2278,19 @@ const Instruments = (function () {
             gl.uniform1f(uniform.source_alpha, v.sourceAlpha);
             gl.uniform1f(uniform.image_size, imageSize);
             gl.uniform1f(uniform.blackout, v.blackout);
+            gl.uniform1f(uniform.contour, v.contour);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
             report(v, band);
         }
 
         function sync() {
-            $$('[data-p6-mode]').forEach(function (b) {
-                const on = b.dataset.p6Mode === mode;
+            $$('[data-' + P + '-mode]').forEach(function (b) {
+                const on = b.getAttribute('data-' + P + '-mode') === mode;
                 b.classList.toggle('is-on', on);
                 b.setAttribute('aria-pressed', String(on));
-                b.disabled = !ready && b.dataset.p6Mode === mode;
+                b.disabled = !ready && b.getAttribute('data-' + P + '-mode') === mode;
             });
-            const play = $('[data-p6-run="pause"]');
+            const play = $('[data-' + P + '-run="pause"]');
             if (play) {
                 const running = !!raf && !userPaused;
                 play.textContent = REDUCED ? 'Paused' : (running ? 'Pause' : 'Play');
@@ -2291,14 +2327,14 @@ const Instruments = (function () {
             });
         }
 
-        $$('[data-p6-mode]').forEach(function (b) {
+        $$('[data-' + P + '-mode]').forEach(function (b) {
             b.addEventListener('click', function () {
-                if (b.dataset.p6Mode !== mode) select(b.dataset.p6Mode, true);
+                if (b.getAttribute('data-' + P + '-mode') !== mode) select(b.getAttribute('data-' + P + '-mode'), true);
             });
         });
-        $$('[data-p6-run]').forEach(function (b) {
+        $$('[data-' + P + '-run]').forEach(function (b) {
             b.addEventListener('click', function () {
-                if (b.dataset.p6Run === 'replay') {
+                if (b.getAttribute('data-' + P + '-run') === 'replay') {
                     phase = 0; userPaused = REDUCED; paint();
                     if (!REDUCED) { userPaused = false; start(); }
                 } else if (raf) {
@@ -2317,7 +2353,9 @@ const Instruments = (function () {
                 if (!userPaused) start();
             }
         };
-    };
+    }
+    makers.randombg = function () { return randomBackgroundMaker({ prefix: 'p6', mode: 'random' }); };
+    makers.explosive = function () { return randomBackgroundMaker({ prefix: 'p6x', mode: 'exploding' }); };
 
     /* ---------------------------------------------------------------------
        Animated definitions
@@ -2399,10 +2437,13 @@ const Instruments = (function () {
         ruleArrow(ctx, cx, cy, vertical ? -Math.PI / 2 : Math.PI, reach, color, width);
     }
 
+    /* A particle is a small disc with a hairline, not a badge: the old five-
+       pixel outline was the heaviest stroke in every rule figure. */
     function ruleParticle(ctx, x, y, r, fill) {
+        r = Math.max(6.5, r * .8);
         ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fillStyle = fill || RULE_VIS.white; ctx.fill();
-        ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = Math.max(5, r * .32); ctx.stroke();
+        ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = Math.max(2.2, r * .18); ctx.stroke();
     }
 
     function rulePathPoint(points, t) {
@@ -2424,10 +2465,11 @@ const Instruments = (function () {
     }
 
     function ruleTrace(ctx, points, pos, color, width) {
+        width = Math.min(width, 3.2);
         ctx.beginPath(); ctx.moveTo(points[0][0], points[0][1]);
         for (let i = 1; i <= pos.index; i++) ctx.lineTo(points[i][0], points[i][1]);
         ctx.lineTo(pos.x, pos.y);
-        ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = width + 5; ctx.stroke();
+        ctx.strokeStyle = 'rgba(21,19,26,.45)'; ctx.lineWidth = width + 2; ctx.stroke();
         ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
     }
 
@@ -2596,9 +2638,10 @@ const Instruments = (function () {
         const pts = [[126,472],[164,444],[204,464],[244,424],[280,449],
                      [322,410],[360,432],[548,212],[584,246],[616,220]];
         return loopingRule('long-range-walk', 5400, function (ctx, W, p) {
-            ctx.fillStyle = 'rgba(168,216,232,.16)';
+            /* the lattice the jumps are between, visible */
+            ctx.fillStyle = '#B9B3A4';
             for (let y = 96; y < 630; y += 34) for (let x = 92; x < 640; x += 34) {
-                ctx.beginPath(); ctx.arc(x, y, 2.2, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y, 1.7, 0, Math.PI * 2); ctx.fill();
             }
             const u = ruleEase((p - .06) / .79) * (pts.length - 1);
             const leg = Math.min(pts.length - 2, Math.floor(u));
@@ -2615,7 +2658,7 @@ const Instruments = (function () {
                 ctx.lineTo(ruleMix(a[0], b[0], q), ruleMix(a[1], b[1], q));
                 ctx.strokeStyle = (i === leg && long) ? '#F0E442'
                     : 'rgb(' + r + ',' + g + ',' + bl + ')';
-                ctx.lineWidth = long ? 10 : 6; ctx.stroke();
+                ctx.lineWidth = long ? 4 : 2.6; ctx.stroke();
             }
             const a = pts[leg], b = pts[leg + 1];
             ruleParticle(ctx, ruleMix(a[0], b[0], f), ruleMix(a[1], b[1], f),
@@ -2684,16 +2727,18 @@ const Instruments = (function () {
             rulePhase(ctx, W, phase, p < .62 ? 'fill one tangent gap' : 'κ = 4');
             const top = W * .292, bottom = W * .708, r = W * .208;
             const cy = W * .5, x0 = W * .292, x1 = W * .708;
-            const settle = ruleOut(p / .18);
-            ctx.globalAlpha = settle;
+            /* the parents are always there: a loop that grew them from nothing
+               read as a broken frame */
+            const settle = 1;
+            ctx.globalAlpha = Math.min(1, settle);
             ctx.beginPath(); ctx.moveTo(W * .07, top); ctx.lineTo(W * .93, top);
             ctx.moveTo(W * .07, bottom); ctx.lineTo(W * .93, bottom);
             ctx.strokeStyle = RULE_VIS.quiet; ctx.lineWidth = 4; ctx.stroke();
             [x0, x1].forEach(function (x) {
                 ctx.beginPath(); ctx.arc(x, cy, r * settle, 0, Math.PI * 2);
                 ctx.fillStyle = 'rgba(118,103,168,.10)'; ctx.fill();
-                ctx.strokeStyle = p >= .18 && p < .76 ? RULE_VIS.cyanBright : RULE_VIS.violet;
-                ctx.lineWidth = p >= .18 && p < .76 ? 5 : 3; ctx.stroke();
+                ctx.strokeStyle = p >= .18 && p < .90 ? RULE_VIS.cyanBright : RULE_VIS.violet;
+                ctx.lineWidth = p >= .18 && p < .90 ? 3.5 : 2.5; ctx.stroke();
             });
             ctx.globalAlpha = 1;
             const nr = r / 4, nx = W / 2, ny = top + nr;
@@ -2704,9 +2749,11 @@ const Instruments = (function () {
             if (p >= .34) {
                 const t = ruleOut((p - .34) / .28);
                 ctx.beginPath(); ctx.arc(nx, ny, nr * t, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(204,121,167,.24)'; ctx.fill();
-                ctx.strokeStyle = p < .76 ? RULE_VIS.yellow : RULE_VIS.rose;
-                ctx.lineWidth = 5; ctx.stroke();
+                ctx.fillStyle = 'rgba(204,121,167,.18)'; ctx.fill();
+                ctx.globalAlpha = p < .93 ? 1 : 1 - ruleEase((p - .93) / .07);
+                ctx.strokeStyle = p < .76 ? RULE_VIS.yellow : RULE_VIS.violet;
+                ctx.lineWidth = 3.5; ctx.stroke();
+                ctx.globalAlpha = 1;
             }
         }, .88);
     };
@@ -2942,7 +2989,7 @@ const Instruments = (function () {
             function center(q) { return [g.left + (q[0] + .5) * g.cell,
                                          g.top + (q[1] + .5) * g.cell]; }
             for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-                if (!occupied.has(x + ',' + y) && !(p >= .82 && x === 6 && y === 2)) continue;
+                if (!occupied.has(x + ',' + y) && !(p >= .76 && x === 6 && y === 2)) continue;
                 const d = Math.hypot(x - cx0, y - cy0);
                 const col = d < 1.2 ? RULE_VIS.violet : d < 2.1 ? RULE_VIS.rose : RULE_VIS.orange;
                 ctx.fillStyle = col; ctx.globalAlpha = .68;
@@ -2952,8 +2999,8 @@ const Instruments = (function () {
             const pts = pathCells.map(center);
             let pos = { x: pts[0][0], y: pts[0][1], index: 0, u: 0 };
             if (p >= .26) pos = rulePathPoint(pts, ruleEase((p - .26) / .50));
-            if (p >= .26 && p < .90) ruleTrace(ctx, pts, pos, RULE_VIS.cyanBright, 5);
-            if (p >= .14 && p < .84) ruleParticle(ctx, pos.x, pos.y, 15, RULE_VIS.white);
+            if (p >= .26 && p < .80) ruleTrace(ctx, pts, pos, RULE_VIS.cyanBright, 3.5);
+            if (p >= .14 && p < .78) ruleParticle(ctx, pos.x, pos.y, 14, RULE_VIS.white);
         }, .88);
     };
 
@@ -3143,8 +3190,8 @@ const Instruments = (function () {
                     if (!q) ctx.moveTo(z[0], z[1]); else ctx.lineTo(z[0], z[1]);
                 }
                 ctx.strokeStyle = active ? 'rgba(198,88,22,' + alpha + ')'
-                                         : 'rgba(57,127,154,' + alpha + ')';
-                ctx.lineWidth = active ? 4.5 : 2.2;
+                                         : 'rgba(57,127,154,' + Math.min(1, alpha * 1.6) + ')';
+                ctx.lineWidth = active ? 3 : 1.8;
                 ctx.stroke();
             }
             function arc(cx, cy, rx, ry, seed, a0, a1, t, color, width) {
@@ -3154,7 +3201,7 @@ const Instruments = (function () {
                     const a = ruleMix(a0, stop, q / 72), z = eddyPoint(cx, cy, rx, ry, a, seed);
                     if (!q) ctx.moveTo(z[0], z[1]); else ctx.lineTo(z[0], z[1]);
                 }
-                ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = width + 4; ctx.stroke();
+                ctx.strokeStyle = 'rgba(21,19,26,.4)'; ctx.lineWidth = width + 2; ctx.stroke();
                 ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
                 return eddyPoint(cx, cy, rx, ry, stop, seed);
             }
@@ -3182,7 +3229,7 @@ const Instruments = (function () {
             ctx.translate(W * .49, W * .49); ctx.scale(zoom, zoom);
             ctx.translate(-W * .49, -W * .49);
 
-            const appear = ruleEase(p / .10);
+            const appear = 1;
             ctx.globalAlpha = appear;
             /* Large contours sit outside the first camera. They become the
                dominant eddy only when the camera retreats. */
@@ -3197,10 +3244,14 @@ const Instruments = (function () {
             });
             ctx.globalAlpha = 1;
 
+            /* the path and particle fade at the ends of the loop; the field
+               stays, so the reset is never a blank frame */
+            const pathAlpha = 1 - Math.max(1 - ruleEase(p / .05), ruleEase((p - .94) / .06));
+            ctx.globalAlpha = pathAlpha;
             const first0 = -2.62, first1 = .45;
             const firstT = ruleClamp(p / .40);
             const firstEnd = arc(W * .38, W * .51, 132, 93, .65, first0, first1,
-                                 firstT, p < .40 ? RULE_VIS.orange : RULE_VIS.rose, 4);
+                                 firstT, RULE_VIS.orange, 3);
             let particle = firstEnd;
 
             const secondStart = eddyPoint(W * .65, W * .39, 110, 84, 2.84, 1.65);
@@ -3214,28 +3265,19 @@ const Instruments = (function () {
                 ctx.beginPath(); ctx.moveTo(firstEnd[0], firstEnd[1]);
                 ctx.bezierCurveTo(curve.c1[0], curve.c1[1], curve.c2[0], curve.c2[1],
                                   curve.point[0], curve.point[1]);
-                ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = 8; ctx.stroke();
-                ctx.strokeStyle = RULE_VIS.white; ctx.lineWidth = 4; ctx.stroke();
+                ctx.strokeStyle = 'rgba(21,19,26,.5)'; ctx.lineWidth = 5; ctx.stroke();
+                ctx.strokeStyle = RULE_VIS.cyanBright; ctx.lineWidth = 3; ctx.stroke();
                 particle = curve.point;
             }
             if (p >= .58) {
                 const secondT = ruleClamp((p - .58) / .42);
                 particle = arc(W * .65, W * .39, 110, 84, 1.65, 2.84,
-                               2.84 + Math.PI * 2.8, secondT,
-                               p < .76 ? RULE_VIS.orange : RULE_VIS.rose, 4);
+                               2.84 + Math.PI * 2.8, secondT, RULE_VIS.orange, 3);
             }
 
-            ruleParticle(ctx, particle[0], particle[1], 15, RULE_VIS.yellow);
+            ruleParticle(ctx, particle[0], particle[1], 13, RULE_VIS.yellow);
+            ctx.globalAlpha = 1;
             ctx.restore();
-
-            /* The reset occurs only behind an opaque paper blink; no endpoint
-               is ever drawn in the next particle's position. */
-            const curtain = Math.max(1 - ruleEase(p / .045),
-                                     ruleEase((p - .955) / .045));
-            if (curtain > .001) {
-                ctx.globalAlpha = curtain; ctx.fillStyle = RULE_VIS.paper;
-                ctx.fillRect(0, 0, W, W); ctx.globalAlpha = 1;
-            }
         }, .88);
     };
 
@@ -3323,7 +3365,7 @@ const Instruments = (function () {
             return D.duration * (lo + (span ? (arc - motionArc[lo]) / span : 0)) / last;
         }
         function trailColour(t) {
-            const stops = [[91,102,116], [168,216,232], [204,121,167], [238,137,62]];
+            const stops = [[236,150,40], [242,160,38], [245,166,35], [248,190,70]];
             const z = ruleClamp(t) * 3, i = Math.min(2, Math.floor(z)), q = z - i;
             return 'rgb(' + Math.round(ruleMix(stops[i][0], stops[i + 1][0], q)) + ',' +
                             Math.round(ruleMix(stops[i][1], stops[i + 1][1], q)) + ',' +
@@ -3384,8 +3426,8 @@ const Instruments = (function () {
                particle tests it and becomes cyan only after a sustained stay. */
             function activeContour(cell, alpha, colour) {
                 ctx.beginPath(); appendContour(cell, ACTIVE_CONTOUR); ctx.globalAlpha = alpha;
-                ctx.strokeStyle = colour === 'cyan' ? '#A8D8E8' : '#8E4257';
-                ctx.lineWidth = (mobile ? 2.5 : 2.2) * U; ctx.stroke(); ctx.globalAlpha = 1;
+                ctx.strokeStyle = colour === 'cyan' ? '#CDEBF4' : '#C4718A';
+                ctx.lineWidth = 1.4 * U; ctx.stroke(); ctx.globalAlpha = 1;
             }
             activeContour(active.current, 1, 'cyan');
 
@@ -3414,7 +3456,7 @@ const Instruments = (function () {
                     ctx.beginPath(); ctx.moveTo(tx[a], ty[a]);
                     for (let i = a + 1; i <= z; i++) ctx.lineTo(tx[i], ty[i]);
                     const age = (a + z) / (2 * Math.max(1, tx.length - 1));
-                    ctx.strokeStyle = trailColour(age); ctx.globalAlpha = .20 + .80 * Math.pow(age, .62);
+                    ctx.strokeStyle = trailColour(age); ctx.globalAlpha = .30 + .70 * Math.pow(age, .7);
                     ctx.lineWidth = trailCore; ctx.stroke();
                 }
             }
@@ -3439,13 +3481,14 @@ const Instruments = (function () {
             if (px.length < 2 || px.length !== py.length)
                 throw new Error('periodic SDE path missing');
             /* The origin never moves. The view only widens, and it widens
-               early enough to retain a generous border around every sample. */
+               when the path asks it to: the camera fits the path's own reach
+               with a margin, rather than pulling back on a clock and leaving
+               the trajectory a squiggle in a field of empty cells. */
             cameraCell = new Float32Array(px.length);
             let prior = CLOSE_CELL;
             for (let i = 0; i < px.length; i++) {
-                const t = D.duration * i / (px.length - 1);
                 const reach = Math.max(.001, Math.abs(px[i]), Math.abs(py[i]));
-                prior = Math.min(prior, scheduledCell(t), SAFE_EXTENT / reach);
+                prior = Math.min(prior, SAFE_EXTENT / (1.25 * reach));
                 cameraCell[i] = prior;
                 if (reach * cameraCell[i] > SAFE_EXTENT + 1e-3)
                     throw new Error('periodic SDE camera containment failed');
@@ -3507,7 +3550,7 @@ const Instruments = (function () {
                 edges.forEach(function (e) {
                     const a = pt(e[0]), b = pt(e[1]);
                     ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
-                    ctx.strokeStyle = RULE_VIS.grid; ctx.lineWidth = 2.5; ctx.stroke();
+                    ctx.strokeStyle = '#B8AF9E'; ctx.lineWidth = 1.4; ctx.stroke();
                 });
                 ctx.globalAlpha = 1;
             }
@@ -3517,8 +3560,10 @@ const Instruments = (function () {
                     .forEach(function (e) {
                         const other = e[0] === current ? e[1] : e[0], b = pt(other);
                         ctx.beginPath(); ctx.moveTo(cp[0], cp[1]); ctx.lineTo(b[0], b[1]);
-                        ctx.strokeStyle = other === selected ? RULE_VIS.yellow : RULE_VIS.orange;
-                        ctx.lineWidth = 2 + e[2] * 1.4; ctx.stroke();
+                        /* the spoke's width is its conductance: the weighting is
+                           the rule, so it must be seen */
+                        ctx.strokeStyle = other === selected ? RULE_VIS.yellow : 'rgba(200,88,22,.72)';
+                        ctx.lineWidth = 1 + e[2] * .55; ctx.stroke();
                     });
             }
             nodes.forEach(function (q, i) {
@@ -3529,8 +3574,8 @@ const Instruments = (function () {
                 const t = ruleEase((p - .56) / .16);
                 ctx.beginPath(); ctx.moveTo(cp[0], cp[1]);
                 ctx.lineTo(ruleMix(cp[0], sp[0], t), ruleMix(cp[1], sp[1], t));
-                ctx.strokeStyle = RULE_VIS.cyanBright; ctx.lineWidth = 5; ctx.stroke();
-                ruleParticle(ctx, ruleMix(cp[0], sp[0], t), ruleMix(cp[1], sp[1], t), 14, RULE_VIS.white);
+                ctx.strokeStyle = RULE_VIS.cyanBright; ctx.lineWidth = 2.5; ctx.stroke();
+                ruleParticle(ctx, ruleMix(cp[0], sp[0], t), ruleMix(cp[1], sp[1], t), 12, RULE_VIS.white);
             }
         }, .88);
     };
@@ -3659,11 +3704,13 @@ const Instruments = (function () {
             const left=W*.18,top=W*.16,size=W*.64,step=size/(n-1);
             function at(i){return [left+ruleMix(states[a][i][0],states[b][i][0],t)*step,
                                   top+ruleMix(states[a][i][1],states[b][i][1],t)*step];}
-            edges.forEach(function(e){const x=at(e[0]),y=at(e[1]);ctx.beginPath();ctx.moveTo(x[0],x[1]);ctx.lineTo(y[0],y[1]);ctx.strokeStyle=component[e[0]]&&component[e[1]]?RULE_VIS.ink:'rgba(142,136,117,.18)';ctx.lineWidth=component[e[0]]&&component[e[1]]?3:1.5;ctx.stroke();});
+            /* cluster edges in the instrument's blue; the pinned boundary
+               vertices in the ochre that is yellow on the dark stage below */
+            edges.forEach(function(e){const x=at(e[0]),y=at(e[1]);ctx.beginPath();ctx.moveTo(x[0],x[1]);ctx.lineTo(y[0],y[1]);ctx.strokeStyle=component[e[0]]&&component[e[1]]?'#3A5F8F':'rgba(142,136,117,.16)';ctx.lineWidth=component[e[0]]&&component[e[1]]?2.4:1.4;ctx.stroke();});
             for(let i=0;i<nodes;i++){
                 const q=at(i);
-                ctx.beginPath();ctx.arc(q[0],q[1],anchor[i]?6:4.5,0,Math.PI*2);
-                ctx.fillStyle=!component[i]?'rgba(142,136,117,.25)':anchor[i]?RULE_VIS.bone:RULE_VIS.rose;ctx.fill();
+                ctx.beginPath();ctx.arc(q[0],q[1],anchor[i]?7:4.2,0,Math.PI*2);
+                ctx.fillStyle=!component[i]?'rgba(142,136,117,.22)':anchor[i]?'#B8960C':'#B8456F';ctx.fill();
             }
         }, .88);
     };
@@ -3785,19 +3832,21 @@ const Instruments = (function () {
             const rgb = active.map(function (v, i) {
                 return Math.round(v + (stored[i] - v) * remember);
             });
-            arrow(sx, sy, angle, cell * .31, 'rgb(' + rgb.join(',') + ')',
-                  Math.max(5, cell * .065));
 
             const wx = ox + (motion.fromX + (motion.toX - motion.fromX) * move + .5) * cell;
             const wy = oy + (motion.fromY + (motion.toY - motion.fromY) * move + .5) * cell;
             if (move > 0) {
                 ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(wx, wy);
                 ctx.strokeStyle = 'rgba(57,127,154,.78)';
-                ctx.lineWidth = Math.max(3, cell * .035); ctx.stroke();
+                ctx.lineWidth = Math.max(2.5, cell * .03); ctx.stroke();
             }
-            ctx.beginPath(); ctx.arc(wx, wy, cell * .16, 0, Math.PI * 2);
-            ctx.fillStyle = '#F2EDE2'; ctx.fill();
-            ctx.strokeStyle = '#27242A'; ctx.lineWidth = Math.max(5, cell * .055); ctx.stroke();
+            /* the walker is a hollow ring, so the rotor it stands on stays in
+               view while it turns; the arrow is drawn over it */
+            ctx.beginPath(); ctx.arc(wx, wy, cell * .19, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(242,237,226,.55)'; ctx.fill();
+            ctx.strokeStyle = '#27242A'; ctx.lineWidth = Math.max(3, cell * .04); ctx.stroke();
+            arrow(sx, sy, angle, cell * .31, 'rgb(' + rgb.join(',') + ')',
+                  Math.max(3.5, cell * .05));
         }
 
         function frame(now) {
@@ -3847,10 +3896,11 @@ const Instruments = (function () {
         const SHAPE_BUDGET_MS = 7;
         const SHAPE_RAMP_MS = 750;
         const GROW_SPEEDS = [250, 500, 1000, 2500, 6000, 15000, 40000];
-        const EXCURSION_COLORS = [
-            [86, 180, 233], [213, 94, 0], [155, 120, 207],
-            [0, 158, 115], [230, 159, 0], [204, 121, 167]
-        ];
+        /* Circuits are few and ordinal, so they take a discrete palette of
+           well-separated hues at one lightness; nested circuits then read as
+           bands rather than as one purple-grey mass. */
+        const CIRCUIT_COLORS = [[61,110,224], [31,162,200], [43,176,140], [134,185,58],
+                                [216,172,43], [239,125,58], [226,80,110], [181,89,214]];
 
         let rotor, firstAt, off, offCtx;
         let trail, trailAt;
@@ -3867,7 +3917,7 @@ const Instruments = (function () {
 
         const TRAIL = 48;
         const elSteps = $('#euler-steps'), elRange = $('#euler-range'),
-              elReturns = $('#euler-circuits'), elRadius = $('#euler-radius'),
+              elCircuits = $('#euler-circuits'), elRadius = $('#euler-radius'),
               elExp = $('#euler-exponent'), note = $('#euler-note'),
               live = $('#euler-live');
         const instrument = canvas.closest('.instrument');
@@ -3947,22 +3997,47 @@ const Instruments = (function () {
                 : 'Turn';
         }
 
-        function paintVisit(i, excursion) {
+        function circuitNumber() {
+            return Math.floor(returns / 4) + 1;
+        }
+
+        /* circuit k takes swatch k of the key, and keeps it */
+        function circuitLevel(mark) {
+            if (!mark) return -1;
+            return (mark - 1) % CIRCUIT_COLORS.length;
+        }
+
+        function circuitRgb(mark) {
+            return CIRCUIT_COLORS[circuitLevel(mark)];
+        }
+
+        function paintVisit(i) {
             const gx = i % N, gy = (i - gx) / N;
+            /* the cell carries its circuit; the arrow on it stays cream */
             const rgb = mixRgb([15, 15, 18],
-                               EXCURSION_COLORS[(excursion - 1) % EXCURSION_COLORS.length],
-                               .18);
+                               circuitRgb(firstAt[i]),
+                               .8);
             offCtx.fillStyle = 'rgb(' + rgb.join(',') + ')';
             offCtx.fillRect(gx, gy, 1, 1);
         }
 
-        /* A site keeps the excursion on which it first appeared. The field
-           is therefore a spatial record of successive returns to the origin. */
+        function repaintTerritory() {
+            offCtx.clearRect(0, 0, N, N);
+            for (let py = minY; py <= maxY; py++) {
+                for (let px = minX; px <= maxX; px++) {
+                    const i = py * N + px;
+                    if (firstAt[i]) paintVisit(i);
+                }
+            }
+        }
+
+        /* A site keeps the circuit in which it first appeared. Four returns
+           make one circuit on Z^2, exactly as in the paper's Figure 2. */
         function visit(px, py) {
             const i = py * N + px;
             if (!firstAt[i]) {
-                firstAt[i] = returns + 1;
-                paintVisit(i, firstAt[i]);
+                firstAt[i] = circuitNumber();
+                paintVisit(i);
             }
             trail[trailAt] = i;
             trailAt = (trailAt + 1) % TRAIL;
@@ -3979,7 +4054,10 @@ const Instruments = (function () {
             rotor[fy * N + fx] = d;
             lastFromX = fx; lastFromY = fy; lastDir = d;
             x = nx; y = ny; steps++;
-            if (x === C && y === C) returns++;
+            if (x === C && y === C) {
+                returns++;
+                if (returns % 4 === 0) repaintTerritory();
+            }
             if (!firstAt[y * N + x]) {
                 range++;
                 const r = Math.hypot(x - C, y - C);
@@ -4056,7 +4134,11 @@ const Instruments = (function () {
         }
 
         function cssScale(scale) { return scale / backingPerCss(); }
-        function arrowsLegible(scale) { return cssScale(scale) >= 7.5; }
+        /* below twelve CSS pixels a cell the arrows would be noise: the
+           coloured cells carry the picture; from twelve they are short ticks;
+           from twenty they are full arrows */
+        function arrowsLegible(scale) { return cssScale(scale) >= 12; }
+        function arrowsFull(scale) { return cssScale(scale) >= 20; }
         function clamp01(v) { return Math.max(0, Math.min(1, v)); }
         function ease(v) {
             v = clamp01(v);
@@ -4084,14 +4166,6 @@ const Instruments = (function () {
                 Math.round(a[1] + (b[1] - a[1]) * t),
                 Math.round(a[2] + (b[2] - a[2]) * t)
             ];
-        }
-
-        function excursionLevel(mark) {
-            return mark ? (mark - 1) % EXCURSION_COLORS.length : -1;
-        }
-
-        function excursionRgb(mark) {
-            return EXCURSION_COLORS[excursionLevel(mark)];
         }
 
         function rgba(rgb, alpha) {
@@ -4139,7 +4213,7 @@ const Instruments = (function () {
                     if (kind === 'untouched' && mark) continue;
                     if (kind === 'visited' && !mark) continue;
                     if (kind === 'visited' && level >= 0 &&
-                            excursionLevel(mark) !== level) continue;
+                            circuitLevel(mark) !== level) continue;
                     const d = rotor[i];
                     const cx = (gx - offX + .5) * scale;
                     const cy = (gy - offY + .5) * scale;
@@ -4149,32 +4223,32 @@ const Instruments = (function () {
         }
 
         function drawFieldArrows(hw, scale, skipIndex, offX, offY) {
-            const ratio = backingPerCss();
-            const core = Math.max(1.25 * ratio, scale * .055);
-            const halo = Math.max(2.8 * ratio, scale * .12);
+            const ratio = backingPerCss(), full = arrowsFull(scale);
+            const core = full ? Math.max(1.2 * ratio, scale * .05) : Math.max(1.3 * ratio, scale * .075);
+            const halo = full ? Math.max(2.2 * ratio, scale * .09) : Math.max(2.4 * ratio, scale * .12);
             const focusDim = motion && motion.progress < TURN_END ? .88 : 1;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
             traceFieldArrows(hw, scale, 'untouched', -1, skipIndex, offX, offY);
-            ctx.strokeStyle = 'rgba(7,7,9,.82)';
+            ctx.strokeStyle = 'rgba(7,7,9,.7)';
             ctx.lineWidth = halo;
             ctx.stroke();
             traceFieldArrows(hw, scale, 'untouched', -1, skipIndex, offX, offY);
-            ctx.strokeStyle = 'rgba(102,106,114,' + (.62 * focusDim).toFixed(3) + ')';
+            ctx.strokeStyle = 'rgba(125,129,141,' + (.9 * focusDim).toFixed(3) + ')';
             ctx.lineWidth = core;
             ctx.stroke();
 
+            /* one cream arrow on every visited cell: the circuit is the cell
+               colour beneath it, so the arrows never fight their ground */
             traceFieldArrows(hw, scale, 'visited', -1, skipIndex, offX, offY);
-            ctx.strokeStyle = 'rgba(7,7,9,.90)';
+            ctx.strokeStyle = 'rgba(7,7,9,.6)';
             ctx.lineWidth = halo;
             ctx.stroke();
-            for (let level = 0; level < EXCURSION_COLORS.length; level++) {
-                traceFieldArrows(hw, scale, 'visited', level, skipIndex, offX, offY);
-                ctx.strokeStyle = rgba(EXCURSION_COLORS[level], .92 * focusDim);
-                ctx.lineWidth = core;
-                ctx.stroke();
-            }
+            traceFieldArrows(hw, scale, 'visited', -1, skipIndex, offX, offY);
+            ctx.strokeStyle = 'rgba(233,230,223,' + (.86 * focusDim).toFixed(3) + ')';
+            ctx.lineWidth = core;
+            ctx.stroke();
         }
 
         function traceTerritoryMarks(hw, scale, level, offX, offY) {
@@ -4187,7 +4261,7 @@ const Instruments = (function () {
             for (let gy = loY; gy <= hiY; gy++) {
                 for (let gx = loX; gx <= hiX; gx++) {
                     const i = gy * N + gx;
-                    if (!firstAt[i] || excursionLevel(firstAt[i]) !== level) continue;
+                    if (!firstAt[i] || circuitLevel(firstAt[i]) !== level) continue;
                     const d = rotor[i], ux = DX[d], uy = DY[d];
                     const cx = (gx - offX + .5) * scale;
                     const cy = (gy - offY + .5) * scale;
@@ -4200,9 +4274,9 @@ const Instruments = (function () {
         function drawTerritoryTexture(hw, scale, offX, offY) {
             const ratio = backingPerCss();
             ctx.lineCap = 'round';
-            for (let level = 0; level < EXCURSION_COLORS.length; level++) {
+            for (let level = 0; level < CIRCUIT_COLORS.length; level++) {
                 traceTerritoryMarks(hw, scale, level, offX, offY);
-                ctx.strokeStyle = rgba(EXCURSION_COLORS[level], .82);
+                ctx.strokeStyle = rgba(CIRCUIT_COLORS[level], .82);
                 ctx.lineWidth = Math.max(.72 * ratio, Math.min(scale * .18, 1.25 * ratio));
                 ctx.stroke();
             }
@@ -4210,7 +4284,7 @@ const Instruments = (function () {
 
         function drawTrail(offX, offY, scale) {
             const ratio = backingPerCss();
-            const inner = Math.max(1.15 * ratio, Math.min(scale * .12, 3.6 * ratio));
+            const inner = Math.max(1 * ratio, Math.min(scale * .08, 1.7 * ratio));
             const count = Math.min(20, steps + 1, TRAIL);
             const points = [];
             for (let age = count; age > 0; age--) {
@@ -4232,10 +4306,10 @@ const Instruments = (function () {
                 ctx.beginPath();
                 ctx.moveTo(points[q - 1][0], points[q - 1][1]);
                 ctx.lineTo(points[q][0], points[q][1]);
-                ctx.strokeStyle = 'rgba(7,7,9,.78)';
-                ctx.lineWidth = inner + 2.2 * ratio;
+                ctx.strokeStyle = 'rgba(7,7,9,.7)';
+                ctx.lineWidth = inner + 1.4 * ratio;
                 ctx.stroke();
-                ctx.strokeStyle = 'rgba(98,203,232,' + alpha.toFixed(3) + ')';
+                ctx.strokeStyle = 'rgba(111,211,255,' + (alpha * .95).toFixed(3) + ')';
                 ctx.lineWidth = inner;
                 ctx.stroke();
             }
@@ -4289,10 +4363,10 @@ const Instruments = (function () {
             const left = (active.x - offX) * scale;
             const top = (active.y - offY) * scale;
             const pulse = rememberPulse();
-            ctx.fillStyle = 'rgba(242,222,77,' + (.14 * (1 - pulse)).toFixed(3) + ')';
+            ctx.fillStyle = 'rgba(242,222,77,' + (.12 * (1 - pulse)).toFixed(3) + ')';
             ctx.fillRect(left, top, scale, scale);
-            ctx.strokeStyle = 'rgba(242,222,77,' + (.92 - .48 * pulse).toFixed(3) + ')';
-            ctx.lineWidth = Math.max(1.25 * ratio, scale * .035);
+            ctx.strokeStyle = 'rgba(242,222,77,' + (.4 - .25 * pulse).toFixed(3) + ')';
+            ctx.lineWidth = Math.max(1 * ratio, scale * .03);
             ctx.strokeRect(left + ctx.lineWidth / 2, top + ctx.lineWidth / 2,
                            Math.max(0, scale - ctx.lineWidth),
                            Math.max(0, scale - ctx.lineWidth));
@@ -4311,7 +4385,7 @@ const Instruments = (function () {
                 ctx.stroke();
                 ctx.setLineDash([]);
             }
-            const stored = excursionRgb(firstAt[active.y * N + active.x]);
+            const stored = circuitRgb(firstAt[active.y * N + active.x]);
             const activeRgb = mixRgb([242, 222, 77], stored, pulse);
             strokeArrow(cx, cy, active.angle, scale * .34,
                         rgba(activeRgb, 1), Math.max(2 * ratio, scale * .078),
@@ -4322,16 +4396,17 @@ const Instruments = (function () {
             const ratio = backingPerCss(), wp = walkerPosition();
             const wx = (wp.x - offX + .5) * scale;
             const wy = (wp.y - offY + .5) * scale;
+            /* one cased yellow ring: the rotor it stands on is drawn over it */
             const radius = arrowsLegible(scale)
-                ? Math.max(4 * ratio, Math.min(scale * .36, 13 * ratio))
-                : 4.4 * ratio;
+                ? Math.max(5 * ratio, Math.min(scale * .34, 12 * ratio))
+                : 6 * ratio;
             ctx.beginPath();
             ctx.arc(wx, wy, radius, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(7,7,9,.94)';
-            ctx.lineWidth = 4.2 * ratio;
+            ctx.strokeStyle = 'rgba(7,7,9,.9)';
+            ctx.lineWidth = 3.4 * ratio;
             ctx.stroke();
-            ctx.strokeStyle = '#FFF8EA';
-            ctx.lineWidth = 2 * ratio;
+            ctx.strokeStyle = '#FFD75A';
+            ctx.lineWidth = 1.6 * ratio;
             ctx.stroke();
         }
 
@@ -4340,7 +4415,7 @@ const Instruments = (function () {
             const cssWidth = W / ratio;
             const compact = cssWidth <= 420;
             const size = Math.min(W * .30, (compact ? 108 : 160) * ratio);
-            const px = W - size - 12 * ratio, py = 12 * ratio;
+            const px = W - size - 24 * ratio, py = 24 * ratio;
             const pad = (compact ? 8 : 10) * ratio;
             const labelH = (compact ? 19 : 22) * ratio;
             const gridTop = py + labelH + pad * .55;
@@ -4352,7 +4427,7 @@ const Instruments = (function () {
 
             ctx.fillStyle = 'rgba(24,24,28,.97)';
             ctx.fillRect(px, py, size, size);
-            ctx.strokeStyle = 'rgba(255,248,234,.52)';
+            ctx.strokeStyle = 'rgba(255,248,234,.3)';
             ctx.lineWidth = Math.max(1, ratio * .75);
             ctx.strokeRect(px + ctx.lineWidth / 2, py + ctx.lineWidth / 2,
                            size - ctx.lineWidth, size - ctx.lineWidth);
@@ -4370,7 +4445,7 @@ const Instruments = (function () {
                     const sx = px + pad + col * cell, sy = gridTop + row * cell;
                     const mark = firstAt[i];
                     const tile = mark
-                        ? mixRgb([15, 15, 18], excursionRgb(mark), .18)
+                        ? mixRgb([15, 15, 18], circuitRgb(mark), .6)
                         : [15, 15, 18];
                     ctx.fillStyle = 'rgb(' + tile.join(',') + ')';
                     ctx.fillRect(sx, sy, cell, cell);
@@ -4397,7 +4472,7 @@ const Instruments = (function () {
                     const isActive = gx === active.x && gy === active.y;
                     if (isActive) angle = active.angle;
                     if (isActive) {
-                        const stored = excursionRgb(firstAt[i]);
+                        const stored = circuitRgb(firstAt[i]);
                         const activeRgb = mixRgb([242, 222, 77],
                                                  stored,
                                                  rememberPulse());
@@ -4407,7 +4482,7 @@ const Instruments = (function () {
                                     'rgba(7,7,9,.94)', Math.max(3.2 * ratio, cell * .18));
                     } else if (firstAt[i]) {
                         strokeArrow(cx, cy, angle, cell * .27,
-                                    rgba(excursionRgb(firstAt[i]), .95),
+                                    rgba(circuitRgb(firstAt[i]), .95),
                                     Math.max(.95 * ratio, cell * .06),
                                     'rgba(7,7,9,.88)', Math.max(2.2 * ratio, cell * .14));
                     } else {
@@ -4443,19 +4518,19 @@ const Instruments = (function () {
             drawGrid(hw, scale, offX, offY);
 
             const active = activeRotor();
-            if (legible) {
-                drawFieldArrows(hw, scale, active.y * N + active.x, offX, offY);
-            } else drawTerritoryTexture(hw, scale, offX, offY);
+            if (legible) drawFieldArrows(hw, scale, active.y * N + active.x, offX, offY);
             drawTrail(offX, offY, scale);
-            if (legible) drawActiveRotor(active, offX, offY, scale);
             drawWalker(offX, offY, scale);
-            if (viewMode === 'whole' && !legible) drawMicroscope();
+            if (legible) drawActiveRotor(active, offX, offY, scale);
+            /* the inset would cover the cluster on a phone */
+            if (viewMode === 'whole' && !legible && W / backingPerCss() > 420) drawMicroscope();
         }
 
         function update() {
             elSteps.textContent = nf.format(steps);
             elRange.textContent = nf.format(range);
-            elReturns.textContent = nf.format(returns);
+            elCircuits.textContent = nf.format(Math.floor(returns / 4)) + ' + '
+                + (returns % 4) + '/4';
             elRadius.textContent = maxR.toFixed(1);
 
             const samples = history.filter(function (h) {
@@ -4585,10 +4660,8 @@ const Instruments = (function () {
                 update();
                 const microscopic = !arrowsLegible(W / (2 * viewHalf));
                 note.textContent = ramp < 1
-                    ? 'Grow \u00b7 ' + nf.format(speed) + '/s'
-                    : 'Grow \u00b7 ' + nf.format(steps) + ' \u00b7 '
-                      + (viewMode === 'follow' ? 'Follow' : 'Whole')
-                      + (microscopic ? ' \u00b7 5\u00d75' : '');
+                    ? nf.format(speed) + ' steps/s'
+                    : (microscopic ? '5\u00d75 inset at the walker' : '');
             }
             raf = requestAnimationFrame(shapeFrame);
         }
@@ -4660,11 +4733,11 @@ const Instruments = (function () {
                         stop();
                         draw();
                         note.textContent = 'Paused';
-                        if (live) live.textContent = 'Rotor walk paused.';
+                        if (live) live.textContent = 'Eulerian walker paused.';
                     } else if (!REDUCED) {
                         userPaused = false;
                         run();
-                        if (live) live.textContent = 'Rotor walk resumed.';
+                        if (live) live.textContent = 'Eulerian walker resumed.';
                     }
                 }
                 if (action === 'step') {
@@ -4681,7 +4754,7 @@ const Instruments = (function () {
                     userPaused = false;
                     reset();
                     if (!REDUCED && pageAwake) run();
-                    else if (live) live.textContent = 'Rotor walk reset.';
+                    else if (live) live.textContent = 'Eulerian walker reset.';
                 }
             });
         });
@@ -4792,7 +4865,7 @@ const Instruments = (function () {
         }
 
         function halfWidth() {
-            return Math.min(C, Math.max(9, Math.ceil(model.maxR) + 4));
+            return Math.min(C, Math.max(9, Math.ceil(model.maxR * 1.06) + 5));
         }
 
         function windowGeometry(snap) {
@@ -4850,19 +4923,21 @@ const Instruments = (function () {
                 route(); ctx.strokeStyle = '#A8D8E8'; ctx.lineWidth = Math.max(4, scale * .10); ctx.stroke();
             }
 
-            if (!model.done) {
+            /* the walker is drawn while it is watched; in Grow it would be a
+               dot at a different site every frame */
+            if (!model.done && watching) {
                 const current = model.y * N + model.x;
                 if (!model.filled[current]) {
-                    ctx.strokeStyle = '#F0E442'; ctx.lineWidth = Math.max(3, scale * .08);
+                    ctx.strokeStyle = '#F0E442'; ctx.lineWidth = Math.max(2, scale * .06);
                     ctx.strokeRect((model.x - offX) * scale, (model.y - offY) * scale, scale, scale);
                 }
                 ctx.beginPath();
                 ctx.arc((model.x - offX + .5) * scale,
                         (model.y - offY + .5) * scale,
-                        Math.max(7, Math.min(16, scale * .24)), 0, Math.PI * 2);
+                        Math.max(10, Math.min(16, scale * .28)), 0, Math.PI * 2);
                 ctx.fillStyle = '#FFF8E8';
                 ctx.fill();
-                ctx.strokeStyle = '#08070B'; ctx.lineWidth = 5; ctx.stroke();
+                ctx.strokeStyle = '#08070B'; ctx.lineWidth = 3; ctx.stroke();
             }
         }
 
@@ -4876,13 +4951,13 @@ const Instruments = (function () {
 
         function label() {
             if (model.done) {
-                note.textContent = 'Finite-board boundary reached';
+                note.textContent = 'Boundary reached';
+            } else if (!watching) {
+                note.textContent = '';
             } else if (!model.filled[model.y * N + model.x]) {
                 note.textContent = 'First empty site';
-            } else if (watching) {
-                note.textContent = 'Walk';
             } else {
-                note.textContent = 'Grow';
+                note.textContent = 'Walk';
             }
         }
 
@@ -4952,6 +5027,7 @@ const Instruments = (function () {
             b.addEventListener('click', function () {
                 uiPace = b.dataset.idlaPace;
                 watching = uiPace === 'watch';
+                if (model.done) { reset(); if (!REDUCED) runCurrent(); return; }
                 if (!watching) model.path.length = 0;
                 if (uiPaused || REDUCED) { clock.stop(); clock.slow(watching ? WATCH : 0); }
                 else runCurrent();
@@ -5048,7 +5124,7 @@ const Instruments = (function () {
         function paintSite(i) {
             const gx = i % N, gy = (i - gx) / N;
             if (!occupied[i]) { offCtx.clearRect(gx, gy, 1, 1); return; }
-            const c = DIR_RGB[rotor[i]], a = .54;
+            const c = DIR_RGB[rotor[i]], a = 1;
             offCtx.fillStyle = 'rgb(' +
                 Math.round(15 + (c[0] - 15) * a) + ',' +
                 Math.round(14 + (c[1] - 14) * a) + ',' +
@@ -5195,22 +5271,33 @@ const Instruments = (function () {
                 }
             }
         }
+        /* The current particle's route: a translucent tint on the cells it
+           has crossed and a hairline through its last sixty steps. The old
+           lattice of bright outlines hid the field it was meant to explain. */
         function drawRoute(points, offX, offY, scale, alpha, includeWalker) {
             if (!points || !points.length) return;
+            const from = Math.max(0, points.length - 400);
+            ctx.fillStyle = 'rgba(255,255,255,' + (.16 * alpha).toFixed(3) + ')';
+            for (let q = from; q < points.length; q++) {
+                const i = points[q], gx = i % N, gy = (i - gx) / N;
+                ctx.fillRect((gx - offX) * scale, (gy - offY) * scale, scale, scale);
+            }
+            const start = Math.max(0, points.length - 60);
             ctx.beginPath();
-            for (let q = 0; q < points.length; q++) {
+            for (let q = start; q < points.length; q++) {
                 const i = points[q], gx = i % N, gy = (i - gx) / N;
                 const px = (gx - offX + .5) * scale, py = (gy - offY + .5) * scale;
-                if (!q) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                if (q === start) ctx.moveTo(px, py); else ctx.lineTo(px, py);
             }
             if (includeWalker && anim) {
                 const w = walkerPosition();
                 ctx.lineTo((w.x - offX + .5) * scale, (w.y - offY + .5) * scale);
             }
-            ctx.strokeStyle = 'rgba(8,7,11,' + (.78 * alpha).toFixed(3) + ')';
-            ctx.lineWidth = Math.max(8, scale * .18); ctx.stroke();
-            ctx.strokeStyle = 'rgba(86,180,233,' + alpha.toFixed(3) + ')';
-            ctx.lineWidth = Math.max(4, scale * .08); ctx.stroke();
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = 'rgba(8,7,11,' + (.6 * alpha).toFixed(3) + ')';
+            ctx.lineWidth = Math.max(3.4, scale * .1); ctx.stroke();
+            ctx.strokeStyle = 'rgba(255,248,232,' + (.85 * alpha).toFixed(3) + ')';
+            ctx.lineWidth = Math.max(1.6, scale * .045); ctx.stroke();
         }
         function drawMicroscope() {
             const ratio = backingPerCss(), size = Math.min(W * .31, 160 * ratio);
@@ -5246,8 +5333,8 @@ const Instruments = (function () {
             const activeX = anim ? anim.fromX : x, activeY = anim ? anim.fromY : y;
             const activeIndex = activeY * N + activeX;
             if (legible) drawFieldArrows(scale, offX, offY, hw, activeIndex);
-            const age = Math.max(0, 1 - (performance.now() - lastPathAt) / 900);
-            if (age) drawRoute(lastPath, offX, offY, scale, age * .42, false);
+            const age = Math.max(0, 1 - (performance.now() - lastPathAt) / 250);
+            if (age) drawRoute(lastPath, offX, offY, scale, age * .5, false);
             drawRoute(path, offX, offY, scale, 1, true);
 
             const targetX = anim ? anim.toX : x, targetY = anim ? anim.toY : y;
@@ -5275,9 +5362,9 @@ const Instruments = (function () {
 
             const w = walkerPosition(), wx = (w.x - offX + .5) * scale;
             const wy = (w.y - offY + .5) * scale;
-            ctx.beginPath(); ctx.arc(wx, wy, Math.max(8, Math.min(16, scale * .25)), 0, Math.PI * 2);
+            ctx.beginPath(); ctx.arc(wx, wy, Math.max(9, Math.min(15, scale * .28)), 0, Math.PI * 2);
             ctx.fillStyle = '#FFF8E8'; ctx.fill();
-            ctx.strokeStyle = '#08070B'; ctx.lineWidth = 5; ctx.stroke();
+            ctx.strokeStyle = '#08070B'; ctx.lineWidth = 3; ctx.stroke();
             update();
         }
         function update() {
@@ -5291,7 +5378,7 @@ const Instruments = (function () {
                 else if (settlePending) note.textContent = 'First empty site';
                 else if (anim && anim.progress < .42) note.textContent = 'Turn';
                 else if (anim) note.textContent = 'Move';
-                else note.textContent = pace === 'grow' ? 'Grow' : 'Turn';
+                else note.textContent = pace === 'grow' ? '' : 'Turn';
             }
         }
         function syncControls() {
@@ -5477,9 +5564,17 @@ const Instruments = (function () {
         }
         function sourceStyle(x, y) {
             const p = 4 * indexOf(x, y);
-            const key = (sourcePixels[p] << 16) | (sourcePixels[p + 1] << 8) | sourcePixels[p + 2];
-            if (!styleCache[key]) styleCache[key] = 'rgb(' + sourcePixels[p] + ',' +
-                sourcePixels[p + 1] + ',' + sourcePixels[p + 2] + ')';
+            let r = sourcePixels[p], g = sourcePixels[p + 1], b = sourcePixels[p + 2];
+            /* the plate's darkest violet vanished on the dark stage: the trunk
+               is lifted toward the ramp's first stop so it stays legible under
+               the bright tips */
+            const L = .3 * r + .59 * g + .11 * b;
+            if (L < 96) {
+                const k = .42 * (1 - L / 96);
+                r = Math.round(r + (124 - r) * k); g = Math.round(g + (111 - g) * k); b = Math.round(b + (191 - b) * k);
+            }
+            const key = (r << 16) | (g << 8) | b;
+            if (!styleCache[key]) styleCache[key] = 'rgb(' + r + ',' + g + ',' + b + ')';
             return styleCache[key];
         }
         function commitOne() {
@@ -5496,7 +5591,7 @@ const Instruments = (function () {
             return true;
         }
         function wholeTarget() {
-            const h = clamp(Math.max(18, Math.max(maxX - minX, maxY - minY) / 2 + 7), 18, square / 2);
+            const h = clamp(Math.max(18, Math.max(maxX - minX, maxY - minY) * .53 + 8), 18, square / 2);
             return {
                 x: clamp((minX + maxX) / 2, h, square - h),
                 y: clamp((minY + maxY) / 2, h, square - h),
@@ -5578,9 +5673,9 @@ const Instruments = (function () {
             if (outView) outView.textContent = nf.format(Math.round(2 * cam.h));
             if (note) {
                 if (!ready) note.textContent = 'Loading run';
-                else if (count >= meta.count) note.textContent = '60,000 particles attached';
+                else if (count >= meta.count) note.textContent = 'Complete';
                 else if (!running && userPaused) note.textContent = 'Paused';
-                else if (pace === 'grow') note.textContent = 'Attaching particles';
+                else if (pace === 'grow') note.textContent = '';
                 else note.textContent = phase === 'contact' ? 'Contact with cluster' : 'Attach at first contact';
             }
         }
@@ -5626,7 +5721,7 @@ const Instruments = (function () {
             /* A logarithmic reveal, but slow enough that the 60,000-point
                branching geometry develops on screen instead of appearing as
                a completed plate after only a few frames. */
-            const target = Math.min(900, Math.max(18, Math.floor((count + 100) / 260)));
+            const target = Math.min(520, Math.max(12, Math.floor((count + 100) / 420)));
             let made = 0;
             while (count < meta.count && made < target && performance.now() - began < 7) {
                 commitOne(); made++;
@@ -5680,6 +5775,11 @@ const Instruments = (function () {
             b.addEventListener('click', function () {
                 const wasPaused = userPaused;
                 stop(false); pace = b.dataset.dlaPace;
+                /* a completed run has nothing left to watch: start it again */
+                if (ready && count >= meta.count) {
+                    if (!viewTouched) view = pace === 'watch' ? 'tip' : 'whole';
+                    reset(!REDUCED); return;
+                }
                 if (!viewTouched) view = pace === 'watch' ? 'tip' : 'whole';
                 phase = 'contact'; contact = nextContact(); phaseUntil = 0;
                 userPaused = REDUCED || wasPaused;
@@ -5797,8 +5897,12 @@ const Instruments = (function () {
            slate, brightened rose, cyan, cream. The site palette's rose and
            slate sit 8 luma apart, so a pile drawn on those two merges the
            moment it is scaled down; #C4718A opens that step to 57. */
-        const H3 = [[21,19,26],[51,47,69],[74,74,94],[196,113,138],[168,216,232],[255,248,232]];
-        const H2 = [[21,19,26],[74,74,94],[196,113,138],[168,216,232]];
+        /* One luminance ladder for both piles, with the maximal stable height
+           landing on the same mid blue in each, so a plane that agrees with the
+           square also looks like it: the base of both panels is one colour and
+           the cream firing set is the only bright thing. */
+        const H3 = [[21,19,26],[27,36,52],[38,54,81],[49,80,111],[61,106,146],[77,134,173]];
+        const H2 = [[21,19,26],[38,54,81],[61,106,146],[77,134,173]];
         const FIRE = 'rgba(255,248,232,.92)';
         const DISAGREE = '#E2C25A';
 
@@ -5809,6 +5913,7 @@ const Instruments = (function () {
 
         let s3, s2, v3, v2, roundNo, done;
         let fire3, fire2;                       /* firing masks, this round */
+        let glow3, glow2;                       /* last round's masks: a brief afterglow */
         let nFire, pace = 'watch', userPaused = false, pageAwake = true;
         let zPick = 0;                          /* the plane on show */
 
@@ -5828,6 +5933,7 @@ const Instruments = (function () {
             s2 = new Int16Array(M2); s2.fill(4);
             v3 = new Uint32Array(M3); v2 = new Uint32Array(M2);
             fire3 = new Uint8Array(M3); fire2 = new Uint8Array(M2);
+            glow3 = new Uint8Array(M3); glow2 = new Uint8Array(M2);
             roundNo = 0; done = false; nFire = 0;
             totD.fill(0);
             draw(); update();
@@ -5838,6 +5944,7 @@ const Instruments = (function () {
            |A_z \u0394 B| = |A_z| + |B| - 2|A_z \u2229 B|, which costs one test per
            firing site instead of a sweep of all 34 planes. */
         function roundOnce() {
+            glow3.set(fire3); glow2.set(fire2);
             fire3.fill(0); fire2.fill(0);
             cntA.fill(0); inter.fill(0);
             const f2 = [];
@@ -5869,7 +5976,7 @@ const Instruments = (function () {
         }
 
         /* a panel: the height pattern as ground, this round's firing over it */
-        function panel(px, py, size, heights, table, fire) {
+        function panel(px, py, size, heights, table, fire, glow) {
             const d = pimg.data, top = table.length - 1;
             for (let yy = 0; yy < D; yy++) {
                 for (let xx = 0; xx < D; xx++) {
@@ -5882,18 +5989,24 @@ const Instruments = (function () {
             }
             pctx.putImageData(pimg, 0, 0);
             ctx.imageSmoothingEnabled = false;
-            ctx.globalAlpha = .55;
             ctx.drawImage(pan, px, py, size, size);
-            ctx.globalAlpha = 1;
             const cell = size / D;
+            if (glow) {
+                ctx.fillStyle = 'rgba(255,248,232,.30)';
+                for (let yy = 0; yy < D; yy++) for (let xx = 0; xx < D; xx++) {
+                    const i = mirror[yy] * M + mirror[xx];
+                    if (!glow[i] || fire[i]) continue;
+                    ctx.fillRect(px + xx * cell, py + yy * cell, cell, cell);
+                }
+            }
             ctx.fillStyle = FIRE;
             for (let yy = 0; yy < D; yy++) for (let xx = 0; xx < D; xx++) {
                 if (!fire[mirror[yy] * M + mirror[xx]]) continue;
                 ctx.fillRect(px + xx * cell, py + yy * cell, cell, cell);
             }
-            ctx.strokeStyle = 'rgba(201,191,168,.34)';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(px, py, size, size);
+            ctx.strokeStyle = 'rgba(201,191,168,.30)';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(px - .75, py - .75, size + 1.5, size + 1.5);
         }
 
         /* The cube, cut at the plane on show. What is drawn is the part of it
@@ -5967,8 +6080,8 @@ const Instruments = (function () {
             /* the outline of the whole box, so the cut reads as a cut */
             const V = [[-1,-1,0],[1,-1,0],[1,1,0],[-1,1,0],
                        [-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]].map(function (q) { return P(q[0],q[1],q[2]); });
-            ctx.strokeStyle = 'rgba(201,191,168,.20)';
-            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = 'rgba(201,191,168,.44)';
+            ctx.lineWidth = 1.4;
             [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].forEach(function (e) {
                 ctx.beginPath();
                 ctx.moveTo(V[e[0]][0], V[e[0]][1]);
@@ -5988,10 +6101,12 @@ const Instruments = (function () {
         function draw() {
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.fillStyle = '#090A10'; ctx.fillRect(0, 0, W, H);
-            cube(W / 2, 232, 124);
-            const SZ = 596, GAP = 64, X0 = (W - 2 * SZ - GAP) / 2, PY = 404;
-            panel(X0, PY, SZ, sliceHeights(zPick), H3, fire3.subarray(zPick * M2, (zPick + 1) * M2));
-            panel(X0 + SZ + GAP, PY, SZ, s2, H2, fire2);
+            /* headroom above the apex, and whole backing pixels per site */
+            cube(W / 2, 262, 104);
+            const SZ = 612, GAP = 40, X0 = (W - 2 * SZ - GAP) / 2, PY = 404;
+            panel(X0, PY, SZ, sliceHeights(zPick), H3, fire3.subarray(zPick * M2, (zPick + 1) * M2),
+                  glow3.subarray(zPick * M2, (zPick + 1) * M2));
+            panel(X0 + SZ + GAP, PY, SZ, s2, H2, fire2, glow2);
         }
 
         const sliceBuf = new Int16Array(M2);
@@ -6020,7 +6135,7 @@ const Instruments = (function () {
         }
 
         const clock = paced({
-            watch: 0x3fffffff, every: 130,
+            watch: 0x3fffffff, every: 400,
             tick: function () { return advance(1); },
             frame: function () { return advance(6); },
             finish: function () {
@@ -6098,15 +6213,20 @@ const Instruments = (function () {
     makers.cylinder = function () {
         const canvas = $('#cylinder-canvas');
         if (!canvas) return null;
-        const ctx = canvas.getContext('2d'), W = canvas.width;
+        const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
         const N = 48, TARGET = N * 36;
-        const left = 80, right = W - 80, cell = (right - left) / N, base = 1300;
+        /* a landscape stage: the finished aggregate is 36 rows high and the
+           interface sits near the top with room for its fluctuations */
+        const left = 88, right = W - 88, cell = (right - left) / N, base = H - 110;
         const outCount = $('#cylinder-count'), outMean = $('#cylinder-mean'),
               outSpan = $('#cylinder-span'), outMode = $('#cylinder-mode');
         const arrivalRamp = rampOf([[86,180,233], [145,116,204],
-                                    [204,121,167], [230,159,0]]);
+                                    [204,121,167], [242,142,107]]);
         let seed, occupied, settled, particle, trail, count, modeSum;
-        let pace = 'grow', view = 'growth', userPaused = false, pageAwake = true;
+        /* the first particles walk in Watch, so the rule is seen; the pace
+           then rises to Grow on its own unless the reader has chosen one */
+        let pace = 'watch', view = 'growth', userPaused = false, pageAwake = true;
+        let paceTouched = false, seenSince = 0;
         let done = false, lastWrap = 0, completionSince = 0;
         let growthBudget = 0, growthLast = 0;
 
@@ -6159,7 +6279,7 @@ const Instruments = (function () {
         function settle() {
             count++;
             occupied.add(key(particle.x, particle.y));
-            settled.push({ x: particle.x, y: particle.y, t: count });
+            settled.push({ x: particle.x, y: particle.y, t: count, at: performance.now() });
             modeSum += Math.SQRT2 * Math.cos(2 * Math.PI * particle.x / N);
             if (count >= TARGET) { done = true; particle = null; return; }
             release();
@@ -6194,6 +6314,7 @@ const Instruments = (function () {
             seed = 0x61c88647; occupied = new Set(); settled = [];
             particle = null; trail = []; count = 0; modeSum = 0; done = false;
             lastWrap = 0; completionSince = 0; growthBudget = 0; growthLast = 0;
+            if (!paceTouched) pace = 'watch';
             release(); draw(); update(); sync();
         }
         function colour(t) {
@@ -6215,72 +6336,78 @@ const Instruments = (function () {
         }
         function draw() {
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.fillStyle = '#090A10'; ctx.fillRect(0, 0, W, W);
-            ctx.fillStyle = '#17151F'; ctx.fillRect(left, base, right - left, W - base);
+            ctx.fillStyle = '#090A10'; ctx.fillRect(0, 0, W, H);
+            ctx.fillStyle = '#1C1E28'; ctx.fillRect(left, base, right - left, H - base);
 
             /* Periodic seam and the uniform source layer. */
-            ctx.strokeStyle = 'rgba(86,180,233,.35)'; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(left, 112); ctx.lineTo(left, W - 40);
-            ctx.moveTo(right, 112); ctx.lineTo(right, W - 40); ctx.stroke();
-            ctx.strokeStyle = 'rgba(255,248,232,.30)'; ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(86,180,233,.35)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(left, 24); ctx.lineTo(left, H - 30);
+            ctx.moveTo(right, 24); ctx.lineTo(right, H - 30); ctx.stroke();
+            ctx.strokeStyle = 'rgba(255,248,232,.30)'; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.moveTo(left, base); ctx.lineTo(right, base); ctx.stroke();
 
+            const now = performance.now(), g = cell * .46;
             if (view === 'growth') {
                 settled.forEach(function (q) {
-                    ctx.fillStyle = colour(q.t);
-                    ctx.fillRect(sx(q.x) - cell * .43, sy(q.y) - cell * .43,
-                                 cell * .86, cell * .86);
+                    /* a cell settled this instant flashes white and takes its
+                       arrival colour over a quarter second */
+                    const age = now - (q.at || 0);
+                    ctx.fillStyle = age < 260 ? 'rgba(255,248,232,' + (1 - age / 260).toFixed(3) + ')' : colour(q.t);
+                    if (age < 260) {
+                        ctx.fillStyle = colour(q.t);
+                        ctx.fillRect(sx(q.x) - g, sy(q.y) - g, 2 * g, 2 * g);
+                        ctx.fillStyle = 'rgba(255,248,232,' + (1 - age / 260).toFixed(3) + ')';
+                    }
+                    ctx.fillRect(sx(q.x) - g, sy(q.y) - g, 2 * g, 2 * g);
                 });
             } else {
                 settled.forEach(function (q) {
-                    ctx.fillStyle = '#292735';
-                    ctx.fillRect(sx(q.x) - cell * .43, sy(q.y) - cell * .43,
-                                 cell * .86, cell * .86);
+                    ctx.fillStyle = '#23252F';
+                    ctx.fillRect(sx(q.x) - g, sy(q.y) - g, 2 * g, 2 * g);
                 });
                 const h = count / N, limit = Math.max(1, Math.ceil(h) + 16);
                 for (let y = 1; y <= limit; y++) for (let x = 0; x < N; x++) {
                     const occ = has(x, y), ref = y <= h;
                     if (occ === ref) continue;
-                    if (occ) {
-                        ctx.fillStyle = '#8E4257';
-                        ctx.fillRect(sx(x) - cell * .43, sy(y) - cell * .43,
-                                     cell * .86, cell * .86);
-                    } else {
-                        ctx.strokeStyle = '#A8D8E8'; ctx.lineWidth = 3;
-                        ctx.strokeRect(sx(x) - cell * .38, sy(y) - cell * .38,
-                                       cell * .76, cell * .76);
-                    }
+                    ctx.fillStyle = occ ? '#F28E6B' : '#5FD3F3';
+                    ctx.fillRect(sx(x) - g, sy(y) - g, 2 * g, 2 * g);
                 }
             }
 
             const h = count / N;
-            ctx.strokeStyle = 'rgba(240,228,66,.78)'; ctx.lineWidth = 3;
-            ctx.setLineDash([14, 10]);
+            ctx.setLineDash([12, 8]);
             ctx.beginPath(); ctx.moveTo(left, base - h * cell);
-            ctx.lineTo(right, base - h * cell); ctx.stroke(); ctx.setLineDash([]);
+            ctx.lineTo(right, base - h * cell);
+            ctx.strokeStyle = 'rgba(9,10,16,.8)'; ctx.lineWidth = 4; ctx.stroke();
+            ctx.strokeStyle = 'rgba(230,240,255,.85)'; ctx.lineWidth = 1.6; ctx.stroke();
+            ctx.setLineDash([]);
 
             /* The live path, with deep half-cylinder excursions shown as a
                dotted return arc rather than a fabricated reflected walk. */
-            for (let i = 1; i < trail.length; i++) {
-                const a = trail[i - 1], b = trail[i];
-                if (b.kind === 'deep') {
-                    ctx.save(); ctx.setLineDash([8, 10]);
-                    ctx.strokeStyle = 'rgba(86,180,233,.52)'; ctx.lineWidth = 4;
-                    ctx.beginPath();
-                    const ax = sx(a.x), bx = sx(b.x), yy = base + 18;
-                    ctx.moveTo(ax, yy); ctx.quadraticCurveTo((ax + bx) / 2, W - 32, bx, yy);
-                    ctx.stroke(); ctx.restore();
-                } else {
-                    const ax = sx(a.x), bx = sx(b.x);
-                    if (Math.abs(ax - bx) > (right - left) / 2) continue;
-                    ctx.beginPath(); ctx.moveTo(ax, sy(a.y)); ctx.lineTo(bx, sy(b.y));
-                    ctx.strokeStyle = 'rgba(168,216,232,.72)'; ctx.lineWidth = 5; ctx.stroke();
+            /* the walk is drawn only while it is being watched: in Grow the
+               particle would appear at a different site every frame */
+            if (pace === 'watch') {
+                for (let i = 1; i < trail.length; i++) {
+                    const a = trail[i - 1], b = trail[i];
+                    if (b.kind === 'deep') {
+                        ctx.save(); ctx.setLineDash([8, 10]);
+                        ctx.strokeStyle = 'rgba(86,180,233,.52)'; ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        const ax = sx(a.x), bx = sx(b.x), yy = base + 14;
+                        ctx.moveTo(ax, yy); ctx.quadraticCurveTo((ax + bx) / 2, H - 26, bx, yy);
+                        ctx.stroke(); ctx.restore();
+                    } else {
+                        const ax = sx(a.x), bx = sx(b.x);
+                        if (Math.abs(ax - bx) > (right - left) / 2) continue;
+                        ctx.beginPath(); ctx.moveTo(ax, sy(a.y)); ctx.lineTo(bx, sy(b.y));
+                        ctx.strokeStyle = 'rgba(243,234,216,.8)'; ctx.lineWidth = 3; ctx.stroke();
+                    }
                 }
-            }
-            if (particle) {
-                ctx.beginPath(); ctx.arc(sx(particle.x), sy(particle.y), 10, 0, Math.PI * 2);
-                ctx.fillStyle = '#FFF8E8'; ctx.fill();
-                ctx.strokeStyle = '#090A10'; ctx.lineWidth = 4; ctx.stroke();
+                if (particle) {
+                    ctx.beginPath(); ctx.arc(sx(particle.x), sy(particle.y), 9, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFF8E8'; ctx.fill();
+                    ctx.strokeStyle = '#090A10'; ctx.lineWidth = 3; ctx.stroke();
+                }
             }
         }
         function update() {
@@ -6290,7 +6417,14 @@ const Instruments = (function () {
             if (outSpan) outSpan.textContent = b.span.toFixed(1);
             if (outMode) outMode.textContent = (modeSum / N).toFixed(2);
         }
-        function advanceWalk() { const live = step(); draw(); update(); sync(); return live; }
+        function advanceWalk() {
+            /* the walk is watched for a few seconds after the stage comes into
+               view before the pace rises on its own */
+            if (!paceTouched && count >= 6 && seenSince && performance.now() - seenSince > 6000) {
+                pace = 'grow'; start(); return true;
+            }
+            const live = step(); draw(); update(); sync(); return live;
+        }
         function advanceGrowth() {
             /* The definition film above shows an individual walk.  This view
                defaults to aggregate growth, two particles per frame, so the
@@ -6300,7 +6434,7 @@ const Instruments = (function () {
             const now = performance.now();
             if (done) {
                 if (!completionSince) completionSince = now;
-                if (now - completionSince > 3500) reset();
+                if (now - completionSince > 6000) reset();
                 else { draw(); update(); sync(); }
                 return true;
             }
@@ -6345,7 +6479,7 @@ const Instruments = (function () {
             }
         }
         $$('[data-cyl-pace]').forEach(function (b) {
-            b.addEventListener('click', function () { pace = b.dataset.cylPace; start(); });
+            b.addEventListener('click', function () { paceTouched = true; pace = b.dataset.cylPace; start(); });
         });
         $$('[data-cyl-view]').forEach(function (b) {
             b.addEventListener('click', function () { view = b.dataset.cylView; draw(); sync(); });
@@ -6368,8 +6502,8 @@ const Instruments = (function () {
         reset(); userPaused = REDUCED; if (!REDUCED) start();
         else clock.start();
         return {
-            pause: function () { pageAwake = false; clock.stop(); },
-            resume: function () { pageAwake = true; draw(); if (!userPaused) start(); }
+            pause: function () { pageAwake = false; seenSince = 0; clock.stop(); },
+            resume: function () { pageAwake = true; seenSince = performance.now(); draw(); if (!userPaused) start(); }
         };
     };
 
@@ -6383,10 +6517,15 @@ const Instruments = (function () {
         const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
         const outCount = $('#cylinder3d-count'), outMean = $('#cylinder3d-mean'),
               outSpan = $('#cylinder3d-span'), outOuter = $('#cylinder3d-outer');
-        const ramp = rampOf([[50,70,145], [48,194,183], [226,92,151], [255,202,96]]);
+        /* the same settlement ramp as the unrolled cylinder above, its first
+           stop lifted so the base layers separate from the ground */
+        const ramp = rampOf([[80,100,205], [106,95,214], [178,95,191], [224,103,154], [242,142,107]]);
         let spec, baseName = 'square', BASE, TARGET;
         let seed, occupied, settled, layers, particle, count, outer, inner;
         let yaw = -Math.PI / 4, userPaused = false, pageAwake = true;
+        /* the camera keeps the growing top of the column in the frame and
+           lets the oldest layers descend out of it */
+        let zShift = 0, unit = 56;
         let done = false, completionSince = 0, budget = 0, lastFrame = 0;
         let drag = null;
 
@@ -6620,7 +6759,7 @@ const Instruments = (function () {
                 if (!has(particle.v, particle.z)) {
                     count++;
                     occupied.add(key(particle.v, particle.z));
-                    settled.push({ v: particle.v, z: particle.z, t: count });
+                    settled.push({ v: particle.v, z: particle.z, t: count, at: performance.now() });
                     layers[particle.z]++;
                     outer = Math.max(outer, particle.z);
                     while (layers[inner + 1] === BASE) inner++;
@@ -6636,29 +6775,38 @@ const Instruments = (function () {
             seed = spec.seed; occupied = new Set(); settled = [];
             layers = new Uint16Array(128); particle = null;
             count = 0; outer = 0; inner = 0; done = false;
-            completionSince = 0; budget = 0; lastFrame = 0;
+            completionSince = 0; budget = 0; lastFrame = 0; zShift = 0;
+            /* every base fills about three quarters of the stage width; the
+               extent is taken over the cell polygons, not their centres */
+            let span = 1, far = 0;
+            spec.cells.forEach(function (c) { c.poly.forEach(function (p) { far = Math.max(far, Math.hypot(p.x, p.y)); }); });
+            span = 2 * far;
+            unit = Math.min(W * .76 / (span * 1.05), H * .7 / (span * .5 + 5));
             draw(); update(); sync();
         }
         function project(x, y, z) {
             const c = Math.cos(yaw), s = Math.sin(yaw);
             const rx = c * x - s * y, ry = s * x + c * y;
-            return { x: W / 2 + rx * (W / 30),
-                     y: H * .775 + ry * (H / 60) - z * (H / 42.857142857) };
+            return { x: W / 2 + rx * unit,
+                     y: H * .70 + ry * (unit * .5) - (z - zShift) * (unit * .6) };
         }
         function polygon(points, fill, stroke) {
             ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
             for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
             ctx.closePath();
             if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-            if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.15; ctx.stroke(); }
+            if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
         }
-        function colour(t, shade) {
+        function colour(t, shade, at) {
             const j = Math.max(0, Math.min(255, Math.round(255 * t / TARGET))) * 3;
-            const lift = shade > 1 ? 12 : 0;
-            const r = Math.min(255, Math.round(ramp[j] * shade + lift));
-            const g = Math.min(255, Math.round(ramp[j + 1] * shade + lift));
-            const b = Math.min(255, Math.round(ramp[j + 2] * shade + lift));
-            return 'rgb(' + r + ',' + g + ',' + b + ')';
+            let r = ramp[j] * shade, g = ramp[j + 1] * shade, b = ramp[j + 2] * shade;
+            /* a cube that has just settled flashes and takes its colour */
+            const age = at ? performance.now() - at : 1e9;
+            if (age < 170) {
+                const k = 1 - age / 170;
+                r += (255 - r) * k; g += (248 - g) * k; b += (232 - b) * k;
+            }
+            return 'rgb(' + Math.min(255, Math.round(r)) + ',' + Math.min(255, Math.round(g)) + ',' + Math.min(255, Math.round(b)) + ')';
         }
         function depth(q) {
             const p = spec.cells[q.v].center;
@@ -6678,23 +6826,53 @@ const Instruments = (function () {
         function drawCube(q) {
             const cell = spec.cells[q.v];
             const top = cubeCorners(q, q.z), bottom = cubeCorners(q, q.z - 1);
+            /* walls darken with depth below the current top of the column */
+            const depthShade = Math.max(.62, 1 - .035 * Math.max(0, outer - q.z));
             for (let i = 0; i < cell.poly.length; i++) {
                 const front = edgeFront(cell, i);
                 if (front <= 1e-8 || !sideExposed(q, cell, i)) continue;
                 const j = (i + 1) % cell.poly.length;
                 const a = cell.poly[i], b = cell.poly[j];
                 const length = Math.max(1e-6, Math.hypot(b.x-a.x, b.y-a.y));
-                const shade = .48 + .18 * Math.min(1, front / length);
+                const shade = (.56 + .24 * Math.min(1, front / length)) * depthShade;
                 polygon([top[i], top[j], bottom[j], bottom[i]],
-                        colour(q.t, shade), 'rgba(7,8,14,.42)');
+                        colour(q.t, shade, q.at), 'rgba(7,8,14,.3)');
             }
-            if (!has(q.v, q.z + 1))
-                polygon(top, colour(q.t, 1.08), 'rgba(7,8,14,.46)');
+            if (!has(q.v, q.z + 1)) {
+                polygon(top, colour(q.t, 1.0 * Math.max(.8, depthShade), q.at), null);
+                /* an edge is drawn only where the neighbour's height differs,
+                   so a flat top reads as one surface rather than a brick grid */
+                ctx.beginPath();
+                for (let i = 0; i < cell.poly.length; i++) {
+                    const j = (i + 1) % cell.poly.length, nb = cell.edges[i];
+                    if (nb >= 0 && has(nb, q.z) && !has(nb, q.z + 1)) continue;
+                    ctx.moveTo(top[i].x, top[i].y); ctx.lineTo(top[j].x, top[j].y);
+                }
+                ctx.strokeStyle = 'rgba(7,8,14,.55)'; ctx.lineWidth = 1; ctx.stroke();
+            }
         }
         function drawBase() {
             spec.cells.forEach(function (cell) {
                 polygon(cell.poly.map(function (p) { return project(p.x,p.y,0); }),
-                        '#121722', 'rgba(137,151,174,.18)');
+                        '#121722', 'rgba(137,151,174,.16)');
+            });
+            /* the base graph itself, on the ground plane: the vertices and the
+               edges the walk may take */
+            ctx.beginPath();
+            spec.cells.forEach(function (cell, i) {
+                const a = project(cell.center.x, cell.center.y, 0);
+                (spec.graph[i] || []).forEach(function (j) {
+                    if (j <= i) return;
+                    const b = project(spec.cells[j].center.x, spec.cells[j].center.y, 0);
+                    if (spec.lattice && Math.hypot(b.x - a.x, b.y - a.y) > unit * 2.2) return;   /* a wrap-around edge */
+                    ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+                });
+            });
+            ctx.strokeStyle = 'rgba(160,172,196,.34)'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.fillStyle = 'rgba(200,210,228,.55)';
+            spec.cells.forEach(function (cell) {
+                const a = project(cell.center.x, cell.center.y, 0);
+                ctx.beginPath(); ctx.arc(a.x, a.y, 2.2, 0, Math.PI * 2); ctx.fill();
             });
         }
         function draw() {
@@ -6732,9 +6910,11 @@ const Instruments = (function () {
         }
         function advance() {
             const now = performance.now();
+            const want = Math.max(0, outer - 10);
+            zShift += (want - zShift) * .035;
             if (done) {
                 if (!completionSince) completionSince = now;
-                if (now - completionSince > 1800) reset();
+                if (now - completionSince > 2600) reset();
                 else { draw(); update(); sync(); }
                 return true;
             }
@@ -6891,8 +7071,8 @@ const Instruments = (function () {
             xs.push(u); ys.push(v); jumps.push(j); conductances.push(a);
             n++; if (j > maxJump) maxJump = j;
             if (note) note.textContent = j >= 12
-                ? 'Long jump · ' + j.toFixed(1)
-                : 'Critical jump kernel; one fixed environment';
+                ? 'Long jump \u00b7 ' + j.toFixed(1)
+                : 'One fixed environment';
             if (n >= TARGET) done = true;
             return !done;
         }
@@ -6907,10 +7087,11 @@ const Instruments = (function () {
             draw(); update(); sync();
         }
         function scaleAt(k) { return Math.sqrt(Math.max(1, k)); }
+        /* age is hue alone, at full strength: the oldest steps stay legible */
         function pathColour(q, alpha) {
             let a, b, u;
-            if (q < .55) { a = [86,180,233]; b = [204,121,167]; u = q / .55; }
-            else { a = [204,121,167]; b = [230,159,0]; u = (q - .55) / .45; }
+            if (q < .5) { a = [86,180,233]; b = [178,95,191]; u = q / .5; }
+            else { a = [178,95,191]; b = [242,142,107]; u = (q - .5) / .5; }
             return 'rgba(' + Math.round(a[0] + (b[0] - a[0]) * u) + ','
                 + Math.round(a[1] + (b[1] - a[1]) * u) + ','
                 + Math.round(a[2] + (b[2] - a[2]) * u) + ',' + alpha + ')';
@@ -6927,37 +7108,56 @@ const Instruments = (function () {
             const start = Math.max(0, n - KEEP);
             for (let i = start; i <= n; i++)
                 extent = Math.max(extent, Math.abs(xs[i]) * 1.08, Math.abs(ys[i]) * 1.08);
-            const targetX = view === 'follow' ? x : 0;
-            const targetY = view === 'follow' ? y : 0;
-            const targetHalf = view === 'follow' ? Math.max(10, natural * .68) : Math.max(16, extent);
-            const cameraGap = Math.hypot(targetX - camX, targetY - camY);
-            const cameraEase = view === 'follow'
-                ? Math.min(.82, .28 + .50 * Math.min(1, cameraGap / Math.max(1, camHalf)))
-                : .14;
+            /* Follow frames the last three hundred steps, and holds still while
+               the head stays in the middle half of the view: the picture drifts
+               after the walk instead of lurching with every jump. */
+            let targetX = 0, targetY = 0, targetHalf = Math.max(16, extent), cameraEase = .14;
+            if (view === 'follow') {
+                const from = Math.max(0, n - 300);
+                let lx = x, hx = x, ly = y, hy = y;
+                for (let i = from; i <= n; i++) {
+                    lx = Math.min(lx, xs[i]); hx = Math.max(hx, xs[i]);
+                    ly = Math.min(ly, ys[i]); hy = Math.max(hy, ys[i]);
+                }
+                targetX = (lx + hx) / 2; targetY = (ly + hy) / 2;
+                targetHalf = Math.max(10, .58 * Math.max(hx - lx, hy - ly) + 4);
+                const inside = Math.abs(x - camX) < .5 * camHalf && Math.abs(y - camY) < .5 * camHalf
+                    && Math.abs(targetX - camX) < .35 * camHalf && Math.abs(targetY - camY) < .35 * camHalf;
+                cameraEase = inside ? 0 : .12;
+            }
             camX += (targetX - camX) * cameraEase;
             camY += (targetY - camY) * cameraEase;
-            camHalf += (targetHalf - camHalf) * (view === 'follow' ? .20 : .14);
+            camHalf += (targetHalf - camHalf) * (view === 'follow' ? .12 : .14);
             const pad = 86, sc = (W - 2 * pad) / (2 * camHalf);
             function px(q) { return W / 2 + (q - camX) * sc; }
             function py(q) { return W / 2 - (q - camY) * sc; }
 
+            /* the lattice itself, when its sites are far enough apart to see */
+            if (sc >= 22) {
+                ctx.fillStyle = 'rgba(255,248,232,.10)';
+                const x0 = Math.ceil(camX - camHalf * 1.02), x1 = Math.floor(camX + camHalf * 1.02);
+                const y0 = Math.ceil(camY - camHalf * 1.02), y1 = Math.floor(camY + camHalf * 1.02);
+                for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) {
+                    ctx.fillRect(px(gx) - 1, py(gy) - 1, 2, 2);
+                }
+            }
             for (let i = start + 1; i <= n; i++) {
                 const q = (i - start) / Math.max(1, n - start);
                 const len = jumps[i], a = conductances[i];
                 ctx.beginPath(); ctx.moveTo(px(xs[i - 1]), py(ys[i - 1]));
                 ctx.lineTo(px(xs[i]), py(ys[i]));
-                ctx.strokeStyle = pathColour(q, .18 + .72 * q);
-                ctx.lineWidth = Math.min(12, (1.7 + Math.log1p(len) * 1.4) * a);
+                ctx.strokeStyle = pathColour(q, .82 + .18 * q);
+                ctx.lineWidth = Math.min(6, (1.3 + Math.log1p(len) * .9) * a);
                 ctx.stroke();
             }
             if (n > 0) {
                 ctx.beginPath(); ctx.moveTo(px(xs[n - 1]), py(ys[n - 1]));
                 ctx.lineTo(px(xs[n]), py(ys[n]));
-                ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 5 + conductances[n] * 3; ctx.stroke();
+                ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 3 + conductances[n] * 1.5; ctx.stroke();
             }
-            ctx.beginPath(); ctx.arc(px(x), py(y), 10, 0, Math.PI * 2);
+            ctx.beginPath(); ctx.arc(px(x), py(y), 9, 0, Math.PI * 2);
             ctx.fillStyle = '#FFF8E8'; ctx.fill();
-            ctx.strokeStyle = '#090A10'; ctx.lineWidth = 4; ctx.stroke();
+            ctx.strokeStyle = '#090A10'; ctx.lineWidth = 3; ctx.stroke();
         }
         function update() {
             const j = n ? jumps[n] : 0, natural = scaleAt(n);
@@ -7114,7 +7314,7 @@ const Instruments = (function () {
 
         function grid(ox, oy, s, c) {
             const cell = s / (L - 1);
-            ctx.lineWidth = Math.max(1, cell * .30);
+            ctx.lineWidth = Math.max(1, cell * .28);
             for (let y = 0; y < L; y++) {
                 for (let x = 0; x < L; x++) {
                     const i = y * L + x;
@@ -7142,11 +7342,11 @@ const Instruments = (function () {
             const xc = ox + .5 * s;
             ctx.setLineDash([7, 7]);
             ctx.strokeStyle = 'rgba(226,194,90,.75)';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = Math.max(2, W / 720);
             ctx.beginPath(); ctx.moveTo(xc, oy); ctx.lineTo(xc, oy + s); ctx.stroke();
             ctx.setLineDash([]);
             ctx.strokeStyle = '#A8D8E8';
-            ctx.lineWidth = 3.5;
+            ctx.lineWidth = Math.max(2.5, W / 620);
             ctx.beginPath();
             for (let k = 0; k < PS.length; k++) {
                 const x = ox + PS[k] * s, y = oy + s - DENS[k] * s;
@@ -7154,17 +7354,18 @@ const Instruments = (function () {
             }
             ctx.stroke();
             ctx.fillStyle = 'rgba(242,237,226,.72)';
-            ctx.font = '500 20px ui-monospace, "IBM Plex Mono", monospace';
+            const fs = Math.round(W / 65), dy = Math.round(fs * 1.2);
+            ctx.font = '500 ' + fs + 'px ui-monospace, "IBM Plex Mono", monospace';
             ctx.textAlign = 'center';
-            ctx.fillText('0', ox, oy + s + 24);
-            ctx.fillText('1/2', xc, oy + s + 24);
-            ctx.fillText('1', ox + s, oy + s + 24);
+            ctx.fillText('0', ox, oy + s + dy);
+            ctx.fillText('1/2', xc, oy + s + dy);
+            ctx.fillText('1', ox + s, oy + s + dy);
         }
 
         function draw() {
             ctx.fillStyle = PALETTE.ink;
             ctx.fillRect(0, 0, W, H);
-            const gap = 18, s = (W - 5 * gap) / 4, top = (H - s) / 2 - 8;
+            const gap = Math.round(W / 86), s = (W - 5 * gap) / 4, top = (H - s) / 2 - Math.round(W / 190);
             for (let k = 0; k < 3; k++) grid(gap + k * (s + gap), top, s, cfg[k]);
             curve(gap + 3 * (s + gap), top, s);
         }
@@ -7180,9 +7381,12 @@ const Instruments = (function () {
         const note = $('#harmonic-note'), outSweeps = $('#harmonic-sweeps'),
               outSites = $('#harmonic-sites'), outMove = $('#harmonic-move'),
               outResidual = $('#harmonic-residual');
-        const WATCH = 0x3fffffff, EVERY = 180, FAST_CAP = 64;
-        const COLOUR = rampOf([[86,180,233], [138,127,209],
-                               [204,121,167], [230,159,0]]);
+        const WATCH = 0x3fffffff, EVERY = 100, FAST_CAP = 64;
+        /* the site's attachment ramp, lightness rising with displacement, so
+           the key under the stage and the edges agree */
+        const COLOUR = rampOf([[111,94,224], [204,121,167],
+                               [150,205,240], [255,248,232]]);
+        let watchBegan = 0, watchAcc = 0;
 
         let DATA = null, D = null, key = 'sparse';
         let latX, latY, solX, solY, x, y, nx, ny, off, nbr, boundary;
@@ -7275,7 +7479,7 @@ const Instruments = (function () {
                 }
                 const u = Math.round(band / 11 * 255) * 3;
                 ctx.strokeStyle = 'rgb(' + COLOUR[u] + ',' + COLOUR[u + 1] + ',' + COLOUR[u + 2] + ')';
-                ctx.lineWidth = Math.max(1.7 * ratio, 2.2); ctx.stroke();
+                ctx.lineWidth = Math.max(1.4 * ratio, 2); ctx.stroke();
             }
 
             ctx.beginPath();
@@ -7304,9 +7508,16 @@ const Instruments = (function () {
                 : (sweeps ? 'Relaxing coordinates' : 'Boundary values fixed');
         }
 
+        /* Watch is a clock, not a sweep count: three sweeps a second at
+           first, so the lattice is seen to melt, then the rate rises by 1.6
+           every second and the coordinates settle within a quarter minute. */
         function watchTick() {
             if (done) return false;
-            const count = sweeps < 12 ? 1 : (sweeps < 80 ? 4 : 12);
+            const now = performance.now();
+            if (!watchBegan) watchBegan = now;
+            const t = (now - watchBegan) / 1000;
+            watchAcc += Math.min(140, 3 * Math.pow(1.6, t)) * EVERY / 1000;
+            const count = Math.floor(watchAcc); watchAcc -= count;
             for (let q = 0; q < count && !done; q++) relaxOne();
             draw(); syncControls();
             return !done;
@@ -7354,6 +7565,7 @@ const Instruments = (function () {
             guides = Array.from({length:n}, function (_, i) { return i; })
                 .sort(function (a, b) { return disp[b] - disp[a]; }).slice(0, 44);
             sweeps = 0; residual = harmonicResidual(); done = false; ready = true;
+            watchBegan = 0; watchAcc = 0;
             makeUnderlay(); userPaused = !autoplay || REDUCED;
             clock.slow(pace === 'watch' ? WATCH : 0);
             draw(); syncControls();
@@ -7449,7 +7661,12 @@ const Instruments = (function () {
         let px, py, alive, stamp, sorts, lives, chains,
             nLayers, nAlive, pending, held, prepared, watchPhase;
         let showCurves = true, showHull = true, curvesBtn = null;
-        let pace = 'grow', userPaused = false, pageAwake = true;
+        let pace = 'watch', userPaused = false, pageAwake = true;
+        /* the unit square sits inside a small margin, so its boundary is seen
+           as a boundary rather than as the edge of the canvas */
+        const PAD = Math.round(W * .04), SPAN = W - 2 * PAD;
+        function X(v) { return PAD + v * SPAN; }
+        function Y(v) { return PAD + (1 - v) * SPAN; }
 
         const elN = $('#peel-n'), elAlive = $('#peel-alive'),
               elLayers = $('#peel-layers'), elRatio = $('#peel-ratio'),
@@ -7518,7 +7735,7 @@ const Instruments = (function () {
                             const xx = q / 2000, a = Math.min(xx, 1 - xx);
                             if (a < 2 * k) { open = false; continue; }
                             const b = k / a, yy = branch ? 1 - b : b;
-                            const sx = xx * (W - 1), sy = (1 - yy) * (W - 1);
+                            const sx = X(xx), sy = Y(yy);
                             if (!open) { c.moveTo(sx, sy); open = true; } else c.lineTo(sx, sy);
                         }
                         c.stroke();
@@ -7536,7 +7753,7 @@ const Instruments = (function () {
                    s/8 of the maximum is the square inset by s/16 */
                 level: function (c, s) {
                     const m = s / 16;
-                    c.strokeRect(m * (W - 1), m * (W - 1), (1 - 2 * m) * (W - 1), (1 - 2 * m) * (W - 1));
+                    c.strokeRect(X(m), Y(1 - m), (1 - 2 * m) * SPAN, (1 - 2 * m) * SPAN);
                 },
                 note: 'The last figure converges to √2/2 ≈ 0.707, the maximum of √2·min(x, 1−x, y, 1−y); its level sets are concentric squares.'
             },
@@ -7597,7 +7814,7 @@ const Instruments = (function () {
 
         function strokeLevel(s) {
             cctx.strokeStyle = 'rgba(255,248,232,.62)';
-            cctx.lineWidth = 2.5;
+            cctx.lineWidth = 2;
             norm.level(cctx, s);
         }
 
@@ -7644,9 +7861,11 @@ const Instruments = (function () {
                see what the fronts are being taken off; --slate at half over
                the ink ground, dim enough that the innermost peeled layers,
                which land on slate itself, still read against it */
-            pctx.fillStyle = 'rgba(74,74,94,.5)';
+            /* the surviving points must stay visible: the front is seen eating
+               them, and what is left is the interior the next front finds */
+            pctx.fillStyle = 'rgba(160,160,172,.6)';
             for (let i = 0; i < px.length; i++) {
-                pctx.fillRect(px[i] * (W - 3), (1 - py[i]) * (W - 3), 2, 2);
+                pctx.fillRect(X(px[i]) - 1, Y(py[i]) - 1, 2, 2);
             }
             cctx.clearRect(0, 0, W, W);
             if (curvesBtn) {
@@ -7661,6 +7880,8 @@ const Instruments = (function () {
         function composite() {
             ctx.fillStyle = PALETTE.ink;
             ctx.fillRect(0, 0, W, W);
+            ctx.strokeStyle = 'rgba(201,191,168,.22)'; ctx.lineWidth = 1.5;
+            ctx.strokeRect(PAD - 2, PAD - 2, SPAN + 4, SPAN + 4);
             ctx.drawImage(ptsC, 0, 0);
             if (showCurves && norm.level) ctx.drawImage(curveC, 0, 0);
             if (showHull && chains && nAlive) strokeHull();
@@ -7702,7 +7923,7 @@ const Instruments = (function () {
                 const i = L0[q];
                 if (stamp[i] === layer) {
                     alive[i] = 0; nAlive--;
-                    pctx.fillRect(px[i] * (W - 3), (1 - py[i]) * (W - 3), 3, 3);
+                    pctx.fillRect(X(px[i]) - 1.5, Y(py[i]) - 1.5, 3, 3);
                 } else if (track) {
                     const uv = norm.u(px[i], py[i]);
                     if (uv < minU) minU = uv;
@@ -7742,9 +7963,9 @@ const Instruments = (function () {
            empty -- a hairline that follows the front, not a band across it. */
         function strokeHull() {
             ctx.strokeStyle = '#F0E442';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2;
             ctx.lineJoin = 'round';
-            ctx.globalAlpha = .85;
+            ctx.globalAlpha = .9;
             for (let c = 0; c < cones.length; c++) {
                 const cn = cones[c], ch = chains[c];
                 if (!ch || ch.length < 2) continue;
@@ -7752,14 +7973,14 @@ const Instruments = (function () {
                 let fv = cn.f[0] * px[ch[0]] + cn.f[1] * py[ch[0]],
                     gv = cn.g[0] * px[ch[0]] + cn.g[1] * py[ch[0]];
                 ctx.beginPath();
-                ctx.moveTo(px[ch[0]] * (W - 3) + 1.5, (1 - py[ch[0]]) * (W - 3) + 1.5);
+                ctx.moveTo(X(px[ch[0]]), Y(py[ch[0]]));
                 for (let j = 1; j < ch.length; j++) {
                     const i = ch[j];
                     const fj = cn.f[0] * px[i] + cn.f[1] * py[i],
                           gj = cn.g[0] * px[i] + cn.g[1] * py[i];
                     const cx = iv[0] * fj + iv[1] * gv, cy = iv[2] * fj + iv[3] * gv;
-                    ctx.lineTo(cx * (W - 3) + 1.5, (1 - cy) * (W - 3) + 1.5);
-                    ctx.lineTo(px[i] * (W - 3) + 1.5, (1 - py[i]) * (W - 3) + 1.5);
+                    ctx.lineTo(X(cx), Y(cy));
+                    ctx.lineTo(X(px[i]), Y(py[i]));
                     fv = fj; gv = gj;
                 }
                 ctx.stroke();
@@ -7773,9 +7994,8 @@ const Instruments = (function () {
             for (let q = 0; q < lives[0].length; q++) {
                 const i = lives[0][q];
                 if (stamp[i] !== layer) continue;
-                const x = px[i] * (W - 3) + 1.5,
-                      y = (1 - py[i]) * (W - 3) + 1.5;
-                ctx.moveTo(x + 6, y); ctx.arc(x, y, 6, 0, Math.PI * 2);
+                const x = X(px[i]), y = Y(py[i]);
+                ctx.moveTo(x + 5, y); ctx.arc(x, y, 5, 0, Math.PI * 2);
             }
             ctx.fillStyle = '#F0E442'; ctx.fill();
             ctx.strokeStyle = '#08070B'; ctx.lineWidth = 2; ctx.stroke();
@@ -7785,8 +8005,8 @@ const Instruments = (function () {
            violet -> rose -> cyan -> white from the outside inward. */
         function colourFor(k) {
             const t = Math.min(1, k / Math.max(1, norm.depth * Math.sqrt(px.length)));
-            const stops = [[138, 127, 209], [204, 121, 167],
-                           [86, 180, 233], [255, 248, 232]];
+            const stops = [[111, 94, 224], [204, 121, 167],
+                           [150, 205, 240], [255, 248, 232]];
             const u = t * (stops.length - 1), lo = Math.floor(u),
                   hi = Math.min(stops.length - 1, lo + 1), f = u - lo;
             return 'rgb(' + Math.round(stops[lo][0] + (stops[hi][0] - stops[lo][0]) * f) + ',' +
@@ -7824,19 +8044,25 @@ const Instruments = (function () {
            union, remove that union, then hold on the new interior. */
         function watchBeat() {
             if (!nAlive) return false;
+            /* the four-beat proof is shown for the first layers; once the
+               mechanism has been seen the peel runs at two beats a layer */
+            const quick = nLayers >= 6;
             if (watchPhase === 'front') {
                 if (!prepareLayer()) return false;
-                watchPhase = 'select';
-                note.textContent = 'Identify outer front';
+                watchPhase = quick ? 'commit' : 'select';
+                note.textContent = quick ? 'Layer ' + nf.format(nLayers + 1) : 'Identify outer front';
             } else if (watchPhase === 'select') {
                 watchPhase = 'commit';
                 note.textContent = 'Select minimal points';
             } else if (watchPhase === 'commit') {
                 commitPrepared();
-                watchPhase = 'hold';
-                note.textContent = nAlive ? 'Remove layer' : 'Complete';
+                /* the next front is prepared at once, so the yellow front never
+                   blinks off between layers */
+                if (nAlive) prepareLayer();
+                if (quick) watchPhase = 'front';
+                else watchPhase = 'hold';
+                note.textContent = nAlive ? (quick ? 'Layer ' + nf.format(nLayers) : 'Remove layer') : 'Complete';
             } else {
-                chains = null;
                 watchPhase = 'front';
                 note.textContent = nAlive ? 'Advance to next layer' : 'Complete';
             }
@@ -7845,7 +8071,7 @@ const Instruments = (function () {
         }
 
         const clock = paced({
-            watch: 0x3fffffff, every: 150,
+            watch: 0x3fffffff, every: 140,
             tick: watchBeat,
             frame: function () {
                 if (++held < norm.hold) return true;
@@ -8329,7 +8555,7 @@ const Instruments = (function () {
                     if (rr > far) far = rr;
                 }
             }
-            const CX = 720, CY = 356, RAD = 286;
+            const CX = 720, CY = 346, RAD = 340;
             const scale = RAD / far;
             const T = D.curve.t, YD = D.curve.drift, YF = D.curve.free;
             let yMax = 0;
@@ -8340,12 +8566,12 @@ const Instruments = (function () {
             const gx = function (t) { return GX0 + (Math.log(t) - lt0) / (lt1 - lt0) * (GX1 - GX0); };
             const gy = function (v) { return GY1 - v / yMax * (GY1 - GY0); };
 
-            function cloud(ctx, ax, ay, colour, alpha) {
+            function cloud(ctx, ax, ay, colour, alpha, r) {
                 ctx.fillStyle = colour;
                 ctx.globalAlpha = alpha;
                 for (let i = 0; i < ax.length; i++) {
                     ctx.beginPath();
-                    ctx.arc(CX + ax[i] / D.q * scale, CY + ay[i] / D.q * scale, 3.1, 0, Math.PI * 2);
+                    ctx.arc(CX + ax[i] / D.q * scale, CY + ay[i] / D.q * scale, r, 0, Math.PI * 2);
                     ctx.fill();
                 }
                 ctx.globalAlpha = 1;
@@ -8375,11 +8601,11 @@ const Instruments = (function () {
                 let ci = 0;
                 while (ci + 1 < T.length && T[ci + 1] <= t) ci++;
 
-                /* the two clouds, same origin, same noise */
-                cloud(ctx, D.freeX[fi], D.freeY[fi], PALETTE.rose, .85);
-                cloud(ctx, D.driftX[fi], D.driftY[fi], PALETTE.cyan, .8);
-                ring(ctx, Math.sqrt(YF[ci] * T[ci]), 'rgba(142,66,87,.85)');
-                ring(ctx, Math.sqrt(YD[ci] * T[ci]), 'rgba(168,216,232,.9)');
+                /* the two clouds, same origin, same noise: the compact
+                   no-drift cloud is drawn last, so it is seen sitting inside
+                   the spreading one instead of buried under it */
+                cloud(ctx, D.driftX[fi], D.driftY[fi], PALETTE.cyan, .78, 2.6);
+                cloud(ctx, D.freeX[fi], D.freeY[fi], '#D98BA3', .95, 3.3);
 
                 /* the curve that is the whole point: flat is a diffusion */
                 ctx.strokeStyle = 'rgba(201,191,168,.30)';
@@ -8395,15 +8621,29 @@ const Instruments = (function () {
                 ctx.fillStyle = PALETTE.rose;
                 ctx.beginPath(); ctx.arc(gx(T[ci]), gy(YF[ci]), 6, 0, Math.PI * 2); ctx.fill();
 
-                ctx.fillStyle = 'rgba(242,237,226,.86)';
-                ctx.font = '500 27px ui-monospace, "IBM Plex Mono", monospace';
+                /* on a phone the film is a quarter of its logical width, so
+                   its labels are set larger to stay legible */
+                const cssW = canvas.getBoundingClientRect().width || 1440;
+                const mag = Math.max(1, Math.min(2.1, 760 / cssW));
+                const fs = Math.round(30 * mag);
+                ctx.font = '500 ' + fs + 'px ui-monospace, "IBM Plex Mono", monospace';
                 ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-                ctx.fillText('t = ' + t.toFixed(0).padStart(4, ' ')
-                    + '     with drift  ' + YD[ci].toFixed(3)
-                    + '     without  ' + YF[ci].toFixed(3), GX0, GY0 - 26);
-                ctx.fillStyle = 'rgba(201,191,168,.62)';
-                ctx.font = '400 23px ui-monospace, "IBM Plex Mono", monospace';
-                ctx.fillText('⟨|Xₜ−X₀|²⟩ / t', GX0, GY0 - 60);
+                /* the readout is set in the two curve colours, and drops its
+                   formula prefix when the stage is too narrow for it */
+                const parts = [['⟨|Xₜ−X₀|²⟩ / t   ', 'rgba(201,191,168,.75)'],
+                               ['t = ' + t.toFixed(0) + '   ', 'rgba(242,237,226,.9)'],
+                               ['drift ' + YD[ci].toFixed(2) + '   ', PALETTE.cyan],
+                               ['none ' + YF[ci].toFixed(2), '#D98BA3']];
+                let width = parts.reduce(function (s, p) { return s + ctx.measureText(p[0]).width; }, 0);
+                if (width > GX1 - GX0) { parts.shift(); width = parts.reduce(function (s, p) { return s + ctx.measureText(p[0]).width; }, 0); }
+                let x = GX0;
+                parts.forEach(function (p) { ctx.fillStyle = p[1]; ctx.fillText(p[0], x, GY0 - 30 * mag); x += ctx.measureText(p[0]).width; });
+                ctx.fillStyle = 'rgba(201,191,168,.7)';
+                ctx.font = '400 ' + Math.round(22 * mag) + 'px ui-monospace, "IBM Plex Mono", monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText('log t', GX1, GY1 + 32);
+                ctx.textAlign = 'left';
+                ctx.fillText('0', GX0 - 26, GY1 + 8);
             }, .995);
         }).catch(function () {});
 
@@ -8417,7 +8657,7 @@ const Instruments = (function () {
         const canvas = $('#sd-canvas');
         if (!canvas) return null;
         const ctx = canvas.getContext('2d'), W = canvas.width;
-        const DISPLAY_PATH_FPS = 15;
+        const DISPLAY_PATH_FPS = 30;
         let D = null, fields = [], ready = false;
         let pathX = null, pathY = null, recordX = null, recordY = null;
         let cameraX = null, cameraY = null;
@@ -8538,16 +8778,19 @@ const Instruments = (function () {
                 drawSettledField(fields[blend.old], D.halves[blend.old], cam, 1);
                 return;
             }
-            /* The old contour family dissolves before the new one resolves.
-               Both remain registered to the same camera; no contour is an
-               active object that can move ahead of the particle. */
-            const oldAlpha = 1 - ruleEase(clamp(blend.q / .72, 0, 1));
-            const nextAlpha = ruleEase(clamp((blend.q - .28) / .72, 0, 1));
+            /* The new contour family resolves before the old one dissolves,
+               so the field never dims to a blink between them: for a moment
+               the fine contours sit nested inside the coarse ones, as they
+               do in a low-passed field. Both stay registered to one camera. */
+            const nextAlpha = ruleEase(clamp(blend.q / .55, 0, 1));
+            const oldAlpha = 1 - ruleEase(clamp((blend.q - .45) / .55, 0, 1));
             drawSettledField(fields[blend.old], D.halves[blend.old], cam, oldAlpha);
             drawSettledField(fields[blend.next], D.halves[blend.next], cam, nextAlpha);
         }
+        /* one amber, aged by alpha alone: the path is the brightest line on
+           the stage and never borrows a colour from the field's tints */
         function trailColour(t) {
-            const stops = [[168,216,232], [204,121,167], [238,137,62]];
+            const stops = [[236,150,40], [245,166,35], [248,190,70]];
             const z = clamp(t, 0, 1) * 2, i = Math.min(1, Math.floor(z)), u = z - i;
             return 'rgb(' + Math.round(ruleMix(stops[i][0], stops[i + 1][0], u)) + ',' +
                             Math.round(ruleMix(stops[i][1], stops[i + 1][1], u)) + ',' +
@@ -8589,7 +8832,7 @@ const Instruments = (function () {
                     for (let i = a + 1; i <= z; i++) ctx.lineTo(trailX[i], trailY[i]);
                     const age = (a + z) / (2 * Math.max(1, count - 1));
                     ctx.strokeStyle = trailColour(age);
-                    ctx.globalAlpha = .25 + .75 * Math.pow(age, .62);
+                    ctx.globalAlpha = .32 + .68 * Math.pow(age, .7);
                     ctx.lineWidth = core; ctx.stroke();
                 }
             }
@@ -8609,18 +8852,18 @@ const Instruments = (function () {
                 const s = stateAt(ruleMix(cutTime, state.seconds, i / pieces));
                 const q = screenPoint(s.point, state.camera);
                 ctx.beginPath(); ctx.moveTo(old[0], old[1]); ctx.lineTo(q[0], q[1]);
-                ctx.strokeStyle = '#EE893E'; ctx.globalAlpha = .66 + .34 * i / pieces;
+                ctx.strokeStyle = '#F8BE46'; ctx.globalAlpha = .7 + .3 * i / pieces;
                 ctx.lineWidth = core; ctx.stroke(); old = q;
             }
             ctx.globalAlpha = 1;
         }
         function drawParticle(state) {
             const cssWidth = Math.max(1, canvas.getBoundingClientRect().width || 720);
-            const PX = W / cssWidth, diameter = cssWidth < 500 ? 13 : 11, r = diameter * PX / 2;
+            const PX = W / cssWidth, diameter = cssWidth < 500 ? 14 : 12, r = diameter * PX / 2;
             const q = screenPoint(state.point, state.camera);
             ctx.beginPath(); ctx.arc(q[0], q[1], r, 0, Math.PI * 2);
             ctx.fillStyle = '#F6D854'; ctx.fill();
-            ctx.strokeStyle = 'rgba(8,7,11,.78)'; ctx.lineWidth = 1.5 * PX; ctx.stroke();
+            ctx.strokeStyle = 'rgba(8,7,11,.85)'; ctx.lineWidth = 2 * PX; ctx.stroke();
         }
         function paint() {
             if (!ready) { ctx.fillStyle = '#0F0E13'; ctx.fillRect(0, 0, W, W); return; }
@@ -8734,9 +8977,9 @@ const Instruments = (function () {
               outView = $('#flattice-view');
         const src = (window.galleryAssets && window.galleryAssets.flatticeLarge)
             || 'plates/p5-flattice-hero-void.png';
-        const MASS = 1300000, CLOSE_WIDTH = 180, DURATION = 18000;
+        const MASS = 1300000, CLOSE_WIDTH = 132, DURATION = 22000;
         const CLOSE_X = 740, CLOSE_Y = 330;
-        let image = null, ready = false, failed = false;
+        let image = null, half = null, ready = false, failed = false;
         let phase = REDUCED ? .55 : 0, pageAwake = true,
             userPaused = REDUCED, raf = 0, lastNow = 0;
 
@@ -8744,8 +8987,8 @@ const Instruments = (function () {
         function ease(x) { x = clamp01(x); return x * x * (3 - 2 * x); }
         function cameraAt(p) {
             let q;
-            if (p < .08) q = 0;
-            else if (p < .36) q = ease((p - .08) / .28);
+            if (p < .11) q = 0;
+            else if (p < .40) q = ease((p - .11) / .29);
             else if (p < .74) q = 1;
             else if (p < .96) q = 1 - ease((p - .74) / .22);
             else q = 0;
@@ -8766,13 +9009,26 @@ const Instruments = (function () {
             const camera = cameraAt(phase), sw = camera.width;
             const sx = Math.max(0, Math.min(image.width - sw, camera.x - sw / 2));
             const sy = Math.max(0, Math.min(image.height - sw, camera.y - sw / 2));
-            ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(image, sx, sy, sw, sw, 0, 0, W, H);
+            /* Magnified sites are whole pixels; a minified view is drawn from
+               an area-averaged copy, so periodic patches become their mean
+               tone instead of a moire. A two per cent frame keeps the
+               configuration's own edge off the canvas edge. */
+            const inset = Math.round(W * .02), dest = W - 2 * inset;
+            /* sites per device pixel decides the source: whole sites when they
+               are at least a device pixel wide, the area-averaged copy when
+               more than one site would land on a pixel */
+            const cssW = canvas.getBoundingClientRect().width || 720;
+            const devicePx = dest * (cssW / W) * (window.devicePixelRatio || 1);
+            const perPx = sw / Math.max(1, devicePx);
+            ctx.imageSmoothingEnabled = perPx > .9;
+            ctx.imageSmoothingQuality = 'high';
+            if (half && perPx > 1.4) ctx.drawImage(half, sx / 2, sy / 2, sw / 2, sw / 2, inset, inset, dest, dest);
+            else ctx.drawImage(image, sx, sy, sw, sw, inset, inset, dest, dest);
             if (outMass) outMass.textContent = nf.format(MASS);
             if (outView) outView.textContent = nf.format(Math.round(sw)) + ' sites';
-            if (camera.q < .18) note.textContent = 'Individual heights 0 and 1';
-            else if (camera.q < .72) note.textContent = 'Zooming out from individual sites';
-            else note.textContent = 'Large-scale height regions';
+            if (camera.q < .18) note.textContent = 'Individual sites';
+            else if (camera.q < .72) note.textContent = 'Zooming out';
+            else note.textContent = 'Whole configuration';
         }
         function stop() {
             if (raf) cancelAnimationFrame(raf);
@@ -8814,7 +9070,15 @@ const Instruments = (function () {
 
         paint(); sync();
         loadImage(src).then(function (img) {
-            image = img; ready = true; paint(); sync();
+            image = img;
+            try {
+                half = document.createElement('canvas');
+                half.width = Math.ceil(img.width / 2); half.height = Math.ceil(img.height / 2);
+                const hc = half.getContext('2d');
+                hc.imageSmoothingEnabled = true; hc.imageSmoothingQuality = 'high';
+                hc.drawImage(img, 0, 0, half.width, half.height);
+            } catch (e) { half = null; }
+            ready = true; paint(); sync();
             if (!REDUCED) { userPaused = false; start(); }
         }).catch(function (err) {
             console.warn('F-lattice configuration:', err);
@@ -8834,7 +9098,7 @@ const Instruments = (function () {
         if (!svg || !$('#ft-p1')) return null;
         const NS = 'http://www.w3.org/2000/svg';
         const SLOT = ['p0', 'q0', 'p1', 'q1'];
-        let data = null, atlas = null, sel = null, kind = 'std';
+        let data = null, atlas = null, sel = null, kind = 'std', scrolled = false;
 
         function el(t, at) {
             const n = document.createElementNS(NS, t);
@@ -8851,7 +9115,7 @@ const Instruments = (function () {
                243 of them. The figure scrolls sideways past that point. */
             const leaves = data.nodes['.'].leaves || 27;
             const W = Math.max(1200, Math.round(leaves * 13));
-            const H = 60 + maxd * 66, padx = 26, pady = 26;
+            const H = 60 + maxd * 66, padx = 100, pady = 26;
             svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
             svg.style.width = Math.max(100, Math.round(W / 12)) + 'ch';
             const X = function (k) { return padx + data.nodes[k].x * (W - 2 * padx); };
@@ -8881,21 +9145,30 @@ const Instruments = (function () {
                                     'aria-label': nd.p1 + ' and ' + nd.q1 });
                 /* the dot carries the size of the tile it names */
                 const shrink = 1 / (1 + 0.5 * nd.depth);
-                g.appendChild(el('circle', { cx: X(k), cy: Y(k),
-                                             r: 1.6 + (1.4 + 7 * Math.sqrt(big(k) / most)) * shrink }));
-                if (nd.depth <= 1) {
-                    const t = el('text', { x: X(k), y: Y(k) - 13, 'text-anchor': 'middle' });
-                    t.textContent = nd.p1 + '  ' + nd.q1;
+                const rr = 2.2 + (1.6 + 7 * Math.sqrt(big(k) / most)) * shrink;
+                g.appendChild(el('circle', { cx: X(k), cy: Y(k), r: k === sel ? Math.max(6, rr * 2) : rr }));
+                if (nd.depth <= 1 || k === sel) {
+                    const anchor = nd.x > .92 ? 'end' : nd.x < .08 ? 'start' : 'middle';
+                    const t = el('text', { x: X(k), y: Y(k) - 13, 'text-anchor': anchor });
+                    t.textContent = nd.p1 + ' \u00b7 ' + nd.q1;
                     g.appendChild(t);
                 }
                 g.appendChild(el('circle', { cx: X(k), cy: Y(k),
-                                             r: Math.max(5, 13 - 2 * nd.depth), class: 'ft-hit' }));
+                                             r: Math.max(7, 14 - 2 * nd.depth), class: 'ft-hit' }));
                 g.addEventListener('click', function () { select(k); });
                 g.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(k); }
                 });
                 svg.appendChild(g);
             });
+            /* the tree is wider than its column and scrolls; it opens with the
+               root in view rather than on the far leaves */
+            const wrap = svg.closest('.tree-wrap');
+            if (wrap && !scrolled && data.nodes['.']) {
+                scrolled = true;
+                const shown = svg.getBoundingClientRect().width || wrap.scrollWidth;
+                wrap.scrollLeft = Math.max(0, X('.') / W * shown - wrap.clientWidth * .8);
+            }
         }
 
         function paint(canvas, frac) {
@@ -9111,15 +9384,33 @@ const Instruments = (function () {
         function yL(v) { return LBOT - (v - rL[0]) / (rL[1] - rL[0]) * (LBOT - LTOP); }
         function yR(v) { return RTOP + (v - rR[0]) / (rR[1] - rR[0]) * (RBOT - RTOP); }
 
-        function minima(ctx, a, yf, upto, alpha) {
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = 'rgba(201,191,168,' + alpha + ')';
+        /* a walk's cell minima drawn as a step function: treads, thin risers
+           and a baseline, tinted like the arcs that walk will produce */
+        function minima(ctx, a, yf, upto, alpha, tint, baseline, label) {
+            ctx.strokeStyle = 'rgba(201,191,168,' + (alpha * .35).toFixed(3) + ')';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(X0, baseline); ctx.lineTo(X1, baseline); ctx.stroke();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(' + tint + ',' + alpha + ')';
             ctx.beginPath();
             for (let i = 0; i < n && i < upto; i++) {
-                ctx.moveTo(X0 + i * CW + 5, yf(a[i]));
-                ctx.lineTo(X0 + (i + 1) * CW - 5, yf(a[i]));
+                ctx.moveTo(X0 + i * CW + 3, yf(a[i]));
+                ctx.lineTo(X0 + (i + 1) * CW - 3, yf(a[i]));
             }
             ctx.stroke();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(' + tint + ',' + (alpha * .5).toFixed(3) + ')';
+            ctx.beginPath();
+            for (let i = 1; i < n && i < upto; i++) {
+                ctx.moveTo(X0 + i * CW, yf(a[i - 1]));
+                ctx.lineTo(X0 + i * CW, yf(a[i]));
+            }
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(' + tint + ',' + alpha + ')';
+            const cssW = ctx.canvas.getBoundingClientRect().width || 1440;
+            ctx.font = '500 ' + Math.round(26 * Math.max(1, Math.min(2, 760 / cssW))) + 'px ui-monospace, "IBM Plex Mono", monospace';
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            ctx.fillText(label, X0 - 18, baseline);
         }
 
         /* the chord that decides the edge: at max(a_i,a_j), under everything
@@ -9180,10 +9471,10 @@ const Instruments = (function () {
 
             /* L minima, then its chords, then the same for R */
             const drawnL = p < .10 ? Math.ceil(p / .10 * n) : n;
-            minima(ctx, D.aL, yL, drawnL, p < .10 ? .55 : .8);
+            minima(ctx, D.aL, yL, drawnL, p < .10 ? .6 : .85, '120,178,214', LBOT, 'L');
             if (p >= .46) {
                 const drawnR = p < .56 ? Math.ceil((p - .46) / .10 * n) : n;
-                minima(ctx, D.aR, yR, drawnR, p < .56 ? .55 : .8);
+                minima(ctx, D.aR, yR, drawnR, p < .56 ? .6 : .85, '204,121,150', RTOP, 'R');
             }
 
             row(ctx, null);
@@ -9246,7 +9537,7 @@ const Instruments = (function () {
                 ctx.stroke();
             });
             if (stage === 2) {
-                ctx.fillStyle = '#A8D8E8';
+                ctx.fillStyle = '#F0E442';
                 ring.forEach(function (d) {
                     ctx.beginPath();
                     ctx.arc(cx + d[0] * r * .62, cy + d[1] * r * .62, size * .028, 0, Math.PI * 2);
@@ -9255,22 +9546,22 @@ const Instruments = (function () {
             }
             const nb = stage === 3 ? NB0 + SHARE : NB0;
             ring.forEach(function (d) {
-                node(cx + d[0] * r, cy + d[1] * r, size * .088, nb, false);
+                node(cx + d[0] * r, cy + d[1] * r, size * .098, nb, false);
             });
-            node(cx, cy, size * .105, stage === 3 ? 1 : START, hot);
+            node(cx, cy, size * .115, stage === 3 ? 1 : START, hot);
         }
 
         function node(x, y, rad, mass, hot) {
             ctx.beginPath();
             ctx.arc(x, y, rad, 0, Math.PI * 2);
-            ctx.fillStyle = hot ? 'rgba(168,216,232,.20)'
+            ctx.fillStyle = hot ? 'rgba(240,228,66,.16)'
                 : 'rgba(118,103,168,' + (.10 + Math.min(1, mass) * .24).toFixed(2) + ')';
             ctx.fill();
-            ctx.strokeStyle = hot ? '#A8D8E8' : 'rgba(201,191,168,.55)';
-            ctx.lineWidth = hot ? 4 : 2;
+            ctx.strokeStyle = hot ? '#F0E442' : 'rgba(201,191,168,.55)';
+            ctx.lineWidth = hot ? 3 : 2;
             ctx.stroke();
             ctx.fillStyle = 'rgba(242,237,226,.92)';
-            ctx.font = '500 ' + Math.round(rad * .86) + 'px ui-monospace, "IBM Plex Mono", monospace';
+            ctx.font = '500 ' + Math.round(rad * .74) + 'px ui-monospace, "IBM Plex Mono", monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(mass === 1 ? '1' : mass.toFixed(2).replace(/0$/, ''), x, y + 1);
@@ -9279,7 +9570,7 @@ const Instruments = (function () {
         function draw() {
             ctx.fillStyle = PALETTE.ink;
             ctx.fillRect(0, 0, W, H);
-            const gap = 18, size = (W - 5 * gap) / 4;
+            const gap = Math.round(W / 86), size = (W - 5 * gap) / 4;
             for (let k = 0; k < 4; k++) panel(gap + k * (size + gap), (H - size) / 2, size, k);
         }
 
@@ -9293,10 +9584,11 @@ const Instruments = (function () {
         const ctx = canvas.getContext('2d');
         const W = canvas.width, H = canvas.height;
         const WATCH = 0x3fffffff, EVERY = 280, CAP = 56, BAND = 18, FRONT_AGE = 4;
-        /* house cyan, brightened rose, cream: the three arrival bands, with
-           pairwise luma gaps of 41, 74 and 116, so the bands stay separable
-           at the 0.22 alpha the un-toppled rim is drawn at. */
-        const CYCLE = [[168, 216, 232], [196, 113, 138], [255, 248, 232]];
+        /* the three arrival bands, the same three the key beneath the stage
+           shows */
+        const CYCLE = [[86, 180, 233], [204, 121, 167], [230, 159, 0]];
+        /* the bake's cells are in a 960 by 820 frame; the stage is larger */
+        const SX = W / 960, SY = H / 820;
 
         const elSweeps = $('#mcrt-sweeps'), elCells = $('#mcrt-cells'),
               elArea = $('#mcrt-area'), elExcess = $('#mcrt-excess'),
@@ -9317,8 +9609,8 @@ const Instruments = (function () {
             const v = cells[i];
             if (!v || v.length < 6) return false;
             c.beginPath();
-            c.moveTo(v[0], v[1]);
-            for (let k = 2; k < v.length; k += 2) c.lineTo(v[k], v[k + 1]);
+            c.moveTo(v[0] * SX, v[1] * SY);
+            for (let k = 2; k < v.length; k += 2) c.lineTo(v[k] * SX, v[k + 1] * SY);
             c.closePath();
             return true;
         }
@@ -9408,13 +9700,16 @@ const Instruments = (function () {
                 ctx.fillStyle = '#0F0E13'; ctx.fillRect(0, 0, W, H);
                 return;
             }
-            if (underImg[key]) ctx.drawImage(underImg[key], 0, 0);
-            else { ctx.fillStyle = PALETTE.ink; ctx.fillRect(0, 0, W, H); }
+            if (underImg[key]) {
+                ctx.globalAlpha = .42;
+                ctx.drawImage(underImg[key], 0, 0, W, H);
+                ctx.globalAlpha = 1;
+            } else { ctx.fillStyle = PALETTE.ink; ctx.fillRect(0, 0, W, H); }
             ctx.drawImage(recC, 0, 0);
             /* Yellow is reserved for the moving arrival front. Outlining
                every unstable cell would swamp the record once the pile
                enters its long drain, when almost every toppler is active. */
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.5;
             for (let q = 0; q < front.length; q++) {
                 const f = front[q];
                 ctx.strokeStyle = 'rgba(240,228,66,' + (0.95 * (1 - f.age / FRONT_AGE)).toFixed(3) + ')';
@@ -9436,7 +9731,7 @@ const Instruments = (function () {
             if (elExcess) {
                 elExcess.textContent =
                     totNow >= 0.05 ? totNow.toFixed(1) :
-                    totNow > 0 ? totNow.toExponential(1) : '0';
+                    totNow > 0 ? '< 0.05' : '0';
             }
         }
 
@@ -9850,7 +10145,7 @@ const Instruments = (function () {
         const W = canvas.width;
         const N = 96, Q = W / 1152, S = W / N, OFF = S / 2;
         const SZ = N * N, ROOT = (N >> 1) * N + (N >> 1);
-        const W_ORD = 4 * Q, W_HI = 6 * Q;
+        const W_ORD = 2.6 * Q, W_HI = 4.2 * Q;
         const RATE = 0.002, CEIL = 4000;             /* edges, then steps, per frame */
         const WATCH = 0x3fffffff, EVERY = 260;
         const K = 12;
@@ -9860,8 +10155,8 @@ const Instruments = (function () {
            violet -> rose -> cyan -> paper chronology as the attachment key:
            every committed edge is write-once, so colour remains time. */
         const SHADE = (function () {
-            const r = rampOf([[138, 127, 209], [204, 121, 167],
-                              [86, 180, 233], [255, 248, 232]]);
+            const r = rampOf([[111, 94, 224], [204, 121, 167],
+                              [150, 205, 240], [255, 248, 232]]);
             const out = [];
             for (let e = 0; e < K; e++) {
                 const i = Math.round(e / (K - 1) * 255) * 3;
@@ -9889,6 +10184,7 @@ const Instruments = (function () {
         let nxt, inTree, onpath, posIn, path, order, deg;
         let plen, oi, steps, kept, erased, committed, branchLen, attachments;
         let done, safetyStopped, state, loopCut, closingLive, pendingHit;
+        let flash = [], flashAt = -1e9;          /* the path committed a moment ago */
         let pace = 'grow', view = 'whole', viewTouched = false;
         let userPaused = false, pageAwake = true, cameraSnap = true;
         let growFramePhase = 0;
@@ -9908,8 +10204,10 @@ const Instruments = (function () {
         /* Write-once: each edge is drawn the moment it commits, in the shade
            of that moment, and the record is never touched again. */
         function commit(hit) {
+            flash = []; flashAt = performance.now();
             for (let i = plen - 1; i >= 0; i--) {
                 const v = path[i], p = (i === plen - 1) ? hit : path[i + 1];
+                flash.push([v, p]);
                 nxt[v] = p;
                 inTree[v] = 1; onpath[v] = 0; posIn[v] = -1;
                 deg[v]++; deg[p]++;
@@ -10041,7 +10339,8 @@ const Instruments = (function () {
             return canvas.getBoundingClientRect().width <= 500 ? 11 : 15;
         }
         function cameraTarget() {
-            if (view === 'whole') return { x: N / 2, y: N / 2, h: N / 2 };
+            /* the whole board sits inside a small margin, so its outline is seen */
+            if (view === 'whole') return { x: N / 2, y: N / 2, h: N / 2 * 1.07 };
             /* Let the live walk set the shot.  A fixed 30-cell window made
                the loop-erasure event microscopic; a three-span window keeps
                the whole active loop visible while giving it about one third
@@ -10064,9 +10363,12 @@ const Instruments = (function () {
             const q = cameraTarget(), a = snap ? 1 : .32;
             cam.x += (q.x - cam.x) * a; cam.y += (q.y - cam.y) * a;
             cam.h = Math.exp(Math.log(cam.h) + (Math.log(q.h) - Math.log(cam.h)) * (snap ? 1 : .18));
-            cam.h = Math.max(8, Math.min(N / 2, cam.h));
-            cam.x = Math.max(cam.h, Math.min(N - cam.h, cam.x));
-            cam.y = Math.max(cam.h, Math.min(N - cam.h, cam.y));
+            cam.h = Math.max(8, Math.min(N / 2 * 1.07, cam.h));
+            if (cam.h >= N / 2) { cam.x = cam.y = N / 2; }
+            else {
+                cam.x = Math.max(cam.h, Math.min(N - cam.h, cam.x));
+                cam.y = Math.max(cam.h, Math.min(N - cam.h, cam.y));
+            }
         }
         function liveEdge(c, a, b, colour, width, alpha) {
             c.globalAlpha = alpha === undefined ? 1 : alpha;
@@ -10105,6 +10407,16 @@ const Instruments = (function () {
                     liveDot(c, path[plen - 1], '#FFF8E8', 9);
                 }
             }
+            /* in Grow each committed path is shown in cyan for a beat, so the
+               tree is seen to be made of walks rather than to appear */
+            if (pace === 'grow' && !done) {
+                const age = performance.now() - flashAt;
+                if (age < 450 && flash.length && flash.length < 4000) {
+                    const a = 1 - age / 450;
+                    for (let i = 0; i < flash.length; i++)
+                        liveEdge(c, flash[i][0], flash[i][1], '#A8D8E8', W_HI + Q, a);
+                }
+            }
             if (done) {
                 let v = 0, n = 0;
                 while (v !== ROOT && nxt[v] >= 0 && n++ < SZ) {
@@ -10112,7 +10424,7 @@ const Instruments = (function () {
                 }
             }
             /* The root is a reference point, not the current event. */
-            liveDot(c, ROOT, '#F0E442', 4);
+            liveDot(c, ROOT, '#F0E442', 8);
         }
         function drawGrid() {
             if (view !== 'follow' || done) return;
@@ -10136,6 +10448,10 @@ const Instruments = (function () {
             ctx.drawImage(off, sx, sy, sw, sw, 0, 0, W, W);
             drawGrid();
             const z = W / sw;
+            /* the board's outline: the unspanned part of the stage is a region,
+               not an absence */
+            ctx.strokeStyle = 'rgba(255,248,232,.14)'; ctx.lineWidth = 1.5;
+            ctx.strokeRect(-sx * z + .75, -sy * z + .75, W * z - 1.5, W * z - 1.5);
             ctx.save();
             ctx.setTransform(z, 0, 0, z, -sx * z, -sy * z);
             transientLayer(ctx);
@@ -10158,7 +10474,7 @@ const Instruments = (function () {
             if (note) {
                 if (done) note.textContent = 'Complete';
                 else if (safetyStopped) note.textContent = 'Finite-run safety limit reached';
-                else if (pace === 'grow') note.textContent = 'Grow';
+                else if (pace === 'grow') note.textContent = '';
                 else note.textContent = {
                     walk: plen ? 'Random walk' : 'Rooted tree', loop_hold: 'Loop detected',
                     erase: 'Erase loop', attach_hold: 'Reached tree', commit: 'Add path to tree'
@@ -10184,7 +10500,7 @@ const Instruments = (function () {
                 paint(); update(); syncControls();
                 return !done && !safetyStopped;
             }
-            const quota = Math.max(1, Math.round(RATE * Math.max(1, kept)));
+            const quota = Math.max(kept < 2000 ? 3 : 1, Math.round(RATE * Math.max(1, kept)));
             const beforeEdges = committed, beforeSteps = steps;
             let ops = 0;
             while (!done && !safetyStopped && committed - beforeEdges < quota &&
@@ -10350,7 +10666,14 @@ const Instruments = (function () {
         const HARDCAP = 2000000;   /* tab safety; 12x the slowest baked cover */
         const elSteps = $('#gw-steps'), elVis = $('#gw-visited'),
               elArea = $('#gw-area'), elUnseen = $('#gw-unseen'), note = $('#gw-note');
-        const CYCLE = ['#A8D8E8', '#8E4257', '#E69F00'];
+        /* first-visit order as one sequential ramp: the earliest cells are
+           darkest, the newest brightest, so the eye lands where the walk is */
+        const BANDS = 12;
+        const GW_RAMP = rampOf([[40,60,120], [90,120,210], [178,107,157], [240,162,74], [255,241,184]]);
+        const CYCLE = Array.from({ length: BANDS }, function (_, b) {
+            const j = Math.round(255 * b / (BANDS - 1)) * 3;
+            return 'rgb(' + GW_RAMP[j] + ',' + GW_RAMP[j + 1] + ',' + GW_RAMP[j + 2] + ')';
+        });
 
         let D = null, px = null, py = null, off = null, nbr = null, cum = null;
         let cells = null, areas = null, totalArea = 0;
@@ -10384,8 +10707,12 @@ const Instruments = (function () {
         /* write-once: painted on first entry, never touched again; the ink
            hairline keeps the cell edges -- the geometry the bands are read
            against -- from fusing inside a band */
+        /* the band index follows the square root of the visit count: the
+           early bands then separate while the walk is still young, and the
+           ramp stays monotone over the whole cover */
         function paintArrival(i) {
-            appendCell(arrivalPaths[((seen - 1) / BAND | 0) % 3], i);
+            const u = Math.sqrt(Math.max(0, seen - 1) / Math.max(1, D.n));
+            appendCell(arrivalPaths[Math.min(BANDS - 1, Math.floor(BANDS * u))], i);
         }
 
         function step() {
@@ -10421,11 +10748,23 @@ const Instruments = (function () {
         function followHalf() {
             return canvas.getBoundingClientRect().width <= 500 ? 100 : 120;
         }
+        /* Follow frames the recent walk, not just its head: the box around
+           the last hundred cells, with a margin, eased so the picture drifts
+           after the walker instead of lurching with every step. */
         function cameraTarget() {
             if (view === 'whole') return { x: mapSize / 2, y: mapSize / 2, h: mapSize / 2 };
-            const h = followHalf();
-            return { x: Math.max(h, Math.min(mapSize - h, px[at])),
-                     y: Math.max(h, Math.min(mapSize - h, py[at])), h: h };
+            const base = followHalf();
+            let minX = px[at], maxX = px[at], minY = py[at], maxY = py[at];
+            const m = Math.min(tn, TRAIL, 100);
+            for (let k = tn - m; k < tn; k++) {
+                const v = trail[(k % TRAIL + TRAIL) % TRAIL];
+                if (v < 0) continue;
+                minX = Math.min(minX, px[v]); maxX = Math.max(maxX, px[v]);
+                minY = Math.min(minY, py[v]); maxY = Math.max(maxY, py[v]);
+            }
+            const h = Math.min(mapSize / 2, Math.max(base, .62 * Math.max(maxX - minX, maxY - minY) + 36));
+            return { x: Math.max(h, Math.min(mapSize - h, (minX + maxX) / 2)),
+                     y: Math.max(h, Math.min(mapSize - h, (minY + maxY) / 2)), h: h };
         }
         function moveCamera(snap) {
             const q = cameraTarget(), a = snap ? 1 : .18;
@@ -10442,19 +10781,19 @@ const Instruments = (function () {
                transform.  Divide by zoom so the trajectory stays a crisp
                hairline instead of becoming a heavy ribbon when Follow zooms
                into small cells. */
-            const darkWidth = 4 / zoom, lightWidth = 1.8 / zoom;
+            const darkWidth = 2.6 / zoom, lightWidth = 1 / zoom;
             for (let k = first + 1; k < tn; k++) {
                 const a = trail[(k - 1) % TRAIL], b = trail[k % TRAIL];
                 const f = (k - first) / m;
                 c.beginPath(); c.moveTo(px[a], py[a]); c.lineTo(px[b], py[b]);
-                c.strokeStyle = 'rgba(8,7,11,' + (.25 + .6 * f).toFixed(3) + ')';
+                c.strokeStyle = 'rgba(8,7,11,' + (.2 + .5 * f).toFixed(3) + ')';
                 c.lineWidth = darkWidth; c.stroke();
                 c.beginPath(); c.moveTo(px[a], py[a]); c.lineTo(px[b], py[b]);
-                c.strokeStyle = 'rgba(255,248,232,' + (.08 + .72 * f).toFixed(3) + ')';
+                c.strokeStyle = 'rgba(255,248,232,' + (.06 + .5 * f).toFixed(3) + ')';
                 c.lineWidth = lightWidth; c.stroke();
             }
             if (!done) {
-                const outer = 9 / zoom, inner = 5 / zoom;
+                const outer = 14 / zoom, inner = 10 / zoom;
                 c.beginPath(); c.arc(px[at], py[at], outer, 0, Math.PI * 2);
                 c.fillStyle = 'rgba(8,7,11,.85)'; c.fill();
                 c.beginPath(); c.arc(px[at], py[at], inner, 0, Math.PI * 2);
@@ -10506,7 +10845,7 @@ const Instruments = (function () {
             lastFresh = step();
             draw(); syncControls();
             if (seen >= D.n) { halt(); return false; }
-            if (note) note.textContent = lastFresh ? 'First visit to a new cell' : 'Random walk';
+            if (note) note.textContent = 'Random walk';
             return true;
         }
 
@@ -10515,7 +10854,7 @@ const Instruments = (function () {
             lastFresh = advance() > 0;
             draw(); syncControls();
             if (seen >= D.n || steps >= HARDCAP) { halt(); return false; }
-            if (note) note.textContent = nf.format(D.n - seen) + ' unseen';
+            if (note) note.textContent = 'Random walk';
             return true;
         }
 
@@ -10671,8 +11010,8 @@ const Instruments = (function () {
                 ctx.beginPath(); ctx.moveTo(points[0][0], points[0][1]);
                 for (let i = 1; i <= pos.index; i++) ctx.lineTo(points[i][0], points[i][1]);
                 ctx.lineTo(pos.x, pos.y);
-                ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = 4; ctx.stroke();
-                ctx.strokeStyle = color; ctx.lineWidth = 1.7; ctx.stroke();
+                ctx.strokeStyle = 'rgba(21,19,26,.4)'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.strokeStyle = color; ctx.lineWidth = 1.6; ctx.stroke();
             }
             ctx.beginPath();
             for (let x = left; x <= right; x += 4) {
@@ -10685,24 +11024,26 @@ const Instruments = (function () {
             const q = p < .42 ? ruleEase(p / .42) : 1;
             const pos0 = rulePathPoint(path, q);
             trace(path, pos0, RULE_VIS.cyanBright);
-            ruleParticle(ctx, pos0.x, pos0.y, 11, RULE_VIS.cyan);
+            ruleParticle(ctx, pos0.x, pos0.y, 10, RULE_VIS.cyan);
 
             if (p >= .42) {
                 const a = ruleEase((p - .42) / .18);
                 ctx.beginPath(); ctx.moveTo(W * .25, 145); ctx.lineTo(W * (.25 + .34 * a), 145);
                 ctx.strokeStyle = RULE_VIS.yellow; ctx.lineWidth = 2.5; ctx.stroke();
                 ruleArrow(ctx, W * (.25 + .34 * a), 145, 0, 18,
-                          RULE_VIS.yellow, 2.4, 1.8);
+                          RULE_VIS.yellow, 2.4, 0);
             }
 
             if (p >= .56) {
                 const r = ruleEase((p - .56) / .30);
+                /* the tilted walker in the instrument's yellow, lifted a
+                   little so both paths stay visible where they coincide */
                 const shifted = path.map(function (z, i) {
-                    return [z[0] + r * (18 + 3.8 * i), z[1]];
+                    return [z[0] + r * (18 + 3.8 * i), z[1] - 7 * r];
                 });
                 const pos1 = rulePathPoint(shifted, q);
-                trace(shifted, pos1, RULE_VIS.rose);
-                ruleParticle(ctx, pos1.x, pos1.y, 11, RULE_VIS.white);
+                trace(shifted, pos1, RULE_VIS.yellow);
+                ruleParticle(ctx, pos1.x, pos1.y, 10, RULE_VIS.white);
             }
 
             /* Two rulers encode the competing scales without a prose label:
@@ -10727,7 +11068,7 @@ const Instruments = (function () {
            (1/2)e^(2V) div(e^(-2V) grad) = (1/2)Delta - grad V . grad,
            hence unit Brownian noise and drift -grad V. */
         const LOGICAL = 720, M = 40, DT = .01, SQ = Math.sqrt(DT),
-              STEPS = 28, KEEP = 1500;
+              STEPS = 9, KEEP = 1500;
         const fieldCan = document.createElement('canvas'), FIELD = 96;
         fieldCan.width = fieldCan.height = FIELD;
         const fieldCtx = fieldCan.getContext('2d');
@@ -10803,8 +11144,9 @@ const Instruments = (function () {
                 const x = camera.x + ((i + .5) / FIELD * LOGICAL - LOGICAL * .5) / scale;
                 const y = camera.y + ((j + .5) / FIELD * LOGICAL - LOGICAL * .5) / scale;
                 const v = Math.max(-1, Math.min(1, potential(x, y) / 1.08));
-                const a = .16 + .15 * Math.abs(v);
-                const target = v < 0 ? [43,91,112] : [105,48,70];
+                /* a greyscale relief: the three data colours are the only chroma */
+                const a = .16 + .18 * Math.abs(v);
+                const target = v < 0 ? [62,70,88] : [86,72,80];
                 const k = (j * FIELD + i) * 4;
                 d[k] = Math.round(15 + (target[0] - 15) * a);
                 d[k + 1] = Math.round(14 + (target[1] - 14) * a);
@@ -10854,8 +11196,8 @@ const Instruments = (function () {
                     q = worldToScreen(a[i][0], a[i][1]); ctx.lineTo(q[0], q[1]);
                 }
                 ctx.strokeStyle = color;
-                ctx.lineWidth = .48 + .48 * age;
-                ctx.globalAlpha = .055 + .58 * age * age;
+                ctx.lineWidth = .5 + .3 * age;
+                ctx.globalAlpha = .05 + .34 * age * age;
                 ctx.stroke();
             }
             ctx.globalAlpha = 1;
@@ -10875,21 +11217,21 @@ const Instruments = (function () {
             }
         }
         function drawTracer(q, fill) {
-            const glow = ctx.createRadialGradient(q[0], q[1], 1, q[0], q[1], 12);
-            glow.addColorStop(0, fill); glow.addColorStop(.32, fill);
-            glow.addColorStop(1, 'rgba(15,14,19,0)');
-            ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(q[0], q[1], 12, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(q[0], q[1], 4.2, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = 'rgba(15,14,19,.82)'; ctx.lineWidth = .8; ctx.stroke();
+            ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(q[0], q[1], 4.5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = 'rgba(15,14,19,.85)'; ctx.lineWidth = 1; ctx.stroke();
+        }
+        function labelMag() {
+            const cssW = canvas.getBoundingClientRect().width || 720;
+            return Math.max(1, Math.min(2, 560 / cssW));
         }
         function drawRuler(y, length, color, label) {
-            const x = 42, end = x + length;
-            ctx.strokeStyle = color; ctx.lineWidth = 1.15; ctx.lineCap = 'round';
+            const mag = labelMag(), x = 42, end = x + length * mag;
+            ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.lineCap = 'round';
             ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(end, y);
-            ctx.moveTo(x, y - 3.5); ctx.lineTo(x, y + 3.5);
-            ctx.moveTo(end, y - 3.5); ctx.lineTo(end, y + 3.5); ctx.stroke();
-            ctx.fillStyle = color; ctx.font = '500 15px ui-monospace, monospace';
-            ctx.fillText(label, 230, y + 5);
+            ctx.moveTo(x, y - 3); ctx.lineTo(x, y + 3);
+            ctx.moveTo(end, y - 3); ctx.lineTo(end, y + 3); ctx.stroke();
+            ctx.fillStyle = color; ctx.font = '500 ' + Math.round(13 * mag) + 'px ui-monospace, monospace';
+            ctx.fillText(label, 42 + 188 * mag, y + 4 * mag);
         }
         function report() {
             const t = Math.max(time, DT), ratio = lambda * Math.sqrt(t);
@@ -10901,11 +11243,8 @@ const Instruments = (function () {
             const diff = variance / (M * t), mobility = (m1x - m0x) / (lambda * t);
             if (outBalance) outBalance.textContent = ratio.toFixed(2);
             if (outError) outError.textContent = Math.abs(mobility - diff).toFixed(3);
-            const phase = Math.floor(time * .16) & 3;
-            if (note) note.textContent = [
-                'Shared Gaussian increments ΔW', 'Path average n⁻¹Σf(ωₖ)',
-                'Critical time t ≈ λ⁻²', 'Empirical mobility − variance rate'
-            ][phase];
+            setNote(note, ratio > .78 && ratio < 1.28
+                ? 'Critical time t \u2248 \u03bb\u207b\u00b2' : 'Shared Gaussian increments \u0394W');
         }
         function paint() {
             const qx = (x0[0] + x1[0]) * .5, qy = (y0[0] + y1[0]) * .5,
@@ -10916,38 +11255,27 @@ const Instruments = (function () {
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W0,H0);
             ctx.save(); ctx.scale(W0 / LOGICAL, H0 / LOGICAL);
             drawPotentialField();
-            contour(-.72, 'rgba(86,180,233,.19)');
-            contour(-.36, 'rgba(86,180,233,.12)');
-            contour(0, 'rgba(230,220,200,.16)');
-            contour(.36, 'rgba(213,94,119,.12)');
-            contour(.72, 'rgba(213,94,119,.19)');
-            drawResponse();
+            contour(-.6, 'rgba(230,220,200,.15)');
+            contour(0, 'rgba(230,220,200,.2)');
+            contour(.6, 'rgba(230,220,200,.15)');
             drawTrail(trail0, '#56B4E9'); drawTrail(trail1, '#E69F00');
             let a = worldToScreen(x0[0], y0[0]), b = worldToScreen(x1[0], y1[0]);
-            ctx.save(); ctx.setLineDash([3, 4]);
+            ctx.save(); ctx.setLineDash([4, 3]);
             ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
-            ctx.strokeStyle = 'rgba(213,94,119,.78)'; ctx.lineWidth = .82; ctx.stroke();
+            ctx.strokeStyle = 'rgba(213,94,119,.8)'; ctx.lineWidth = 1; ctx.stroke();
             ctx.restore();
             drawTracer(a, '#56B4E9'); drawTracer(b, '#F0E442');
 
             const t = Math.max(time, DT), fluct = Math.sqrt(t), drift = lambda * t,
                   ruler = 180 / Math.max(1, fluct, drift), l1 = ruler * fluct,
                   l2 = ruler * drift;
-            drawRuler(54, l1, '#56B4E9', '\u221at');
-            drawRuler(78, l2, '#F0E442', '\u03bbt');
-            ctx.fillStyle='#F2EDE2'; ctx.font='500 15px ui-monospace, monospace';
+            const lm = labelMag();
+            drawRuler(54 * lm, l1, '#56B4E9', '\u221at');
+            drawRuler(78 * lm, l2, '#F0E442', '\u03bbt');
+            ctx.fillStyle='#F2EDE2'; ctx.font='500 ' + Math.round(13 * lm) + 'px ui-monospace, monospace';
             if (lambda * Math.sqrt(t) > .78 && lambda * Math.sqrt(t) < 1.28) {
-                ctx.fillStyle='#F0E442'; ctx.fillText('t \u2248 \u03bb\u207b\u00b2', 320,72);
+                ctx.fillStyle='#F6F1E6'; ctx.fillText('t \u2248 \u03bb\u207b\u00b2', 42 + 270 * lm, 70 * lm);
             }
-            const tokens = ['short time','long-time LLN','exit','homogenization'], phase = Math.floor(time*.16)&3;
-            tokens.forEach(function(s,i){
-                const x=74+i*158;
-                ctx.fillStyle=i===phase?'#F0E442':'rgba(242,237,226,.48)';
-                ctx.fillText(s,x,675);
-                if(i<3){const from=x+(i===1?96:48), to=74+(i+1)*158-26;
-                    ctx.beginPath();ctx.moveTo(from,668);ctx.lineTo(to,668);
-                    ctx.strokeStyle='rgba(201,191,168,.28)';ctx.lineWidth=.72;ctx.stroke();}
-            });
             ctx.restore(); report();
         }
         function sync() {
@@ -11013,7 +11341,8 @@ const Instruments = (function () {
                 ctx.fillStyle=weights[i]>.5?RULE_VIS.cyan:RULE_VIS.rose;ctx.fill();
             });
             ctx.beginPath();ctx.arc(360,360,28,0,Math.PI*2);
-            ctx.fillStyle=p<.64?RULE_VIS.yellow:ruleMixColor(RULE_VIS.rose,RULE_VIS.white,merge);ctx.fill();
+            ctx.fillStyle=p<.64?'rgba(211,201,183,.45)':ruleMixColor(RULE_VIS.rose,RULE_VIS.white,merge);ctx.fill();
+            ctx.strokeStyle=RULE_VIS.quiet;ctx.lineWidth=1.5;ctx.stroke();
             if(p>=.34){
                 pts.slice(1).forEach(function(q,i){
                     const x=ruleMix(q[0],360,expect),y=ruleMix(q[1],360,expect);
@@ -11099,32 +11428,34 @@ const Instruments = (function () {
         function pos(i){const v=nodes[i];return[92+v.x*(680/(N-1)),77+v.y*(566/(N-1))];}
         function sceneryLayer(){
             let max=1e-12;for(let i=0;i<g.length;i++)max=Math.max(max,Math.abs(g[i]));
+            /* the frozen scenery, small and quiet under the recursion */
             nodes.forEach(function(v,i){const q=pos(i),a=Math.sqrt(Math.abs(g[i])/max);
-                ctx.beginPath();ctx.arc(q[0],q[1],9.6+2.6*a,0,Math.PI*2);
-                ctx.fillStyle=g[i]<0?'rgba(204,121,167,'+(.38+.46*a)+')':
-                    'rgba(86,180,233,'+(.34+.56*a)+')';
+                ctx.beginPath();ctx.arc(q[0],q[1],3.2+2.2*a,0,Math.PI*2);
+                ctx.fillStyle=g[i]<0?'rgba(204,121,167,'+(.30+.30*a)+')':
+                    'rgba(86,180,233,'+(.30+.30*a)+')';
                 ctx.fill();
             });
         }
         function thresholdField(n,threshold,alpha){
             const qn=Q[n];let scale=1e-12;
             for(let i=0;i<qn.length;i++)scale=Math.max(scale,Math.abs(qn[i]));
+            /* magnitude is radius, opaque: alpha-coded discs read as out of focus */
             nodes.forEach(function(v,i){
                 const point=pos(i),z=qn[i],a=Math.sqrt(Math.abs(z)/scale),
                       keep=z>0?1:1-threshold,
-                      radius=(4.2+8.5*a)*keep;
+                      radius=(3+8.5*a)*keep;
                 if(radius<.2)return;
                 ctx.beginPath();ctx.arc(point[0],point[1],radius,0,Math.PI*2);
-                ctx.fillStyle=z>0?'rgba(86,180,233,'+(alpha*(.22+.76*a))+')':
-                    'rgba(204,121,167,'+(alpha*keep*(.22+.76*a))+')';
+                ctx.fillStyle=z>0?'rgba(86,180,233,'+(alpha*.95)+')':
+                    'rgba(204,121,167,'+(alpha*keep*.95)+')';
                 ctx.fill();
             });
         }
         function continuationSet(n,alpha){
             const qn=Q[n];
             nodes.forEach(function(v,i){if(qn[i]>0){const point=pos(i);
-                ctx.beginPath();ctx.arc(point[0],point[1],8.4,0,Math.PI*2);
-                ctx.strokeStyle='rgba(255,248,232,'+alpha+')';ctx.lineWidth=2.3;ctx.stroke();
+                ctx.beginPath();ctx.arc(point[0],point[1],13.5,0,Math.PI*2);
+                ctx.strokeStyle='rgba(255,248,232,'+alpha+')';ctx.lineWidth=1.4;ctx.stroke();
             }});
         }
         function fieldStats(n){
@@ -11138,19 +11469,21 @@ const Instruments = (function () {
         function signed(v){return(v<0?'\u2212':'')+Math.abs(v).toFixed(3);}
         function drawWalk(local){
             const count=Math.max(1,Math.min(sample.length,
-                Math.floor((local-.68)/.25*sample.length)+1));
+                Math.floor((local-.56)/.32*sample.length)+1));
             ctx.beginPath();let began=false;
             for(let k=0;k<count;k++)if(sample[k].i>=0){const point=pos(sample[k].i);
                 if(!began){ctx.moveTo(point[0],point[1]);began=true;}else ctx.lineTo(point[0],point[1]);}
-            ctx.strokeStyle='#F0E442';ctx.lineWidth=3;ctx.stroke();
+            ctx.strokeStyle='rgba(240,228,66,.9)';ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
             const z=sample[count-1];if(z&&z.i>=0){const point=pos(z.i);
-                ruleParticle(ctx,point[0],point[1],7,'#F0E442');
+                ctx.beginPath();ctx.arc(point[0],point[1],6.5,0,Math.PI*2);
+                ctx.fillStyle='#F0E442';ctx.fill();
+                ctx.strokeStyle='rgba(15,14,19,.85)';ctx.lineWidth=1.6;ctx.stroke();
             }
         }
         function phaseNote(local,n,positive){
-            if(local<.40)return'q\u2099 = g + Pw\u2099 \u00b7 n = '+n;
-            if(local<.58)return'w\u2099\u208a\u2081 = max(q\u2099, 0) \u00b7 n = '+n;
-            if(local<.68)return'Continuation {q\u2099 > 0} \u00b7 '+positive+' sites';
+            if(local<.32)return'q\u2099 = g + Pw\u2099 \u00b7 n = '+n;
+            if(local<.44)return'w\u2099\u208a\u2081 = max(q\u2099, 0) \u00b7 n = '+n;
+            if(local<.56)return'Continuation {q\u2099 > 0} \u00b7 '+positive+' sites';
             return'Walk continues only while q\u2099 > 0';
         }
         function paint(){
@@ -11159,17 +11492,19 @@ const Instruments = (function () {
             nodes.forEach(function(v,i){const a=pos(i);v.nbr.forEach(function(j){if(j<i)return;const b=pos(j);
                 ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.strokeStyle='rgba(201,191,168,.18)';ctx.lineWidth=1.5;ctx.stroke();});});
             sceneryLayer();
-            const D=16,local=(elapsed%D)/D,
-                  fade=local<.06?local/.06:(local>.94?(1-local)/.06:1),
-                  n=Math.min(MAXH-1,Math.max(0,Math.floor(MAXH*ruleEase(local/.36)))),
-                  threshold=ruleEase((local-.40)/.18),stats=fieldStats(n);
+            /* the walk, the instrument's subject, is on screen within ten
+               seconds of the cycle's start */
+            const D=18,local=(elapsed%D)/D,
+                  fade=local<.04?local/.04:(local>.96?(1-local)/.04:1),
+                  n=Math.min(MAXH-1,Math.max(0,Math.floor(MAXH*ruleEase(local/.30)))),
+                  threshold=ruleEase((local-.32)/.14),stats=fieldStats(n);
             ctx.globalAlpha=fade;thresholdField(n,threshold,1);
-            if(local>=.50)continuationSet(n,ruleEase((local-.50)/.14)*.9);
-            if(local>=.68)drawWalk(local);
+            if(local>=.42)continuationSet(n,ruleEase((local-.42)/.12)*.9);
+            if(local>=.56)drawWalk(local);
             ctx.globalAlpha=1;ctx.restore();
             if(outH)outH.textContent=signed(stats.lo)+' \u2026 '+signed(stats.hi);
             if(outV)outV.textContent=stats.maxW.toFixed(3);
-            if(note)note.textContent=phaseNote(local,n,stats.positive);
+            if(note){note.textContent='';const s=document.createElement('span');s.className='nocase';s.textContent=phaseNote(local,n,stats.positive);note.appendChild(s);}
         }
         function sync(){
             $$('[data-rwrs-mu]').forEach(function(b){const on=Math.abs(parseFloat(b.dataset.rwrsMu)-mu)<1e-12;
@@ -11192,123 +11527,342 @@ const Instruments = (function () {
         return{pause:function(){pageAwake=false;stop();},resume:function(){pageAwake=true;paint();if(!userPaused)start();}};
     };
 
+    /* Two walks from the centre.  A 7-by-7 patch of Z^2 carries the integer
+       harmonic function f(x,y) = 3x^2 - 3y^2 + x + 8y + 51 (values 0..86, every
+       average exact).  Because f(o) is the average of its four neighbours, one
+       neighbour is at least f(o) and one is at most f(o).  Stepping to the
+       largest neighbour: o = (0,0) -> (0,1) -> (1,1) -> (2,1) -> (3,1), values
+       51 <= 56 <= 60 <= 70 <= 86, the unique maximum on the patch.  Stepping to
+       the smallest: (0,0) -> (0,-1) -> (0,-2) -> (0,-3), values 51 >= 40 >= 23
+       >= 0, the unique minimum.  No step has a tie.  Both walks are computed
+       here from f, not written down. */
     makers.uniqueintro = function () {
-        const nbr=[[360,145],[575,360],[360,575],[145,360]],w=[1,1.8,.7,1.4],v=[-.75,.20,.92,.48];
-        let average=0,total=0;for(let i=0;i<4;i++){average+=w[i]*v[i];total+=w[i];}average/=total;
-        return loopingRule('unique-continuation',6800,function(ctx,W,p){
-            const q=ruleEase(p/.55);
-            nbr.forEach(function(a,i){ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(360,360);
-                ctx.strokeStyle=RULE_VIS.grid;ctx.lineWidth=4+5*w[i];ctx.stroke();
-                const x=ruleMix(a[0],360,q),y=ruleMix(a[1],360,q);
-                ruleParticle(ctx,x,y,5+i%2,v[i]<0?RULE_VIS.rose:RULE_VIS.cyan);
-                ctx.beginPath();ctx.arc(a[0],a[1],19,0,Math.PI*2);ctx.fillStyle=v[i]<0?RULE_VIS.rose:RULE_VIS.cyan;ctx.fill();});
-            ctx.beginPath();ctx.arc(360,360,28,0,Math.PI*2);ctx.fillStyle=p<.46?RULE_VIS.bone:
-                (average<0?RULE_VIS.rose:RULE_VIS.yellow);ctx.fill();
-            const lo=155,hi=565,x=630,y=ruleMix(hi,lo,(average+1)/2);
-            ctx.beginPath();ctx.moveTo(x,lo);ctx.lineTo(x,hi);ctx.strokeStyle=RULE_VIS.key;ctx.lineWidth=4;ctx.stroke();
-            ctx.beginPath();ctx.moveTo(x-13,y);ctx.lineTo(x+13,y);ctx.strokeStyle=RULE_VIS.yellow;ctx.lineWidth=7;ctx.stroke();
-        },.84);
+        const SP=80,OX=360,OY=286,RD=24,FONT='600 24px "IBM Plex Mono", ui-monospace, monospace',
+              EQ='600 28px "IBM Plex Mono", ui-monospace, monospace',QUIET='500 20px "IBM Plex Mono", ui-monospace, monospace';
+        function F(x,y){return 3*x*x-3*y*y+x+8*y+51;}
+        function at(x,y){return[OX+SP*x,OY-SP*y];}
+        const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+        function greedy(sign){const path=[[0,0]];
+            while(Math.max(Math.abs(path[path.length-1][0]),Math.abs(path[path.length-1][1]))<3){
+                const u=path[path.length-1];let best=null,bv=-Infinity;
+                dirs.forEach(function(d){const w=[u[0]+d[0],u[1]+d[1]],v=sign*F(w[0],w[1]);if(v>bv){bv=v;best=w;}});
+                path.push(best);}
+            return path;}
+        const WALKS=[{path:greedy(1),col:RULE_VIS.cyan,rel:' ≤ '},{path:greedy(-1),col:RULE_VIS.rose,rel:' ≥ '}];
+        const T_DEF=2.2,T_STEP=1.25,T_END=2.8,
+              starts=[T_DEF,T_DEF+(WALKS[0].path.length-1)*T_STEP],
+              DUR=starts[1]+(WALKS[1].path.length-1)*T_STEP+T_END;
+        const oNb=dirs.map(function(d){return F(d[0],d[1]);});
+        function indexOn(path,x,y,upto){for(let i=0;i<=upto&&i<path.length;i++)if(path[i][0]===x&&path[i][1]===y)return i;return-1;}
+        return loopingRule('unique-continuation',DUR*1000,function(ctx,W,p){
+            const t=p*DUR,done=t>=starts[1]+(WALKS[1].path.length-1)*T_STEP;
+            /* progress of each walk: vertices reached, the running step and its phase */
+            const prog=WALKS.map(function(wk,i){const S=wk.path.length-1,tt=t-starts[i];
+                if(tt<0)return{reached:0,step:-1,local:0};
+                if(tt>=S*T_STEP)return{reached:S,step:-1,local:0};
+                const step=Math.floor(tt/T_STEP),local=(tt-step*T_STEP)/T_STEP;
+                return{reached:step+(local>=.92?1:0),step:step,local:local};});
+            /* the patch */
+            ctx.strokeStyle=RULE_VIS.grid;ctx.lineWidth=5;ctx.beginPath();
+            for(let x=-3;x<=3;x++){const a=at(x,-3),b=at(x,3);ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);}
+            for(let y=-3;y<=3;y++){const a=at(-3,y),b=at(3,y);ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);}
+            ctx.stroke();
+            /* the definition beat: the four neighbours of o, then the largest and the smallest */
+            const defA=t<T_DEF+.3?ruleEase(t/.4)*(t>T_DEF?1-(t-T_DEF)/.3:1):0,
+                  pickA=t<T_DEF+.3?ruleEase((t-1.4)/.3)*(t>T_DEF?1-(t-T_DEF)/.3:1):0;
+            if(defA>0){const o=at(0,0);dirs.forEach(function(d){const b=at(d[0],d[1]);ctx.beginPath();ctx.moveTo(o[0],o[1]);ctx.lineTo(b[0],b[1]);
+                ctx.strokeStyle=RULE_VIS.quiet;ctx.lineWidth=6;ctx.globalAlpha=defA;ctx.stroke();ctx.globalAlpha=1;});}
+            /* paths reached so far, and the moving segment */
+            WALKS.forEach(function(wk,i){const pr=prog[i];
+                if(pr.reached>0){ctx.beginPath();for(let q=0;q<=pr.reached;q++){const a=at(wk.path[q][0],wk.path[q][1]);if(q)ctx.lineTo(a[0],a[1]);else ctx.moveTo(a[0],a[1]);}
+                    ctx.strokeStyle=wk.col;ctx.lineWidth=9;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+                if(pr.step>=0&&pr.local>=.5&&pr.local<.92){const a=at(wk.path[pr.step][0],wk.path[pr.step][1]),b=at(wk.path[pr.step+1][0],wk.path[pr.step+1][1]),m=ruleEase((pr.local-.5)/.42);
+                    ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(ruleMix(a[0],b[0],m),ruleMix(a[1],b[1],m));ctx.strokeStyle=wk.col;ctx.lineWidth=9;ctx.stroke();}
+                /* the comparison at the current vertex */
+                if(pr.step>=0&&pr.local<.5){const u=wk.path[pr.step],cmp=ruleEase(pr.local/.25),a=at(u[0],u[1]);
+                    dirs.forEach(function(d){const b=at(u[0]+d[0],u[1]+d[1]);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);
+                        ctx.strokeStyle=RULE_VIS.quiet;ctx.lineWidth=6;ctx.globalAlpha=cmp;ctx.stroke();ctx.globalAlpha=1;});}
+            });
+            /* vertices */
+            for(let x=-3;x<=3;x++)for(let y=-3;y<=3;y++){
+                const q=at(x,y);let fill=RULE_VIS.white,text=RULE_VIS.ink;
+                WALKS.forEach(function(wk,i){if(indexOn(wk.path,x,y,prog[i].reached)>0){fill=wk.col;text=RULE_VIS.white;}});
+                if(x===0&&y===0)fill=RULE_VIS.yellow;
+                ctx.beginPath();ctx.arc(q[0],q[1],RD,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();
+                ctx.strokeStyle=RULE_VIS.key;ctx.lineWidth=2.2;ctx.stroke();
+                ctx.fillStyle=text;ctx.font=FONT;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(F(x,y)),q[0],q[1]+1);
+            }
+            /* rings: the neighbour picked out, the walker, the endpoints */
+            function ring(q,r,col,w,a){ctx.beginPath();ctx.arc(q[0],q[1],r,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=w;ctx.globalAlpha=a;ctx.stroke();ctx.globalAlpha=1;}
+            if(pickA>0)WALKS.forEach(function(wk){const w=wk.path[1];ring(at(w[0],w[1]),RD+8,wk.col,5,pickA);});
+            WALKS.forEach(function(wk,i){const pr=prog[i],S=wk.path.length-1;
+                if(pr.step>=0){const u=wk.path[pr.step],w=wk.path[pr.step+1],a=at(u[0],u[1]),b=at(w[0],w[1]);
+                    if(pr.local>=.25&&pr.local<.5)ring(b,RD+8,wk.col,5,ruleEase((pr.local-.25)/.15));
+                    const m=pr.local<.5?0:ruleEase((pr.local-.5)/.42);
+                    ring([ruleMix(a[0],b[0],m),ruleMix(a[1],b[1],m)],RD+8,wk.col,5,1);}
+                else if(t>=starts[i]&&pr.reached===S){const e=wk.path[S],q=at(e[0],e[1]),a=ruleEase((t-starts[i]-S*T_STEP)/.4);
+                    ring(q,RD+8,wk.col,5,1);ring(q,RD+16,wk.col,3.5,a);}
+            });
+            const o=at(0,0);ctx.fillStyle=RULE_VIS.ink;ctx.font=FONT;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('o',o[0]+RD+8,o[1]-RD-2);
+            /* text: the average at o, then the two running sequences */
+            ctx.font=EQ;ctx.textBaseline='middle';
+            if(t<T_DEF+.3){const left='('+oNb.join(' + ')+')',right=' / 4 = '+F(0,0),out=t>T_DEF?1-(t-T_DEF)/.3:1;
+                const a1=ruleEase((t-.4)/.4),a2=ruleEase((t-.9)/.4),wl=ctx.measureText(left).width,wr=ctx.measureText(right).width,x0=360-(wl+wr)/2;
+                ctx.textAlign='left';ctx.globalAlpha=a1*out;ctx.fillStyle=RULE_VIS.ink;ctx.fillText(left,x0,598);
+                ctx.globalAlpha=a2*out;ctx.fillStyle=RULE_VIS.yellow;ctx.fillText(right,x0+wl,598);ctx.globalAlpha=1;}
+            WALKS.forEach(function(wk,i){if(t<starts[i])return;const parts=[];for(let q=0;q<=prog[i].reached;q++)parts.push(String(F(wk.path[q][0],wk.path[q][1])));
+                ctx.textAlign='center';ctx.globalAlpha=Math.min(1,(t-starts[i])/.3);ctx.fillStyle=wk.col;ctx.fillText(parts.join(wk.rel),360,i?640:598);ctx.globalAlpha=1;});
+            ctx.fillStyle=RULE_VIS.quiet;ctx.font=QUIET;ctx.textAlign='center';
+            ctx.fillText(done?'maximum and minimum are attained on the boundary':
+                t<T_DEF?'f(o) = average of the four neighbours':t<starts[1]?'step to the largest neighbour':'step to the smallest neighbour',360,682);
+        },.93);
     };
 
+    /* ---- Unique continuation: harmonic functions with many zeros on the boundary ----
+
+       Z^2, the triangular lattice and the honeycomb lattice, each with the
+       origin o at a vertex, B_r its graph-metric ball and S_r the sphere.
+       f lives on B_{2n+1} and is harmonic (unit conductances) at every vertex
+       of B_{2n}; its boundary values on S = S_{2n+1} determine it through the
+       exact Poisson kernel, obtained from a banded Cholesky factorization of
+       the Dirichlet Laplacian and one back-solve per boundary vertex.
+
+       Boundary values.  nu(b) = value at o of the harmonic function equal to 1
+       at b and 0 elsewhere on the sphere (harmonic measure from o).  Each b
+       gets an arc of length 2 pi nu(b); the arcs are laid clockwise from the
+       topmost vertex, whose arc is centred at angle 0, and theta_b is the
+       centre of b's arc.  f_k has boundary values H sin(k theta_b): they
+       change sign 2k times around S, that is 2k zeros on the boundary.  By
+       the left-right symmetry of each lattice the datum is odd and f_k(o) = 0.
+       Parametrising by harmonic measure rather than by vertex count matters:
+       with vertex count the corners of the polygonal sphere leak every mode
+       into the slowest low modes and B_n keeps leaving {|f| <= 1}.
+
+       The film raises the number of boundary zeros, k = 1..K with
+       K = floor(1/(2 max nu)), the most the sphere resolves with two vertices
+       per period everywhere, then loops.  The object is the zero set of f:
+       the cell sides across which f changes sign, drawn as light curves, and
+       the boundary zeros as dots on the sphere.  Every cell receives one of
+       two fixed-luminance sign colours; there is no magnitude threshold and
+       no third fill.  Readouts count the boundary zeros, the edges the zero
+       set crosses, and the share of B_2n no zero curve touches. */
     makers.unique = function () {
         const canvas=$('#unique-canvas');if(!canvas)return null;
-        const ctx=canvas.getContext('2d'),W0=canvas.width,H0=canvas.height,LOGICAL=720,N=25,MID=12;
-        const outDensity=$('#unique-zero-density'),outBoundary=$('#unique-boundary'),note=$('#unique-note');
-        const ax=new Float64Array(N-1),by=new Float64Array(N-1),F=new Float64Array(N),G=new Float64Array(N);
-        const A=[1,1.8,.7,1.35],B=[1.45,.75,1.7,.95,1.2];
-        for(let x=0;x<N-1;x++){ax[x]=A[x%A.length];F[x+1]=F[x]+1/ax[x];}
-        for(let y=0;y<N-1;y++){by[y]=B[y%B.length];G[y+1]=G[y]+1/by[y];}
-        const fc=F[MID],gc=G[MID];for(let i=0;i<N;i++){F[i]-=fc;G[i]-=gc;}
-        let norm=0;for(let y=0;y<N;y++)for(let x=0;x<N;x++)norm=Math.max(norm,Math.abs(F[x]*G[y]));
-        const field=new Float64Array(N*N);for(let y=0;y<N;y++)for(let x=0;x<N;x++)field[y*N+x]=F[x]*G[y]/norm;
-        const levels={minus:-.18,zero:0,plus:.18},keys=['minus','zero','plus'];
-        let key='zero',level=0,elapsed=0,lastNow=0,raf=0,running=false,pageAwake=true,userPaused=false;
-        function mapPoint(x,y,half){return[LOGICAL*.5+(x-MID)*(LOGICAL*.43/half),LOGICAL*.5+(y-MID)*(LOGICAL*.43/half)];}
-        function counts(){
-            const eps=.035;let near=0,bound=0;
-            for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-                const z=Math.abs(field[y*N+x]-level);if(z<=eps)near++;
-                if((x===4||x===20||y===4||y===20)&&x>=4&&x<=20&&y>=4&&y<=20&&z<=eps)bound++;
+        const ctx=canvas.getContext('2d'),W0=canvas.width,H0=canvas.height,LW=864,LH=720;
+        const outDensity=$('#unique-zero-density'),outInner=$('#unique-boundary'),outComps=$('#unique-components'),note=$('#unique-note');
+        const H=100,S3=Math.sqrt(3);
+        const LAT={
+            square:{R:39,P:4,origin:[0,0],
+                pos:function(a){return[a[0],a[1]];},
+                nbrs:function(a){return[[a[0]+1,a[1]],[a[0]-1,a[1]],[a[0],a[1]+1],[a[0],a[1]-1]];},
+                cell:function(a){return[[.5,.5],[-.5,.5],[-.5,-.5],[.5,-.5]];}},
+            tri:{R:31,P:6,origin:[0,0],
+                pos:function(a){return[a[0]*S3/2,a[0]/2+a[1]];},
+                nbrs:function(a){const i=a[0],j=a[1];return[[i+1,j],[i-1,j],[i,j+1],[i,j-1],[i+1,j-1],[i-1,j+1]];},
+                cell:function(a){const c=[];for(let t=0;t<6;t++)c.push([Math.cos(t*Math.PI/3)/S3,Math.sin(t*Math.PI/3)/S3]);return c;}},
+            honey:{R:45,P:3,origin:[0,0,0],
+                pos:function(a){return[a[1]*S3+a[2]*S3/2,1.5*a[2]+a[0]];},
+                nbrs:function(a){const s=a[0],i=a[1],j=a[2];return s?[[0,i,j],[0,i,j+1],[0,i-1,j+1]]:[[1,i,j],[1,i,j-1],[1,i+1,j-1]];},
+                cell:function(a){const base=a[0]?Math.PI/2:Math.PI/6,c=[];for(let t=0;t<3;t++)c.push([Math.cos(base+t*2*Math.PI/3),Math.sin(base+t*2*Math.PI/3)]);return c;}}
+        };
+        const built={};
+        function build(key){
+            if(built[key])return built[key];
+            const L=LAT[key],R=L.R,n=(R-1)/2,verts=[],index=new Map();
+            function add(a,dist){const k=a.join(',');if(index.has(k))return index.get(k);const p=L.pos(a);
+                index.set(k,verts.length);verts.push({a:a,x:p[0],y:p[1],dist:dist});return verts.length-1;}
+            add(L.origin,0);let shell=[0];
+            for(let d=1;d<=R;d++){const next=[];shell.forEach(function(u){L.nbrs(verts[u].a).forEach(function(b){
+                if(!index.has(b.join(',')))next.push(add(b,d));});});shell=next;}
+            const N=verts.length,adj=[],edges=[];
+            for(let u=0;u<N;u++)adj.push([]);
+            for(let u=0;u<N;u++)L.nbrs(verts[u].a).forEach(function(b){const k=b.join(',');if(!index.has(k))return;
+                const w=index.get(k);if(w>u){edges.push([u,w]);adj[u].push(w);adj[w].push(u);}});
+            const interior=[],boundary=[],intIndex=new Int32Array(N).fill(-1);
+            for(let u=0;u<N;u++)(verts[u].dist<R?interior:boundary).push(u);
+            interior.sort(function(a,b){return verts[a].y-verts[b].y||verts[a].x-verts[b].x;});
+            interior.forEach(function(u,q){intIndex[u]=q;});
+            const M=interior.length,NB=boundary.length;
+            let band=0;edges.forEach(function(e){if(intIndex[e[0]]>=0&&intIndex[e[1]]>=0)band=Math.max(band,Math.abs(intIndex[e[0]]-intIndex[e[1]]));});
+            const BW=band+1,Lb=new Float64Array(M*BW);
+            for(let q=0;q<M;q++){const u=interior[q];Lb[q*BW]=adj[u].length;adj[u].forEach(function(w){const p=intIndex[w];if(p>=0&&p<q)Lb[q*BW+(q-p)]=-1;});}
+            for(let j=0;j<M;j++){const jlo=Math.max(0,j-band);let s=Lb[j*BW];
+                for(let k=jlo;k<j;k++){const v=Lb[j*BW+(j-k)];s-=v*v;}
+                const d=Math.sqrt(s);Lb[j*BW]=d;
+                for(let i=j+1;i<=Math.min(M-1,j+band);i++){let t=Lb[i*BW+(i-j)];const klo=Math.max(jlo,i-band);
+                    for(let k=klo;k<j;k++)t-=Lb[i*BW+(i-k)]*Lb[j*BW+(j-k)];Lb[i*BW+(i-j)]=t/d;}}
+            const y=new Float64Array(M),x=new Float64Array(M),K=new Float64Array(M*NB);
+            for(let col=0;col<NB;col++){
+                y.fill(0);adj[boundary[col]].forEach(function(w){const p=intIndex[w];if(p>=0)y[p]+=1;});
+                for(let i=0;i<M;i++){let s=y[i];const klo=Math.max(0,i-band);for(let k=klo;k<i;k++)s-=Lb[i*BW+(i-k)]*y[k];y[i]=s/Lb[i*BW];}
+                for(let i=M-1;i>=0;i--){let s=y[i];const khi=Math.min(M-1,i+band);for(let k=i+1;k<=khi;k++)s-=Lb[k*BW+(k-i)]*x[k];x[i]=s/Lb[i*BW];}
+                for(let q=0;q<M;q++)K[q*NB+col]=x[q];
             }
-            return[near,bound];
+            /* clockwise order of the sphere from the topmost vertex; harmonic measure from o; arc centres */
+            const order=boundary.map(function(u,c){return c;}).sort(function(a,b){
+                const A=(Math.atan2(verts[boundary[a]].x,verts[boundary[a]].y)+2*Math.PI)%(2*Math.PI),
+                      B=(Math.atan2(verts[boundary[b]].x,verts[boundary[b]].y)+2*Math.PI)%(2*Math.PI);return A-B;});
+            const q0=intIndex[0],nu=new Float64Array(NB),theta=new Float64Array(NB);let nuMax=0,acc=0;
+            for(let c=0;c<NB;c++){nu[c]=K[q0*NB+c];nuMax=Math.max(nuMax,nu[c]);}
+            order.forEach(function(c){theta[c]=2*Math.PI*(acc+nu[c]/2-nu[order[0]]/2);acc+=nu[c];});
+            const KMAX=Math.floor(1/(2*nuMax));
+            let ballCount=0,innerCount=0;for(let u=0;u<N;u++){if(verts[u].dist<R)ballCount++;if(verts[u].dist<=n)innerCount++;}
+            const bOrder=order.map(function(c){return boundary[c];});
+            const modes=[],g=new Float64Array(NB);
+            for(let k=1;k<=KMAX;k++){
+                for(let c=0;c<NB;c++)g[c]=H*Math.sin(k*theta[c]);
+                const f=new Float64Array(N);
+                for(let q=0;q<M;q++){let s=0;const row=q*NB;for(let c=0;c<NB;c++)s+=K[row+c]*g[c];f[interior[q]]=s;}
+                for(let c=0;c<NB;c++)f[boundary[c]]=g[c];
+                modes.push({k:k,f:f});
+            }
+            /* stage geometry: fit the hull of S into a fixed box; cell corners in stage coordinates */
+            let xmax=0,ymax=0;for(let u=0;u<N;u++){xmax=Math.max(xmax,Math.abs(verts[u].x));ymax=Math.max(ymax,Math.abs(verts[u].y));}
+            const SC=Math.min(BOX_W/(2*xmax),BOX_H/(2*ymax)),P=L.P,corner=new Float32Array(N*P*2);
+            for(let u=0;u<N;u++){const v=verts[u],cell=L.cell(v.a);
+                for(let t=0;t<P;t++){corner[(u*P+t)*2]=CX+SC*(v.x+cell[t][0]);corner[(u*P+t)*2+1]=CY-SC*(v.y+cell[t][1]);}}
+            /* nodal segments: the side shared by the two cells of each edge */
+            const seg=new Float32Array(edges.length*4);
+            edges.forEach(function(e,q){const u=e[0],w=e[1],hit=[];
+                for(let i=0;i<P&&hit.length<2;i++)for(let j=0;j<P&&hit.length<2;j++){
+                    const dx=corner[(u*P+i)*2]-corner[(w*P+j)*2],dy=corner[(u*P+i)*2+1]-corner[(w*P+j)*2+1];
+                    if(dx*dx+dy*dy<1e-4)hit.push(i);}
+                seg[q*4]=corner[(u*P+hit[0])*2];seg[q*4+1]=corner[(u*P+hit[0])*2+1];seg[q*4+2]=corner[(u*P+hit[1])*2];seg[q*4+3]=corner[(u*P+hit[1])*2+1];});
+            const pts=boundary.map(function(u){return[CX+SC*verts[u].x,CY-SC*verts[u].y];}).sort(function(a,b){return a[0]-b[0]||a[1]-b[1];});
+            function cross(o,a,b){return(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);}
+            const lower=[],upper=[];
+            pts.forEach(function(p){while(lower.length>=2&&cross(lower[lower.length-2],lower[lower.length-1],p)<=0)lower.pop();lower.push(p);});
+            for(let i=pts.length-1;i>=0;i--){const p=pts[i];while(upper.length>=2&&cross(upper[upper.length-2],upper[upper.length-1],p)<=0)upper.pop();upper.push(p);}
+            lower.pop();upper.pop();const hull=lower.concat(upper);
+            const ringN=[];for(let u=0;u<N;u++)if(verts[u].dist===n)ringN.push(u);
+            ringN.sort(function(a,b){return Math.atan2(verts[a].x,verts[a].y)-Math.atan2(verts[b].x,verts[b].y);});
+            /* the graph as a static layer */
+            const wire=document.createElement('canvas');wire.width=W0;wire.height=H0;
+            const c2=wire.getContext('2d');c2.scale(W0/LW,H0/LH);
+            c2.beginPath();hull.forEach(function(p,q){if(q)c2.lineTo(p[0],p[1]);else c2.moveTo(p[0],p[1]);});c2.closePath();c2.clip();
+            c2.beginPath();edges.forEach(function(e){const a=verts[e[0]],b=verts[e[1]];c2.moveTo(CX+SC*a.x,CY-SC*a.y);c2.lineTo(CX+SC*b.x,CY-SC*b.y);});
+            c2.strokeStyle='rgba(15,14,19,.45)';c2.lineWidth=.6;c2.lineCap='round';c2.stroke();
+            const G={key:key,R:R,n:n,N:N,verts:verts,adj:adj,edges:edges,seg:seg,ballCount:ballCount,innerCount:innerCount,NB:NB,modes:modes,KMAX:KMAX,bOrder:bOrder,
+                     SC:SC,P:P,corner:corner,hull:hull,ringN:ringN,wire:wire,f:new Float64Array(N),sgn:new Int8Array(N)};
+            G.schedule=makeSchedule(G);
+            /* the still for reduced motion: the first k at which less than half of B_n is untouched by the zero set */
+            G.kHalf=0;for(let i=0;i<modes.length;i++){G.f.set(modes[i].f);if(measure(G).untouchedInner/innerCount<.5){G.kHalf=modes[i].k;break;}}
+            built[key]=G;return G;
         }
-        function segmentPath(points,want,amount,half){
-            const last=(points.length-1)*ruleClamp(amount),whole=Math.floor(last),frac=last-whole;
-            ctx.beginPath();let open=false;
-            for(let k=0;k<=whole+1&&k<points.length;k++){
-                let x=points[k][0],y=points[k][1];
-                if(k===whole+1){x=ruleMix(points[whole][0],x,frac);y=ruleMix(points[whole][1],y,frac);}
-                const ix=Math.max(0,Math.min(N-1,Math.round(x))),iy=Math.max(0,Math.min(N-1,Math.round(y))),
-                      good=want*(field[iy*N+ix]-level)>.025,q=mapPoint(x,y,half);
-                if(good){if(!open){ctx.moveTo(q[0],q[1]);open=true;}else ctx.lineTo(q[0],q[1]);}else open=false;
-            }
-            ctx.strokeStyle=want>0?'#56B4E9':'#D55E77';ctx.lineWidth=4;ctx.stroke();
+
+        /* ---- stage layout ---- */
+        const BOX_W=816,BOX_H=664,CX=432,CY=360;
+        /* fills by sign only, two fixed tones that sit under the zero curves */
+        const BLUE='rgb(61,122,158)',PINK='rgb(154,70,89)',ZEROC='#F0E442';
+
+        /* ---- the film: a schedule of held modes joined by convex combinations ---- */
+        const T_IN=.4,T_SWEEP=19,T_HOLDK=1.6,T_OUT=.6;
+        function makeSchedule(G){
+            const K=G.KMAX,w=[];let sum=0;
+            for(let k=1;k<=K;k++){w.push(1/(k+1.5));sum+=1/(k+1.5);}
+            const states=[];let t=T_IN;
+            for(let k=1;k<=K;k++){const base=T_SWEEP*w[k-1]/sum;
+                let hold=.4*base,morph=.6*base;
+                if(k===K){hold+=T_HOLDK;morph=0;}
+                states.push({k:k,start:t,hold:hold,morph:morph});t+=hold+morph;}
+            return{states:states,D:t+T_OUT};
+        }
+        let key='square',G=null,elapsed=0,lastNow=0,raf=0,running=false,pageAwake=true,userPaused=false;
+        function frameState(t){
+            const S=G.schedule,D=S.D,fade=t<T_IN?t/T_IN:(t>D-T_OUT?(D-t)/T_OUT:1);
+            let i=0;while(i<S.states.length-1&&t>=S.states[i+1].start)i++;
+            const st=S.states[i],m=st.morph>0?ruleEase((t-st.start-st.hold)/st.morph):0;
+            return{fade:fade,i:i,m:m};
+        }
+        function compose(st){
+            const f=G.f,N=G.N,A=G.modes[st.i].f,B=st.m>0?G.modes[st.i+1].f:null,wa=1-st.m;
+            for(let u=0;u<N;u++){let v=wa*A[u];if(B)v+=st.m*B[u];f[u]=v;}
+        }
+        /* The zero set is represented only by sign-changing cell sides and
+           boundary dots.  Exact zero values take the positive fill so the
+           picture never introduces a third, threshold-dependent region. */
+        function measure(G){
+            const f=G.f,N=G.N,sgn=G.sgn,adj=G.adj,verts=G.verts,R=G.R,n=G.n;
+            for(let u=0;u<N;u++)sgn[u]=f[u]>=0?1:-1;
+            let crossed=0;G.edges.forEach(function(e){if(sgn[e[0]]*sgn[e[1]]<0)crossed++;});
+            let untouched=0,untouchedInner=0;
+            for(let u=0;u<N;u++){if(verts[u].dist>=R)continue;const list=adj[u];let clean=true;
+                for(let q=0;q<list.length;q++)if(sgn[list[q]]!==sgn[u]){clean=false;break;}
+                if(clean){untouched++;if(verts[u].dist<=n)untouchedInner++;}}
+            const dots=[],B=G.bOrder,NB=B.length;
+            for(let r=0;r<NB;r++){const u=B[r],w=B[(r+1)%NB];
+                const a=f[u],b=f[w];
+                if(a===0)dots.push([verts[u].x,verts[u].y]);
+                else if(a*b<0){const q=Math.abs(a)/(Math.abs(a)+Math.abs(b));
+                    dots.push([verts[u].x+(verts[w].x-verts[u].x)*q,
+                               verts[u].y+(verts[w].y-verts[u].y)*q]);}}
+            return{crossed:crossed,untouched:untouched,untouchedInner:untouchedInner,dots:dots};
+        }
+        function status(st,m){
+            const k=G.modes[st.i].k,K=G.KMAX;
+            if(st.m>0)return'zeros on the boundary '+(2*k)+' → '+(2*k+2);
+            return(2*k)+' zeros on the boundary'+(k===K?', the most it resolves':'')+' · zero set crosses '+nf.format(m.crossed)+' edges · untouched: '+(100*m.untouched/G.ballCount).toFixed(1)+' % of B₂ₙ, '+(100*m.untouchedInner/G.innerCount).toFixed(1)+' % of Bₙ';
         }
         function paint(){
-            const D=13,local=(elapsed%D)/D,
-                  fade=local<.06?local/.06:(local>.94?(1-local)/.06:1);
-            const zoom=local<.70?8.4:ruleMix(8.4,13.2,ruleEase((local-.70)/.18));
+            const D=G.schedule.D,t=elapsed%D,st=frameState(t);
+            compose(st);
+            const m=measure(G),f=G.f,N=G.N,verts=G.verts,sgn=G.sgn,P=G.P,corner=G.corner;
             ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#0F0E13';ctx.fillRect(0,0,W0,H0);
-            ctx.save();ctx.scale(W0/LOGICAL,H0/LOGICAL);ctx.globalAlpha=fade;
-            /* Edge width is conductance.  With F increments 1/a_x and G
-               increments 1/b_y, h(x,y)=F(x)G(y) has zero weighted Laplacian
-               at every interior vertex, up to floating-point roundoff. */
-            for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-                const a=mapPoint(x,y,zoom);
-                if(x+1<N){const b=mapPoint(x+1,y,zoom);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);
-                    ctx.strokeStyle='rgba(201,191,168,.16)';ctx.lineWidth=.7+1.05*ax[x];ctx.stroke();}
-                if(y+1<N){const b=mapPoint(x,y+1,zoom);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);
-                    ctx.strokeStyle='rgba(201,191,168,.16)';ctx.lineWidth=.7+1.05*by[y];ctx.stroke();}
-            }
-            const eps=.035;
-            for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-                const z=field[y*N+x]-level,q=mapPoint(x,y,zoom);ctx.beginPath();ctx.arc(q[0],q[1],Math.abs(z)<=eps?4.8:2.8,0,Math.PI*2);
-                ctx.fillStyle=Math.abs(z)<=eps?'#F0E442':z>0?'#56B4E9':'#D55E77';ctx.globalAlpha=fade*(Math.abs(z)<=eps?.96:.70);ctx.fill();
-            }
-            ctx.globalAlpha=fade;
-            if(local>=.22){
-                const a=ruleEase((local-.22)/.16),corners=[[4,4],[20,4],[20,20],[4,20],[4,4]],take=a*4;
-                ctx.beginPath();let q=mapPoint(corners[0][0],corners[0][1],zoom);ctx.moveTo(q[0],q[1]);
-                for(let k=0;k<4;k++){if(take<=k)break;const u=Math.min(1,take-k),x=ruleMix(corners[k][0],corners[k+1][0],u),
-                    y=ruleMix(corners[k][1],corners[k+1][1],u);q=mapPoint(x,y,zoom);ctx.lineTo(q[0],q[1]);}
-                ctx.strokeStyle='#F0E442';ctx.lineWidth=3;ctx.stroke();
-            }
-            if(local>=.38){
-                const a=ruleEase((local-.38)/.22),p=[],m=[];for(let i=3;i<=21;i++){p.push([i,i]);m.push([i,N-1-i]);}
-                segmentPath(p,1,a,zoom);segmentPath(m,-1,a,zoom);
-            }
-            if(local>=.58&&local<.78){
-                const q=mapPoint(MID,MID,zoom),a=ruleEase((local-.58)/.08);
-                ctx.strokeStyle='rgba(240,228,66,'+a+')';ctx.lineWidth=4;
-                ctx.strokeRect(q[0]-11,q[1]-11,22,22);
-            }
+            ctx.save();ctx.scale(W0/LW,H0/LH);ctx.globalAlpha=st.fade;
+            ctx.save();ctx.beginPath();G.hull.forEach(function(p,q){if(q)ctx.lineTo(p[0],p[1]);else ctx.moveTo(p[0],p[1]);});ctx.closePath();ctx.clip();
+            [[1,BLUE],[-1,PINK]].forEach(function(pair){ctx.beginPath();let any=false;
+                for(let u=0;u<N;u++){if(sgn[u]!==pair[0])continue;const o=u*P*2;
+                    ctx.moveTo(corner[o],corner[o+1]);for(let q=1;q<P;q++)ctx.lineTo(corner[o+2*q],corner[o+2*q+1]);ctx.closePath();any=true;}
+                if(any){ctx.fillStyle=pair[1];ctx.fill();}});
             ctx.restore();
-            const c=counts();if(outDensity)outDensity.textContent=(100*c[0]/(N*N)).toFixed(1)+'%';
-            if(outBoundary)outBoundary.textContent=String(c[1]);
-            if(note)note.textContent=local<.22?'Exact weighted-harmonic field':local<.38?'Cycle \u03b3':
-                local<.58?'Opposite-sign path segments':local<.78?'Near-level crossing region':'Finite-box level count';
+            ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(G.wire,0,0);ctx.setTransform(W0/LW,0,0,H0/LH,0,0);
+            /* the zero set: the side shared by two cells across which f changes sign */
+            ctx.save();ctx.beginPath();G.hull.forEach(function(p,q){if(q)ctx.lineTo(p[0],p[1]);else ctx.moveTo(p[0],p[1]);});ctx.closePath();ctx.clip();
+            const E=G.edges,seg=G.seg;ctx.beginPath();
+            for(let q=0;q<E.length;q++){if(sgn[E[q][0]]*sgn[E[q][1]]>=0)continue;ctx.moveTo(seg[q*4],seg[q*4+1]);ctx.lineTo(seg[q*4+2],seg[q*4+3]);}
+            ctx.strokeStyle='rgba(15,14,19,.85)';ctx.lineWidth=5.2;ctx.lineCap='round';ctx.stroke();
+            ctx.strokeStyle=ZEROC;ctx.lineWidth=3;ctx.stroke();
+            ctx.restore();
+            /* S_n, the boundary of B_n */
+            ctx.beginPath();G.ringN.forEach(function(u,q){const v=verts[u],X=CX+G.SC*v.x,Y=CY-G.SC*v.y;if(q)ctx.lineTo(X,Y);else ctx.moveTo(X,Y);});ctx.closePath();
+            ctx.setLineDash([7,5]);ctx.strokeStyle='rgba(15,14,19,.8)';ctx.lineWidth=4;ctx.stroke();
+            ctx.strokeStyle='rgba(246,241,230,.85)';ctx.lineWidth=1.6;ctx.stroke();ctx.setLineDash([]);
+            /* the boundary zeros */
+            ctx.beginPath();m.dots.forEach(function(d){const X=CX+G.SC*d[0],Y=CY-G.SC*d[1];ctx.moveTo(X+5,Y);ctx.arc(X,Y,5,0,Math.PI*2);});
+            ctx.fillStyle=ZEROC;ctx.fill();ctx.strokeStyle='#0F0E13';ctx.lineWidth=1.6;ctx.stroke();
+            ctx.restore();
+            const k=G.modes[st.i].k;
+            if(outDensity)outDensity.textContent=st.m>0?(2*k)+' → '+(2*k+2):String(2*k);
+            if(outInner)outInner.textContent=nf.format(m.crossed);
+            if(outComps)outComps.textContent=(100*m.untouched/G.ballCount).toFixed(1)+'% · '+(100*m.untouchedInner/G.innerCount).toFixed(1)+'%';
+            if(note){note.textContent='';const sp=document.createElement('span');sp.className='nocase';sp.textContent=status(st,m);note.appendChild(sp);}
         }
         function sync(){
-            $$('[data-unique-level]').forEach(function(b){const on=b.dataset.uniqueLevel===key;
+            $$('[data-unique-graph]').forEach(function(b){const on=b.dataset.uniqueGraph===key;
                 b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
             const b=$('[data-unique-run="pause"]');if(b){b.textContent=REDUCED?'Paused':running?'Pause':'Play';
                 b.classList.toggle('is-on',running);b.setAttribute('aria-pressed',String(running));}
         }
-        function select(k){
-            const z=levels[k]===undefined?parseFloat(k):levels[k];if(!isFinite(z))return;
-            key=String(k);level=z;elapsed=0;paint();sync();
-        }
+        function stillTime(g){const st=g.schedule.states[(g.kHalf||g.KMAX)-1];return st.start+st.hold*.5;}
+        /* choosing a graph restarts its film from two zeros on the boundary, as Replay does */
+        function select(k){if(!LAT[k])return;key=k;G=build(k);lastNow=0;elapsed=REDUCED?stillTime(G):0;paint();sync();}
         function frame(now){if(!running)return;if(!lastNow)lastNow=now;elapsed+=Math.min(40,now-lastNow)/1000;
             lastNow=now;paint();raf=requestAnimationFrame(frame);}
         function stop(){running=false;cancelAnimationFrame(raf);raf=0;lastNow=0;sync();}
         function start(){if(REDUCED||running||userPaused||!pageAwake)return;running=true;sync();raf=requestAnimationFrame(frame);}
-        $$('[data-unique-level]').forEach(function(b){b.addEventListener('click',function(){select(b.dataset.uniqueLevel);if(!userPaused)start();});});
+        /* Next adds one pair of boundary zeros and holds there; Play resumes the sweep from that count */
+        function skip(){const S=G.schedule,D=S.D,t=elapsed%D,loop=Math.floor(elapsed/D);
+            let i=0;while(i<S.states.length-1&&t>=S.states[i+1].start)i++;
+            elapsed=loop*D+S.states[Math.min(i+1,S.states.length-1)].start+.01;}
+        $$('[data-unique-graph]').forEach(function(b){b.addEventListener('click',function(){select(b.dataset.uniqueGraph);if(!userPaused)start();});});
         $$('[data-unique-run]').forEach(function(b){b.addEventListener('click',function(){const a=b.dataset.uniqueRun;
             if(a==='pause'){if(running){userPaused=true;stop();}else{userPaused=false;start();}}
             if(a==='replay'){stop();elapsed=0;userPaused=REDUCED;paint();if(!userPaused)start();}
-            if(a==='next'){const i=(keys.indexOf(key)+1)%keys.length;select(keys[i]);if(!userPaused)start();}
+            if(a==='next'){skip();userPaused=true;stop();paint();}
         });});
-        if(REDUCED)elapsed=10.2;paint();sync();if(!REDUCED)start();
+        select(key);if(!REDUCED)start();
+        /* prepare the other graphs while this one plays, so that a switch is immediate */
+        setTimeout(function(){build('tri');},700);setTimeout(function(){build('honey');},1400);
         return{pause:function(){pageAwake=false;stop();},resume:function(){pageAwake=true;paint();if(!userPaused)start();}};
     };
 
@@ -11432,7 +11986,7 @@ const Instruments = (function () {
                     LOGICAL / 2 - (y0 - camera.y) * s];
         }
         function drawContours() {
-            const GRID = 31, span = 2 * camera.h, step = span / GRID;
+            const GRID = 61, span = 2 * camera.h, step = span / GRID;
             const x0 = camera.x - camera.h, y0 = camera.y - camera.h;
             const z = new Float64Array((GRID + 1) * (GRID + 1));
             let absMax = 0;
@@ -11461,11 +12015,13 @@ const Instruments = (function () {
                         ctx.lineTo(cuts[e + 1][0], cuts[e + 1][1]);
                     }
                 }
-                const colours = ['rgba(213,94,119,.27)', 'rgba(230,159,0,.25)',
-                                 'rgba(242,237,226,.29)', 'rgba(86,180,233,.27)',
-                                 'rgba(0,158,115,.24)'];
+                /* two hues by the sign of the stream function, lighter at
+                   the larger level: the field is a quiet ground for the path */
+                const colours = ['rgba(204,121,167,.55)', 'rgba(204,121,167,.40)',
+                                 'rgba(242,237,226,.38)', 'rgba(86,180,233,.40)',
+                                 'rgba(86,180,233,.55)'];
                 ctx.strokeStyle = colours[li];
-                ctx.lineWidth = view === 'flow' ? 1.15 : .72;
+                ctx.lineWidth = view === 'flow' ? .8 : .6;
                 ctx.stroke();
             });
         }
@@ -11476,7 +12032,7 @@ const Instruments = (function () {
             for (let i = 1; i < trail.length; i++) {
                 q = screen(trail[i][0], trail[i][1]); ctx.lineTo(q[0], q[1]);
             }
-            ctx.strokeStyle = '#7FD4EE'; ctx.lineWidth = 1.45;
+            ctx.strokeStyle = '#F5A623'; ctx.lineWidth = 1.3;
             ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
             q = screen(x, y);
             ctx.beginPath(); ctx.arc(q[0], q[1], 5.5, 0, 2 * Math.PI);
@@ -11485,29 +12041,31 @@ const Instruments = (function () {
         }
         function drawScalingReference() {
             if (view !== 'scaling') return;
-            const exponent = 1 / (2 - gamma), ox = 510, oy = 610, w = 150, h = 105;
-            ctx.fillStyle = 'rgba(15,14,19,.86)'; ctx.fillRect(ox - 18, oy - h - 17, w + 37, h + 39);
+            const exponent = 1 / (2 - gamma), ox = 470, oy = 640, w = 200, h = 140;
+            ctx.fillStyle = 'rgba(15,14,19,.88)'; ctx.fillRect(ox - 62, oy - h - 24, w + 92, h + 66);
             ctx.beginPath(); ctx.moveTo(ox, oy - h); ctx.lineTo(ox, oy); ctx.lineTo(ox + w, oy);
-            ctx.strokeStyle = 'rgba(242,237,226,.58)'; ctx.lineWidth = 1.3; ctx.stroke();
+            ctx.strokeStyle = 'rgba(242,237,226,.58)'; ctx.lineWidth = 1.2; ctx.stroke();
             ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + w, oy - h * exponent / .65);
-            ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 1.6; ctx.stroke();
             const u = Math.min(1, Math.log1p(time) / Math.log(180));
             const px = ox + w * u, py = oy - h * exponent / .65 * u;
             ctx.beginPath(); ctx.arc(px, py, 4.2, 0, 2 * Math.PI);
             ctx.fillStyle = '#F0E442'; ctx.fill();
+            ctx.fillStyle = 'rgba(242,237,226,.72)';
+            ctx.font = '500 13px ui-monospace, monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText('log t', ox + w / 2, oy + 8);
+            ctx.save(); ctx.translate(ox - 14, oy - h / 2); ctx.rotate(-Math.PI / 2);
+            ctx.textBaseline = 'bottom'; ctx.fillText('log |X|', 0, 0); ctx.restore();
+            ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = '#F0E442';
+            ctx.fillText('slope 1/(2\u2212\u03b3)', ox + 8, oy - h + 14);
         }
         function report() {
             const exponent = 1 / (2 - gamma);
             if (outExponent) outExponent.textContent = '1/(2−γ) = ' + exponent.toFixed(3);
             if (outScale) outScale.textContent = 'five frequencies; κ = ' + KAPPA.toFixed(3);
-            if (note) {
-                const phase = Math.floor(time / 5) % 3;
-                note.textContent = [
-                    'Finite five-scale analytic flow; one Euler–Maruyama path',
-                    'Positive molecular diffusivity κ = ' + KAPPA.toFixed(3),
-                    'Infinite-scale theorem exponent 1/(2−γ)'
-                ][phase];
-            }
+            setNote(note, '\u03b3 = ' + gamma.toFixed(2) + ' \u00b7 one path \u00b7 t = ' + Math.floor(time));
         }
         function paint() {
             updateCamera();
@@ -11582,8 +12140,15 @@ const Instruments = (function () {
         const note = $('#mcrt-idla-note'), outParticles = $('#mcrt-idla-particles');
         const outSteps = $('#mcrt-idla-steps'), outRadius = $('#mcrt-idla-radius');
         const MAP_BUTTONS = $$('[data-mcrt-idla-map]');
-        const COLOURS = ['#56B4E9', '#D55E77', '#F0E442', '#009E73'];
+        /* settled cells take the site's attachment ramp by settlement order,
+           as the key under the stage says */
+        const ORDER_RAMP = rampOf([[111,94,224], [204,121,167], [150,205,240], [255,248,232]]);
         const EDGE_RATE = 46, SPAWN_HOLD = .12, LOOP_HOLD = 2.2;
+        /* the first walks are slow enough to be followed edge by edge; the
+           pace then rises to the rate that fills the cluster */
+        function edgeRate() {
+            return particles < 20 ? 9 : particles < 60 ? 9 + (particles - 20) / 40 * (EDGE_RATE - 9) : EDGE_RATE;
+        }
         const ghost = document.createElement('canvas'); ghost.width = W; ghost.height = H;
         const ghostCtx = ghost.getContext('2d');
 
@@ -11623,9 +12188,8 @@ const Instruments = (function () {
             }
         }
         function colour(i) {
-            const band = Math.min(COLOURS.length - 1,
-                Math.floor(COLOURS.length * order[i] / Math.max(1, target)));
-            return COLOURS[band];
+            const j = Math.max(0, Math.min(255, Math.round(255 * order[i] / Math.max(1, target - 1)))) * 3;
+            return 'rgb(' + ORDER_RAMP[j] + ',' + ORDER_RAMP[j + 1] + ',' + ORDER_RAMP[j + 2] + ')';
         }
         function resetState() {
             occupied = new Uint8Array(G.n); order = new Int16Array(G.n); order.fill(-1);
@@ -11672,7 +12236,7 @@ const Instruments = (function () {
                 if (spawnClock <= 0) chooseEdge();
                 return;
             }
-            active.u += dt * EDGE_RATE;
+            active.u += dt * edgeRate();
             /* dt is capped below so this loop normally executes once.  It is
                kept exact for a delayed frame: every traversed graph edge is
                still appended to the visible walk before the next is chosen. */
@@ -11719,9 +12283,9 @@ const Instruments = (function () {
                 ctx.strokeStyle = 'rgba(246,241,230,.72)'; ctx.lineWidth = Math.max(1.1, W / 960);
                 ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
                 if (p) {
-                    ctx.beginPath(); ctx.arc(p[0], p[1], 5.2 * W / 960, 0, 2 * Math.PI);
+                    ctx.beginPath(); ctx.arc(p[0], p[1], 6.2 * W / 960, 0, 2 * Math.PI);
                     ctx.fillStyle = '#F6F1E6'; ctx.fill();
-                    ctx.strokeStyle = '#15131A'; ctx.lineWidth = 1.4; ctx.stroke();
+                    ctx.strokeStyle = '#15131A'; ctx.lineWidth = 1.6; ctx.stroke();
                 }
             }
             const s = centres[G.source];
@@ -11737,9 +12301,9 @@ const Instruments = (function () {
             if (outSteps) outSteps.textContent = nf.format(steps);
             if (outRadius) outRadius.textContent = String(radius);
             if (note) {
-                if (particles >= target) note.textContent = 'Finite internal DLA complete';
-                else if (active && spawnClock <= 0) note.textContent = 'Particle ' + (particles + 1) + ': random walk on graph edges';
-                else note.textContent = 'Particle ' + (particles + 1) + ': starts at the source';
+                if (particles >= target) note.textContent = 'Complete';
+                else if (active && spawnClock <= 0) note.textContent = 'Particle ' + (particles + 1) + ' \u00b7 walking';
+                else note.textContent = 'Particle ' + (particles + 1) + ' \u00b7 at the source';
             }
         }
         function captureGhost() {
@@ -11945,14 +12509,14 @@ const Instruments = (function () {
                         z = Math.log1p(s.odo[i]) / Math.log1p(solution.maxOdo || 1);
                         fill = z < .005 ? mixColour([22,20,29],[58,48,72], Math.min(1, cap / 2.4))
                                         : (z < .55 ? mixColour([40,76,104],[86,180,233], z / .55)
-                                                   : mixColour([86,180,233],[240,228,66], (z - .55) / .45));
+                                                   : mixColour([86,180,233],[255,248,232], (z - .55) / .45));
                     }
                     ctx.fillStyle = fill; ctx.fillRect(pad + x * cell, pad + y * cell, cell + .2, cell + .2);
                     if (front && solution.first[i] >= 0 && solution.first[i] < s.cells &&
                         solution.first[i] >= Math.max(0, s.cells - 16)) {
                         const age = (s.cells - 1 - solution.first[i]) / 16;
-                        ctx.strokeStyle = 'rgba(246,241,230,' + (.95 * (1 - age)).toFixed(3) + ')';
-                        ctx.lineWidth = 1.7; ctx.strokeRect(pad + x * cell + 1, pad + y * cell + 1, cell - 2, cell - 2);
+                        ctx.strokeStyle = 'rgba(240,228,66,' + (.9 * (1 - age)).toFixed(3) + ')';
+                        ctx.lineWidth = 1.2; ctx.strokeRect(pad + x * cell + 1, pad + y * cell + 1, cell - 2, cell - 2);
                     }
                 }
                 ctx.restore();
@@ -11963,7 +12527,8 @@ const Instruments = (function () {
             const sy = sx;
             ctx.beginPath(); ctx.moveTo(sx - 5, sy); ctx.lineTo(sx + 5, sy);
             ctx.moveTo(sx, sy - 5); ctx.lineTo(sx, sy + 5);
-            ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 1.8; ctx.stroke();
+            ctx.strokeStyle = 'rgba(15,14,19,.85)'; ctx.lineWidth = 3.4; ctx.stroke();
+            ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 1.6; ctx.stroke();
             ctx.restore();
 
             const reportSnap = state.overlay && state.overlayAlpha > .5 ? state.overlay : snap;
@@ -11971,14 +12536,13 @@ const Instruments = (function () {
             if (outError) {
                 let err = 0;
                 for (let i = 0; i < NN; i++) err = Math.max(err, reportSnap.mass[i] - capacity[i]);
-                outError.textContent = reportSnap === solution.snaps[solution.snaps.length - 1]
-                    ? solution.maxError.toExponential(1) : err.toExponential(1);
+                const v = reportSnap === solution.snaps[solution.snaps.length - 1] ? solution.maxError : err;
+                outError.textContent = v >= 10 ? v.toFixed(0) : v >= 1 ? v.toFixed(1)
+                    : v >= .01 ? v.toFixed(2) : v.toExponential(1);
             }
             if (note) {
-                note.textContent = state.overlay ? 'Replay transition'
-                    : state.phase < .98
-                    ? 'Legal topplings on a finite variable-capacity grid'
-                    : 'Stable finite obstacle solution';
+                note.textContent = state.overlay ? 'Replay'
+                    : state.phase < .98 ? 'Legal topplings' : 'Stable';
             }
         }
         function sync() {
@@ -12055,7 +12619,9 @@ const Instruments = (function () {
         const outRound = $('#dimred-scale-round'), outMismatch = $('#dimred-scale-mismatch');
         const outSites = $('#dimred-scale-sites'), note = $('#dimred-scale-note');
         const corners = [[0,0,0,0], [48,0,16,0], [0,48,0,16], [48,48,16,16]];
-        const heightColour = ['#17161E','#292938','#3A5268','#9D4E6A','#D07725'];
+        /* the same luminance ladder as the cube instrument above; cream is the
+           firing set, pink is reserved for a mismatch */
+        const heightColour = ['#15131A','#1b2434','#263651','#31506f','#4d86ad'];
         let big, small, roundNo = 0, view = 'firing', raf = 0, lastNow = 0;
         let accumulator = 0, hold = 0, running = false, pageAwake = true;
         let userPaused = false;
@@ -12063,10 +12629,10 @@ const Instruments = (function () {
         function makeState(n) {
             const h = new Int16Array(n * n); h.fill(4);
             return { n: n, h: h, odo: new Uint16Array(n * n),
-                     fire: new Uint8Array(n * n), count: 0 };
+                     fire: new Uint8Array(n * n), glow: new Uint8Array(n * n), count: 0 };
         }
         function topple(s) {
-            const n = s.n, h = s.h, fire = s.fire; fire.fill(0); s.count = 0;
+            const n = s.n, h = s.h, fire = s.fire; s.glow.set(fire); fire.fill(0); s.count = 0;
             for (let i = 0; i < h.length; i++) if (h[i] >= 4) {
                 fire[i] = 1; s.count++;
             }
@@ -12112,27 +12678,28 @@ const Instruments = (function () {
         function paint() {
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W0,H0);
             ctx.save(); ctx.scale(W0 / LW, H0 / LH);
-            const side = 520, cell = side / BIG, ox = 100, oy = 38;
+            const side = 512, cell = side / BIG, ox = (LW - side) / 2, oy = 40;
             let top = 1;
             if (view === 'odometer') for (let i = 0; i < big.odo.length; i++) top = Math.max(top, big.odo[i]);
             for (let y = 0; y < BIG; y++) for (let x = 0; x < BIG; x++) {
                 const i = y * BIG + x, j = smallIndexAt(x, y);
                 let fill = view === 'firing'
-                    ? (big.fire[i] ? '#56B4E9' : heightColour[Math.max(0, Math.min(4, big.h[i]))])
+                    ? (big.fire[i] ? '#F6F1E6'
+                        : big.glow[i] ? '#8aa5bf'
+                        : heightColour[Math.max(0, Math.min(4, big.h[i]))])
                     : odoColour(big.odo[i], top);
                 if (j >= 0) {
                     const a = view === 'firing' ? big.fire[i] : big.odo[i];
                     const b = view === 'firing' ? small.fire[j] : small.odo[j];
                     if (a !== b) fill = '#D55E77';
-                    else if (view === 'firing' && a) fill = '#F6F1E6';
                 }
                 ctx.fillStyle = fill;
-                ctx.fillRect(ox + x * cell, oy + y * cell, cell + .22, cell + .22);
+                ctx.fillRect(ox + x * cell, oy + y * cell, cell, cell);
             }
             corners.forEach(function (c) {
                 const x = ox + c[0] * cell, y = oy + c[1] * cell, s = J * cell;
-                ctx.strokeStyle = '#56B4E9'; ctx.lineWidth = 2.4; ctx.strokeRect(x + 1.2, y + 1.2, s - 2.4, s - 2.4);
-                ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 1.25; ctx.strokeRect(x + 4.2, y + 4.2, s - 8.4, s - 8.4);
+                ctx.strokeStyle = 'rgba(246,241,230,.9)'; ctx.lineWidth = 1.5; ctx.strokeRect(x + .75, y + .75, s - 1.5, s - 1.5);
+                ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 1; ctx.strokeRect(x + 3.5, y + 3.5, s - 7, s - 7);
             });
             ctx.strokeStyle = 'rgba(242,237,226,.32)'; ctx.lineWidth = 1.5;
             ctx.strokeRect(ox, oy, side, side);
@@ -12170,7 +12737,7 @@ const Instruments = (function () {
             const dt = Math.min(50, now - lastNow); lastNow = now;
             if (roundNo < TAU) {
                 accumulator += dt;
-                while (accumulator >= 38 && roundNo < TAU) { accumulator -= 38; step(); }
+                while (accumulator >= 85 && roundNo < TAU) { accumulator -= 85; step(); }
             } else {
                 hold += dt;
                 if (hold >= 2400) reset();
@@ -12289,16 +12856,17 @@ const Instruments = (function () {
         function paint() {
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W0,H0);
             ctx.save(); ctx.scale(W0 / LW, H0 / LH);
-            const side = 430, cell = side / N, ox = 145, oy = 28;
+            const side = 466, cell = side / N, ox = (LW - side) / 2, oy = 24;
             for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
                 const i = y * N + x, py = oy + (N - 1 - y) * cell;
                 let fill = background[i] === 3 ? '#397F9A' : '#292938';
-                if (toppled[i]) fill = ruleMixColor('#56B4E9', '#D55E77', y / (N - 1));
+                /* toppled rows go quiet: the current line is the bright thing */
+                if (toppled[i]) fill = ruleMixColor('#2c4d78', '#6b3f5a', y / (N - 1));
                 ctx.fillStyle = fill;
                 ctx.fillRect(ox + x * cell + .55, py + .55, cell - 1.1, cell - 1.1);
                 if (!toppled[i] && background[i] === 3) {
-                    ctx.fillStyle = '#F0E442';
-                    ctx.fillRect(ox + x * cell + cell * .31, py + cell * .44, cell * .38, 2.1);
+                    ctx.beginPath(); ctx.arc(ox + (x + .5) * cell, py + cell * .5, 2.3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#F6F1E6'; ctx.fill();
                 }
                 const age = topplings - 1 - lastTopple[i];
                 if (age >= 0 && age < 13) {
@@ -12313,10 +12881,10 @@ const Instruments = (function () {
             /* The fixed source line is part of the cell problem, not an
                expanding decoration.  Short vertical strokes show its one
                input grain to every site of the first line. */
-            const sourceY = oy + side + 22;
-            ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 2.2;
+            const sourceY = oy + side + 18;
+            ctx.strokeStyle = 'rgba(240,228,66,.6)'; ctx.lineWidth = 1.5;
             ctx.beginPath(); ctx.moveTo(ox, sourceY); ctx.lineTo(ox + side, sourceY); ctx.stroke();
-            ctx.strokeStyle = 'rgba(240,228,66,.56)'; ctx.lineWidth = 1.2;
+            ctx.strokeStyle = 'rgba(240,228,66,.3)'; ctx.lineWidth = 1;
             for (let x = 0; x < N; x++) {
                 const px = ox + (x + .5) * cell;
                 ctx.beginPath(); ctx.moveTo(px, sourceY - 2); ctx.lineTo(px, oy + side + 1); ctx.stroke();
@@ -12470,7 +13038,10 @@ const Instruments = (function () {
         }
         for (let n = 1; n <= MAX_N; n++) graphs[n] = buildGraph(n);
 
-        function position(v) { return [105 + (v.x - 1) * 170, 452 - (v.y - 1) * 50]; }
+        /* the ladder fills the stage while it is short and packs as it grows */
+        function pitchFor(n) { return Math.min(90, 380 / Math.max(1, n - 1)); }
+        let pitch = pitchFor(1), baseY = 452;
+        function position(v) { return [105 + (v.x - 1) * 170, baseY - (v.y - 1) * pitch]; }
         function frameState() {
             if (REDUCED) return { a: MAX_N, b: MAX_N, q: 1, shown: MAX_N };
             const growDuration = (MAX_N - 1) * STEP_MS;
@@ -12480,13 +13051,19 @@ const Instruments = (function () {
             const q = ruleEase(((local % STEP_MS) / STEP_MS - .18) / .68);
             return { a: a, b: b, q: q, shown: q > .55 ? b : a };
         }
+        /* pink at the grounded terminal through cream to blue at the source:
+           yellow is left to the boundary vertices of the instrument above */
         function colour(z) {
-            if (z < .5) return ruleMixColor('#D55E77', '#F0E442', z * 2);
-            return ruleMixColor('#F0E442', '#56B4E9', (z - .5) * 2);
+            if (z < .5) return ruleMixColor('#D55E77', '#F6F1E6', z * 2);
+            return ruleMixColor('#F6F1E6', '#56B4E9', (z - .5) * 2);
         }
         function paint() {
             const state = frameState(), ga = graphs[state.a], gb = graphs[state.b];
             const labelGraph = graphs[state.shown], labelScale = A[state.shown + 1];
+            pitch = ruleMix(pitchFor(state.a), pitchFor(state.b), state.q);
+            /* the ladder is centred on the stage while it is short */
+            const height = ruleMix((state.a - 1) * pitchFor(state.a), (state.b - 1) * pitchFor(state.b), state.q);
+            baseY = Math.min(452, LH / 2 + height / 2 + 30);
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W0,H0);
             ctx.save(); ctx.scale(W0 / LW, H0 / LH);
 
@@ -12495,7 +13072,7 @@ const Instruments = (function () {
                 const isNew = va.y > ga.n || vb.y > ga.n;
                 const p = position(va), q = position(vb);
                 ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]);
-                ctx.strokeStyle = isNew ? 'rgba(86,180,233,' + (.18 + .68 * state.q).toFixed(3) + ')'
+                ctx.strokeStyle = isNew ? 'rgba(246,241,230,' + (.18 + .68 * state.q).toFixed(3) + ')'
                                         : 'rgba(201,191,168,.56)';
                 ctx.lineWidth = isNew ? 3 : 2.4; ctx.stroke();
             });
@@ -12511,9 +13088,23 @@ const Instruments = (function () {
                 ctx.lineWidth = (i === gb.s || i === gb.t) ? 2.5 : 1.5; ctx.stroke();
                 const labelIndex = labelGraph.byKey[v.key];
                 if (mode === 'integer' && alpha > .72 && labelIndex !== undefined) {
-                    const label = Math.round(labelGraph.values[labelIndex] * labelScale);
-                    ctx.fillStyle = '#0F0E13'; ctx.font = '700 10.5px ui-monospace, monospace';
-                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(label), p[0], p[1] + .5);
+                    const label = String(Math.round(labelGraph.values[labelIndex] * labelScale));
+                    const cssW = canvas.getBoundingClientRect().width || 720;
+                    const narrow = cssW < 480, mag = Math.max(1, Math.min(2, 700 / cssW));
+                    ctx.font = '700 ' + Math.round(11 * mag) + 'px ui-monospace, monospace';
+                    ctx.textBaseline = 'middle';
+                    /* a number that no longer fits its disc sits beside it; on a
+                       phone every number does, set large enough to read */
+                    if (narrow || ctx.measureText(label).width > 22) {
+                        ctx.fillStyle = '#E8E2D0';
+                        if (v.y === 1) { ctx.textAlign = 'center'; ctx.fillText(label, p[0], p[1] + 30); }
+                        else if (v.x <= 2) { ctx.textAlign = 'right'; ctx.fillText(label, p[0] - 20, p[1]); }
+                        else { ctx.textAlign = 'left'; ctx.fillText(label, p[0] + 20, p[1]); }
+                    } else {
+                        ctx.font = '700 11px ui-monospace, monospace';
+                        ctx.fillStyle = '#0F0E13'; ctx.textAlign = 'center';
+                        ctx.fillText(label, p[0], p[1] + .5);
+                    }
                 }
                 ctx.globalAlpha = 1;
             });
