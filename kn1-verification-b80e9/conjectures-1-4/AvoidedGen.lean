@@ -5,7 +5,7 @@ import KN.AvoidedPeelTools
 
 `genY_of_surplusTransferY`: if (S5) with base avoided set `Y` holds for every relay set (of relays outside `Y` that can avoid
 `Y`), then `Sur^Y_o(A) ≥ 0`, i.e. `Σ_{a ∈ A} P(J^o_a) m_a^Y ≤ E[F(C_o); o ↮ Y, o ↔ A]`, for every such relay set `A`, every
-observer `o`, every monotone nonnegative `F` and every `m^Y`-compatible injective rank.  Induction on `|A|`: remove the
+observer `o`, every monotone `F` (no nonnegativity is needed, unlike the development's unconditioned bound) and every `m^Y`-compatible injective rank.  Induction on `|A|`: remove the
 rank-maximal relay `k`; the one-cluster BHK inequality for `C_k` given `k ↮ Y ∪ T` bounds the deficit; Lemma κ and (S5) with `v = k`
 transfer it (verbatim the bookkeeping of `AGloc.gen_firstRank_of_surplusTransfer`).
 -/
