@@ -1152,15 +1152,6 @@
         </div>
     </section>
 
-    <section class="band band--void band--build">
-        <div class="wide">
-            <div class="stage stage--wide" style="--stage-max:1080px">
-                <canvas id="build-superdiffusion" width="2160" height="1350" data-build-anim="sdrace" role="img" aria-label="The upper panel shows 220 displacement samples from each of two independent 3,000-particle runs in the same fixed 1,024-periodic stream field. The runs use the same initial-position law, time step, integrator and Brownian variance; the control omits the drift. The lower graph uses all 3,000 particles to estimate \(\mathbf E|X_t-X_0|^2/t\)."></canvas>
-                <span class="stage-note">\(\widehat M(t)=3000^{-1}\sum_{i=1}^{3000}|X_i(t)-X_i(0)|^2\) &middot; control: time-average of \(\widehat M(t)/t\) over saved times = 0.040294, while \(4\nu=0.0400\) &middot; drift: \(\widehat M(10)/10=0.72266\), \(\widehat M(1600)/1600=1.85565\) &middot; OLS slope of \(\log(\widehat M(t)/t)\) on \(\log\log t\) over saved \(t\ge200\): 0.5440</span>
-            </div>
-        </div>
-    </section>
-
     <section class="band band--void band--model-live band--sd-lattice">
         <div class="instrument instrument--model" data-model-theme="superdiffusion">
             <div class="sd-toy-note">
@@ -2059,6 +2050,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=f16e02d8"></script>
+<script defer src="gallery.js?v=2e8fa734"></script>
 </body>
 </html>
