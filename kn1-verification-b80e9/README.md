@@ -49,7 +49,7 @@ with exactly the standard axioms `propext`, `Classical.choice`, `Quot.sound` and
 
 The mathematics is entirely the development's, whose internal docstring in
 `Percolation/Continuity/CSH/Defs.lean` already notes the multiplicative consequence. (The paper's footnote on p.
-3 records that J. van den Berg and D. van Engelenburg independently considered the same inequality;
+3 records that J. van den Berg and D. Engelenburg independently considered the same inequality;
 "Kozma–Nitzan's Conjecture 1" is used here as the conventional name.) This folder was produced entirely by AI
 systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): ChatGPT pointed out that Conjecture 1 follows by
 the same methods, and Claude Fable 5.1 wrote and machine-checked the explicit corollary and this folder, which
