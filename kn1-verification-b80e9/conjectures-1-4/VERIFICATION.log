@@ -1,4 +1,4 @@
-# KN modules (Conjectures 2 and 4, Question 7, Conjectures 1 and 3): clean sequential recompile (2026-09-02T23:17Z)
+# KN modules (Conjectures 2 and 4, Question 7, Conjectures 1 and 3): clean sequential recompile (2026-09-02T23:26Z)
 # Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
 # Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the development's pin)
 ## KN/AvoidedDefs.lean (      79 lines)
