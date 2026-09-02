@@ -31,27 +31,6 @@ with exactly the standard axioms `propext`, `Classical.choice`, `Quot.sound` and
 | `LICENSE`, `NOTICE` | Apache License 2.0, and the development's NOTICE reproduced as that licence requires. |
 | `SOURCES.sha256` | SHA-256 of the development's 251 Lean source files and its three pin files (`lakefile.toml`, `lake-manifest.json`, `lean-toolchain`), 254 entries, against which this was checked. The tree hash `b80e9252…` quoted in `verification.log` is `grep -v '^#' SOURCES.sha256 \| shasum -a 256`. |
 
-## How the proof goes
-
-For an increasing F ≥ 0 of vertex sets, order the relays by m_a = E F(C_a) and let P^o_a be the event that a is the
-first relay of o (o ↔ a and o ↮ a' for every relay a' of smaller rank). The development proves, for every finite
-relay set and all weights in [0,1], the first-relay bound
-
-    Σ_{a ∈ A} P(P^o_a) · E F(C_a) ≤ E[F(C_o); o ↔ A]
-
-(`AGloc.gen_firstRank_of_surplusTransfer`, with its surplus-transfer hypothesis supplied by `CSH.cshAll`,
-`CSH.surplusMargin_nonneg_of_csh`, `CSH.surplusTransfer_nondegenerate_of_surplusMargin` and the closure over weights 0
-and 1 in `CSH.surplusTransfer_of_nondegenerate`). With F = 1{b ∈ ·} this reads
-Σ_a P(P^o_a) P(a ↔ b) ≤ P(o ↔ A, o ↔ b) ≤ P(o ↔ b) (`AGloc.agloc_firstRank_of_gen`). The events P^o_a partition
-{o ↔ A}, so Σ_a P(P^o_a) = P(o ↔ A), and pulling out the minimum gives Conjecture 1. The development's additive
-gluing theorem comes from the same inequality and is then weakened by bounding t·P(o ↔ A) by t (the step `h5` of
-`AGloc.additiveGluing_card_of_agloc_firstRank`); the file here keeps the factor. No new mathematical idea is
-involved: all the mathematics is the development's conditioned slack hierarchy and its peeling argument, and the
-development's own design note says as much (`Percolation/Continuity/CSH/Defs.lean`, lines 50–51: (S5) gives the
-first-relay bound "and with it the additive and multiplicative gluing inequalities"). What is added here is the
-closed statement and its machine-checked derivation, which the release does not contain ("Conjectures 1, 2 and 4
-are neither proved nor stated in the release", `summary.tex`).
-
 ## How to check
 
 1. Obtain the development and confirm it is the one checked here: from its root, run
@@ -65,25 +44,6 @@ are neither proved nor stated in the release", `summary.tex`).
 
    Expected output: the `#print axioms` lines recorded in `verification.log`, each reading
    `[propext, Classical.choice, Quot.sound]`, with no errors and no `sorry` warnings.
-
-## Status, and what is not claimed
-
-* Correctness rests on the development's kernel-checked chain. The development has not been externally refereed
-  (its README says so), and the corollary inherits that status; the mechanical checks are those in `verification.log`.
-* The development's stated repository URL (github.com/anthropic-experimental/percolation) was not publicly
-  accessible on 2 September 2026. This folder therefore does not redistribute the development; it pins its Lean
-  sources and build pins by hash (its documentation files are not hashed).
-* The corollary has not been run through the Palomar comparator, which compares only the two θ(p_c) = 0 statements
-  of the development's `Challenge.lean`.
-* Nothing is claimed about Kozma–Nitzan's Conjectures 2 and 4. Conjecture 4 puts the event {o ↔ A} inside the
-  expectations on both sides, E[f(o); o ↔ A] ≥ min_a E[f(a); o ↔ A], whereas the first-relay bound has unrestricted
-  relay means and only gives P(o ↔ A)·min_a E f(C_a), which by the Harris inequality is the weaker quantity; so this
-  route does not reach it. Conjecture 2, the paper's "pre-FKG" form P(o ↔ b) ≥ min_a P(o ↔ A, a ↔ b), is stronger
-  than Conjecture 1 and is likewise not given by this certificate.
-* The Lean statement was compared with the paper's Conjecture 1 as printed on its page 3 ("Let G be a finite graph
-  with arbitrary probabilities on its edges"; P(0 ↔ b) ≥ P(0 ↔ A) min{P(a ↔ b) : a ∈ A}) and with the development's
-  transcription of it in `Percolation/Literature/KozmaNitzanReduction.lean`. The development formalises graphs on
-  the vertex set `Fin n`, which represents every finite graph (absent edges have weight 0).
 
 ## Attribution
 
