@@ -425,13 +425,27 @@
     }
 
     function makeFLattice(ctx,W){
-        const points=[];for(let s=-7;s<=7;s++)for(let t=-7;t<=7;t++)points.push([s-t,s+t]);
-        return function(t){ground(ctx,W);const q=(t%11)/11,r=.26+1.08*(.5-.5*Math.cos(TAU*Math.min(q,.92)/.92)),scale=51,tf=p=>[W/2+p[0]*scale,W/2-p[1]*scale];
-            ctx.strokeStyle='rgba(201,191,168,.12)';ctx.lineWidth=1;ctx.beginPath();points.forEach(p=>{const a=tf(p),u=tf([p[0]+1,p[1]+1]),v=tf([p[0]-1,p[1]+1]);ctx.moveTo(a[0],a[1]);ctx.lineTo(u[0],u[1]);ctx.moveTo(a[0],a[1]);ctx.lineTo(v[0],v[1]);});ctx.stroke();
-            points.forEach((p,i)=>{const a=tf(p),rad=r*scale;if(a[0]+rad<0||a[0]-rad>W||a[1]+rad<0||a[1]-rad>W)return;ctx.beginPath();ctx.arc(a[0],a[1],rad,0,TAU);ctx.fillStyle=i%2?'rgba(86,180,233,.055)':'rgba(204,121,167,.05)';ctx.fill();ctx.strokeStyle=i%2?'rgba(168,216,232,.78)':'rgba(204,121,167,.78)';ctx.lineWidth=2.2;ctx.stroke();dot(ctx,a[0],a[1],3.4,C.ink,C.bg,1.2);});
-            if(r>Math.SQRT2/2){const d=Math.SQRT2,h=Math.sqrt(Math.max(0,r*r-d*d/4)),pairs=[[1,1],[-1,1]];points.forEach(p=>pairs.forEach(v=>{const mid=[p[0]+v[0]/2,p[1]+v[1]/2],nx=-v[1]/d,ny=v[0]/d;for(const sign of [-1,1]){const z=tf([mid[0]+sign*h*nx,mid[1]+sign*h*ny]);if(z[0]>5&&z[0]<W-5&&z[1]>5&&z[1]<W-5)dot(ctx,z[0],z[1],2.6,C.yellow,C.bg,1);}}));}
-            if(q>.94){ctx.fillStyle=`rgba(21,19,26,${smooth((q-.94)/.06)})`;ctx.fillRect(0,0,W,W);}
-        };
+        let data=null,nodes=[],edges=[],largest=1;
+        const branch=['.','2','23','231','2312'];
+        function build(raw){data=raw;nodes=Object.keys(data.nodes).map(k=>({key:k,...data.nodes[k]}));edges=nodes.filter(n=>n.parent&&data.nodes[n.parent]).map(n=>[data.nodes[n.parent],n]);largest=Math.max(...nodes.map(n=>data.tiles[n.p1]?.std?.cells||1));draw.ready=true;}
+        function radius(n,overview){const cells=data.tiles[n.p1]?.std?.cells||1,q=Math.sqrt(cells/largest);return overview?1.5+3.2*q:4.2+5.2*q;}
+        function nodeColour(n){return n.kind===1?C.cyan:n.kind===2?C.rose:n.kind===3?C.bone:C.ink;}
+        function onBranch(key,depth){return branch.slice(0,depth+1).includes(key);}
+        function overview(alpha){
+            ctx.save();ctx.globalAlpha=alpha;const pos=n=>[18+n.x*(W-36),24+n.depth*72];
+            edges.forEach(e=>{const a=pos(e[0]),b=pos(e[1]),chosen=onBranch(e[1].word||e[1].key,e[1].depth);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.strokeStyle=chosen?'rgba(226,194,90,.72)':'rgba(201,191,168,.20)';ctx.lineWidth=chosen?2.3:.75;ctx.stroke();});
+            nodes.forEach(n=>{const p=pos(n);if(p[1]>W-12)return;dot(ctx,p[0],p[1],radius(n,true),nodeColour(n),n.key==='.'?C.yellow:null,n.key==='.'?2:0);});ctx.restore();
+        }
+        function localTree(progress,alpha){
+            const d=Math.min(branch.length-1,Math.floor(progress)),u=d<branch.length-1?smooth((progress-d-.18)/.64):0,a=data.nodes[branch[d]],b=data.nodes[branch[Math.min(branch.length-1,d+1)]],cameraDepth=mix(d,Math.min(branch.length-1,d+1),u),cameraX=mix(a.x,b.x,u),w0=1.06/Math.pow(2.72,d),w1=1.06/Math.pow(2.72,Math.min(branch.length-1,d+1)),viewWidth=Math.exp(mix(Math.log(w0),Math.log(w1),u));
+            const pos=n=>[W/2+(n.x-cameraX)*W/viewWidth,W*.37+(n.depth-cameraDepth)*96];
+            ctx.save();ctx.globalAlpha=alpha;
+            edges.forEach(e=>{if(e[1].depth>Math.ceil(cameraDepth)+2)return;const p=pos(e[0]),q=pos(e[1]);if(Math.max(p[0],q[0])<-20||Math.min(p[0],q[0])>W+20||Math.max(p[1],q[1])<-20||Math.min(p[1],q[1])>W+20)return;const chosen=onBranch(e[1].word||e[1].key,Math.floor(cameraDepth+.001));ctx.beginPath();ctx.moveTo(...p);ctx.lineTo(...q);ctx.strokeStyle=chosen?'rgba(226,194,90,.88)':'rgba(201,191,168,.30)';ctx.lineWidth=chosen?4:1.45;ctx.stroke();});
+            nodes.forEach(n=>{if(n.depth>Math.ceil(cameraDepth)+2)return;const p=pos(n);if(p[0]<-18||p[0]>W+18||p[1]<-18||p[1]>W+18)return;const active=n.key===branch[Math.round(cameraDepth)];dot(ctx,p[0],p[1],active?12:radius(n,false),active?C.yellow:nodeColour(n),active?C.ink:C.bg,active?2.5:1.3);});
+            dot(ctx,W/2,W*.37,5.2,C.ink,C.yellow,2);ctx.restore();
+        }
+        function draw(t){ground(ctx,W);if(!draw.ready||!data)return false;const q=(t%12)/12,transition=smooth((q-.10)/.08),progress=4*clamp((q-.18)/.66,0,1);if(transition<1)overview(1-transition);if(transition>0)localTree(progress,transition);if(q>.95){ctx.fillStyle=`rgba(21,19,26,${smooth((q-.95)/.05)})`;ctx.fillRect(0,0,W,W);}return true;}
+        draw.ready=false;draw.failed=false;fetch('gallery/plates/p-farey-tree.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(build).catch(e=>{draw.failed=true;console.warn('F-lattice tree thumbnail:',e);});return draw;
     }
 
     function makePareto(ctx,W){
