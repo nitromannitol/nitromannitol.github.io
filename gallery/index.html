@@ -661,24 +661,23 @@
         <div class="instrument instrument--model" data-model-theme="divisible">
             <div class="model-control-shelf" aria-label="Divisible sandpile controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">LQG parameter \(\gamma\)</span><div class="model-segmented"><button type="button" class="btn is-on" data-mcrt-map="sqrt2" aria-pressed="true">\(\sqrt{2}\)</button><button type="button" class="btn" data-mcrt-map="uniform" aria-pressed="false">\(\sqrt{8/3}\)</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Pace</span><div class="model-segmented"><button type="button" class="btn is-on" data-mcrt-pace="watch" aria-pressed="true">Watch</button><button type="button" class="btn" data-mcrt-pace="grow" aria-pressed="false">Grow</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-mcrt-run="pause">Pause</button><button type="button" class="btn" data-mcrt-run="step">Step</button><button type="button" class="btn" data-mcrt-run="replay">Replay</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:660px">
-                <canvas id="mcrt-canvas" width="1440" height="1230" role="img" aria-label="A finite divisible-sandpile computation using parallel toppling on a mated-CRT map. Dim cells contain positive mass but have not toppled; solid colours record each cell's first-toppling sweep; yellow outlines mark cells that have newly acquired positive mass."></canvas>
+                <canvas id="mcrt-canvas" width="1440" height="1440" role="img" aria-label="A finite divisible-sandpile computation using parallel toppling on a mated-CRT map. Dim cells contain positive mass but have not toppled; solid colours record each cell's first-toppling sweep; yellow outlines mark cells that have newly acquired positive mass."></canvas>
                 <span class="model-phase-chip" id="mcrt-note">Loading map</span>
             </div>
             <dl class="readout model-readout model-readout--five">
                 <div><dt>Sweeps</dt><dd id="mcrt-sweeps">0</dd></div>
                 <div><dt>Positive-mass cells (current / final)</dt><dd id="mcrt-cells">0</dd></div>
                 <div><dt>Toppled / positive-mass cells</dt><dd id="mcrt-ball">&mdash;</dd></div>
-                <div><dt>Tutte-polygon area of positive-mass cells / total stored Tutte-cell area</dt><dd id="mcrt-area">&mdash;</dd></div>
+                <div><dt>Barycentric-cell area of positive-mass vertices / disk area</dt><dd id="mcrt-area">&mdash;</dd></div>
                 <div><dt>Total excess \(\sum_{v\in I}(m(v)-1)^+\)</dt><dd id="mcrt-excess">&mdash;</dd></div>
             </dl>
             <div class="model-key model-key--settle"><span>Dim: positive mass &middot; solid: toppled</span><span class="model-swatches" aria-hidden="true"><i></i><i></i><i></i></span></div>
-            <p class="caption">Divisible sandpile on a mated-CRT map with 60,000 vertices: mass 600 at the source, run offline until the maximum excess is below 10⁻¹². Drawn: the vertices with positive final mass and the neighbours of every vertex that topples. The browser repeats the same parallel toppling on these vertices: a vertex with mass above 1 keeps 1 and sends equal shares of the excess along its incident edges, parallel edges counted separately. Solid colour: vertices that have toppled. Dim colour: vertices holding mass that have not toppled. Yellow outline: vertices toppling in the current sweep.</p>
+            <p class="caption">Divisible sandpile on the finite \(\gamma=\sqrt2\) mated-CRT disk used in the paper simulation: 10,000 vertices, source at maximum graph distance from the boundary, and boundary vertices placed by discrete harmonic measure before barycentric extension. Mass 2,000 is added at the source. The browser performs the parallel topplings on the exact multigraph, with parallel edges counted separately. Solid colour: vertices that have toppled. Dim colour: vertices holding positive mass that have not toppled. Yellow outline: newly reached vertices.</p>
         </div>
     </section>
 
@@ -687,12 +686,11 @@
         <div class="instrument instrument--model" data-model-theme="divisible">
             <div class="model-control-shelf" aria-label="Mated-CRT internal DLA controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Finite map</span><div class="model-segmented"><button type="button" class="btn is-on" data-mcrt-idla-map="sqrt2" aria-pressed="true">\(\gamma=\sqrt2\)</button><button type="button" class="btn" data-mcrt-idla-map="uniform" aria-pressed="false">\(\gamma=\sqrt{8/3}\)</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-mcrt-idla-run="pause">Pause</button><button type="button" class="btn" data-mcrt-idla-run="replay">Replay</button><button type="button" class="btn" data-mcrt-idla-run="new">New</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:660px">
-                <canvas id="mcrt-idla-canvas" width="1440" height="1230" role="img" aria-label="Internal DLA on an exact finite mated-CRT graph. Each particle performs simple random walk along graph edges from the marked source and settles at its first unoccupied cell. Colour records settlement order."></canvas>
+                <canvas id="mcrt-idla-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on an exact finite mated-CRT graph. Each particle performs simple random walk along graph edges from the marked source and settles at its first unoccupied cell. Colour records settlement order."></canvas>
                 <span class="model-phase-chip" id="mcrt-idla-note">Loading exact finite graph</span>
             </div>
             <dl class="readout model-readout">
@@ -701,7 +699,7 @@
                 <div><dt>Maximum graph distance from the source over occupied vertices</dt><dd id="mcrt-idla-radius">0</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption">Internal DLA on the same map. Each particle starts at the source, at each step follows an incident edge chosen uniformly (parallel edges counted separately), and settles at the first unoccupied vertex. Colour: order of settlement. A run places min{128, max{72, ⌊0.16|V|⌋}} particles, where |V| is the number of vertices.</p>
+            <p class="caption">Internal DLA on the same finite \(\gamma=\sqrt2\) disk map. Each particle starts at the source, follows an incident edge chosen uniformly at every step (parallel edges counted separately), and settles at the first unoccupied vertex. Colour records settlement order.</p>
         </div>
     </section>
 
@@ -1880,9 +1878,8 @@ window.galleryAssets = {
     flatticeLarge: 'plates/p5-flattice-hero-void.png?v=7fa90cea',
     fareyTree: 'plates/p-farey-tree.json?v=d5c063ee',
     fareyAtlas: 'plates/p-farey-atlas.png?v=fbf1cbdc',
-    mcrtRun: 'plates/p-mcrt-run.json?v=4391debd',
-    mcrtMeshSqrt2: 'plates/p-mcrt-mesh-sqrt2-void.png?v=c7a5ac92',
-    mcrtMeshUniform: 'plates/p-mcrt-mesh-uniform-void.png?v=b57b28bc',
+    mcrtRun: 'plates/p-mcrt-run.json?v=96e1ff57',
+    mcrtMeshSqrt2: 'plates/p-mcrt-mesh-sqrt2-void.png?v=c2391813',
     randomEmpty: 'plates/p6-deterministic-hero-void.png?v=fd428ee8',
     randomHoles: 'plates/p6-random-hero-void.png?v=189a2a4a',
     randomExploding: 'plates/p6-exploding-hero-void.png?v=441171f0',
@@ -1909,6 +1906,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=588ba153"></script>
+<script defer src="gallery.js?v=fde11edb"></script>
 </body>
 </html>
