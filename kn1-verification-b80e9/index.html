@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Kozma–Nitzan Conjecture 1: Lean verification</title>
+    <title>Kozma–Nitzan Conjectures 1–4: Lean verification</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
     <style>
@@ -19,7 +19,7 @@
 </head>
 <body>
     <header>
-        <h1>Kozma–Nitzan Conjecture 1 as a corollary of the Lean proof of θ(p<sub>c</sub>) = 0</h1>
+        <h1>Kozma–Nitzan Conjectures 1–4 on top of the Lean proof of θ(p<sub>c</sub>) = 0</h1>
     </header>
 
     <main class="kn1">
@@ -41,6 +41,37 @@
             <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> and no <code>sorry</code>.</p>
         </section>
 
+
+        <section>
+            <h2>Conjectures 2, 3 and 4 (and 1 again)</h2>
+            <p>Folder <a href="conjectures-1-4/">conjectures-1-4/</a> (nine Lean modules, two agent reports, and
+            <a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>; details in its
+            <a href="conjectures-1-4/README.md">README</a>). For a nonempty relay set A, vertices o, b and an increasing real
+            function F of vertex sets, Lean accepts, with exactly the standard axioms:</p>
+            <ul>
+                <li><strong>Conjecture 4</strong> (p. 32), fixed-minimiser form: if a ∈ A minimises E F(C<sub>x</sub>) over A then
+                    E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A].</li>
+                <li><strong>Conjecture 2</strong> (p. 3), strong pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
+                    min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b).</li>
+                <li><strong>Conjecture 1</strong> and <strong>Conjecture 3</strong>, re-exported in the same file.</li>
+            </ul>
+            <p><em>Idea.</em> The development's first-relay bound, Σ<sub>x</sub> P(x is o's first relay)·E F(C<sub>x</sub>) ≤ E[F(C<sub>o</sub>); o ↔ A],
+            is proved here in an <em>avoided</em> form: the observer's cluster must avoid a set Y and the relay means are conditioned on
+            x ↮ Y (the development's hierarchy already carries an avoided set, so its peeling argument goes through with Y inserted into
+            every avoidance set). With Y = {a}, a the relay of least mean, and the increasing projected functional
+            φ<sub>a</sub>(K) = F(K) − E[F(C<sub>a</sub>) | C<sub>o</sub> = K], every conditional relay mean is nonnegative, which gives
+            E[(F(C<sub>o</sub>) − F(C<sub>a</sub>)); o ↮ a, o ↔ A] ≥ 0; on {o ↔ a} the clusters coincide. F = 1{b ∈ ·} gives (3), Harris gives
+            Conjecture 1, Conjecture 1 gives Conjecture 3. The route is the one proposed in the ChatGPT document.</p>
+            <p><em>What it implies.</em> Conjectures 2 and 4 were known only for two relays and for an observer isolated in G ∖ A
+            (the paper's Theorems 1, 4, 7, 8); they now hold in general, so the paper's whole chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0
+            is formal. The fixed-minimiser form shows that the relay minimising the unconditional mean is a valid relay in the pre-FKG
+            comparison; in particular inequality (41) of the paper's Question 7 holds for the relay minimising P(a ↔ b). The avoided
+            first-relay bound itself (<code>genY_all</code>) is a general conditioned gluing inequality with no loss in the number of relays.
+            Nothing is claimed about Conjecture 6 or Questions 5, 8, 9.</p>
+            <p class="note">Produced entirely by Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): seven modules by Claude Fable 5.1,
+            two (<code>Projection</code>, <code>AvoidedClosure</code>) by Codex (GPT-5.6 sol) from specifications; the route from the
+            ChatGPT document. Not yet run through the six-pass review used for the Conjecture 1 certificate.</p>
+        </section>
         <section>
             <h2>Files</h2>
             <table>
