@@ -1,11 +1,45 @@
 
 const publications = [
   {
+    id: "sharpness-critical-scaling-parking",
+    title: "Sharpness and critical scaling of parking",
+    thumbnail: "images/parking.svg",
+    thumbnailAnimation: "parking",
+    altText: "Cars moving along square-lattice paths toward unoccupied parking spots.",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Christoforos Panagiotis", url: "https://sites.google.com/view/christoforos-panagiotis/" }
+    ],
+    status: "submitted",
+    links: [
+      { type: "Gallery", url: "gallery/#parking" }
+    ],
+    abstract: 'In the parking model on Z<sup>d</sup>, each site independently contains one car with probability p or one parking spot with probability 1&minus;p. Cars perform independent discrete-time simple random walks and park upon first reaching a free spot. At the critical density p=1/2, if U<sub>n</sub>(0) is the number of departures from the origin in the first n rounds, then E[U<sub>n</sub>(0)] is of order n<sup>(4&minus;d)/4</sup> for d &le; 3 and log n for d &ge; 4. For every p&lt;1/2, the parking-time tail has matching stretched-exponential bounds with exponent d/(d+2). As p increases to 1/2, E[U<sub>&infin;</sub>(0)] has order (1&minus;2p)<sup>&minus;3</sup>, (1&minus;2p)<sup>&minus;1</sup>, and (1&minus;2p)<sup>&minus;1/3</sup> in dimensions 1, 2, and 3, respectively, and log(1/(1&minus;2p)) in dimensions d &ge; 4. The proof compares the particle odometer with a divisible-sandpile odometer, which is an optimal-stopping value for random walk in random scenery, and controls the routing discrepancy by martingale estimates.',
+    year: 2026
+  },
+  {
+    id: "quantitative-explosion-percolation-divisible-sandpile",
+    title: "Quantitative explosion and percolation of the divisible sandpile",
+    thumbnail: "images/divisible_percolation.svg",
+    thumbnailAnimation: "divisible-percolation",
+    altText: "The largest connected component of toppled sites on the square lattice.",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Christoforos Panagiotis", url: "https://sites.google.com/view/christoforos-panagiotis/" }
+    ],
+    status: "submitted",
+    links: [
+      { type: "Gallery", url: "gallery/#divisible-percolation" }
+    ],
+    abstract: 'Consider the parallel divisible sandpile on Z<sup>d</sup> with i.i.d. initial masses of mean &rho;. At &rho;=1, the mass u<sub>t</sub>(0) emitted to each neighbor by time t has order t<sup>(4&minus;d)/4</sup> for d &le; 3, order log t for d=4, and a divergent, tail-dependent order for d &ge; 5. The corresponding spatial scaling limits are Brownian optimal-stopping values for d &le; 3, the membrane model under the critical four-dimensional rescaling, and tail-dependent weighted membrane fields for d &ge; 5. For every d &ge; 2 and every suitably nondegenerate family of mass laws with uniform exponential moments near mean one, there exists &rho;<sub>+</sub>&lt;1 such that the toppled set {x : u<sub>&infin;</sub>(x)&gt;0} contains an infinite nearest-neighbor component almost surely whenever &rho;&isin;(&rho;<sub>+</sub>,1). The proof combines quantitative critical explosion with crossing and multiscale arguments for strongly correlated level sets.',
+    year: 2026
+  },
+  {
     id: "eulerian-walkers",
     title: "Eulerian walkers on Z<sup>2</sup> have range exponent 2/3",
     bibtexTitle: "Eulerian walkers on {$\\mathbb{Z}^2$} have range exponent 2/3",
     thumbnail: "images/eulerian_walkers.png",
-    altText: "One excursion of an Eulerian walker on the square lattice sweeping around the previously visited region, drawn as a colorful trail over evenly spaced gray growth rings that reflect the t to the one-third growth of the range.",
+    altText: "The range of an Eulerian walker on the square lattice, with sites colored by the circuit in which they were first visited.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Yuval Peres", url: "https://yuvalperes.com/" }
@@ -13,7 +47,7 @@ const publications = [
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2608.23545" }
     ],
-    abstract: 'In the Eulerian walker model (also known as rotor walk), each site of the square lattice begins with an arrow pointing to one of its four neighbors. A walker that starts at the origin repeatedly turns the arrow at its current site clockwise by 90&deg; and steps in the new direction. <a href="https://arxiv.org/abs/cond-mat/9611019">Priezzhev, Dhar, Dhar, and Krishnamurthy (1996)</a> introduced this as a model of self-organized criticality and conjectured that, for independent uniform initial directions, the region explored in the first t steps has radius of order t<sup>1/3</sup>. We establish this conjecture and further show that the walker visits every lattice site infinitely often, and that the region it has visited by time t, rescaled by t<sup>1/3</sup>, converges to a convex body.',
+    abstract: 'In the Eulerian walker model (also known as rotor walk), each site of the square lattice begins with an arrow pointing to one of its four neighbors. A walker that starts at the origin repeatedly turns the arrow at its current site clockwise by 90&deg; and steps in the new direction. A circuit consists of four successive returns to the origin, the degree of the origin on the square lattice. <a href="https://arxiv.org/abs/cond-mat/9611019">Priezzhev, Dhar, Dhar, and Krishnamurthy (1996)</a> introduced the model and conjectured that, for independent uniform initial directions, the region explored in the first t steps has radius of order t<sup>1/3</sup>. We prove recurrence and show that the circuit ranges have a deterministic convex limit shape; equivalently, the range at time t, rescaled by t<sup>1/3</sup>, converges to a deterministic convex body and has cardinality of order t<sup>2/3</sup>.',
     year: 2026
   },
   {
@@ -130,7 +164,7 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
       { type: "Blog", url: "https://www.scottnarmstrong.com/2024/04/superdiffusive-CLT/" }
 
     ],
-abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In this paper, we consider the critical case and show that under the superdiffusive scaling of (√log(t)·t), in the long-time limit, the particle converges, in a quenched sense, to ordinary Brownian motion. This problem has been considered heuristically by physicists <a href="references/sdphys1.pdf">since</a> <a href="references/sdphys2.pdf">at</a> <a href="references/sdphys3.pdf">least</a> <a href="references/sdphys4.pdf">1983</a>, where the (√log(t)·t) rate was predicted using heuristic renormalization group arguments. Our proof makes these renormalization group arguments rigorous using ideas from stochastic homogenization. To the best of our knowledge, this is the first critical, infinite-scale, random model that has been shown to homogenize. We hope to apply these ideas to other critical models with an infinite number of length scales. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/"> Quanta article </a> for more.',
+abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
     thumbnail: "images/sd.png",
     altText: "Streamlines of a critically-correlated incompressible random drift exhibiting enhanced diffusion.",
     year: 2024
@@ -226,7 +260,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
       { type: "Appendix", url: "manuscripts/appendix.pdf" },
       { type: "Code", url: "https://github.com/nitromannitol/f-lattice-recursion" }
     ],
-abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear elliptic PDE with a delicate lattice dependence. This dependence is expressed through the quadratic growths of integer-valued, lattice-superharmonic functions (see <a href="https://arxiv.org/pdf/1611.00411">Section 6 of this survey</a> for an exposition). <a href="https://annals.math.princeton.edu/2017/186-1/p01">Lionel Levine, Wesley Pegden, and Charles Smart showed</a> that these functions on Z<sup>2</sup> are characterized by an Apollonian packing of the plane. While their proof was specific to Z<sup>2</sup>, with some effort it can likely be adapted to the triangular, hexagonal, and trihexagonal lattices, where the Apollonian packing is replaced by other circle packings (see these <a href="https://www.math.cmu.edu/~wes/sandgallery.html">simulations by Pegden</a>). However, the F-lattice presents a distinct situation. In this paper, I show that the set of integer superharmonic functions on the F-lattice is governed by a recursion involving rational points on a hyperbola. I conjecture that the objects describing the scaling limits of the Abelian sandpile on general, periodic graphs are <a href="https://arxiv.org/abs/2104.13838">Kleinian bugs</a>.'
+abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear elliptic PDE with a delicate lattice dependence. This dependence is expressed through the quadratic growths of integer-valued, lattice-superharmonic functions (see <a href="https://arxiv.org/pdf/1611.00411">Section 6 of this survey</a> for an exposition). <a href="https://annals.math.princeton.edu/2017/186-1/p01">Lionel Levine, Wesley Pegden, and Charles Smart showed</a> that these functions on Z<sup>2</sup> are characterized by an Apollonian packing of the plane. While their proof was specific to Z<sup>2</sup>, with some effort it can likely be adapted to the triangular, hexagonal, and trihexagonal lattices, where the Apollonian packing is replaced by other circle packings (see these <a href="https://www.math.cmu.edu/~wes/sandgallery.html">simulations by Pegden</a>). The F-lattice presents a distinct situation: its integer superharmonic matrices are classified by a recursion through rational points on a hyperbola, and the boundary of the admissible set is a periodic arrangement of congruent overlapping circles. I conjecture that analogous periodic circle arrangements and their associated operators describe Abelian-sandpile scaling limits on general periodic graphs.'
 ,
     thumbnail: "images/flattice.png",
     altText: "Integer superharmonic quadratic growths on the F-lattice, arranged by the rational points on a hyperbola governing the recursion."
