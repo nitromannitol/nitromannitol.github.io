@@ -50,7 +50,7 @@ const PAGE_MAKERS = {
     'ust':               ['wilsonintro', 'wilson'],
     'sphere-packing':    ['gmcintro', 'gmcwalk'],
     'rotor-walk':        ['rotorintro', 'rotorwalk'],
-    'superdiffusion':    ['sdintro', 'sdlattice', 'sdrace', 'superdiffusion',
+    'superdiffusion':    ['sdintro', 'sdlattice', 'superdiffusion',
                           'algebraicsd'],
     'long-range-walk':   ['longrangeintro', 'longrange'],
     'pareto-peeling':    ['peelintro', 'peeling'],
@@ -85,7 +85,7 @@ const MAKER_TARGETS = {
     gmcintro: '#rule-sphere-packing', gmcwalk: '#gw-canvas',
     rotorintro: '#rule-rotor-walk', rotorwalk: '#euler-canvas',
     sdintro: '#rule-superdiffusion', sdlattice: '#sd-lattice-canvas',
-    sdrace: '#build-superdiffusion', superdiffusion: '#sd-canvas',
+    superdiffusion: '#sd-canvas',
     algebraicsd: '#algebraic-sd-canvas',
     longrangeintro: '#rule-long-range-walk', longrange: '#longrange-canvas',
     peelintro: '#rule-pareto-peeling', peeling: '#peel-canvas',
@@ -8532,138 +8532,11 @@ const Instruments = (function () {
        wrong visual grammar for Brownian motion. Here the path owns the clock.
        The four registered low-pass fields merely reveal structure as one
        continuous world-space trajectory and camera pull back through it. */
-    /* The superdiffusion, measured rather than asserted.
-
-       dX = b dt + √(2κ) dW with b = ∇⊥ψ. The drift is divergence free and
-       conserves ψ exactly, so at κ = 0 a particle is trapped on a level set
-       and never escapes; the noise is the only thing that moves it between
-       level sets, and the two together spread FASTER than a diffusion.
-
-       What is drawn is the signature. For any diffusion ⟨|X_t|²⟩/t is a
-       constant. Here it climbs — the theorem gives |X_t| ~ √t (log t)^{1/4},
-       so ⟨|X_t|²⟩/t ~ (log t)^{1/2}. Both clouds come from bake_sd_race.py,
-       run with the same integrator and the same noise; the only difference is
-       whether the drift is applied. The still cloud is the control, and it
-       returns 4κ = 0.0400 against a measured 0.0403 — so the climbing curve
-       is the drift's doing, not the integrator's. */
-    makers.sdrace = function () {
-        const canvas = $('#build-superdiffusion');
-        if (!canvas) return null;
-        let film = null, D = null;
-
-        fetch('plates/p-sd-race.json').then(function (r) { return r.json(); }).then(function (d) {
-            D = d;
-            let far = 1;
-            for (let f = 0; f < D.driftX.length; f++) {
-                const ax = D.driftX[f], ay = D.driftY[f];
-                for (let i = 0; i < ax.length; i++) {
-                    const rr = Math.hypot(ax[i], ay[i]) / D.q;
-                    if (rr > far) far = rr;
-                }
-            }
-            const CX = 720, CY = 346, RAD = 340;
-            const scale = RAD / far;
-            const T = D.curve.t, YD = D.curve.drift, YF = D.curve.free;
-            let yMax = 0;
-            for (let i = 0; i < YD.length; i++) yMax = Math.max(yMax, YD[i]);
-            yMax *= 1.12;
-            const GX0 = 150, GX1 = 1330, GY0 = 660, GY1 = 858;
-            const lt0 = Math.log(T[0]), lt1 = Math.log(T[T.length - 1]);
-            const gx = function (t) { return GX0 + (Math.log(t) - lt0) / (lt1 - lt0) * (GX1 - GX0); };
-            const gy = function (v) { return GY1 - v / yMax * (GY1 - GY0); };
-
-            function cloud(ctx, ax, ay, colour, alpha, r) {
-                ctx.fillStyle = colour;
-                ctx.globalAlpha = alpha;
-                for (let i = 0; i < ax.length; i++) {
-                    ctx.beginPath();
-                    ctx.arc(CX + ax[i] / D.q * scale, CY + ay[i] / D.q * scale, r, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.globalAlpha = 1;
-            }
-            function ring(ctx, rms, colour) {
-                ctx.strokeStyle = colour; ctx.lineWidth = 2.5;
-                ctx.setLineDash([9, 7]);
-                ctx.beginPath();
-                ctx.arc(CX, CY, rms * scale, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-            function curve(ctx, Y, colour, upto) {
-                ctx.strokeStyle = colour; ctx.lineWidth = 3.5;
-                ctx.beginPath();
-                for (let i = 0; i <= upto && i < Y.length; i++) {
-                    const x = gx(T[i]), y = gy(Y[i]);
-                    if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-
-            film = loopingFilm('#build-superdiffusion', 1440, 900, 20000, function (ctx, LW, LH, p) {
-                const nf = D.frames.length;
-                const fi = Math.min(nf - 1, Math.floor(p * nf));
-                const t = D.frames[fi];
-                let ci = 0;
-                while (ci + 1 < T.length && T[ci + 1] <= t) ci++;
-
-                /* the two clouds, same origin, same noise: the compact
-                   no-drift cloud is drawn last, so it is seen sitting inside
-                   the spreading one instead of buried under it */
-                cloud(ctx, D.driftX[fi], D.driftY[fi], PALETTE.cyan, .78, 2.6);
-                cloud(ctx, D.freeX[fi], D.freeY[fi], '#D98BA3', .95, 3.3);
-
-                /* the curve that is the whole point: flat is a diffusion */
-                ctx.strokeStyle = 'rgba(201,191,168,.30)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(GX0, GY1); ctx.lineTo(GX1, GY1);
-                ctx.moveTo(GX0, GY0); ctx.lineTo(GX0, GY1);
-                ctx.stroke();
-                curve(ctx, YF, PALETTE.rose, ci);
-                curve(ctx, YD, PALETTE.cyan, ci);
-                ctx.fillStyle = PALETTE.cyan;
-                ctx.beginPath(); ctx.arc(gx(T[ci]), gy(YD[ci]), 6, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = PALETTE.rose;
-                ctx.beginPath(); ctx.arc(gx(T[ci]), gy(YF[ci]), 6, 0, Math.PI * 2); ctx.fill();
-
-                /* on a phone the film is a quarter of its logical width, so
-                   its labels are set larger to stay legible */
-                const cssW = canvas.getBoundingClientRect().width || 1440;
-                const mag = Math.max(1, Math.min(2.1, 760 / cssW));
-                const fs = Math.round(30 * mag);
-                ctx.font = '500 ' + fs + 'px ui-monospace, "IBM Plex Mono", monospace';
-                ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-                /* the readout is set in the two curve colours, and drops its
-                   formula prefix when the stage is too narrow for it */
-                const parts = [['⟨|Xₜ−X₀|²⟩ / t   ', 'rgba(201,191,168,.75)'],
-                               ['t = ' + t.toFixed(0) + '   ', 'rgba(242,237,226,.9)'],
-                               ['drift ' + YD[ci].toFixed(2) + '   ', PALETTE.cyan],
-                               ['none ' + YF[ci].toFixed(2), '#D98BA3']];
-                let width = parts.reduce(function (s, p) { return s + ctx.measureText(p[0]).width; }, 0);
-                if (width > GX1 - GX0) { parts.shift(); width = parts.reduce(function (s, p) { return s + ctx.measureText(p[0]).width; }, 0); }
-                let x = GX0;
-                parts.forEach(function (p) { ctx.fillStyle = p[1]; ctx.fillText(p[0], x, GY0 - 30 * mag); x += ctx.measureText(p[0]).width; });
-                ctx.fillStyle = 'rgba(201,191,168,.7)';
-                ctx.font = '400 ' + Math.round(22 * mag) + 'px ui-monospace, "IBM Plex Mono", monospace';
-                ctx.textAlign = 'right';
-                ctx.fillText('log t', GX1, GY1 + 32);
-                ctx.textAlign = 'left';
-                ctx.fillText('0', GX0 - 26, GY1 + 8);
-            }, .995);
-        }).catch(function () {});
-
-        return {
-            pause: function () { if (film) film.pause(); },
-            resume: function () { if (film) film.resume(); }
-        };
-    };
-
     makers.superdiffusion = function () {
         const canvas = $('#sd-canvas');
         if (!canvas) return null;
         const ctx = canvas.getContext('2d'), W = canvas.width;
-        const DISPLAY_PATH_FPS = 30;
+        const DISPLAY_PATH_FPS = 30, PLAYBACK_RATE = 2.15;
         let D = null, fields = [], ready = false;
         let pathX = null, pathY = null, recordX = null, recordY = null;
         let cameraX = null, cameraY = null;
@@ -8899,18 +8772,19 @@ const Instruments = (function () {
             if (!running) return;
             if (!lastFrame) lastFrame = now;
             /* A stalled browser slows the film instead of skipping ahead to a
-               distant Brownian sample. This preserves visible continuity. */
+               distant Brownian sample.  Normal frames run at a brisk visual
+               pace while remaining on consecutive stored path segments. */
             const dt = Math.min(.045, Math.max(0, (now - lastFrame) / 1000));
             lastFrame = now;
             if (playhead >= D.tourSeconds - 1e-7) playhead = 0;
             const desired = Math.min(D.tourSeconds,
-                                     playhead + dt);
+                                     playhead + PLAYBACK_RATE * dt);
             const currentArc = arcAt(playhead), desiredArc = arcAt(desired);
             /* Screen-space arc length owns the pace. A delayed frame slows
                the film; it never catches up by seeking to a distant sample. */
-            const target = .25 * W * dt;
+            const target = .55 * W * dt;
             const cssWidth = Math.max(1, canvas.getBoundingClientRect().width || 720);
-            const maxCssStep = cssWidth < 500 ? 2 : 3;
+            const maxCssStep = cssWidth < 500 ? 2.8 : 4;
             const allowed = Math.min(maxCssStep * W / cssWidth, target);
             playhead = timeAtArc(Math.min(desiredArc, currentArc + allowed));
             paint(); raf = requestAnimationFrame(frame);
