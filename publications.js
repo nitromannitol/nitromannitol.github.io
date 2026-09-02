@@ -22,7 +22,7 @@ const publications = [
     title: "Quantitative explosion and percolation of the divisible sandpile",
     thumbnail: "images/divisible_percolation.svg",
     thumbnailAnimation: "divisible-percolation",
-    altText: "The largest connected component of toppled sites on the square lattice.",
+    altText: "Parallel divisible-sandpile topplings joining into a percolating nearest-neighbor component near critical density.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Christoforos Panagiotis", url: "https://sites.google.com/view/christoforos-panagiotis/" }
@@ -174,7 +174,7 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
 abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
     thumbnail: "images/sd.png",
     thumbnailAnimation: "critical-superdiffusion",
-    altText: "A continuous particle path moving between vortices in a critically correlated flow.",
+    altText: "A positive-diffusivity particle trajectory crossing the streamlines of a critically correlated incompressible flow.",
     year: 2024
   },
   {
@@ -215,7 +215,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949 that the dimension of the space of discrete harmonic polynomials on Z<sup>d</sup> coincides with that of R<sup>d</sup>. This theorem holds for any periodic lattice and was recently extended by <a href="https://arxiv.org/abs/1609.09431">Scott Armstrong and Paul Dario</a> to the supercritical percolation cluster, where their proof used the fact that, on large scales, the cluster resembles R<sup>d</sup>. However, in models such as the <a href="https://arxiv.org/abs/1109.0449?context=math">Ising model</a>, the <a href="https://arxiv.org/abs/1012.4809">Abelian sandpile</a>, and <a href="https://arxiv.org/abs/1508.04284">Anderson localization</a>, small-scale changes in the graph induce qualitatively distinct global behavior. Motivated by this, we prove three theorems on the supercritical cluster that do not hold on Z<sup>d</sup>. Using quantitative homogenization, we show the absence of non-constant Lipschitz harmonic functions and the absence of non-constant integer-valued harmonic functions of at most linear growth. In dimension 2, we also show that a function harmonic outside a finite set, with integer-valued graph Laplacian and uniform decay faster than 1/|x|, must have finite support. We expect these results and our techniques will help in understanding other models on the cluster. (The final section includes many conjectures and partial results regarding the Abelian sandpile on the cluster.)',
     thumbnail: "images/lipschitz-percolation-harmonic.png",
     thumbnailAnimation: "percolation-harmonic",
-    altText: "A harmonic coordinate relaxing on a supercritical percolation cluster.",
+    altText: "The width-four resistance ladder whose growing denominators force integer-valued harmonic functions to be constant.",
     year: 2025
   },
   {
@@ -234,7 +234,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     abstract: 'We prove the convergence of internal diffusion limited aggregation on a family of random planar maps, mated-CRT maps, to the LQG harmonic balls constructed in <a href="https://arxiv.org/abs/2208.11795">our previous work</a>. The proof combines an idea of <a href="https://arxiv.org/abs/1111.0486">Hugo Duminil-Copin, Cyrille Lucas, Ariel Yadin, and Amir Yehudayoff</a> together with inputs from LQG theory. Mated-CRT maps are currently the only random planar maps for which the <a href="https://arxiv.org/abs/2003.10320">convergence of random walk to Liouville Brownian motion</a> has been established, and this fact plays a crucial role in our proof. It would be particularly interesting to determine the law governing the fluctuations around the limit shape.',
     thumbnail: "images/idla_matedcrt.png",
     thumbnailAnimation: "mated-crt-idla",
-    altText: "Internal DLA growing from the root of a finite random planar map.",
+    altText: "Internal DLA cells settling from the root of a mated-CRT map and forming an LQG harmonic ball.",
     year: 2024
   },
   {
@@ -276,7 +276,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
 ,
     thumbnail: "images/flattice.png",
     thumbnailAnimation: "f-lattice",
-    altText: "Microscopic and macroscopic views of a 1.3-million-grain F-lattice sandpile."
+    altText: "Fixed-height sections of the cones in the F-lattice classification, drawn as congruent circles centered on the parameter lattice."
   },
   {
     id: "hamilton-jacobi-scaling-limits",
@@ -357,6 +357,6 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
         abstract:"I show that the Abelian sandpile, started with a random initial configuration on any periodic lattice, approximates the solution of a deterministic, fully nonlinear elliptic PDE at large scales. The PDE is implicitly identified through the ergodic theorem, using ideas from non-divergence form stochastic homogenization. Although the exact form of the PDE remains unknown, it is definitively non-universal: it depends on the fine, local structure of both the initial lattice and randomness.",
     thumbnail: "images/random_pile.png",
     thumbnailAnimation: "random-sandpile",
-    altText: "A random-background Abelian sandpile stabilizing after additions at the origin."
+    altText: "An exact random-background Abelian sandpile viewed from microscopic lattice scale to its macroscopic profile."
   }
 ];
