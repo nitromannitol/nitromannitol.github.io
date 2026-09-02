@@ -45,8 +45,9 @@
                 <li><strong>Question 7</strong> (p. 36), answered affirmatively: if a ∈ A minimises P(a ↔ b) over A, then
                     P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A), the paper's display (41) (<code>question7_holds</code>).</li>
             </ul>
-            <p>Conjectures 2 and 4 were known only for two relays and for an observer isolated in G ∖ A (the paper's Theorems 1, 4, 7 and 8).
-            The same file also exports Conjecture 1, which is essentially the development's own result, and the development's Conjecture 3.</p>
+            <p>In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra hypotheses (Theorems 2, 3 and 11), for an observer isolated in G ∖ A and its one-vertex extension (Theorems 4 and 5), and, for every graph and every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem 9). Both were open in general. Conjecture 4 is also proved in the paper's printed vocabulary of monotone cluster properties f(v, ω)
+            (<code>conjecture4_clusterProperty_holds</code>). The same file derives Conjecture 1, a short corollary of the development's own
+            first-relay bound, from (3) by the Harris inequality, and Conjecture 3 from Conjecture 1.</p>
         </section>
 
         <section>
@@ -58,18 +59,19 @@
             Y = {a}, a the relay of least mean, and the projected functional φ<sub>a</sub>(K) = F(K) − E[F(C<sub>a</sub>) | C<sub>o</sub> = K], which is
             increasing in K because a larger explored cluster leaves a smaller cluster for a, every conditional relay mean equals
             (E F(C<sub>x</sub>) − E F(C<sub>a</sub>)) / P(x ↮ a) ≥ 0, so E[(F(C<sub>o</sub>) − F(C<sub>a</sub>)); o ↮ a, o ↔ A] ≥ 0; on {o ↔ a} the two clusters
-            coincide. That is Conjecture 4 with the fixed minimiser; F = 1{b ∈ ·} gives (3) and Question 7. The route is the one proposed in the
-            ChatGPT document.</p>
+            coincide. That is Conjecture 4 with the fixed minimiser; F = 1{b ∈ ·} gives (3) and Question 7; Harris then gives Conjecture 1 and
+            Conjecture 1 gives Conjecture 3. The route is the one proposed in the ChatGPT document.</p>
         </section>
 
         <section>
             <h2>What it implies</h2>
             <ul>
-                <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 is now formal from top to bottom.</li>
+                <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 is formal from top to bottom: the first four implications
+                    in <code>Conjectures.lean</code>, the last in the development (its formalization of the paper's Theorem 6).</li>
                 <li>The relay minimising the unconditional mean is itself a valid relay in the pre-FKG comparison (Question 7); the answer
                     is uniform in the graph and in the number of relays.</li>
                 <li>The avoided first-relay bound (<code>genY_all</code>) is a general conditioned gluing inequality with no loss in the number of
-                    relays, available for further use.</li>
+                    relays, available for further use; unlike the development's unconditioned bound it needs no nonnegativity of F.</li>
             </ul>
             <p>Nothing is claimed about Conjecture 6 or Questions 5, 8 and 9.</p>
         </section>
@@ -77,14 +79,14 @@
         <section>
             <h2>Files</h2>
             <table>
+                <tr><td><a href="conjectures-1-4/AvoidedDefs.lean">AvoidedDefs</a>, <a href="conjectures-1-4/AvoidedPeelTools.lean">AvoidedPeelTools</a>, <a href="conjectures-1-4/AvoidedPeel.lean">AvoidedPeel</a>, <a href="conjectures-1-4/AvoidedTransfer.lean">AvoidedTransfer</a>, <a href="conjectures-1-4/AvoidedGen.lean">AvoidedGen</a>, <a href="conjectures-1-4/Projection.lean">Projection</a>, <a href="conjectures-1-4/AvoidedClosure.lean">AvoidedClosure</a></td>
+                    <td>The avoided first-relay bound, in compile order: definitions; the peeling identities; (S5D) from the development's hierarchy; all observer positions; the induction on the relay set; the projected functional and its two identities; closure to weights 0 and 1.</td></tr>
                 <tr><td><a href="conjectures-1-4/Statements.lean">Statements.lean</a></td>
                     <td>The closed statements <code>Conjecture4Fixed</code>, <code>Conjecture4</code>, <code>Conjecture2Strong</code>, <code>Conjecture2</code>, <code>Question7</code>, <code>Conjecture1</code>, in the development's vocabulary.</td></tr>
                 <tr><td><a href="conjectures-1-4/Conjectures.lean">Conjectures.lean</a></td>
-                    <td>The theorems, from the avoided first-relay bound <code>genY_all</code> and the projection lemma.</td></tr>
-                <tr><td><a href="conjectures-1-4/AvoidedDefs.lean">AvoidedDefs</a>, <a href="conjectures-1-4/AvoidedPeelTools.lean">AvoidedPeelTools</a>, <a href="conjectures-1-4/AvoidedPeel.lean">AvoidedPeel</a>, <a href="conjectures-1-4/AvoidedTransfer.lean">AvoidedTransfer</a>, <a href="conjectures-1-4/AvoidedClosure.lean">AvoidedClosure</a>, <a href="conjectures-1-4/AvoidedGen.lean">AvoidedGen</a></td>
-                    <td>The avoided first-relay bound: definitions, the peeling identities, the induction from the development's hierarchy, all observer positions, closure to weights 0 and 1, the induction on the relay set.</td></tr>
-                <tr><td><a href="conjectures-1-4/Projection.lean">Projection.lean</a></td>
-                    <td>The projected functional and its two identities.</td></tr>
+                    <td>The theorems, from the avoided first-relay bound <code>genY_all</code> and the projection lemma; Conjecture 1 from (3) by Harris; Conjecture 3 from Conjecture 1.</td></tr>
+                <tr><td><a href="conjectures-1-4/ClusterProperty.lean">ClusterProperty.lean</a></td>
+                    <td>Conjecture 4 in the paper's vocabulary of monotone cluster properties f(v, ω), and the examples f = |C| and f = 1{|C| ≥ k}.</td></tr>
                 <tr><td><a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>, <a href="conjectures-1-4/README.md">README.md</a></td>
                     <td>Clean sequential recompile with <code>#print axioms</code>; the statements, files and commands in one place.</td></tr>
             </table>
@@ -93,12 +95,13 @@
         <section>
             <h2>How to check</h2>
             <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
-mkdir -p .lake/build/lib/lean/KN         # copy the nine .lean files to KN/, then:
-for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures; do
+mkdir -p .lake/build/lib/lean/KN         # copy the ten .lean files to KN/, then:
+for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
-            <p>Expected: the seven <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.</p>
-            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). ChatGPT wrote the document proposing the route (an avoided first-relay bound plus a projection lemma) and pointed out that Conjectures 2 and 4 follow from the development's methods; Claude Fable 5.1 designed the formalization, wrote and machine-checked seven of the nine Lean modules and this page, and specified the two remaining modules (<code>Projection</code>, <code>AvoidedClosure</code>), which were written by Codex (GPT-5.6 sol) and recompiled by Claude. All mathematics below the avoided first-relay bound is the development's. The Lean files have not yet been through an independent review; one is in progress. Released under the Apache License 2.0, matching the development.</p>
+            <p>Expected: the ten <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
+            The development's sources can be pinned first with <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
+            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). ChatGPT wrote the document proposing the route (an avoided first-relay bound plus a projection lemma) and pointed out that Conjectures 2 and 4 follow from the development's methods; Claude Fable 5.1 designed the formalization, wrote and machine-checked eight of the ten Lean modules and this page, and specified the two remaining modules (<code>Projection</code>, <code>AvoidedClosure</code>), which were written by the ChatGPT model through Codex and recompiled by Claude; the module <code>ClusterProperty</code> was contributed by a Claude Opus audit pass. All mathematics below the avoided first-relay bound is the development's. Review status: three independent Claude Opus audit passes (statement fidelity, proof validity, public text) were run; the edits of the completed passes are incorporated. The development itself has not been refereed by external experts (see its README, 'Provenance and review status'). Released under the Apache License 2.0, matching the development.</p>
         </section>
     </main>
 </body>

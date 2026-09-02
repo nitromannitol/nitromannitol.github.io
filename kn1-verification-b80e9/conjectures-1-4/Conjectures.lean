@@ -3,7 +3,6 @@ import KN.AvoidedClosure
 import KN.AvoidedGen
 import KN.Projection
 import KN.Statements
-import KozmaNitzanConjecture1
 
 /-!
 # Kozma–Nitzan's Conjectures 4 (fixed-minimizer form), 2 (strong form), 1 and 3 from the avoided first-relay bound
@@ -12,7 +11,8 @@ import KozmaNitzanConjecture1
 * `conjecture4Fixed_holds` — with `Y = {a}` (the minimiser) and the projected functional `projFunA`, every avoided relay mean is
   nonnegative, so the avoided first-relay bound gives `E[(F(C_o) − F(C_a)); o ↮ a, o ↔ A ∖ {a}] ≥ 0`; on `{o ↔ a}` the two clusters
   coincide; relays that cannot avoid `a` contribute a null set;
-* `conjecture4_holds`, `conjecture2Strong_holds`, `conjecture2_holds`, `conjecture1_holds`, `conjecture3_holds`.
+* `conjecture4_holds`, `conjecture2Strong_holds`, `conjecture2_holds`, `question7_holds`; `conjecture1_holds` from the strong
+  Conjecture 2 by the Harris inequality; `conjecture3_holds` from Conjecture 1 with `δ = ε/2`.
 -/
 
 set_option linter.unusedSectionVars false
@@ -206,12 +206,83 @@ theorem question7_holds : Question7 := by
 theorem conjecture2_holds : Conjecture2 := fun n w A hA o b =>
   le_trans (conjecture2Strong_holds n w A hA o b) (measureReal_mono inter_subset_left (measure_ne_top _ _))
 
-/-- **Conjecture 1** (the corollary of the development certified in `KozmaNitzanConjecture1.lean`). -/
-theorem conjecture1_holds : Conjecture1 := fun n w A hA o b => KN1Corollary.kozmaNitzan_conjecture1 n w A hA o b
+/-- **Conjecture 1 from the strong Conjecture 2 by the Harris inequality**: `P(o ↔ A) · P(x ↔ b) ≤ P(x ↔ b, o ↔ A)` for every `x`
+(both events are increasing), so `P(o ↔ A) · min_x P(x ↔ b) ≤ min_x P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A) ≤ P(o ↔ b)`. -/
+theorem conjecture1_holds : Conjecture1 := by
+  intro n w A hA o b
+  set μ := prodBernoulli w with hμ
+  have hmeas : ∀ S : Set (BondConfig (Fin n)), MeasurableSet S := fun _ => MeasurableSet.of_discrete
+  set U : Set (BondConfig (Fin n)) := ⋃ y ∈ A, openConn o y with hU
+  have hUup : IsUpperSet U := by
+    intro ω ω' hle hω
+    obtain ⟨y, hy, hoy⟩ := mem_iUnion₂.1 hω
+    exact mem_iUnion₂.2 ⟨y, hy, hoy.mono (SimpleGraph.fromEdgeSet_mono hle)⟩
+  set F : Set (Fin n) → ℝ := fun M => if b ∈ M then 1 else 0 with hF
+  have hFmono : ∀ S T : Set (Fin n), S ⊆ T → F S ≤ F T := by
+    intro S T hST
+    simp only [hF]
+    by_cases hS : b ∈ S
+    · rw [if_pos hS, if_pos (hST hS)]
+    · rw [if_neg hS]; split_ifs <;> norm_num
+  have hF0 : ∀ S, 0 ≤ F S := by intro S; simp only [hF]; split_ifs <;> norm_num
+  have hFind : ∀ x : Fin n, (fun ω : BondConfig (Fin n) => F (openCluster ω x)) =
+      (openConn x b : Set (BondConfig (Fin n))).indicator 1 := by
+    intro x
+    funext ω
+    simp only [hF]
+    by_cases hω : ω ∈ (openConn x b : Set (BondConfig (Fin n)))
+    · rw [Set.indicator_of_mem hω, Pi.one_apply, if_pos (show b ∈ openCluster ω x from hω)]
+    · rw [Set.indicator_of_notMem hω, if_neg (show b ∉ openCluster ω x from hω)]
+  -- Harris: `μ(U) · P(x ↔ b) ≤ P(x ↔ b, U)` for every relay `x`
+  have hharris : ∀ x ∈ A, μ.real U * μ.real (openConn x b) ≤ μ.real (openConn x b ∩ U) := by
+    intro x _
+    have h := AGloc.setIntegral_clusterFun_ge w x F hFmono hF0 U hUup
+    rw [← hμ, hFind x, integral_indicator_one (hmeas _), ← integral_indicator (hmeas _), Set.indicator_indicator,
+      integral_indicator_one ((hmeas _).inter (hmeas _)), Set.inter_comm] at h
+    exact h
+  -- the minimum of `P(x ↔ b)` is attained at some `a`
+  obtain ⟨a, haA, hmin⟩ := Finset.exists_min_image A (fun x => μ.real (openConn x b)) hA
+  have hinf : A.inf' hA (fun x => μ.real (openConn x b)) = μ.real (openConn a b) :=
+    le_antisymm (Finset.inf'_le _ haA) (Finset.le_inf' hA _ fun x hx => hmin x hx)
+  have h2 := conjecture2Strong_holds n w A hA o b
+  rw [← hμ, ← hU] at h2
+  -- `P(U) · min_x P(x ↔ b) ≤ min_x P(x ↔ b, U)`
+  have hlow : μ.real U * μ.real (openConn a b) ≤ A.inf' hA (fun x => μ.real (openConn x b ∩ U)) := by
+    refine Finset.le_inf' hA _ fun x hx => ?_
+    calc μ.real U * μ.real (openConn a b) ≤ μ.real U * μ.real (openConn x b) :=
+          mul_le_mul_of_nonneg_left (hmin x hx) measureReal_nonneg
+      _ ≤ μ.real (openConn x b ∩ U) := hharris x hx
+  have h3 : μ.real (openConn o b ∩ U) ≤ μ.real (openConn o b) := measureReal_mono inter_subset_left (measure_ne_top _ _)
+  rw [hinf]
+  linarith [hlow, h2, h3]
 
-/-- **Conjecture 3** (proved in the development). -/
-theorem conjecture3_holds : Percolation.Literature.KozmaNitzan2024_conjecture3 :=
-  Percolation.Continuity.CSH.kozmaNitzan_conjecture3_holds
+/-- **Conjecture 3 from Conjecture 1** (`δ = ε/2`): if `P(o ↔ A) > 1 − δ` and `P(a ↔ b) > 1 − δ` for all `a ∈ A` then
+`P(o ↔ b) ≥ P(o ↔ A) · min_a P(a ↔ b) > (1 − δ)² ≥ 1 − ε` (for `δ < 1`; for `δ ≥ 1` the conclusion `1 − ε < P(o ↔ b)` is
+trivial since `1 − ε < 0`). -/
+theorem conjecture3_holds : Percolation.Literature.KozmaNitzan2024_conjecture3 := by
+  intro ε hε
+  refine ⟨ε / 2, by positivity, ?_⟩
+  intro n w A o b hoA hab
+  set μ := prodBernoulli w with hμ
+  have hn := fun (S : Set (BondConfig (Fin n))) => (measureReal_nonneg : 0 ≤ μ.real S)
+  by_cases hδ : (1 : ℝ) ≤ ε / 2
+  · have : 1 - ε < 0 := by linarith
+    exact lt_of_lt_of_le this (hn _)
+  · have hδ' : 0 < 1 - ε / 2 := by linarith
+    rcases A.eq_empty_or_nonempty with hA0 | hA
+    · subst hA0
+      simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty, measureReal_empty] at hoA
+      exact absurd hoA (not_lt.2 hδ'.le)
+    · have h1 := conjecture1_holds n w A hA o b
+      rw [← hμ] at h1
+      obtain ⟨a, haA, hmin⟩ := Finset.exists_min_image A (fun x => μ.real (openConn x b)) hA
+      have hinf : A.inf' hA (fun x => μ.real (openConn x b)) = μ.real (openConn a b) :=
+        le_antisymm (Finset.inf'_le _ haA) (Finset.le_inf' hA _ fun x hx => hmin x hx)
+      rw [hinf] at h1
+      have hab' := hab a haA
+      have hprod : (1 - ε / 2) * (1 - ε / 2) < μ.real (⋃ a ∈ A, openConn o a) * μ.real (openConn a b) :=
+        mul_lt_mul'' hoA hab' hδ'.le hδ'.le
+      nlinarith [h1, hprod]
 
 end KNAll
 

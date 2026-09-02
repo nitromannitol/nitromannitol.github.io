@@ -1,4 +1,6 @@
-# KN modules (Conjectures 1–4, Question 7): clean sequential recompile (2026-09-02T22:52Z); Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
+# KN modules (Conjectures 2 and 4, Question 7, Conjectures 1 and 3): clean sequential recompile (2026-09-02T23:17Z)
+# Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
+# Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the development's pin)
 ## KN/AvoidedDefs.lean (      79 lines)
 
 
@@ -17,7 +19,7 @@ EXIT=0
 EXIT=0
 ## KN/Statements.lean (      58 lines)
 EXIT=0
-## KN/Conjectures.lean (     226 lines)
+## KN/Conjectures.lean (     297 lines)
 'KNAll.conjecture4Fixed_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture4_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture2Strong_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -25,4 +27,9 @@ EXIT=0
 'KNAll.question7_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture1_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture3_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/ClusterProperty.lean (     159 lines)
+'KNAll.conjecture4_clusterProperty_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture4_size' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture4_sizeGE' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0

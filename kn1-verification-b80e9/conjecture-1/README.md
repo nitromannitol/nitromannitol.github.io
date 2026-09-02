@@ -28,13 +28,12 @@ with exactly the standard axioms `propext`, `Classical.choice`, `Quot.sound` and
 | `KozmaNitzanConjecture1.lean` | The proof from the development's theorems: `KN1Corollary.kozmaNitzan_conjecture1` (all new declarations live in the fresh namespace `KN1Corollary`, so that they cannot be mistaken for theorems of the development), together with the general forms `gen_all` (the first-relay bound for every relay set) and `multiplicativeGluing_all` (any common lower bound q in place of the minimum). |
 | `KN1Bridge.lean` | `KN1Statement.multiplicativeGluing_holds`: the Mathlib-only statement proved, by definitional unfolding, from the theorem of `KozmaNitzanConjecture1.lean`. |
 | `verification.log` | Recorded summary of a clean build of the development, the three compilations with their `#print axioms` output, and the complete output of the development's own axiom-audit script. |
-| `LICENSE`, `NOTICE` | Apache License 2.0, and the development's NOTICE reproduced as that licence requires. |
 | `SOURCES.sha256` | SHA-256 of the development's 251 Lean source files and its three pin files (`lakefile.toml`, `lake-manifest.json`, `lean-toolchain`), 254 entries, against which this was checked. The tree hash `b80e9252…` quoted in `verification.log` is `grep -v '^#' SOURCES.sha256 \| shasum -a 256`. |
 
 ## How to check
 
 1. Obtain the development and confirm it is the one checked here: from its root, run
-   `shasum -a 256 -c /path/to/kn1-verification-b80e9/SOURCES.sha256` (all 254 entries should report `OK`).
+   `shasum -a 256 -c /path/to/kn1-verification-b80e9/conjecture-1/SOURCES.sha256` (all 254 entries should report `OK`).
 2. Build it as its README says: `lake exe cache get && lake build`.
 3. Copy the three `.lean` files into its root and run
 
