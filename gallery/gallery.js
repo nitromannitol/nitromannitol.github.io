@@ -3296,8 +3296,8 @@ const Instruments = (function () {
         const canvas = $('#sd-lattice-canvas');
         if (!canvas) return null;
         const ctx = canvas.getContext('2d'), W = canvas.width, LOGICAL = 720;
-        const CLOSE_CELL = 145, FAR_CELL = 48;
-        const SAFE_EXTENT = .40 * LOGICAL;
+        const CLOSE_CELL = 154, FAR_CELL = 30, ZOOM_SECONDS = 3.8;
+        const SAFE_EXTENT = .44 * LOGICAL;
         let D = null, px = null, py = null, motionArc = null, cameraCell = null;
         let ready = false, raf = 0, running = false, userPaused = false;
         let pageAwake = false, playhead = 0, lastNow = 0;
@@ -3320,7 +3320,7 @@ const Instruments = (function () {
         const ACTIVE_CONTOUR = contourShape(.18, 48);
 
         function scheduledZoom(t) {
-            return ruleEase((t - D.zoomAfter) / 8.0);
+            return ruleEase((t - D.displayZoomAfter) / ZOOM_SECONDS);
         }
         function scheduledCell(t) {
             return Math.exp(ruleMix(Math.log(CLOSE_CELL), Math.log(FAR_CELL), scheduledZoom(t)));
@@ -3370,6 +3370,11 @@ const Instruments = (function () {
             const span = motionArc[hi] - motionArc[lo];
             return D.duration * (lo + (span ? (arc - motionArc[lo]) / span : 0)) / last;
         }
+        function playbackRate(t) {
+            if (t < D.displayZoomAfter) return 2.1;
+            if (t < D.displayZoomAfter + ZOOM_SECONDS) return 2.8;
+            return 4.0;
+        }
         function trailColour(t) {
             const stops = [[236,150,40], [242,160,38], [245,166,35], [248,190,70]];
             const z = ruleClamp(t) * 3, i = Math.min(2, Math.floor(z)), q = z - i;
@@ -3397,7 +3402,7 @@ const Instruments = (function () {
 
             ctx.save(); ctx.scale(W / LOGICAL, W / LOGICAL);
             ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            const fieldAlpha = 1 - .64 * zoom;
+            const fieldAlpha = 1 - .28 * zoom;
 
             /* Exact separatrices of psi(x,y)=cos(pi x)cos(pi y). */
             ctx.globalAlpha = fieldAlpha;
@@ -3486,6 +3491,10 @@ const Instruments = (function () {
             D = data; px = Float32Array.from(D.path.x); py = Float32Array.from(D.path.y);
             if (px.length < 2 || px.length !== py.length)
                 throw new Error('periodic SDE path missing');
+            /* The close view persists through four sustained cell visits.
+               The pullback then has a definite start instead of following
+               every small outward fluctuation of the path. */
+            D.displayZoomAfter = D.changes[Math.min(3, D.changes.length - 1)].time;
             /* The origin never moves. The view only widens, and it widens
                when the path asks it to: the camera fits the path's own reach
                with a margin, rather than pulling back on a clock and leaving
@@ -3493,8 +3502,10 @@ const Instruments = (function () {
             cameraCell = new Float32Array(px.length);
             let prior = CLOSE_CELL;
             for (let i = 0; i < px.length; i++) {
+                const t = D.duration * i / (px.length - 1);
                 const reach = Math.max(.001, Math.abs(px[i]), Math.abs(py[i]));
-                prior = Math.min(prior, SAFE_EXTENT / (1.25 * reach));
+                const containment = SAFE_EXTENT / (1.18 * reach);
+                prior = Math.min(prior, scheduledCell(t), containment);
                 cameraCell[i] = prior;
                 if (reach * cameraCell[i] > SAFE_EXTENT + 1e-3)
                     throw new Error('periodic SDE camera containment failed');
@@ -3517,8 +3528,13 @@ const Instruments = (function () {
             lastNow = now;
             if (playhead >= D.duration - 1e-7) playhead = 0;
             const current = arcAt(playhead);
-            const allowed = Math.min(.0046 * LOGICAL, .20 * LOGICAL * dt);
-            playhead = timeAtArc(Math.min(motionArc[motionArc.length - 1], current + allowed));
+            const desired = Math.min(D.duration, playhead + playbackRate(playhead) * dt);
+            const desiredArc = arcAt(desired);
+            /* Physical simulation time owns the pace, so advection is visibly
+               faster along a streamline than a noisy separatrix crossing.
+               The screen-space cap prevents a delayed frame from jumping. */
+            const allowed = Math.min(.012 * LOGICAL, .66 * LOGICAL * dt);
+            playhead = timeAtArc(Math.min(desiredArc, current + allowed));
             paint(); raf = requestAnimationFrame(frame);
         }
         function pause() {

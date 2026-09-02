@@ -1155,7 +1155,7 @@
     <section class="band band--void band--model-live band--sd-lattice">
         <div class="instrument instrument--model" data-model-theme="superdiffusion">
             <div class="sd-toy-note">
-	                <p><b>Periodic cellular flow.</b> Here \(\psi(x,y)=0.26\cos(\pi x)\cos(\pi y)\), \(b=(\partial_2\psi,-\partial_1\psi)\), and \(dX_t=b(X_t)\,dt+\sqrt{2\kappa}\,dW_t\) with \(\kappa=0.003\). The half-integer grid is the separatrix set. Advection preserves \(\psi\), while the Brownian term crosses separatrices. Periodic homogenization gives a constant \(D_{\mathrm{eff}}&gt;\kappa\) such that \(\varepsilon X_{t/\varepsilon^2}\Rightarrow\sqrt{2D_{\mathrm{eff}}}\,B_t\), where \(B\) is standard planar Brownian motion. The stored Euler&ndash;Maruyama path uses time step 0.002 and is column 54 of a fixed 256-path ensemble; it was selected because it was the only member to reach radius 5 by time 15.</p>
+                <p><b>Periodic cellular flow.</b> Here \(\psi(x,y)=0.26\cos(\pi x)\cos(\pi y)\), \(b=(\partial_2\psi,-\partial_1\psi)\), and \(dX_t=b(X_t)\,dt+\sqrt{2\kappa}\,dW_t\) with \(\kappa=0.003\). The half-integer grid is the separatrix set. Advection moves the particle rapidly along a level set of \(\psi\); Brownian noise permits the slower crossings between cells. After four sustained cell changes, the camera pulls back and the cell-index process \(\lfloor X_t+(1/2,1/2)\rfloor\) becomes a coarse random walk. Periodic homogenization gives \(D_{\mathrm{eff}}&gt;\kappa\) and \(\varepsilon X_{t/\varepsilon^2}\Rightarrow\sqrt{2D_{\mathrm{eff}}}\,B_t\). The displayed path is one continuous Euler&ndash;Maruyama trajectory with time step 0.002; playback accelerates physical time without reordering or splicing its samples.</p>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
                 <canvas id="sd-lattice-canvas" width="1440" height="1440" role="img" aria-label="One linearly interpolated numerical path of an advection-diffusion SDE in a fixed periodic cellular flow. Brownian noise crosses cell separatrices; the camera pulls back to show the cell-to-cell motion on larger scales."></canvas>
@@ -2050,6 +2050,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=2e8fa734"></script>
+<script defer src="gallery.js?v=8b3f21c6"></script>
 </body>
 </html>
