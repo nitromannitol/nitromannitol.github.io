@@ -53,8 +53,13 @@
                     E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A].</li>
                 <li><strong>Conjecture 2</strong> (p. 3), strong pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
                     min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b).</li>
+                <li><strong>Question 7</strong> (p. 36), affirmative: if a ∈ A minimises P(a ↔ b) over A then P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A),
+                    the paper's display (41).</li>
                 <li><strong>Conjecture 1</strong> and <strong>Conjecture 3</strong>, re-exported in the same file.</li>
             </ul>
+            <p>Conjecture 1 is essentially the development's own result: its first-relay bound gives it in a few lines (the certificate
+            above). Conjectures 2 and 4 are new, and answer more: they were known only for two relays and for an observer isolated in
+            G ∖ A, and the fixed-minimiser form settles Question 7.</p>
             <p><em>Idea.</em> The development's first-relay bound, Σ<sub>x</sub> P(x is o's first relay)·E F(C<sub>x</sub>) ≤ E[F(C<sub>o</sub>); o ↔ A],
             is proved here in an <em>avoided</em> form: the observer's cluster must avoid a set Y and the relay means are conditioned on
             x ↮ Y (the development's hierarchy already carries an avoided set, so its peeling argument goes through with Y inserted into
@@ -65,7 +70,7 @@
             <p><em>What it implies.</em> Conjectures 2 and 4 were known only for two relays and for an observer isolated in G ∖ A
             (the paper's Theorems 1, 4, 7, 8); they now hold in general, so the paper's whole chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0
             is formal. The fixed-minimiser form shows that the relay minimising the unconditional mean is a valid relay in the pre-FKG
-            comparison; in particular inequality (41) of the paper's Question 7 holds for the relay minimising P(a ↔ b). The avoided
+            comparison; with F = 1{b ∈ ·} that is the paper's Question 7, answered affirmatively. The avoided
             first-relay bound itself (<code>genY_all</code>) is a general conditioned gluing inequality with no loss in the number of relays.
             Nothing is claimed about Conjecture 6 or Questions 5, 8, 9.</p>
             <p class="note">Produced entirely by Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): seven modules by Claude Fable 5.1,

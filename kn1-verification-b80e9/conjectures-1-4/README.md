@@ -10,12 +10,18 @@ set of relays, `o, b` vertices and `F` an increasing real function of vertex set
   (`conjecture4Fixed_holds`); hence `min_{x∈A} E[F(C_x); o ↔ A] ≤ E[F(C_o); o ↔ A]` (`conjecture4_holds`).
 * Conjecture 2 (p. 3), strong (pre-FKG) form (3): `min_{x∈A} P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A)` (`conjecture2Strong_holds`);
   hence `min_{x∈A} P(o ↔ A, x ↔ b) ≤ P(o ↔ b)` (`conjecture2_holds`).
+* Question 7 (p. 36), affirmative: if `a ∈ A` minimises `P(a ↔ b)` over `A` then `P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A)`, the
+  paper's display (41) (`question7_holds`).
 * Conjecture 1 (p. 3): `P(o ↔ A) · min_{x∈A} P(x ↔ b) ≤ P(o ↔ b)` (`conjecture1_holds`).
 * Conjecture 3 (p. 15): the development's `kozmaNitzan_conjecture3_holds` (`conjecture3_holds`).
 
+Conjecture 1 is essentially the development's own result: its first-relay bound gives it in a few lines (certified separately
+above). Conjectures 2 and 4 are new, and answer more: they were known only for two relays and for an observer isolated in
+`G ∖ A`, and the fixed-minimiser form settles Question 7.
+
 Every theorem is accepted by Lean 4.32.0 with the pinned Mathlib and reports exactly `[propext, Classical.choice, Quot.sound]`
 (`VERIFICATION.log`, a clean sequential recompile of all nine modules); no `sorry`, no axioms. The statements are
-`Conjecture4Fixed`, `Conjecture4`, `Conjecture2Strong`, `Conjecture2`, `Conjecture1` in `Statements.lean`, in the vocabulary of
+`Conjecture4Fixed`, `Conjecture4`, `Conjecture2Strong`, `Conjecture2`, `Question7`, `Conjecture1` in `Statements.lean`, in the vocabulary of
 the development (`prodBernoulli`, `openConn`, `openCluster`).
 
 ## The idea
@@ -37,12 +43,11 @@ proposed in the ChatGPT document; the singleton-source case of its avoided first
   and 8); they now hold for every finite weighted graph and every relay set. Together with Conjectures 1 and 3 this is the
   whole chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p_c) = 0 of the paper, all of it now formal.
 * The fixed-minimiser form says the relay minimising the unconditional mean is itself a valid relay in the pre-FKG
-  comparison; in particular the inequality (41) of the paper's Question 7, `P(0 ↔ b, 0 ↔ A) ≥ P(0 ↔ A, a ↔ b)`, holds for the
-  relay `a` minimising `P(a ↔ b)` over `A`.
+  comparison; with `F = 1{b ∈ ·}` this is exactly the paper's Question 7, answered affirmatively (`question7_holds`).
 * The avoided first-relay bound itself (`genY_all`, `Conjectures.lean`) is a general conditioned gluing inequality with no
   loss in the number of relays, available for other uses.
 
-Nothing is claimed about the paper's Conjecture 6 or its Questions 5, 8, 9.
+Nothing is claimed about the paper's Conjecture 6 or its Questions 5, 8 and 9.
 
 ## Files
 
