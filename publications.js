@@ -276,7 +276,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
 ,
     thumbnail: "images/flattice.png",
     thumbnailAnimation: "f-lattice",
-    altText: "A highlighted branch descending the ternary modified Farey recursion for F-lattice odometers."
+    altText: "Exact parent odometer patterns combining into child pairs along a highlighted branch of the modified Farey tree."
   },
   {
     id: "hamilton-jacobi-scaling-limits",
