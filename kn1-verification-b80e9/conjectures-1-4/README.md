@@ -68,7 +68,10 @@ The last module prints the six `#print axioms` lines of `VERIFICATION.log`.
 
 ## Attribution
 
-Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): the route is from the ChatGPT document;
-seven modules were written and machine-checked by Claude Fable 5.1, two (`Projection`, `AvoidedClosure`) by Codex (GPT-5.6 sol)
-from specifications. All mathematics below the avoided first-relay bound is the development's. Released under the
-Apache License 2.0, matching the development.
+Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). ChatGPT wrote the document
+proposing the route (an avoided first-relay bound plus a projection lemma) and pointed out that Conjectures 2
+and 4 follow from the development's methods; Claude Fable 5.1 designed the formalization, wrote and machine-
+checked seven of the nine Lean modules and this page, and specified the two remaining modules (`Projection`,
+`AvoidedClosure`), which were written by Codex (GPT-5.6 sol) and recompiled by Claude. All mathematics below the
+avoided first-relay bound is the development's. The Lean files have not yet been through an independent review;
+one is in progress. Released under the Apache License 2.0, matching the development.
