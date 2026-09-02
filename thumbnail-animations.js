@@ -425,8 +425,13 @@
     }
 
     function makeFLattice(ctx,W){
-        let data=null,nodes=[],edges=[],largest=1;
+        let data=null,patternImage=null,nodes=[],edges=[],largest=1;
         const branch=['.','2','23','231','2312'];
+        const patternCrops={
+            '0/1':[0,0,12,12],'1/1':[12,0,12,12],'1/2':[24,0,5,5],'1/3':[29,0,5,5],
+            '2/3':[34,0,7,9],'3/5':[41,0,7,11],'4/7':[48,0,17,19],'5/9':[65,0,13,19],
+            '9/16':[78,0,39,43],'13/23':[117,0,33,49],'14/25':[150,0,61,67],'23/41':[211,0,59,87]
+        };
         function build(raw){data=raw;nodes=Object.keys(data.nodes).map(k=>({key:k,...data.nodes[k]}));edges=nodes.filter(n=>n.parent&&data.nodes[n.parent]).map(n=>[data.nodes[n.parent],n]);largest=Math.max(...nodes.map(n=>data.tiles[n.p1]?.std?.cells||1));draw.ready=true;}
         function radius(n,overview){const cells=data.tiles[n.p1]?.std?.cells||1,q=Math.sqrt(cells/largest);return overview?1.5+3.2*q:4.2+5.2*q;}
         function nodeColour(n){return n.kind===1?C.cyan:n.kind===2?C.rose:n.kind===3?C.bone:C.ink;}
@@ -444,8 +449,12 @@
             nodes.forEach(n=>{if(n.depth>Math.ceil(cameraDepth)+2)return;const p=pos(n);if(p[0]<-18||p[0]>W+18||p[1]<-18||p[1]>W+18)return;const active=n.key===branch[Math.round(cameraDepth)];dot(ctx,p[0],p[1],active?12:radius(n,false),active?C.yellow:nodeColour(n),active?C.ink:C.bg,active?2.5:1.3);});
             dot(ctx,W/2,W*.37,5.2,C.ink,C.yellow,2);ctx.restore();
         }
-        function draw(t){ground(ctx,W);if(!draw.ready||!data)return false;const q=(t%12)/12,transition=smooth((q-.10)/.08),progress=4*clamp((q-.18)/.66,0,1);if(transition<1)overview(1-transition);if(transition>0)localTree(progress,transition);if(q>.95){ctx.fillStyle=`rgba(21,19,26,${smooth((q-.95)/.05)})`;ctx.fillRect(0,0,W,W);}return true;}
-        draw.ready=false;draw.failed=false;fetch('gallery/plates/p-farey-tree.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(build).catch(e=>{draw.failed=true;console.warn('F-lattice tree thumbnail:',e);});return draw;
+        function paintPattern(frac,cx,cy,maxW,maxH,alpha){const at=patternCrops[frac];if(!at||alpha<=0)return;const scale=Math.min(maxW/at[2],maxH/at[3]),dw=at[2]*scale,dh=at[3]*scale;ctx.save();ctx.globalAlpha=alpha;ctx.imageSmoothingEnabled=false;ctx.drawImage(patternImage,at[0],at[1],at[2],at[3],cx-dw/2,cy-dh/2,dw,dh);ctx.restore();}
+        function combinePatterns(stage,phase,alpha){if(alpha<=0||!patternImage)return;const n=data.nodes[branch[stage]],join=smooth((phase-.08)/.38),parentAlpha=1-smooth((phase-.36)/.12),childAlpha=smooth((phase-.50)/.12),split=smooth((phase-.54)/.22),nodeAlpha=(1-smooth(Math.abs(phase-.47)/.16));ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,W);ctx.restore();const left=mix(W*.24,W*.5,join),right=mix(W*.76,W*.5,join);paintPattern(n.p0,left,W*.5,142,142,alpha*parentAlpha);paintPattern(n.q0,right,W*.5,142,142,alpha*parentAlpha);if(nodeAlpha>0){ctx.save();ctx.globalAlpha=alpha*nodeAlpha;dot(ctx,W*.5,W*.5,5.5,C.yellow,C.bg,1.5);ctx.restore();}paintPattern(n.p1,W*.5,mix(W*.5,W*.29,split),150,132,alpha*childAlpha);paintPattern(n.q1,W*.5,mix(W*.5,W*.71,split),150,132,alpha*childAlpha);}
+        function draw(t){ground(ctx,W);if(!draw.ready||!data)return false;const cycle=14.5,local=t%cycle,intro=1.25;
+            if(local<intro){const a=smooth((local-.88)/.30);if(a<1)overview(1-a);if(a>0)localTree(0,a);return true;}
+            const slot=Math.min(4,Math.floor((local-intro)/2.5)),phase=(local-intro)-slot*2.5,move=slot<4?smooth((phase-1.72)/.68):0,combineAlpha=smooth((phase-.18)/.15)*(1-smooth((phase-1.70)/.18)),combinePhase=clamp((phase-.25)/1.22,0,1);localTree(slot+move,1);combinePatterns(slot,combinePhase,combineAlpha);if(local>14){ctx.fillStyle=`rgba(21,19,26,${smooth((local-14)/.5)})`;ctx.fillRect(0,0,W,W);}return true;}
+        draw.ready=false;draw.failed=false;const pattern=new Image();Promise.all([fetch('gallery/plates/p-farey-tree.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),new Promise((resolve,reject)=>{pattern.onload=()=>resolve(pattern);pattern.onerror=reject;pattern.src='images/f-lattice-branch-patterns.png';})]).then(values=>{patternImage=values[1];build(values[0]);}).catch(e=>{draw.failed=true;console.warn('F-lattice tree thumbnail:',e);});return draw;
     }
 
     function makePareto(ctx,W){
