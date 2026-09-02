@@ -166,7 +166,7 @@
     }
 
     function makeDivisiblePercolation(ctx, W) {
-        const N = 48, count = N*N, pad = 7, cell = (W-2*pad)/N, rho = .78;
+        const N = 58, count = N*N, pad = 7, cell = (W-2*pad)/N, rho = .96;
         const zeta = new Float64Array(count), initial = new Uint8Array(count), frames = [];
         function h(i) {
             let z=(0x53414e44 ^ Math.imul(i+0x9e37,0x45d9f3b))>>>0;
@@ -176,14 +176,14 @@
         for (let i=0;i<count;i++) { initial[i]=poissonQuantile(h(i),rho); zeta[i]=(initial[i]-1)/4; }
         let u = new Float64Array(count), next = new Float64Array(count);
         frames.push(new Float32Array(u));
-        for (let step=1;step<=480;step++) {
+        for (let step=1;step<=720;step++) {
             for(let y=0;y<N;y++)for(let x=0;x<N;x++){
                 const i=y*N+x,l=y*N+(x+N-1)%N,r=y*N+(x+1)%N,
                     a=((y+N-1)%N)*N+x,b=((y+1)%N)*N+x;
                 next[i]=Math.max(0,zeta[i]+.25*(u[l]+u[r]+u[a]+u[b]));
             }
             const q=u;u=next;next=q;
-            if(step%4===0)frames.push(new Float32Array(u));
+            if(step%3===0)frames.push(new Float32Array(u));
         }
         function classify(v) {
             const mask = new Uint8Array(count), seen = new Uint8Array(count), largest = new Uint8Array(count);
@@ -198,52 +198,53 @@
                 if(comp.length>best.length)best=comp;
             }
             best.forEach(i=>largest[i]=1);
-            const prev=new Int32Array(count);prev.fill(-1);const queue=[];
-            for(let y=0;y<N;y++){const i=y*N;if(mask[i]){prev[i]=-2;queue.push(i);}}
-            let end=-1;
-            for(let head=0;head<queue.length&&end<0;head++){
-                const i=queue[head],x=i%N,y=(i/N)|0;if(x===N-1){end=i;break;}
-                const ns=[[x-1,y],[x+1,y],[x,y-1],[x,y+1]];
-                for(let k=0;k<4;k++){const xx=ns[k][0],yy=ns[k][1];if(xx<0||xx>=N||yy<0||yy>=N)continue;const j=yy*N+xx;if(mask[j]&&prev[j]===-1){prev[j]=i;queue.push(j);}}
-            }
-            const path=[];while(end>=0){path.push(end);end=prev[end];}
-            return {mask,largest,path:path.reverse()};
+            return {mask,largest};
         }
         return function(t) {
-            ground(ctx,W);const local=t%12,amount=Math.min(1,local/9.7),fi=Math.min(frames.length-1,Math.floor(amount*(frames.length-1))),v=frames[fi],state=classify(v);
+            ground(ctx,W);const local=t%12,amount=Math.min(1,local/9.8),fi=Math.min(frames.length-1,Math.floor(amount*(frames.length-1))),v=frames[fi],state=classify(v),prior=classify(frames[Math.max(0,fi-4)]);
             for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-                const i=y*N+x,q=Math.min(1,v[i]/2.4);
-                if(state.largest[i])ctx.fillStyle=rampColour([[29,26,36],[58,110,134],[168,216,232],[246,241,230]],.22+.78*q);
-                else if(state.mask[i])ctx.fillStyle=rampColour([[29,26,36],[90,47,63],[142,66,87],[201,191,168]],.20+.72*q);
-                else ctx.fillStyle=initial[i]?C.deep:C.bg;
-                ctx.fillRect(pad+x*cell,pad+y*cell,cell+.18,cell+.18);
+                const i=y*N+x;if(!state.mask[i])continue;
+                if(!prior.mask[i])ctx.fillStyle=C.ink;
+                else if(state.largest[i])ctx.fillStyle='#579DB7';
+                else ctx.fillStyle='#8E4257';
+                ctx.fillRect(pad+x*cell+.35,pad+y*cell+.35,cell-.7,cell-.7);
             }
-            if(state.path.length){ctx.beginPath();state.path.forEach((i,j)=>{const x=pad+((i%N)+.5)*cell,y=pad+(((i/N)|0)+.5)*cell;j?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.strokeStyle=C.yellow;ctx.lineWidth=5.5;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+            ctx.beginPath();for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x;if(!state.largest[i])continue;const x0=pad+x*cell,y0=pad+y*cell,x1=x0+cell,y1=y0+cell;if(x===0||!state.largest[i-1]){ctx.moveTo(x0,y0);ctx.lineTo(x0,y1);}if(x===N-1||!state.largest[i+1]){ctx.moveTo(x1,y0);ctx.lineTo(x1,y1);}if(y===0||!state.largest[i-N]){ctx.moveTo(x0,y0);ctx.lineTo(x1,y0);}if(y===N-1||!state.largest[i+N]){ctx.moveTo(x0,y1);ctx.lineTo(x1,y1);}}ctx.strokeStyle='rgba(168,216,232,.72)';ctx.lineWidth=1.35;ctx.stroke();
             if(local>11.5){ctx.globalAlpha=(local-11.5)/.5;ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,W);ctx.globalAlpha=1;}
         };
     }
 
     function makeRotor(ctx, W) {
-        const steps=[], first=new Map(), histories=new Map(), rotors=new Map();
+        const steps=[], first=new Map(), firstCircuit=new Map(), histories=new Map(), rotors=new Map();
         let x=0,y=0,returns=0;
         const key=(a,b)=>a+','+b, initial=(a,b)=>(hash2(a,b,0x524f)*4)|0;
-        first.set(key(0,0),0);
+        first.set(key(0,0),0);firstCircuit.set(key(0,0),0);
         for(let s=0;s<1800;s++){
             const k=key(x,y),old=rotors.has(k)?rotors.get(k):initial(x,y),next=(old+1)&3;
             rotors.set(k,next);if(!histories.has(k))histories.set(k,[]);histories.get(k).push([s,next]);
             const dirs=[[1,0],[0,1],[-1,0],[0,-1]],d=dirs[next],nx=x+d[0],ny=y+d[1];
             steps.push({x,y,nx,ny,old,next,circuit:Math.floor(returns/4)});x=nx;y=ny;
-            const nk=key(x,y);if(!first.has(nk))first.set(nk,s+1);if(x===0&&y===0)returns++;
+            const nk=key(x,y);if(!first.has(nk)){first.set(nk,s+1);firstCircuit.set(nk,Math.floor(returns/4));}if(x===0&&y===0)returns++;
         }
-        const all=Array.from(first.keys()).map(k=>k.split(',').map(Number)),tf=fitTransform(all,W,28),scale=Math.hypot(tf([1,0])[0]-tf([0,0])[0],tf([1,0])[1]-tf([0,0])[1]);
-        function rotorAt(k,s){const h=histories.get(k);if(!h)return initial(...k.split(',').map(Number));let lo=0,hi=h.length-1,ans=-1;while(lo<=hi){const m=(lo+hi)>>1;if(h[m][0]<=s){ans=m;lo=m+1;}else hi=m-1;}return ans<0?initial(...k.split(',').map(Number)):h[ans][1];}
+        function rotorBefore(k,s){const h=histories.get(k);if(!h)return initial(...k.split(',').map(Number));let lo=0,hi=h.length-1,ans=-1;while(lo<=hi){const m=(lo+hi)>>1;if(h[m][0]<s){ans=m;lo=m+1;}else hi=m-1;}return ans<0?initial(...k.split(',').map(Number)):h[ans][1];}
         return function(t){
-            ground(ctx,W,'rgba(204,121,167,.7)');const q=(t%15)/15,amount=q<.9?q/.9:1,k=Math.min(steps.length-1,Math.floor(amount*(steps.length-1))),a=amount*(steps.length-1)-k;
-            first.forEach((when,k0)=>{if(when>k)return;const p=tf(k0.split(',').map(Number)),c=Math.floor((histories.get(k0)?.[0]?.[0]||0)/80)%5;ctx.fillStyle=['#315f87','#3f7fa1','#669cad','#98729a','#c46787'][c];ctx.globalAlpha=.72;ctx.fillRect(p[0]-scale*.46,p[1]-scale*.46,scale*.92,scale*.92);});ctx.globalAlpha=1;
-            const st=steps[k],cx=mix(st.x,st.nx,a),cy=mix(st.y,st.ny,a);
-            first.forEach((when,k0)=>{if(when>k)return;const z=k0.split(',').map(Number);if(Math.abs(z[0]-cx)+Math.abs(z[1]-cy)>4.2)return;const p=tf(z),dir=rotorAt(k0,k),ang=dir*Math.PI/2;arrow(ctx,p[0],p[1],ang,Math.max(3,scale*.3),'rgba(239,232,216,.82)',Math.max(1,scale*.07));});
-            const cp=tf([cx,cy]);dot(ctx,cp[0],cp[1],Math.max(4,scale*.28),C.yellow,C.bg,2.5);
-            if(q>.9){ctx.fillStyle=`rgba(16,19,29,${smooth((q-.9)/.1)})`;ctx.fillRect(0,0,W,W);}
+            ground(ctx,W);const q=(t%14)/14,amount=q<.93?q/.93:1,start=420,count=112,z=start+amount*count,k=Math.min(steps.length-1,Math.floor(z)),phase=z-k,st=steps[k];
+            const turnEnd=.38,move=smooth((phase-turnEnd)/(1-turnEnd)),cx=mix(st.x,st.nx,move),cy=mix(st.y,st.ny,move),cell=32,half=7;
+            const toScreen=(a,b)=>[W/2+(a-cx)*cell,W/2+(b-cy)*cell];
+            ctx.strokeStyle='rgba(201,191,168,.12)';ctx.lineWidth=1;ctx.beginPath();
+            for(let j=-half-1;j<=half+1;j++){const px=toScreen(Math.floor(cx)+j,cy)[0],py=toScreen(cx,Math.floor(cy)+j)[1];ctx.moveTo(px,0);ctx.lineTo(px,W);ctx.moveTo(0,py);ctx.lineTo(W,py);}ctx.stroke();
+            for(let yy=Math.floor(cy)-half;yy<=Math.floor(cy)+half;yy++)for(let xx=Math.floor(cx)-half;xx<=Math.floor(cx)+half;xx++){
+                const kk=key(xx,yy),when=first.get(kk);if(when===undefined||when>k)continue;const p=toScreen(xx,yy),exc=firstCircuit.get(kk)||0;
+                ctx.fillStyle=['#294f72','#356f91','#568da5','#806a91','#a05270'][exc%5];ctx.globalAlpha=.76;ctx.fillRect(p[0]-cell*.45,p[1]-cell*.45,cell*.9,cell*.9);
+            }
+            ctx.globalAlpha=1;
+            for(let yy=Math.floor(cy)-half;yy<=Math.floor(cy)+half;yy++)for(let xx=Math.floor(cx)-half;xx<=Math.floor(cx)+half;xx++){
+                const kk=key(xx,yy),p=toScreen(xx,yy),active=xx===st.x&&yy===st.y;let ang=rotorBefore(kk,k)*Math.PI/2;
+                if(active)ang=st.old*Math.PI/2+(Math.PI/2)*smooth(phase/turnEnd);
+                arrow(ctx,p[0],p[1],ang,active?12.5:10.5,active?C.yellow:'rgba(246,241,230,.92)',active?3.2:2.35);
+            }
+            const cp=toScreen(mix(st.x,st.nx,move),mix(st.y,st.ny,move));dot(ctx,cp[0],cp[1],7,C.yellow,C.bg,2.4);
+            if(q>.93){ctx.fillStyle=`rgba(21,19,26,${smooth((q-.93)/.07)})`;ctx.fillRect(0,0,W,W);}
         };
     }
 
@@ -291,17 +292,22 @@
 
     function makeFlow(ctx,W,algebraic){
         const rand=randomFactory(algebraic?0xa16eb2:0xc8171c),modes=[];
-        const octaves=algebraic?5:4;
-        for(let j=0;j<octaves;j++){const k=Math.pow(2,j-1),amp=(algebraic?Math.pow(k,-.72):1/k);modes.push({k,amp,px:TAU*rand(),py:TAU*rand()});}
-        function velocity(x,y){let vx=0,vy=0;modes.forEach(m=>{vx+=m.amp*m.k*Math.sin(m.k*x+m.px)*Math.cos(m.k*y+m.py);vy-=m.amp*m.k*Math.cos(m.k*x+m.px)*Math.sin(m.k*y+m.py);});const norm=algebraic?.23:.18;return[vx*norm,vy*norm];}
+        const modeList=algebraic?[[1,0],[0,1],[1,1],[2,1],[1,2],[2,-1],[3,1],[1,-3],[4,1],[2,3]]:[[1,0],[0,1],[1,1],[1,-1],[2,1],[1,2],[2,-1],[3,1]];
+        modeList.forEach(k=>{const r=Math.hypot(k[0],k[1]),amp=(algebraic?Math.pow(r,-1.68):Math.pow(r,-2.05))*(.72+.56*rand());modes.push({kx:k[0]*.72,ky:k[1]*.72,amp,phase:TAU*rand()});});
+        function field(x,y){let psi=0,gx=0,gy=0;modes.forEach(m=>{const a=m.kx*x+m.ky*y+m.phase,s=Math.sin(a),c=Math.cos(a);psi+=m.amp*c;gx-=m.amp*m.kx*s;gy-=m.amp*m.ky*s;});return[psi,gy,-gx];}
         const path=[[0,0]];let x=0,y=0;
-        for(let i=0;i<1800;i++){const v=velocity(x,y),dt=.035,diff=algebraic?.045:.062;x+=v[0]*dt+diff*gaussian(rand);y+=v[1]*dt+diff*gaussian(rand);path.push([x,y]);}
-        const tf=fitTransform(path,W,38),stream=[];
-        for(let s=0;s<30;s++){let p=[mix(-4,4,rand()),mix(-4,4,rand())],line=[p];for(let j=0;j<34;j++){const v=velocity(p[0],p[1]),n=Math.max(.01,Math.hypot(v[0],v[1]));p=[p[0]+v[0]/n*.08,p[1]+v[1]/n*.08];line.push(p);}stream.push(line);}
-        const stf=p=>[W/2+p[0]*43,W/2+p[1]*43];
-        return function(t){ground(ctx,W,algebraic?'rgba(204,121,167,.5)':'rgba(86,180,233,.45)');
-            stream.forEach((line,i)=>{ctx.globalAlpha=.11+.09*(i%3);trace(ctx,line,1,i%2?C.cyan:C.pink,1.1,stf);});ctx.globalAlpha=1;
-            const q=(t%(algebraic?15:13))/(algebraic?15:13),amount=q<.92?smooth(q/.92):1;trace(ctx,path,amount,algebraic?C.yellow:C.ink,2.45,tf);const p=tf(currentPoint(path,amount)),col=algebraic?C.yellow:C.cyan;halo(ctx,p[0],p[1],14,col);dot(ctx,p[0],p[1],6,col,C.bg,2);if(q>.92){ctx.fillStyle=`rgba(16,19,29,${smooth((q-.92)/.08)})`;ctx.fillRect(0,0,W,W);}
+        for(let i=0;i<2600;i++){const f=field(x,y),dt=.026,diff=algebraic?.024:.030;x+=f[1]*dt*(algebraic?.78:.68)+diff*gaussian(rand);y+=f[2]*dt*(algebraic?.78:.68)+diff*gaussian(rand);path.push([x,y]);}
+        let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;path.forEach(p=>{minX=Math.min(minX,p[0]);maxX=Math.max(maxX,p[0]);minY=Math.min(minY,p[1]);maxY=Math.max(maxY,p[1]);});
+        const span=Math.max(5.8,maxX-minX,maxY-minY),wx=(minX+maxX)/2,wy=(minY+maxY)/2,loX=wx-span*.58,loY=wy-span*.58,world=span*1.16,pad=18,tf=p=>[pad+(p[0]-loX)*(W-2*pad)/world,pad+(p[1]-loY)*(W-2*pad)/world];
+        const N=76,values=new Float32Array(N*N);let fmin=Infinity,fmax=-Infinity;
+        for(let j=0;j<N;j++)for(let i=0;i<N;i++){const v=field(loX+world*i/(N-1),loY+world*j/(N-1))[0];values[j*N+i]=v;fmin=Math.min(fmin,v);fmax=Math.max(fmax,v);}
+        const contours=[];
+        function edgePoint(i,j,e,level){let a,b;if(e===0){a=[i,j];b=[i+1,j];}else if(e===1){a=[i+1,j];b=[i+1,j+1];}else if(e===2){a=[i+1,j+1];b=[i,j+1];}else{a=[i,j+1];b=[i,j];}const va=values[a[1]*N+a[0]],vb=values[b[1]*N+b[0]],q=Math.abs(vb-va)<1e-9?.5:(level-va)/(vb-va);return[pad+(a[0]+q*(b[0]-a[0]))*(W-2*pad)/(N-1),pad+(a[1]+q*(b[1]-a[1]))*(W-2*pad)/(N-1)];}
+        for(let li=1;li<=15;li++){const level=mix(fmin,fmax,li/16),segments=[];for(let j=0;j<N-1;j++)for(let i=0;i<N-1;i++){const bits=(values[j*N+i]>level?1:0)|(values[j*N+i+1]>level?2:0)|(values[(j+1)*N+i+1]>level?4:0)|(values[(j+1)*N+i]>level?8:0),table=[[],[[3,0]],[[0,1]],[[3,1]],[[1,2]],[[3,2],[0,1]],[[0,2]],[[3,2]],[[2,3]],[[0,2]],[[0,3],[1,2]],[[1,2]],[[1,3]],[[0,1]],[[3,0]],[]];for(const pair of table[bits])segments.push([edgePoint(i,j,pair[0],level),edgePoint(i,j,pair[1],level)]);}contours.push({level,segments});}
+        return function(t){ground(ctx,W);
+            contours.forEach((c,i)=>{ctx.beginPath();c.segments.forEach(s=>{ctx.moveTo(s[0][0],s[0][1]);ctx.lineTo(s[1][0],s[1][1]);});ctx.strokeStyle=i%3===0?'rgba(246,241,230,.46)':(i%2?'rgba(168,216,232,.34)':'rgba(204,121,167,.32)');ctx.lineWidth=i%3===0?1.65:1.2;ctx.stroke();});
+            const period=algebraic?15:13,q=(t%period)/period,amount=q<.93?smooth(q/.93):1,z=amount*(path.length-1),end=Math.floor(z),start=Math.max(0,end-560),shown=path.slice(start,end+1);if(end<path.length-1)shown.push([mix(path[end][0],path[end+1][0],z-end),mix(path[end][1],path[end+1][1],z-end)]);
+            trace(ctx,shown,1,algebraic?C.yellow:C.ink,1.55,tf);const p=tf(shown[shown.length-1]),col=algebraic?C.yellow:C.cyan;dot(ctx,p[0],p[1],5.3,col,C.bg,1.8);if(q>.93){ctx.fillStyle=`rgba(21,19,26,${smooth((q-.93)/.07)})`;ctx.fillRect(0,0,W,W);}
         };
     }
 
@@ -353,33 +359,35 @@
     }
 
     function makePercolationHarmonic(ctx,W){
-        const N=20,pad=23,cell=(W-2*pad)/(N-1),edges=[],adj=Array.from({length:N*N},()=>[]);
-        for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x;[[1,0],[0,1]].forEach((d,k)=>{const xx=x+d[0],yy=y+d[1];if(xx>=N||yy>=N)return;if(hash2(x*2+k,y,0x7063)<.79){const j=yy*N+xx;edges.push([i,j]);adj[i].push(j);adj[j].push(i);}});}
-        const seen=new Uint8Array(N*N),queue=[Math.floor(N/2)*N+Math.floor(N/2)];seen[queue[0]]=1;for(let h=0;h<queue.length;h++)adj[queue[h]].forEach(j=>{if(!seen[j]){seen[j]=1;queue.push(j);}});
-        let val=new Float32Array(N*N);for(let i=0;i<val.length;i++)val[i]=seen[i]?hash2(i%N,(i/N)|0,0x41)-.5:0;const frames=[val.slice()];for(let s=0;s<100;s++){const next=val.slice();for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){const i=y*N+x;if(!seen[i]||!adj[i].length)continue;let sum=0;adj[i].forEach(j=>sum+=val[j]);next[i]=sum/adj[i].length;}for(let y=0;y<N;y++){const l=y*N,r=y*N+N-1;if(seen[l])next[l]=-1;if(seen[r])next[r]=1;}val=next;if(s%5===4)frames.push(val.slice());}
-        return function(t){ground(ctx,W,'rgba(86,180,233,.36)');const q=(t%10)/10,fi=Math.min(frames.length-1,Math.floor((q<.88?q/.88:1)*(frames.length-1))),v=frames[fi];edges.forEach(e=>{if(!seen[e[0]]||!seen[e[1]])return;const a=e[0],b=e[1],x1=pad+(a%N)*cell,y1=pad+((a/N)|0)*cell,x2=pad+(b%N)*cell,y2=pad+((b/N)|0)*cell,u=(v[a]+v[b])*.5;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=u>0?`rgba(86,180,233,${.28+.45*Math.abs(u)})`:`rgba(204,121,167,${.28+.45*Math.abs(u)})`;ctx.lineWidth=1.4;ctx.stroke();});queue.forEach(i=>{const x=pad+(i%N)*cell,y=pad+((i/N)|0)*cell;dot(ctx,x,y,1.7,v[i]>0?C.cyan:C.pink);});if(q>.88){ctx.fillStyle=`rgba(16,19,29,${smooth((q-.88)/.12)})`;ctx.fillRect(0,0,W,W);}
+        const MAX=8,graphs={};
+        function solve(matrix,rhs){const n=rhs.length,a=matrix.map((row,i)=>row.slice().concat(rhs[i]));for(let col=0;col<n;col++){let p=col;for(let r=col+1;r<n;r++)if(Math.abs(a[r][col])>Math.abs(a[p][col]))p=r;const tmp=a[col];a[col]=a[p];a[p]=tmp;const d=a[col][col];for(let k=col;k<=n;k++)a[col][k]/=d;for(let r=0;r<n;r++)if(r!==col&&Math.abs(a[r][col])>1e-12){const f=a[r][col];for(let k=col;k<=n;k++)a[r][k]-=f*a[col][k];}}return a.map(row=>row[n]);}
+        function build(n){const nodes=[],byKey=new Map();function add(x,y){byKey.set(x+','+y,nodes.length);nodes.push({x,y,nbr:[]});}for(let x=1;x<=4;x++)add(x,1);for(let y=2;y<=n;y++){add(2,y);add(3,y);}const edges=[];nodes.forEach((v,i)=>[[1,0],[0,1]].forEach(d=>{const j=byKey.get((v.x+d[0])+','+(v.y+d[1]));if(j===undefined)return;v.nbr.push(j);nodes[j].nbr.push(i);edges.push([i,j]);}));const s=byKey.get('1,1'),terminal=byKey.get('4,1'),unknown=nodes.map((_,i)=>i).filter(i=>i!==s&&i!==terminal),row=new Map(unknown.map((i,r)=>[i,r])),matrix=unknown.map(()=>new Array(unknown.length).fill(0)),rhs=new Array(unknown.length).fill(0);unknown.forEach((i,r)=>{matrix[r][r]=nodes[i].nbr.length;nodes[i].nbr.forEach(j=>{if(j===terminal)rhs[r]++;else if(j!==s)matrix[r][row.get(j)]--;});});const values=new Float64Array(nodes.length),sol=solve(matrix,rhs);values[terminal]=1;unknown.forEach((i,r)=>values[i]=sol[r]);return{n,nodes,edges,values,s,terminal};}
+        for(let n=1;n<=MAX;n++)graphs[n]=build(n);
+        function colour(z){return z<.5?rampColour([[213,94,119],[246,241,230]],z*2):rampColour([[246,241,230],[86,180,233]],(z-.5)*2);}
+        return function(t){ground(ctx,W);const local=t%11.5,grow=Math.min(MAX-1,local/1.15),n=Math.min(MAX,1+Math.floor(grow)),fade=smooth(grow-Math.floor(grow)),g=graphs[n],next=graphs[Math.min(MAX,n+1)],baseY=354,pitch=42,pos=v=>[52+(v.x-1)*(W-104)/3,baseY-(v.y-1)*pitch];
+            next.edges.forEach(e=>{const a=next.nodes[e[0]],b=next.nodes[e[1]],fresh=a.y>n||b.y>n,p=pos(a),q=pos(b);ctx.globalAlpha=fresh?fade:1;ctx.beginPath();ctx.moveTo(...p);ctx.lineTo(...q);ctx.strokeStyle=fresh?C.ink:'rgba(201,191,168,.56)';ctx.lineWidth=fresh?3.2:2.4;ctx.stroke();});
+            next.nodes.forEach((v,i)=>{const fresh=v.y>n,p=pos(v);ctx.globalAlpha=fresh?fade:1;dot(ctx,p[0],p[1],i===next.s||i===next.terminal?13:10.5,colour(next.values[i]),fresh?C.yellow:(i===next.s||i===next.terminal?C.ink:C.bg),fresh?2.8:2);});ctx.globalAlpha=1;
+            if(local>10.7){ctx.fillStyle=`rgba(21,19,26,${smooth((local-10.7)/.8)})`;ctx.fillRect(0,0,W,W);}
         };
     }
 
     function makeMatedCRTIDLA(ctx,W){
-        let data=null,mesh=null,cluster=null,mctx=null,cctx=null,transform=null,last=-1;
+        let data=null,cluster=null,cctx=null,transform=null,last=-1;
         function cellPath(c,v){const raw=data.cells[v];if(!raw||!raw.length)return false;const pieces=typeof raw[0]==='number'?[raw]:raw;c.beginPath();let any=false;for(const p of pieces){if(!p||p.length<6)continue;const a=transform(p[0],p[1]);c.moveTo(a[0],a[1]);for(let j=2;j+1<p.length;j+=2){const q=transform(p[j],p[j+1]);c.lineTo(q[0],q[1]);}c.closePath();any=true;}return any;}
-        function paintCell(c,v,fill){if(cellPath(c,v)){c.fillStyle=fill;c.fill();}else{const p=transform(data.xy[v][0],data.xy[v][1]);dot(c,p[0],p[1],1.8,fill);}}
+        function paintCell(c,v,fill,outline){if(cellPath(c,v)){c.fillStyle=fill;c.fill();if(outline){c.strokeStyle=outline;c.lineWidth=.7;c.stroke();}}else{const p=transform(data.xy[v][0],data.xy[v][1]);dot(c,p[0],p[1],1.8,fill);}}
         function build(raw){
-            data=raw.idla;let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
-            data.order.forEach(v=>{const p=data.xy[v];x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);});
-            const pad=20,s=(W-2*pad)/Math.max(x1-x0,y1-y0),ox=W/2-s*(x0+x1)/2,oy=W/2-s*(y0+y1)/2;
-            transform=(x,y)=>[ox+s*x,oy+s*y];mesh=document.createElement('canvas');cluster=document.createElement('canvas');mesh.width=cluster.width=W;mesh.height=cluster.height=W;mctx=mesh.getContext('2d');cctx=cluster.getContext('2d');
-            mctx.fillStyle=C.bg;mctx.fillRect(0,0,W,W);mctx.strokeStyle='rgba(201,191,168,.20)';mctx.lineWidth=.8;
-            for(let v=0;v<data.n;v++){const p=data.xy[v];if(p[0]<x0-25||p[0]>x1+25||p[1]<y0-25||p[1]>y1+25)continue;if(cellPath(mctx,v))mctx.stroke();}
+            data=raw.idla;const xs=data.order.map(v=>data.xy[v][0]).sort((a,b)=>a-b),ys=data.order.map(v=>data.xy[v][1]).sort((a,b)=>a-b),lo=Math.floor(.005*(data.order.length-1)),hi=Math.floor(.995*(data.order.length-1)),x0=xs[lo],x1=xs[hi],y0=ys[lo],y1=ys[hi];
+            const pad=18,s=(W-2*pad)/Math.max(x1-x0,y1-y0),ox=W/2-s*(x0+x1)/2,oy=W/2-s*(y0+y1)/2;
+            transform=(x,y)=>[ox+s*x,oy+s*y];cluster=document.createElement('canvas');cluster.width=cluster.height=W;cctx=cluster.getContext('2d');
             draw.ready=true;
         }
         function reset(){cctx.clearRect(0,0,W,W);last=-1;}
         function draw(t){
             ground(ctx,W);if(!draw.ready||!data)return false;const local=t%11.5,amount=Math.min(1,local/9),k=Math.min(data.order.length-1,Math.floor(amount*(data.order.length-1)));
-            if(k<last)reset();for(let j=last+1;j<=k;j++)paintCell(cctx,data.order[j],rampColour(ORDER,j/Math.max(1,data.order.length-1)));last=k;
-            ctx.drawImage(mesh,0,0);ctx.drawImage(cluster,0,0);
-            const recent=Math.max(0,k-14);for(let j=recent;j<=k;j++)paintCell(ctx,data.order[j],C.ink);
+            const palette=[[25,35,86],[25,99,146],[68,166,185],[228,205,83],[220,119,66],[139,48,72]];
+            if(k<last)reset();for(let j=last+1;j<=k;j++)paintCell(cctx,data.order[j],rampColour(palette,j/Math.max(1,data.order.length-1)),'rgba(21,19,26,.30)');last=k;
+            ctx.drawImage(cluster,0,0);
+            const recent=Math.max(0,k-5);for(let j=recent;j<=k;j++)paintCell(ctx,data.order[j],C.ink,'rgba(21,19,26,.7)');
             const source=transform(data.xy[data.source][0],data.xy[data.source][1]);dot(ctx,source[0],source[1],4.5,C.ink,C.bg,2.2);
             if(local>11){ctx.globalAlpha=(local-11)/.5;ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,W);ctx.globalAlpha=1;}return true;
         }
@@ -417,11 +425,13 @@
     }
 
     function makeFLattice(ctx,W){
-        const image=new Image();let half=null;
-        function buildHalf(){half=document.createElement('canvas');half.width=Math.ceil(image.width/2);half.height=Math.ceil(image.height/2);const c=half.getContext('2d');c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';c.drawImage(image,0,0,half.width,half.height);draw.ready=true;}
-        function camera(p){let q;if(p<.12)q=0;else if(p<.50)q=smooth((p-.12)/.38);else if(p<.78)q=1;else q=1-smooth((p-.78)/.22);const width=Math.exp(mix(Math.log(132),Math.log(image.width),q));return{q,width,x:mix(740,image.width*.5,q),y:mix(330,image.height*.5,q)};}
-        function draw(t){ground(ctx,W);if(!draw.ready)return false;const p=(t%14)/14,cam=camera(p),sw=cam.width,sx=clamp(cam.x-sw/2,0,image.width-sw),sy=clamp(cam.y-sw/2,0,image.height-sw),inset=8,dest=W-16,perPixel=sw/dest;ctx.imageSmoothingEnabled=perPixel>.9;ctx.imageSmoothingQuality='high';if(half&&perPixel>1.4)ctx.drawImage(half,sx/2,sy/2,sw/2,sw/2,inset,inset,dest,dest);else ctx.drawImage(image,sx,sy,sw,sw,inset,inset,dest,dest);return true;}
-        draw.ready=false;draw.failed=false;image.onload=buildHalf;image.onerror=()=>{draw.failed=true;};image.src='gallery/plates/p5-flattice-hero-void.png';return draw;
+        const points=[];for(let s=-7;s<=7;s++)for(let t=-7;t<=7;t++)points.push([s-t,s+t]);
+        return function(t){ground(ctx,W);const q=(t%11)/11,r=.26+1.08*(.5-.5*Math.cos(TAU*Math.min(q,.92)/.92)),scale=51,tf=p=>[W/2+p[0]*scale,W/2-p[1]*scale];
+            ctx.strokeStyle='rgba(201,191,168,.12)';ctx.lineWidth=1;ctx.beginPath();points.forEach(p=>{const a=tf(p),u=tf([p[0]+1,p[1]+1]),v=tf([p[0]-1,p[1]+1]);ctx.moveTo(a[0],a[1]);ctx.lineTo(u[0],u[1]);ctx.moveTo(a[0],a[1]);ctx.lineTo(v[0],v[1]);});ctx.stroke();
+            points.forEach((p,i)=>{const a=tf(p),rad=r*scale;if(a[0]+rad<0||a[0]-rad>W||a[1]+rad<0||a[1]-rad>W)return;ctx.beginPath();ctx.arc(a[0],a[1],rad,0,TAU);ctx.fillStyle=i%2?'rgba(86,180,233,.055)':'rgba(204,121,167,.05)';ctx.fill();ctx.strokeStyle=i%2?'rgba(168,216,232,.78)':'rgba(204,121,167,.78)';ctx.lineWidth=2.2;ctx.stroke();dot(ctx,a[0],a[1],3.4,C.ink,C.bg,1.2);});
+            if(r>Math.SQRT2/2){const d=Math.SQRT2,h=Math.sqrt(Math.max(0,r*r-d*d/4)),pairs=[[1,1],[-1,1]];points.forEach(p=>pairs.forEach(v=>{const mid=[p[0]+v[0]/2,p[1]+v[1]/2],nx=-v[1]/d,ny=v[0]/d;for(const sign of [-1,1]){const z=tf([mid[0]+sign*h*nx,mid[1]+sign*h*ny]);if(z[0]>5&&z[0]<W-5&&z[1]>5&&z[1]<W-5)dot(ctx,z[0],z[1],2.6,C.yellow,C.bg,1);}}));}
+            if(q>.94){ctx.fillStyle=`rgba(21,19,26,${smooth((q-.94)/.06)})`;ctx.fillRect(0,0,W,W);}
+        };
     }
 
     function makePareto(ctx,W){
@@ -479,13 +489,9 @@
     }
 
     function makeRandomSandpile(ctx,W){
-        const N=51,c=N>>1,heights=new Uint16Array(N*N),queued=new Uint8Array(N*N),snapshots=[],rand=randomFactory(0x5a6d);
-        for(let i=0;i<heights.length;i++)heights[i]=(rand()*4)|0;
-        function stabilize(){const queue=[],push=i=>{if(!queued[i]&&heights[i]>=4){queued[i]=1;queue.push(i);}};push(c*N+c);for(let h=0;h<queue.length;h++){const i=queue[h];queued[i]=0;if(heights[i]<4)continue;const q=(heights[i]/4)|0;heights[i]-=4*q;const x=i%N,y=(i/N)|0;[[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{const xx=x+d[0],yy=y+d[1];if(xx<0||xx>=N||yy<0||yy>=N)return;const j=yy*N+xx;heights[j]+=q;push(j);});push(i);}}
-        stabilize();for(let grains=0;grains<=8500;grains++){heights[c*N+c]++;if(heights[c*N+c]>=4)stabilize();if(grains%230===0)snapshots.push(heights.slice());}
-        const pad=18,cell=(W-2*pad)/N,colors=['#171722','#4c5269','#9a4f68','#78bdd5'];
-        return function(t){ground(ctx,W,'rgba(204,121,167,.38)');const q=(t%12)/12,fi=Math.min(snapshots.length-1,Math.floor((q<.92?q/.92:1)*(snapshots.length-1))),a=snapshots[fi];for(let y=0;y<N;y++)for(let x=0;x<N;x++){ctx.fillStyle=colors[a[y*N+x]&3];ctx.fillRect(pad+x*cell+.25,pad+y*cell+.25,cell-.5,cell-.5);}dot(ctx,W/2,W/2,3.5,C.yellow,C.bg,1.2);if(q>.92){ctx.fillStyle=`rgba(16,19,29,${smooth((q-.92)/.08)})`;ctx.fillRect(0,0,W,W);}
-        };
+        const image=new Image();
+        function draw(t){ground(ctx,W);if(!draw.ready)return false;const q=(t%13)/13;let zoom;if(q<.12)zoom=0;else if(q<.58)zoom=smooth((q-.12)/.46);else if(q<.82)zoom=1;else if(q<.95)zoom=1-smooth((q-.82)/.13);else zoom=0;const full=image.width,crop=Math.exp(mix(Math.log(185),Math.log(full),zoom)),cx=full*.50,cy=full*.50,sx=clamp(cx-crop/2,0,full-crop),sy=clamp(cy-crop/2,0,full-crop),inset=8,dest=W-16;ctx.imageSmoothingEnabled=crop>dest;ctx.imageSmoothingQuality='high';ctx.drawImage(image,sx,sy,crop,crop,inset,inset,dest,dest);return true;}
+        draw.ready=false;draw.failed=false;image.onload=()=>{draw.ready=true;};image.onerror=()=>{draw.failed=true;};image.src='gallery/plates/p6-random-hero-void.png';return draw;
     }
 
     const FACTORIES = {
