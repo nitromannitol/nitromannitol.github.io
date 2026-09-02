@@ -218,197 +218,21 @@ function createThumbnailLink(pub, primaryLink) {
     imgEl.loading = 'lazy';
 
     container.appendChild(imgEl);
-    if (pub.thumbnailAnimation) {
+    if (pub.thumbnailAnimation && window.PublicationThumbnailAnimations) {
         const canvas = document.createElement('canvas');
-        canvas.width = 420;
-        canvas.height = 420;
         canvas.classList.add('pub-thumbnail', 'pub-thumbnail-canvas');
         canvas.setAttribute('aria-hidden', 'true');
+        canvas.hidden = true;
         container.appendChild(canvas);
-        attachPublicationThumbnailAnimation(canvas, pub.thumbnailAnimation);
+        attachPublicationThumbnailAnimation(canvas, pub.thumbnailAnimation, imgEl);
     }
     return container;
 }
 
-function attachPublicationThumbnailAnimation(canvas, kind) {
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let running = false;
-    let raf = 0;
-    let start = 0;
-
-    const mix = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
-    const hash = (x, y) => {
-        let z = (Math.imul(x + 37, 0x45d9f3b) ^ Math.imul(y + 71, 0x119de1f3)) >>> 0;
-        z = Math.imul(z ^ (z >>> 16), 0x45d9f3b) >>> 0;
-        return ((z ^ (z >>> 16)) >>> 0) / 4294967296;
-    };
-
-    function ground() {
-        const g = ctx.createLinearGradient(0, 0, W, W);
-        g.addColorStop(0, '#10141f');
-        g.addColorStop(1, '#24192c');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, W);
+function attachPublicationThumbnailAnimation(canvas, kind, baseImage) {
+    if (window.PublicationThumbnailAnimations) {
+        window.PublicationThumbnailAnimations.attach(canvas, kind, baseImage);
     }
-
-    function drawParking(t) {
-        ground();
-        const n = 14, pad = 21, cell = (W - 2 * pad) / n;
-        for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-            const pulse = Math.max(0, Math.sin(.8 * x + .61 * y + t * 1.7));
-            ctx.fillStyle = `rgba(205,82,122,${(.025 + .13 * pulse * pulse).toFixed(3)})`;
-            ctx.fillRect(pad + x * cell + 1, pad + y * cell + 1, cell - 2, cell - 2);
-        }
-        ctx.strokeStyle = 'rgba(226,218,200,.11)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (let i = 0; i <= n; i++) {
-            const q = pad + i * cell;
-            ctx.moveTo(pad, q); ctx.lineTo(W - pad, q);
-            ctx.moveTo(q, pad); ctx.lineTo(q, W - pad);
-        }
-        ctx.stroke();
-
-        const spots = [[2,2],[7,1],[12,3],[4,9],[9,7],[11,12],[2,12]];
-        ctx.strokeStyle = '#68c7ea'; ctx.lineWidth = 4;
-        spots.forEach(p => {
-            ctx.beginPath();
-            ctx.arc(pad + (p[0] + .5) * cell, pad + (p[1] + .5) * cell, cell * .22, 0, Math.PI * 2);
-            ctx.stroke();
-        });
-
-        const paths = [
-            [[1,11],[2,11],[2,10],[2,9],[3,9],[3,8],[4,8],[4,9]],
-            [[11,1],[11,2],[11,3],[10,3],[10,4],[10,5],[9,5],[9,6],[9,7]],
-            [[13,10],[12,10],[12,11],[11,11],[11,12]]
-        ];
-        const colors = ['#f2c861','#ee9a55','#f0d96b'];
-        paths.forEach((path, j) => {
-            const q = (t * (.19 + .018 * j) + .24 * j) % 1;
-            const progress = Math.min(1, q / .72);
-            const u = progress * (path.length - 1), k = Math.min(path.length - 2, Math.floor(u)), a = u - k;
-            ctx.beginPath();
-            path.forEach((p, i) => {
-                const x = pad + (p[0] + .5) * cell, y = pad + (p[1] + .5) * cell;
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            });
-            ctx.strokeStyle = colors[j]; ctx.globalAlpha = .62; ctx.lineWidth = 3; ctx.stroke();
-            ctx.globalAlpha = 1;
-            const p = path[k], r = path[k + 1];
-            const x = pad + (mix(p[0], r[0], a) + .5) * cell;
-            const y = pad + (mix(p[1], r[1], a) + .5) * cell;
-            ctx.beginPath(); ctx.arc(x, y, cell * .25, 0, Math.PI * 2);
-            if (q < .72) {
-                ctx.fillStyle = colors[j]; ctx.fill();
-                ctx.strokeStyle = '#10141f'; ctx.lineWidth = 3; ctx.stroke();
-            } else {
-                ctx.globalAlpha = q < .9 ? 1 : Math.max(0, (1 - q) / .1);
-                ctx.fillStyle = '#68c7ea'; ctx.fill();
-                ctx.globalAlpha = 1;
-            }
-        });
-    }
-
-    const PERC_N = 23;
-    const percField = (() => {
-        let a = new Float32Array(PERC_N * PERC_N);
-        for (let y = 0; y < PERC_N; y++) for (let x = 0; x < PERC_N; x++) a[y * PERC_N + x] = hash(x, y);
-        for (let pass = 0; pass < 4; pass++) {
-            const b = new Float32Array(a.length);
-            for (let y = 0; y < PERC_N; y++) for (let x = 0; x < PERC_N; x++) {
-                let s = 2 * a[y * PERC_N + x], m = 2;
-                [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
-                    const xx = x + d[0], yy = y + d[1];
-                    if (xx >= 0 && xx < PERC_N && yy >= 0 && yy < PERC_N) { s += a[yy * PERC_N + xx]; m++; }
-                });
-                b[y * PERC_N + x] = s / m;
-            }
-            a = b;
-        }
-        return a;
-    })();
-
-    function drawPercolation(t) {
-        ground();
-        const pad = 19, cell = (W - 2 * pad) / PERC_N;
-        const wave = .5 - .5 * Math.cos(2 * Math.PI * ((t * .085) % 1));
-        const threshold = .61 - .12 * wave;
-        const active = new Uint8Array(PERC_N * PERC_N);
-        for (let i = 0; i < active.length; i++) active[i] = percField[i] > threshold ? 1 : 0;
-        let best = [], seen = new Uint8Array(active.length);
-        for (let i = 0; i < active.length; i++) if (active[i] && !seen[i]) {
-            const stack = [i], component = []; seen[i] = 1;
-            while (stack.length) {
-                const v = stack.pop(), x = v % PERC_N, y = (v / PERC_N) | 0;
-                component.push(v);
-                [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
-                    const xx = x + d[0], yy = y + d[1], u = yy * PERC_N + xx;
-                    if (xx >= 0 && xx < PERC_N && yy >= 0 && yy < PERC_N && active[u] && !seen[u]) {
-                        seen[u] = 1; stack.push(u);
-                    }
-                });
-            }
-            if (component.length > best.length) best = component;
-        }
-        const largest = new Uint8Array(active.length);
-        best.forEach(i => { largest[i] = 1; });
-        for (let y = 0; y < PERC_N; y++) for (let x = 0; x < PERC_N; x++) {
-            const i = y * PERC_N + x;
-            ctx.fillStyle = largest[i] ? '#56b4e9' : active[i] ? '#8b719d' : 'rgba(133,147,181,.10)';
-            ctx.fillRect(pad + x * cell + .8, pad + y * cell + .8, cell - 1.6, cell - 1.6);
-        }
-        ctx.strokeStyle = '#f0d96b'; ctx.lineWidth = 2;
-        best.forEach(i => {
-            const x = i % PERC_N, y = (i / PERC_N) | 0;
-            [[1,0],[-1,0],[0,1],[0,-1]].forEach(d => {
-                const xx = x + d[0], yy = y + d[1];
-                if (xx < 0 || xx >= PERC_N || yy < 0 || yy >= PERC_N || !largest[yy * PERC_N + xx]) {
-                    const x0 = pad + x * cell, y0 = pad + y * cell;
-                    ctx.beginPath();
-                    if (d[0] === 1) { ctx.moveTo(x0 + cell, y0); ctx.lineTo(x0 + cell, y0 + cell); }
-                    if (d[0] === -1) { ctx.moveTo(x0, y0); ctx.lineTo(x0, y0 + cell); }
-                    if (d[1] === 1) { ctx.moveTo(x0, y0 + cell); ctx.lineTo(x0 + cell, y0 + cell); }
-                    if (d[1] === -1) { ctx.moveTo(x0, y0); ctx.lineTo(x0 + cell, y0); }
-                    ctx.stroke();
-                }
-            });
-        });
-    }
-
-    function draw(now) {
-        if (!start) start = now || performance.now();
-        const t = ((now || start) - start) / 1000;
-        if (kind === 'parking') drawParking(t);
-        else if (kind === 'divisible-percolation') drawPercolation(t);
-    }
-    function frame(now) {
-        if (!running) return;
-        draw(now);
-        raf = requestAnimationFrame(frame);
-    }
-    function play() {
-        if (reduced || running || document.hidden) return;
-        running = true;
-        raf = requestAnimationFrame(frame);
-    }
-    function pause() {
-        running = false;
-        cancelAnimationFrame(raf);
-        raf = 0;
-    }
-
-    draw(performance.now() + (reduced ? 3200 : 0));
-    if (!reduced && 'IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(entries => {
-            if (entries.some(entry => entry.isIntersecting)) play(); else pause();
-        }, { threshold: .12 });
-        requestAnimationFrame(() => observer.observe(canvas));
-    } else if (!reduced) {
-        play();
-    }
-    document.addEventListener('visibilitychange', () => document.hidden ? pause() : play());
 }
 
 function appendTitle(wrapper, pub) {

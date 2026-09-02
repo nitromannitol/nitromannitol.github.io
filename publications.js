@@ -5,7 +5,7 @@ const publications = [
     title: "Sharpness and critical scaling of parking",
     thumbnail: "images/parking.svg",
     thumbnailAnimation: "parking",
-    altText: "Cars moving along square-lattice paths toward unoccupied parking spots.",
+    altText: "Cars performing square-lattice random walks and occupying distinct free parking spots.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Christoforos Panagiotis", url: "https://sites.google.com/view/christoforos-panagiotis/" }
@@ -39,7 +39,8 @@ const publications = [
     title: "Eulerian walkers on Z<sup>2</sup> have range exponent 2/3",
     bibtexTitle: "Eulerian walkers on {$\\mathbb{Z}^2$} have range exponent 2/3",
     thumbnail: "images/eulerian_walkers.png",
-    altText: "The range of an Eulerian walker on the square lattice, with sites colored by the circuit in which they were first visited.",
+    thumbnailAnimation: "rotor-walk",
+    altText: "An Eulerian walker rotates lattice arrows and traverses a range colored by circuit.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Yuval Peres", url: "https://yuvalperes.com/" }
@@ -54,7 +55,8 @@ const publications = [
     id: "einstein-relation",
     title: "Quantitative Einstein relation for reversible diffusions in a random environment",
     thumbnail: "images/einstein_paths.png",
-    altText: "Sample paths of diffusions in a random potential with varying drift strength, colored from blue (no drift) to red (maximum drift), showing the Einstein relation.",
+    thumbnailAnimation: "einstein-relation",
+    altText: "Paired unforced and weakly forced diffusion paths in the same random potential.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Ruizhe Xu", url: "https://arxiv.org/search/?query=%22Ruizhe+Xu%22&searchtype=author&abstracts=show&order=-announced_date_first&size=50" }
@@ -69,7 +71,8 @@ const publications = [
     id: "critical-long-range-rcm",
     title: "Quantitative homogenization for the critical long-range random conductance model",
     thumbnail: "images/critical_long_range_rw.png",
-    altText: "Sample path of a critical long-range random walk on the two-dimensional integer lattice, showing fractal-like clustering punctuated by long jumps.",
+    thumbnailAnimation: "long-range-walk",
+    altText: "A critical long-range random walk combining local motion with occasional long jumps.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Paul Dario", url: "https://pauldario.pages.math.cnrs.fr/webpage-of-paul-dario/" }
@@ -84,7 +87,8 @@ const publications = [
     id: "gff-idla-cylinder",
     title: "Gaussian fluctuations for Internal DLA on cylinders",
     thumbnail: "images/idla_cylinder.png",
-    altText: "Sample of an IDLA cluster on a cylinder whose base is the Nauru graph; each occupied site is drawn as a prism over its Voronoi cell.",
+    thumbnailAnimation: "idla-cylinder",
+    altText: "Internal DLA growing upward from the base of a periodic cylinder.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Vittoria Silvestri", url: "https://vittoriasilvestri.wordpress.com/" },
@@ -100,7 +104,8 @@ const publications = [
     id: "divisible-sandpile-rwrs",
     title: "Divisible sandpiles via random walks in random scenery",
     thumbnail: "images/divisible_sandpile.png",
-    altText: "Approximation of the divisible sandpile odometer on a tree-of-pipes graph embedded in the Poincaré disk; edge color and width are proportional to the odometer.",
+    thumbnailAnimation: "sandpile-rwrs",
+    altText: "A divisible-sandpile odometer evolving over a fixed random reward field.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Yuval Peres", url: "https://yuvalperes.com/" },
@@ -116,7 +121,8 @@ const publications = [
   id: "algebraic-sd",
   title: "Superdiffusion and anomalous regularization in self-similar random incompressible flows",
   thumbnail: "images/algebraic-sd.png",
-  altText: "Streamline visualization of a self-similar random incompressible flow exhibiting algebraic superdiffusion.",
+  thumbnailAnimation: "algebraic-superdiffusion",
+  altText: "A particle following a continuous path through a self-similar incompressible flow.",
   authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
@@ -145,7 +151,8 @@ abstract: 'A Brownian particle advected by an incompressible random drift underg
     ],
 abstract: 'Random walks on graphs approximating Euclidean space are known to converge to Brownian motion. We introduce a family of graphs, orthogonal tiling graphs, flexible enough to approximate irregular manifolds in arbitrary dimension, for which we prove that the trace of random walk converges to the trace of Brownian motion. This family includes Voronoi tessellations of Gaussian multiplicative chaos in arbitrary dimension, and so our result implies a higher-dimensional generalization of <a href="https://arxiv.org/abs/1807.07511">Gwynne, Miller, and Sheffield (2022)</a>. Our proof proceeds by showing convergence of a finite volume scheme that induces a non-uniformly elliptic operator on the graph. One of our main contributions is an L<sup>2</sup>-L<sup>∞</sup> estimate for this operator. In the special case of 2D, our method also leads to a short proof of <a href="https://arxiv.org/abs/1906.01613">Gurel-Gurevich, Jerison, and Nachmias (2020)</a>, which in turn generalized earlier work by <a href="references/dubjeko1999.pdf">Dubejko (1999)</a>, <a href="https://arxiv.org/abs/0810.2188">Chelkak-Smirnov (2011)</a>, <a href="https://arxiv.org/abs/1110.6737">Skopenkov (2013)</a>, and <a href="https://arxiv.org/abs/1511.01209">Werness (2015)</a>. Orthogonal tiling graphs in 2D include isoradial graphs, which were used by <a href="https://arxiv.org/abs/0910.2045">Chelkak and Smirnov (2012)</a> to establish the universality of critical Ising models. We believe orthogonal tiling graphs could help in studying this model and others in d > 2.',
     thumbnail: "images/rw_sphere_packing.png",
-    altText: "A sphere packing in the plane with an overlaid trajectory of a random walk on its contact graph.",
+    thumbnailAnimation: "sphere-packing",
+    altText: "A conductance-weighted random walk on an irregular planar orthogonal tiling.",
     year: 2025
   },
   {
@@ -166,7 +173,8 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
     ],
 abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
     thumbnail: "images/sd.png",
-    altText: "Streamlines of a critically-correlated incompressible random drift exhibiting enhanced diffusion.",
+    thumbnailAnimation: "critical-superdiffusion",
+    altText: "A continuous particle path moving between vortices in a critically correlated flow.",
     year: 2024
   },
   {
@@ -186,7 +194,8 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     ],
     abstract: 'Bounded harmonic functions are constant. However, there are non-constant harmonic functions on R<sup>d</sup> that are bounded on all but a tiny fraction of space (see, <a href="https://link.springer.com/book/10.1007/978-3-642-61983-0">[Ch 3, Problems 158-160]</a>). These functions have no immediate discrete analogue, and, it turns out, cannot exist on periodic planar graphs. We prove that for any periodic planar graph G, there exists a constant &alpha;(G) such that any discrete harmonic function which is bounded on a (1 - &alpha;(G))-density of the graph is constant. A key aspect of the argument is a new unique continuation result for periodic planar graphs. Our proof is based on the maximum principle and elementary geometric arguments. It generalizes and simplifies earlier work by <a href="https://arxiv.org/abs/1712.07902">Lev Buhovsky, Alexander Logunov, Eugenia Malinnikova, and Mikhail Sodin</a>, who established this result on the square lattice using techniques specific to that setting. The ideas in Buhovsky-Logunov-Malinnikova-Sodin were later applied by <a href="https://arxiv.org/abs/1809.09041">Charles Smart and Jian Ding</a> to establish localization near the edge for the Anderson-Bernoulli model on the square lattice.',
     thumbnail: "images/unique_continuation.png",
-    altText: "A periodic planar graph with a highlighted subset of vertices illustrating a unique-continuation configuration.",
+    thumbnailAnimation: "unique-continuation",
+    altText: "Sign domains and zero edges of discrete harmonic functions on a hexagonal lattice ball.",
     year: 2025
   },
   {
@@ -205,7 +214,8 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     ],
   abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949 that the dimension of the space of discrete harmonic polynomials on Z<sup>d</sup> coincides with that of R<sup>d</sup>. This theorem holds for any periodic lattice and was recently extended by <a href="https://arxiv.org/abs/1609.09431">Scott Armstrong and Paul Dario</a> to the supercritical percolation cluster, where their proof used the fact that, on large scales, the cluster resembles R<sup>d</sup>. However, in models such as the <a href="https://arxiv.org/abs/1109.0449?context=math">Ising model</a>, the <a href="https://arxiv.org/abs/1012.4809">Abelian sandpile</a>, and <a href="https://arxiv.org/abs/1508.04284">Anderson localization</a>, small-scale changes in the graph induce qualitatively distinct global behavior. Motivated by this, we prove three theorems on the supercritical cluster that do not hold on Z<sup>d</sup>. Using quantitative homogenization, we show the absence of non-constant Lipschitz harmonic functions and the absence of non-constant integer-valued harmonic functions of at most linear growth. In dimension 2, we also show that a function harmonic outside a finite set, with integer-valued graph Laplacian and uniform decay faster than 1/|x|, must have finite support. We expect these results and our techniques will help in understanding other models on the cluster. (The final section includes many conjectures and partial results regarding the Abelian sandpile on the cluster.)',
     thumbnail: "images/lipschitz-percolation-harmonic.png",
-    altText: "Level sets of a harmonic function on the supercritical bond percolation cluster in two dimensions.",
+    thumbnailAnimation: "percolation-harmonic",
+    altText: "A harmonic coordinate relaxing on a supercritical percolation cluster.",
     year: 2025
   },
   {
@@ -223,7 +233,8 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     ],
     abstract: 'We prove the convergence of internal diffusion limited aggregation on a family of random planar maps, mated-CRT maps, to the LQG harmonic balls constructed in <a href="https://arxiv.org/abs/2208.11795">our previous work</a>. The proof combines an idea of <a href="https://arxiv.org/abs/1111.0486">Hugo Duminil-Copin, Cyrille Lucas, Ariel Yadin, and Amir Yehudayoff</a> together with inputs from LQG theory. Mated-CRT maps are currently the only random planar maps for which the <a href="https://arxiv.org/abs/2003.10320">convergence of random walk to Liouville Brownian motion</a> has been established, and this fact plays a crucial role in our proof. It would be particularly interesting to determine the law governing the fluctuations around the limit shape.',
     thumbnail: "images/idla_matedcrt.png",
-    altText: "A simulation of internal DLA on a mated-CRT random planar map, with the cluster shaded by harmonic measure.",
+    thumbnailAnimation: "mated-crt-idla",
+    altText: "Internal DLA growing from the root of a finite random planar map.",
     year: 2024
   },
   {
@@ -242,7 +253,8 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     ],
     abstract: 'We prove the well-posedness of Hele-Shaw flow on Liouville Quantum Gravity (LQG) surfaces and then use this to construct LQG harmonic balls, domains that satisfy the mean value property on LQG surfaces. LQG harmonic balls are the conjectured scaling limit of internal diffusion-limited aggregation on random planar maps. Almost surely, for Lebesgue-almost every mass, they are neither <a href = "https://arxiv.org/abs/2109.01252">LQG metric balls</a> nor Lipschitz domains; for every mass, the boundaries of their complementary components are Jordan curves. There are many interesting properties of LQG harmonic balls to explore, such as their Hausdorff dimension and the structure of their induced geodesics.',
     thumbnail: "images/harmonic_ball.png",
-    altText: "A simulated LQG harmonic ball with an irregular boundary on a Liouville quantum gravity surface.",
+    thumbnailAnimation: "harmonic-ball",
+    altText: "An LQG harmonic ball evolving through a nonuniform random area field.",
   },
   {
     id: "integer-superharmonic-matrices",
@@ -263,7 +275,8 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
 abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear elliptic PDE with a delicate lattice dependence. This dependence is expressed through the quadratic growths of integer-valued, lattice-superharmonic functions (see <a href="https://arxiv.org/pdf/1611.00411">Section 6 of this survey</a> for an exposition). <a href="https://annals.math.princeton.edu/2017/186-1/p01">Lionel Levine, Wesley Pegden, and Charles Smart showed</a> that these functions on Z<sup>2</sup> are characterized by an Apollonian packing of the plane. While their proof was specific to Z<sup>2</sup>, with some effort it can likely be adapted to the triangular, hexagonal, and trihexagonal lattices, where the Apollonian packing is replaced by other circle packings (see these <a href="https://www.math.cmu.edu/~wes/sandgallery.html">simulations by Pegden</a>). The F-lattice presents a distinct situation: its integer superharmonic matrices are classified by a recursion through rational points on a hyperbola, and the boundary of the admissible set is a periodic arrangement of congruent overlapping circles. I conjecture that analogous periodic circle arrangements and their associated operators describe Abelian-sandpile scaling limits on general periodic graphs.'
 ,
     thumbnail: "images/flattice.png",
-    altText: "Integer superharmonic quadratic growths on the F-lattice, arranged by the rational points on a hyperbola governing the recursion."
+    thumbnailAnimation: "f-lattice",
+    altText: "Microscopic and macroscopic views of a 1.3-million-grain F-lattice sandpile."
   },
   {
     id: "hamilton-jacobi-scaling-limits",
@@ -283,7 +296,8 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
     ],
   abstract: 'Pareto peeling is an algorithm for sorting large amounts of multivariate data. For random initial data in 2D, we prove that Pareto peeling converges, in the large sample limit, to the viscosity solution of an explicit Hamilton-Jacobi equation. This resolves a <a href="references/caldernotes.pdf">question posed by Jeff Calder</a> and complements earlier work by <a href="https://arxiv.org/abs/1805.08278">Jeff Calder and Charles Smart</a>. While some of our theorems apply in arbitrary dimension, we now think that for d > 2 the process may not always converge.',
     thumbnail: "images/pareto_peeling.png",
-    altText: "A 2D point cloud with successive Pareto layers, whose large-sample envelope is a viscosity solution of a Hamilton-Jacobi equation."
+    thumbnailAnimation: "pareto-peeling",
+    altText: "Successive Pareto fronts peeling a planar point cloud."
   },
   {
     id: "shape-theorem-exploding-sandpiles",
@@ -302,7 +316,8 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
     ],
   abstract: 'Some sandpiles explode: sites topple without stopping. I prove that random, exploding sandpiles have a limit shape. The proof uses ideas from my <a href="https://arxiv.org/abs/2009.05968">dimensional reduction paper</a> to compare the dynamics of an exploding sandpile to a <a href="references/schonmann.pdf">bootstrap percolation</a> process. This project grew out of a question posed by Lionel Levine during <a href="https://math7710.wordpress.com/2020/10/13/october-13-student-research-projects/"> an online topics class he ran during the COVID pandemic.</a>',
     thumbnail: "images/exploding_pile.png",
-    altText: "A simulation of an exploding random sandpile, showing the cluster of sites that topple without stopping."
+    thumbnailAnimation: "exploding-sandpile",
+    altText: "The toppled region of an exploding random sandpile expanding across the lattice."
   },
   {
     id: "dynamic-dimensional-reduction",
@@ -321,7 +336,8 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
     ],
 abstract: 'Dimensional reduction in sandpiles, the property that slices of higher-dimensional sandpiles correspond to lower-dimensional ones, has been conjectured since <a href="references/LKG.pdf">at least 1990</a>. I prove an exact version of this conjecture. The key insight is that dimensional reduction is closely tied to a discrete parabolic regularity of the sandpile. The proof demonstrates that the "flow" of sandpile dynamics preserves certain derivative bounds, allowing dimensional reduction to occur.',
     thumbnail: "images/dim_reduction.png",
-    altText: "Slices of a higher-dimensional Abelian sandpile configuration, illustrating that each slice coincides with a lower-dimensional sandpile."
+    thumbnailAnimation: "dimensional-reduction",
+    altText: "Parallel toppling on a three-dimensional sandpile whose central face has the two-dimensional firing pattern."
   },
   {
     id: "convergence-random-abelian-sandpile",
@@ -340,6 +356,7 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
     ],
         abstract:"I show that the Abelian sandpile, started with a random initial configuration on any periodic lattice, approximates the solution of a deterministic, fully nonlinear elliptic PDE at large scales. The PDE is implicitly identified through the ergodic theorem, using ideas from non-divergence form stochastic homogenization. Although the exact form of the PDE remains unknown, it is definitively non-universal: it depends on the fine, local structure of both the initial lattice and randomness.",
     thumbnail: "images/random_pile.png",
-    altText: "A simulation of a random Abelian sandpile on a periodic lattice, approximating the scaling limit of a fully nonlinear elliptic PDE."
+    thumbnailAnimation: "random-sandpile",
+    altText: "A random-background Abelian sandpile stabilizing after additions at the origin."
   }
 ];
