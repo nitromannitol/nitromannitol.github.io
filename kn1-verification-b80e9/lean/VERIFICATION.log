@@ -1,4 +1,4 @@
-# KN modules (Conjectures 2 and 4, Question 7, Conjectures 1 and 3): clean sequential recompile (2026-09-02T23:26Z)
+# KN modules: clean sequential recompile (2026-09-02T23:56Z)
 # Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
 # Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the development's pin)
 ## KN/AvoidedDefs.lean (      79 lines)
@@ -32,4 +32,16 @@ EXIT=0
 'KNAll.conjecture4_clusterProperty_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture4_size' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture4_sizeGE' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Statements6.lean (      30 lines)
+EXIT=0
+## KN/PairSource.lean (     457 lines)
+EXIT=0
+## KN/Conjecture6Reduction.lean (     104 lines)
+'KNAll.conjecture6Strong_of_forceOpen_min' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture6_of_conjecture6Strong' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture6_hypotheses_vacuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question5Dual.lean (      82 lines)
+'KNAll.question5_dual' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
