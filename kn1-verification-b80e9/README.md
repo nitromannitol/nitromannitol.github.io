@@ -93,8 +93,8 @@ of the release-level disclaimers, and its proof guide (`summary.tex`, the paragr
 (AG)") displays the intermediate estimate P(o ↔ A, o ↮ b) ≤ t·P(o ↔ A) before weakening it to t. What the
 release lacks is the closed statement and its short assembly, which these files supply. (The paper's footnote on
 p. 3 records that J. van den Berg and D. van Engelenburg independently considered the same inequality;
-"Kozma–Nitzan's Conjecture 1" is used here as the conventional name.) AI-assisted reading of the development
-(reports to A. Bou-Rabee on 2 September 2026) noticed the inconsistency; the explicit corollary here was written
-and machine-checked by Claude (Anthropic, through Claude Code) at his request, and then checked by six mutually
-independent AI review passes (three Claude Opus, three OpenAI Codex), run by him, before being posted. The three
+"Kozma–Nitzan's Conjecture 1" is used here as the conventional name.) This folder was produced entirely by AI
+systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): ChatGPT pointed out that Conjecture 1 follows by
+the same methods, and Claude Fable 5.1 wrote and machine-checked the explicit corollary and this folder, which
+was then checked by six AI review passes (three Claude Opus, three OpenAI Codex) before being posted. The three
 Lean files are released under the Apache License 2.0, matching the development.

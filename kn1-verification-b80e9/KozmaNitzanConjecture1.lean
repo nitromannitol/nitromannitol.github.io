@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: Apache-2.0
--- Released by Ahmed Bou-Rabee under the Apache License 2.0 (matching the development it is a corollary of).
+-- Produced by Claude Fable 5.1 (max); released under the Apache License 2.0 (matching the development it is a corollary of).
 import Percolation.Continuity.MainTheorem
 
 /-!
