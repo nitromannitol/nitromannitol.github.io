@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Kozma–Nitzan Conjectures 2 and 4: Lean verification</title>
+    <title>Kozma–Nitzan conjectures: Lean verification</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
     <style>
@@ -18,7 +18,7 @@
 </head>
 <body>
     <header>
-        <h1>Kozma–Nitzan's Conjectures 2 and 4, formalized on top of the Lean proof of θ(p<sub>c</sub>) = 0</h1>
+        <h1>Kozma–Nitzan's conjectures and questions: what is machine-checked and what is not</h1>
     </header>
 
     <main class="kn1">
@@ -26,82 +26,122 @@
             <p>The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions
             d ≥ 2</em> (written by Claude, Anthropic, under the direction of Justin Leder; Lean v4.32.0, Mathlib commit
             <code>81a5d257</code>) proves Conjecture 3 of Kozma–Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>)
-            through a family of conditioned correlation inequalities, the conditioned slack hierarchy. The Lean files in
-            <a href="conjectures-1-4/">conjectures-1-4/</a> prove, on top of that development, the paper's Conjectures 2 and 4 and answer its
-            Question 7. Lean accepts every theorem with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
-            <code>Quot.sound</code>, and no <code>sorry</code> (<a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>).</p>
+            through a family of conditioned correlation inequalities, the conditioned slack hierarchy. The paper has nine numbered open
+            items: Conjectures 1, 2, 3, 4 and 6 and Questions 5, 7, 8 and 9. The document
+            <a href="document/kozma_nitzan_all_conjectures_proof.pdf">kozma_nitzan_all_conjectures_proof</a>
+            (<a href="document/kozma_nitzan_all_conjectures_proof.tex">TeX</a>) proposes proofs of all nine on top of the development's
+            methods. The Lean files in <a href="lean/">lean/</a> machine-check the part concerning Conjectures 1, 2, 3 and 4, Question 7 and
+            the probabilistic half of Question 5; Lean accepts every theorem with exactly the standard axioms <code>propext</code>,
+            <code>Classical.choice</code>, <code>Quot.sound</code>, and no <code>sorry</code>
+            (<a href="lean/VERIFICATION.log">VERIFICATION.log</a>). Conjecture 6 and Question 9 are proved in the document only; Question 8
+            is not settled. The status of each item is stated below.</p>
         </section>
 
         <section>
-            <h2>What is proved</h2>
+            <h2>Machine-checked</h2>
             <p>Bernoulli bond percolation on a finite weighted graph (vertices <code>Fin n</code>, independent pairs with weights in [0,1], an
             absent edge being weight 0), a nonempty relay set A, vertices o and b, and an increasing real function F of vertex sets:</p>
             <ul>
                 <li><strong>Conjecture 4</strong> (p. 32), in the stronger fixed-minimiser form: if a ∈ A minimises E F(C<sub>x</sub>) over A, then
                     E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]
-                    (<code>conjecture4Fixed_holds</code>, <code>conjecture4_holds</code>).</li>
+                    (<code>conjecture4Fixed_holds</code>, <code>conjecture4_holds</code>); also in the paper's vocabulary of monotone cluster
+                    properties f(v, ω) (<code>conjecture4_clusterProperty_holds</code>).</li>
                 <li><strong>Conjecture 2</strong> (p. 3), in the strong pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
                     min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b) (<code>conjecture2Strong_holds</code>, <code>conjecture2_holds</code>).</li>
                 <li><strong>Question 7</strong> (p. 36), answered affirmatively: if a ∈ A minimises P(a ↔ b) over A, then
                     P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A), the paper's display (41) (<code>question7_holds</code>).</li>
+                <li><strong>Conjecture 1</strong> (p. 3): P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b) (<code>conjecture1_holds</code>, from (3) by the
+                    Harris inequality; it is also a short corollary of the development's own first-relay bound).</li>
+                <li><strong>Conjecture 3</strong> (p. 15), from Conjecture 1 (<code>conjecture3_holds</code>).</li>
+                <li><strong>Question 5</strong> (p. 32), probabilistic half: for every nonnegative weight vector y on the vertices some relay a ∈ A
+                    satisfies Σ<sub>b</sub> y<sub>b</sub> P(o ↔ A, a ↔ b) ≤ Σ<sub>b</sub> y<sub>b</sub> P(o ↔ b) (<code>question5_dual</code>). The
+                    coefficient vector asked for in (38) follows by finite-dimensional separation; that step is being formalized.</li>
+                <li><strong>Conjecture 6</strong> (p. 34), reductions: its strong form implies the paper's display (40)
+                    (<code>conjecture6_of_conjecture6Strong</code>); its hypothesis (39) is a consequence of Conjecture 1
+                    (<code>conjecture6_hypotheses_vacuous</code>); the strong form holds whenever the minimiser is taken in the graph with the
+                    edge forced open (<code>conjecture6Strong_of_forceOpen_min</code>); and the pair-source projection identities and
+                    the source–relay overlap lemma of the document (<code>PairSource</code>). Conjecture 6 itself is not machine-checked.</li>
             </ul>
-            <p>In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra hypotheses (Theorems 2, 3 and 11), for an observer isolated in G ∖ A and its one-vertex extension (Theorems 4 and 5), and, for every graph and every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem 9). Both were open in general. Conjecture 4 is also proved in the paper's printed vocabulary of monotone cluster properties f(v, ω)
-            (<code>conjecture4_clusterProperty_holds</code>). The same file derives Conjecture 1, a short corollary of the development's own
-            first-relay bound, from (3) by the Harris inequality, and Conjecture 3 from Conjecture 1.</p>
+            <p>In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra hypotheses (Theorems 2, 3 and 11), for an observer isolated in G ∖ A and its one-vertex extension (Theorems 4 and 5), and, for every graph and every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem 9). Both were open in general. The strong form of Conjecture 6 used here is the document's Theorem 6.2 (a fixed minimiser, no endpoint hypotheses).</p>
         </section>
 
         <section>
-            <h2>The idea</h2>
-            <p>The development proves a first-relay bound: ordering the relays by E F(C<sub>x</sub>),
-            Σ<sub>x∈A</sub> P(x is o's first relay)·E F(C<sub>x</sub>) ≤ E[F(C<sub>o</sub>); o ↔ A]. The new ingredient is an <em>avoided</em> version of
-            it, in which the observer's cluster is required to avoid a set Y and the relay means are conditioned on x ↮ Y; the development's
-            hierarchy already carries an avoided set, so its peeling argument goes through with Y inserted into every avoidance set. With
-            Y = {a}, a the relay of least mean, and the projected functional φ<sub>a</sub>(K) = F(K) − E[F(C<sub>a</sub>) | C<sub>o</sub> = K], which is
-            increasing in K because a larger explored cluster leaves a smaller cluster for a, every conditional relay mean equals
-            (E F(C<sub>x</sub>) − E F(C<sub>a</sub>)) / P(x ↮ a) ≥ 0, so E[(F(C<sub>o</sub>) − F(C<sub>a</sub>)); o ↮ a, o ↔ A] ≥ 0; on {o ↔ a} the two clusters
-            coincide. That is Conjecture 4 with the fixed minimiser; F = 1{b ∈ ·} gives (3) and Question 7; Harris then gives Conjecture 1 and
-            Conjecture 1 gives Conjecture 3. The route is the one proposed in the ChatGPT document.</p>
+            <h2>Proved in the document, not machine-checked</h2>
+            <ul>
+                <li><strong>Conjecture 6</strong>, in the strong form: for e = {v, w} and a ∈ A minimising P<sub>G</sub>(x ↔ b) over A,
+                    P<sub>G⏚e</sub>(v ↔ b, v ↔ A) ≥ P<sub>G⏚e</sub>(a ↔ b, v ↔ A), where G⏚e has the edge e forced open; display (40) follows,
+                    without the paper's hypothesis (39). The document's first version of this argument contained an error (an exact conditional
+                    identity for a two-vertex source that fails; a four-vertex counterexample was found by a Codex audit). The corrected argument
+                    explores the whole source cluster and carries a nonnegative correction term. It was audited by two further Codex passes and
+                    one Claude Opus pass: no gap and no counterexample, with exact rational enumeration of every inequality in the chain on
+                    graphs with four to six vertices (several thousand instances, no violation). A Lean formalization of this argument is in
+                    progress.</li>
+                <li><strong>Question 9</strong> (p. 36): the minimiser of P<sub>H</sub>(a ↔ b), H the graph with all edges at o removed, satisfies
+                    (41). The document's proof conditions on the edges at o and applies the source-set theorem to the random set of open
+                    neighbours; it needs that theorem for source sets of every size. Not machine-checked. Exhaustive searches over
+                    four-vertex weighted graphs found no counterexample, in either reading of the minimiser.</li>
+                <li><strong>Question 5</strong>: the separation step (a compact convex set of coefficient vectors, a point outside it, a
+                    separating functional, then Conjecture 4 for a weighted vertex count). Standard; formalization in progress.</li>
+                <li><strong>Countable graphs</strong>: the document extends the inequalities to countable graphs and re-derives
+                    θ(p<sub>c</sub>) = 0 through the paper's Theorem 6. The development already contains θ(p<sub>c</sub>) = 0 as a Lean theorem, so
+                    this adds no new statement.</li>
+            </ul>
         </section>
 
         <section>
-            <h2>What it implies</h2>
+            <h2>Not settled</h2>
+            <p><strong>Question 8</strong> (p. 36) takes the minimiser of P(a ↔ b, o ↮ A) over A, with o <em>not</em> joined to A. The document's
+            Question 8 argument instead uses the minimiser of P(o ↔ A, a ↔ b), for which (41) is the machine-checked strong form of Conjecture 2;
+            that is a different question. For the paper's Question 8, in the reading where (41) must hold for every minimiser, there is an exact
+            four-vertex counterexample on the degenerate locus P(o ↮ A) = 0, where the minimand vanishes identically. In the reading with a
+            unique minimiser no counterexample was found in exhaustive four-vertex grid searches, and no proof is known.</p>
+        </section>
+
+        <section>
+            <h2>Implications</h2>
             <ul>
                 <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 is formal from top to bottom: the first four implications
                     in <code>Conjectures.lean</code>, the last in the development (its formalization of the paper's Theorem 6).</li>
-                <li>The relay minimising the unconditional mean is itself a valid relay in the pre-FKG comparison (Question 7); the answer
-                    is uniform in the graph and in the number of relays.</li>
-                <li>The avoided first-relay bound (<code>genY_all</code>) is a general conditioned gluing inequality with no loss in the number of
-                    relays, available for further use; unlike the development's unconditioned bound it needs no nonnegativity of F.</li>
+                <li>Of the paper's nine numbered items, five are machine-checked (Conjectures 1–4, Question 7), one is machine-checked up to a
+                    standard convexity step (Question 5), two have written proofs in the document that passed independent audits but are not
+                    yet in Lean (Conjecture 6, Question 9), and one remains open (Question 8).</li>
+                <li>The relay minimising the unconditional connection probability is itself a valid relay in the pre-FKG comparison
+                    (Question 7), uniformly in the graph and in the number of relays.</li>
+                <li>Conjecture 6 holds without either of its endpoint hypotheses (document); hypothesis (39) is in any case a consequence of
+                    Conjecture 1 (Lean).</li>
+                <li>A source-set version of the avoided first-relay bound, for sources of every size, would settle Question 9 by the document's
+                    argument; the pair-source case gives Conjecture 6.</li>
             </ul>
-            <p>Nothing is claimed about Conjecture 6 or Questions 5, 8 and 9.</p>
         </section>
 
         <section>
             <h2>Files</h2>
             <table>
-                <tr><td><a href="conjectures-1-4/AvoidedDefs.lean">AvoidedDefs</a>, <a href="conjectures-1-4/AvoidedPeelTools.lean">AvoidedPeelTools</a>, <a href="conjectures-1-4/AvoidedPeel.lean">AvoidedPeel</a>, <a href="conjectures-1-4/AvoidedTransfer.lean">AvoidedTransfer</a>, <a href="conjectures-1-4/AvoidedGen.lean">AvoidedGen</a>, <a href="conjectures-1-4/Projection.lean">Projection</a>, <a href="conjectures-1-4/AvoidedClosure.lean">AvoidedClosure</a></td>
-                    <td>The avoided first-relay bound, in compile order: definitions; the peeling identities; (S5D) from the development's hierarchy; all observer positions; the induction on the relay set; the projected functional and its two identities; closure to weights 0 and 1.</td></tr>
-                <tr><td><a href="conjectures-1-4/Statements.lean">Statements.lean</a></td>
-                    <td>The closed statements <code>Conjecture4Fixed</code>, <code>Conjecture4</code>, <code>Conjecture2Strong</code>, <code>Conjecture2</code>, <code>Question7</code>, <code>Conjecture1</code>, in the development's vocabulary.</td></tr>
-                <tr><td><a href="conjectures-1-4/Conjectures.lean">Conjectures.lean</a></td>
-                    <td>The theorems, from the avoided first-relay bound <code>genY_all</code> and the projection lemma; Conjecture 1 from (3) by Harris; Conjecture 3 from Conjecture 1.</td></tr>
-                <tr><td><a href="conjectures-1-4/ClusterProperty.lean">ClusterProperty.lean</a></td>
-                    <td>Conjecture 4 in the paper's vocabulary of monotone cluster properties f(v, ω), and the examples f = |C| and f = 1{|C| ≥ k}.</td></tr>
-                <tr><td><a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>, <a href="conjectures-1-4/README.md">README.md</a></td>
+                <tr><td><a href="lean/AvoidedDefs.lean">AvoidedDefs</a>, <a href="lean/AvoidedPeelTools.lean">AvoidedPeelTools</a>, <a href="lean/AvoidedPeel.lean">AvoidedPeel</a>, <a href="lean/AvoidedTransfer.lean">AvoidedTransfer</a>, <a href="lean/AvoidedGen.lean">AvoidedGen</a>, <a href="lean/Projection.lean">Projection</a>, <a href="lean/AvoidedClosure.lean">AvoidedClosure</a></td>
+                    <td>The avoided first-relay bound (<code>genY_all</code>) and the projected functional, on top of the development's hierarchy.</td></tr>
+                <tr><td><a href="lean/Statements.lean">Statements.lean</a>, <a href="lean/Statements6.lean">Statements6.lean</a></td>
+                    <td>The closed statements of Conjectures 1, 2, 4 and Question 7, and of Conjecture 6 (strong and paper forms), in the development's vocabulary.</td></tr>
+                <tr><td><a href="lean/Conjectures.lean">Conjectures.lean</a>, <a href="lean/ClusterProperty.lean">ClusterProperty.lean</a></td>
+                    <td>The theorems for Conjectures 1–4 and Question 7; Conjecture 4 in the paper's cluster-property vocabulary.</td></tr>
+                <tr><td><a href="lean/PairSource.lean">PairSource.lean</a>, <a href="lean/Conjecture6Reduction.lean">Conjecture6Reduction.lean</a>, <a href="lean/Question5Dual.lean">Question5Dual.lean</a></td>
+                    <td>Lemmas toward Conjecture 6 (pair-source projection identities, overlap lemma, reductions) and the probabilistic half of Question 5.</td></tr>
+                <tr><td><a href="lean/VERIFICATION.log">VERIFICATION.log</a>, <a href="lean/README.md">README.md</a></td>
                     <td>Clean sequential recompile with <code>#print axioms</code>; the statements, files and commands in one place.</td></tr>
+                <tr><td><a href="document/kozma_nitzan_all_conjectures_proof.pdf">kozma_nitzan_all_conjectures_proof.pdf</a>, <a href="document/kozma_nitzan_all_conjectures_proof.tex">.tex</a></td>
+                    <td>The document (26 pages; SHA-256 <code>8f0e51b3…d4736c92</code>).</td></tr>
             </table>
         </section>
 
         <section>
             <h2>How to check</h2>
             <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
-mkdir -p .lake/build/lib/lean/KN         # copy the ten .lean files to KN/, then:
-for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty; do
+mkdir -p .lake/build/lib/lean/KN         # copy the fourteen .lean files to KN/, then:
+for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
-            <p>Expected: the ten <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
+            <p>Expected: the fourteen <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
             The development's sources can be pinned first with <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
-            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). ChatGPT wrote the document proposing the route (an avoided first-relay bound plus a projection lemma) and pointed out that Conjectures 2 and 4 follow from the development's methods; Claude Fable 5.1 designed the formalization, wrote and machine-checked eight of the ten Lean modules and this page, and specified the two remaining modules (<code>Projection</code>, <code>AvoidedClosure</code>), which were written by the ChatGPT model through Codex and recompiled by Claude; the module <code>ClusterProperty</code> was contributed by a Claude Opus audit pass. All mathematics below the avoided first-relay bound is the development's. Review status: three independent Claude Opus audit passes (statement fidelity, proof validity, public text) were run; the edits of the completed passes are incorporated. The development itself has not been refereed by external experts (see its README, 'Provenance and review status'). Released under the Apache License 2.0, matching the development.</p>
+            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). The document is ChatGPT's; its Conjecture 6 argument was corrected after a Codex audit found the error described above. Claude Fable 5.1 designed the Lean formalization, wrote and machine-checked eight of the fourteen modules and this page, and specified the modules Projection, AvoidedClosure and PairSource, which were written by the ChatGPT model through Codex and recompiled by Claude; ClusterProperty, Conjecture6Reduction and Question5Dual were contributed by Claude Opus audit and research passes. All mathematics below the avoided first-relay bound is the development's. Review status: three independent Claude Opus audit passes of the Lean certificate (statement fidelity, proof validity, public text) found no mathematical error; their edits are incorporated. The development itself has not been refereed by external experts (see its README, 'Provenance and review status'). Released under the Apache License 2.0, matching the development.</p>
         </section>
     </main>
 </body>

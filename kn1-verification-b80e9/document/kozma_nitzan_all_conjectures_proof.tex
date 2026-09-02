@@ -1,0 +1,2009 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{leanblock}[theorem]{Lean formalization block}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{warning}[theorem]{Warning}
+
+\newcommand{\PP}{\mathbb P}
+\newcommand{\EE}{\mathbb E}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\Sur}{\operatorname{Sur}}
+\newcommand{\con}{\leftrightarrow}
+\newcommand{\ncon}{\not\leftrightarrow}
+\newcommand{\KN}{Kozma--Nitzan}
+\newcommand{\lean}[1]{\texttt{#1}}
+
+\title{All Numbered Kozma--Nitzan Conjectures and Questions:\\
+       a Source-Set Proof and Lean Formalization Blueprint}
+\author{Prepared from the supplied notes and formal development}
+\date{2 September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\parbox{0.92\textwidth}{
+\textbf{Result.}
+All five numbered conjectures in Kozma--Nitzan---Conjectures
+1, 2, 3, 4, and 6---and all four numbered questions---Questions
+5, 7, 8, and 9---follow from a guarded, source-set extension of the
+conditioned slack hierarchy.  That extension is proved below from the
+same finite-product and BHK inputs used by the supplied development.  In
+fact we prove stronger statements.  In Conjecture~4 one may use the
+particular relay minimizing the \emph{unconditional} cluster mean, which
+answers Question~7.  A finite-dimensional separation argument gives the
+common coefficients requested in Question~5.  The strong pre-FKG theorem
+answers Question~8, and conditioning on the star of the observer answers
+Question~9.  Finally, Conjecture~6 remains true without either of its two
+endpoint assumptions.  The central device is to allow a finite set of
+vertices, rather than one vertex, to be the source in the avoided
+first-relay inequality.
+
+The full source-set wrapper described here has not yet been submitted to a
+Lean kernel.  The probabilistic input it needs is already present in the
+repository, including set clusters, set markers, two-set conditional
+association, and the CSH peeling theorem.  Section~\ref{sec:lean} separates
+the new declarations into small formalization blocks.
+}}
+\end{center}
+
+\begin{abstract}
+Let independent bond percolation be given on a finite weighted graph.  For
+a finite source set $S$, write $C_S=\bigcup_{s\in S}C_s$.  We prove a
+source-set, avoided version of the first-relay inequality.  If $Y$ is an
+avoided set, $T$ is a relay set, $\Phi$ is increasing, and the relays are
+ordered by the conditional means
+\[
+ m_x^Y=\EE[\Phi(C_x)\mid x\ncon Y],
+\]
+then
+\[
+ \EE[\Phi(C_S);\ S\ncon Y,\ S\con T]
+ \geq \sum_{x\in T}\PP(J_x^{S,Y})m_x^Y,
+\]
+where $J_x^{S,Y}$ says that $x$ is the first relay met by $C_S$.
+The proof is the CSH surplus-transfer and relay-peeling proof with a
+set-valued source.  We give all of the quantities and the two inequalities
+used in the induction.
+
+A monotone projection then shows that if $a\in A$ minimizes
+$\EE F(C_a)$, it is the particular relay which works in Conjecture~4.
+Taking $F(K)=\one\{b\in K\}$ proves the strong pre-FKG inequality and hence
+Conjectures~2, 1, and 3.  Finally take the source set $S=\{v,w\}$.  The union
+$C_v\cup C_w$, its connection events, and its avoidance events are
+unchanged by the state of the internal edge $e=\{v,w\}$.  The avoided
+source-set inequality therefore transfers verbatim to the graph in which
+$e$ is forced open, proving Conjecture~6 with the old minimizer $a$.
+
+The same fixed-minimizer theorem resolves the remaining numbered
+questions.  Convex separation produces one probability vector on $A$
+which works simultaneously for every target $b$ (Question~5).  Questions
+7 and 8 are respectively the fixed-minimizer and minimum forms of the
+strong pre-FKG inequality.  For Question~9, reveal all pairs incident to
+the observer; their open endpoints form a random source set in the graph
+with the observer's star deleted, to which the source-set theorem applies
+configuration by configuration.
+An elementary finite-edge exhaustion extends the needed inequality to
+countable graphs; combined with Kozma--Nitzan's Theorem~6, this also gives
+$\PP_{p_c}(|C(0)|=\infty)=0$ on $\mathbb Z^d$ for every $d\geq2$.
+\end{abstract}
+
+\tableofcontents
+
+\section{Model and exact targets}\label{sec:targets}
+
+Let $V$ be a finite vertex set and let every unordered pair $e$ be open,
+independently, with probability $p_e\in[0,1]$.  A pair of weight zero is
+simply an absent edge.  The open cluster of $x$ is $C_x$.  For a finite
+source set $S\subseteq V$, put
+\begin{equation}\label{eq:setcluster}
+ C_S:=\bigcup_{s\in S}C_s.
+\end{equation}
+Thus $S\con B$ means $C_S\cap B\ne\varnothing$, and $S\ncon B$ means
+$C_S\cap B=\varnothing$.  We use the same symbols when one of the sets is
+a singleton.  All sets in this document are finite.
+
+A cluster functional is an increasing map $F:2^V\to\mathbb R$.  The
+paper's slightly more intrinsic definition of a monotone cluster property
+is equivalent on the support of a finite percolation measure: condition
+(2) in that definition makes the value common to all roots of one cluster,
+and an isotone function on the poset of realizable clusters extends to
+$2^V$ by
+\[
+ F(K)=\max\{f(L):L\text{ is a realizable cluster and }L\subseteq K\}.
+\]
+An irrelevant constant can be inserted when the displayed set is empty.
+
+We record the five numbered conjectures in the form used below.  We always
+assume $A\ne\varnothing$.
+
+\begin{conjecture}[\KN\ 1]
+For vertices $o,b$ and a relay set $A$,
+\begin{equation}\label{eq:C1}
+ \PP(o\con b)\geq \PP(o\con A)\min_{x\in A}\PP(x\con b).
+\end{equation}
+\end{conjecture}
+
+\begin{conjecture}[\KN\ 2]
+One has
+\begin{equation}\label{eq:C2}
+ \PP(o\con b)\geq
+ \min_{x\in A}\PP(o\con A,\ x\con b).
+\end{equation}
+The useful stronger form has $\PP(o\con b,o\con A)$ on the left.
+\end{conjecture}
+
+\begin{conjecture}[\KN\ 3]
+For every $\varepsilon>0$ there is a $\delta>0$, independent of the graph
+and of $|A|$, such that
+\[
+ \PP(o\con A)>1-\delta,
+ \qquad \PP(x\con b)>1-\delta\quad(x\in A)
+\]
+imply $\PP(o\con b)>1-\varepsilon$.
+\end{conjecture}
+
+\begin{conjecture}[\KN\ 4]
+For every increasing cluster functional $F$,
+\begin{equation}\label{eq:C4}
+ \EE[F(C_o);o\con A]
+ \geq \min_{x\in A}\EE[F(C_x);o\con A].
+\end{equation}
+\end{conjecture}
+
+For $e=\{v,w\}$, write $G/e$ for the weighting obtained by replacing
+$p_e$ by $1$.  This is equivalent to contraction for connectivity events.
+
+\begin{conjecture}[\KN\ 6]
+Suppose $a\in A$ minimizes $\PP_G(x\con b)$ over $x\in A$ and
+\[
+ \PP_G(x\con b)\geq
+ \PP_G(x\con A)\PP_G(a\con b),\qquad x\in\{v,w\}.
+\]
+Then
+\begin{equation}\label{eq:C6}
+ \PP_{G/e}(v\con b)\geq
+ \PP_{G/e}(v\con A)\PP_{G/e}(a\con b).
+\end{equation}
+\end{conjecture}
+
+\begin{conjecture}[\KN\ Question 5]
+Do there exist coefficients $c_x\geq0$, depending on $G,o,A$ but not on
+$b$, with $\sum_{x\in A}c_x=1$, such that simultaneously for every
+$b\in V$,
+\begin{equation}\label{eq:Q5}
+ \PP(o\con b)\geq
+ \sum_{x\in A}c_x\PP(o\con A,x\con b)?
+\end{equation}
+\end{conjecture}
+
+The remaining candidate questions all ask whether a specified relay $a$
+satisfies
+\begin{equation}\label{eq:Qcandidate}
+ \PP(o\con b,o\con A)\geq\PP(o\con A,a\con b).
+\end{equation}
+
+\begin{conjecture}[\KN\ Question 7]
+Does \eqref{eq:Qcandidate} hold when $a$ minimizes
+$\PP(x\con b)$ over $x\in A$?
+\end{conjecture}
+
+\begin{conjecture}[\KN\ Question 8]
+Does \eqref{eq:Qcandidate} hold when $a$ minimizes
+$\PP(o\con A,x\con b)$ over $x\in A$?
+\end{conjecture}
+
+\begin{conjecture}[\KN\ Question 9]
+Let $H$ be obtained from $G$ by deleting every pair incident to $o$.
+Does \eqref{eq:Qcandidate}, with probabilities evaluated in $G$, hold
+when $a$ minimizes $\PP_H(x\con b)$ over $x\in A$?
+\end{conjecture}
+
+There is no Conjecture~5 and no Question~6 in the paper.  Its complete
+numbered inventory is
+\[
+ \text{Conjectures }1,2,3,4,6,
+ \qquad \text{Questions }5,7,8,9.
+\]
+The results below prove every one of these statements.  The unnumbered
+strong form (3) of Conjecture~2 is also proved.
+
+\section{Avoided first-relay quantities}\label{sec:definitions}
+
+Fix an avoided set $Y\subseteq V$.  For a vertex $x$ put
+\[
+ D_Y(x):=\{x\ncon Y\},\qquad d_Y(x):=\PP(D_Y(x)).
+\]
+For a source set $S$, define analogously
+\[
+ D_Y(S):=\{S\ncon Y\}=\bigcap_{s\in S}D_Y(s).
+\]
+Let $T\subseteq V\setminus Y$ be a relay set and let
+$r:T\to\{1,\ldots,|T|\}$ be a bijective rank.  For an increasing
+functional $\Phi$, assume first that $d_Y(x)>0$ for every $x\in T$ and put
+\begin{equation}\label{eq:condmean}
+ m_x^Y:=\frac{\EE[\Phi(C_x);D_Y(x)]}{d_Y(x)}.
+\end{equation}
+The rank is called compatible if
+\begin{equation}\label{eq:compatible}
+ r(x)<r(z)\quad\Longrightarrow\quad m_x^Y\leq m_z^Y.
+\end{equation}
+
+The first-relay pattern of $x$, seen from $S$ while $Y$ is avoided, is
+\begin{equation}\label{eq:pattern}
+ J_x^{S,Y}:=D_Y(S)\cap\{S\con x\}
+ \cap\bigcap_{\substack{z\in T\\r(z)<r(x)}}\{S\ncon z\}.
+\end{equation}
+The patterns are disjoint and
+\begin{equation}\label{eq:partition}
+ \bigsqcup_{x\in T}J_x^{S,Y}
+ =D_Y(S)\cap\{S\con T\}.
+\end{equation}
+
+Define the avoided source surplus
+\begin{equation}\label{eq:surplus}
+ \Sur_{S,Y}(T;r,\Phi):=
+ \EE[\Phi(C_S);D_Y(S),S\con T]
+ -\sum_{x\in T}\PP(J_x^{S,Y})m_x^Y.
+\end{equation}
+For a singleton source we abbreviate $\Sur_{x,Y}:=\Sur_{\{x\},Y}$.
+Notice that no connectedness of $C_S$ is asserted or needed.
+
+\section{The source-set lift of the conditioned slack hierarchy}
+\label{sec:sourceset}
+
+
+The extension needed below is not obtained by wiring the source vertices.
+Wiring would turn $C_S$ into one connected cluster, but would also change
+the law of a relay cluster whenever that relay reaches $S$.  There is a
+second, subtler trap.  From
+\[
+ z\ncon B,\qquad z\con S
+\]
+one cannot conclude $S\ncon B$: a different component generated by $S$
+may hit $B$.  Thus an unguarded set-observer version of CSH is not enough.
+The correct extension retains the full source-avoidance guard at every
+evaluation.
+
+\subsection{Guarded source forms}
+
+For finite vertex sets $R,X,Y$, write
+\begin{equation}\label{eq:guard-event}
+ \mathsf H_{X\mid Y}(R):=\{R\ncon Y,\ R\con X\}.
+\end{equation}
+The elementary identity driving the construction is the disjoint union
+\begin{equation}\label{eq:guard-split}
+ \mathsf H_{X\cup\{d\}\mid Y}(R)
+ =\mathsf H_{X\mid Y}(R)\ \sqcup\
+   \mathsf H_{\{d\}\mid Y\cup X}(R).
+\end{equation}
+Indeed, if $C_R$ has not met $X$, then its first new contact with
+$X\cup\{d\}$ is a contact with $d$, and in that case $C_R$ avoids
+$Y\cup X$.  Notice that \eqref{eq:guard-split} keeps track of every
+component in $C_R$.
+
+For a vertex owner $x$, an avoided set $Y$, a finite source $R$, and an
+increasing functional $\psi$, put
+\begin{align}
+ d_x(Y)&:=\PP(x\ncon Y),\label{eq:guard-denom}\\
+ \Gamma_{x,Y}^{\psi}(R)
+ &:=d_x(Y)\EE[\psi(C_x);\mathsf H_{\{x\}\mid Y}(R)]\notag\\
+ &\hspace{1.5cm}-\EE[\psi(C_x);x\ncon Y]
+       \PP(\mathsf H_{\{x\}\mid Y}(R)).\label{eq:guardGamma}
+\end{align}
+When $R=\{u\}$, the guard and the contact imply that $C_u=C_x$ and
+$x\ncon Y$; hence \eqref{eq:guardGamma} is exactly the ordinary
+denominator-free CSH covariance evaluated at $u$.
+
+Let ${\bf d}=(d_1,\ldots,d_\ell)$ be a list of distinct decoys and set
+\[
+ B_j=Y\cup\{x,d_i:i<j\},\qquad
+ B_*=Y\cup\{x,d_1,\ldots,d_\ell\}.
+\]
+The guarded decoy profile and observer price are
+\begin{align}
+ c_j(R)&=
+ \frac{\PP(\mathsf H_{\{d_j\}\mid B_j}(R))}
+      {\PP(d_j\ncon B_j)},\label{eq:guard-decoy}\\
+ p_{O,v}&=
+ \frac{\PP(\mathsf H_{\{v\}\mid B_*}(O))}
+      {\PP(v\ncon B_*)}.
+ \label{eq:guard-price}
+\end{align}
+For a function $h$ on finite source sets define
+\begin{equation}\label{eq:guard-slack}
+ L_0 h=h,\qquad
+ (L_j h)(R)=(L_{j-1}h)(R)-c_j(R)(L_{j-1}h)(\{d_j\}).
+\end{equation}
+All evaluations other than the primary one at $O$ are singletons.  In
+particular, for singleton $O=\{o\}$ all guards in
+\eqref{eq:guard-decoy}--\eqref{eq:guard-price} collapse by connectivity,
+and these are precisely the constants of the CSH already in the project.
+
+\begin{theorem}[guarded-source conditioned slack hierarchy]
+\label{thm:guardCSH}
+Assume first that all edge weights lie in $(0,1)$ and that the sets
+$Y$, $O$, $\{v\}$, $\{x\}$, and $\{d_1,\ldots,d_\ell\}$ are pairwise
+disjoint (the $d_j$ are distinct).  For every increasing $\psi$,
+\begin{equation}\label{eq:guardCSH}
+ \boxed{\quad
+ L_\ell\Gamma_{x,Y}^{\psi}(O)
+ -p_{O,v}L_\ell\Gamma_{x,Y}^{\psi}(\{v\})\geq0.
+ \quad}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+We give every additional identity needed beyond the existing CSH proof.
+Throughout this proof a covariance is unnormalised: thus
+\(\operatorname{cov}_D(f,g)=\PP(D)\EE[fg;D]-\EE[f;D]\EE[g;D]\).
+Every $\Gamma$ in the asserted margin annihilates constants.  Since the
+state space is finite, we may therefore add a constant to $\psi$ and
+assume throughout the proof that $\psi\geq0$.
+
+\emph{1. The source kernel and guarded exchange.}
+Work in an induced finite world $U$.  For a possible cluster $K$ of a
+vertex $v$, define
+\begin{equation}\label{eq:alpha-kernel}
+ \alpha_{R,B}^{U}(K)=
+ \one\{K\cap R\ne\varnothing\}\,
+ \PP_{U\setminus K}(C_{R\setminus K}\cap B=\varnothing).
+\end{equation}
+Boundary pairs meeting $K$ are deleted in $U\setminus K$.  Directly from
+this definition,
+\begin{equation}\label{eq:alpha-properties}
+ K\subseteq K'\Longrightarrow
+ \alpha_{R,B}^{U}(K)\leq\alpha_{R,B}^{U}(K'),
+ \qquad B\subseteq B'\Longrightarrow
+ \alpha_{R,B'}^{U}(K)\leq\alpha_{R,B}^{U}(K).
+\end{equation}
+For the first implication, the indicator can only turn on, the residual
+source shrinks, and the residual graph loses possible paths to $B$.
+Exploration of $C_v$ gives the exact tower identity
+\begin{equation}\label{eq:alpha-tower}
+ \EE_U[\alpha_{R,B}^{U}(C_v);v\ncon B]
+ =\PP_U(R\ncon B,R\con v).
+\end{equation}
+In particular, exploration of $C_x$ gives
+\begin{equation}\label{eq:gamma-alpha}
+ \Gamma_{x,Y}^{\psi}(R)
+ =d_x(Y)\EE[\psi(C_x)\alpha_{R,Y}(C_x);x\ncon Y]
+  -\EE[\psi(C_x);x\ncon Y]
+   \EE[\alpha_{R,Y}(C_x);x\ncon Y].
+\end{equation}
+Thus a guarded contact can be averaged to an increasing function of one
+cluster.  We use this identity below for the exchange estimate.  It is
+important, however, not to feed $\alpha_{R,Y}^{V}$ unchanged into the
+old one-cluster Gibbs reduction: after $C_Y$ is exposed, that fixed kernel
+is not the residual-world contact indicator.  The correct reduction is
+the two-cluster calculation in part~4 below.
+
+Fix a marker set $X$ with $x\in X$ and $v\notin X$, and put
+\[
+ E_{X,R}(N)=\PP_U(R\ncon X\cup N,R\con v),\qquad
+ M_X(N)=\PP_U(v\ncon X\cup N).
+\]
+If $N\cap N'=\varnothing$ and $N,N'$ are disjoint from $X$, then
+\begin{equation}\label{eq:guard-exchange}
+ E_{X,R}(N)M_X(N')
+ \leq M_X(N\cup N')E_{X,R}(\varnothing).
+\end{equation}
+Here is a complete derivation.  The one-cluster BHK core says, for
+increasing nonnegative $f,g$,
+\[
+ \EE[f(C_v);v\ncon A]\EE[g(C_v);v\ncon A']
+ \leq \EE[f(C_v)g(C_v);v\ncon A\cap A']
+       \PP(v\ncon A\cup A').
+\]
+Apply it with avoided sets $X\cup N$ and $X\cup N'$, increasing function
+$K\mapsto\alpha_{R,X\cup N}^{U}(K)$, and the constant function $1$.
+Because the two additional sets are disjoint, their intersection is
+$X$ and their union is $X\cup N\cup N'$.  Thus
+\[
+ \EE[\alpha_{R,X\cup N}(C_v);v\ncon X\cup N]M_X(N')
+ \leq
+ \EE[\alpha_{R,X\cup N}(C_v);v\ncon X]M_X(N\cup N').
+\]
+The first expectation is $E_{X,R}(N)$ by
+\eqref{eq:alpha-tower}.  By \eqref{eq:alpha-properties}, the second is at
+most the same expectation with $X\cup N$ replaced by $X$, namely
+$E_{X,R}(\varnothing)$.  This proves \eqref{eq:guard-exchange}.  Cases in
+which the displayed disjointness fails reduce either to the same statement
+after deleting redundant vertices or to a zero factor.
+
+\emph{2. The guarded two-source inequality.}
+For a nonnegative world functional $h$ write, with
+$U_N=U\setminus C_N$,
+\begin{align*}
+ Y_h^x(N)&=\EE_U[\one\{x\ncon N\}h(U_N)],\\
+ X_{R,h}^x(N)&=\EE_U[\one\{x\ncon N,R\ncon N\}
+                 q_R(U_N)h(U_N)],\\
+ q_R(W)&=\frac{\PP_W(R\ncon X,R\con v)}
+                    {\PP_W(v\ncon X)}.
+\end{align*}
+The one-source stopped-Harris estimate already proved in the project is
+\begin{equation}\label{eq:guard-star}
+ Y_h^x(N)M_X(\varnothing)\leq M_X(N)h(U),
+ \qquad N\longmapsto Y_h^x(N)\text{ is antitone},
+\end{equation}
+for
+$h(W)=\operatorname{Cov}_W(\psi(C_x),\one\{v\con X\})$.
+The guarded analogue of \lean{CovTau.metaA2\_of\_star} is
+\begin{equation}\label{eq:guard-A2}
+ E_{X,R}(N)Y_h^x(N')
+ \leq M_X(N\cup N')X_{R,h}^x(N\cap N').
+\end{equation}
+For $N\cap N'=\varnothing$, multiply \eqref{eq:guard-star} by
+$E_{X,R}(N)$ and use \eqref{eq:guard-exchange}.  Since
+$E_{X,R}(\varnothing)=q_R(U)M_X(\varnothing)$, cancellation of the
+positive factor $M_X(\varnothing)$ gives
+\[
+ E_{X,R}(N)Y_h^x(N')
+ \leq M_X(N\cup N')q_R(U)h(U),
+\]
+which is \eqref{eq:guard-A2} at the empty intersection.  If that factor
+is zero, both $E_{X,R}(N)$ and the left side vanish, so the same conclusion
+holds without division.
+
+For completeness we give the nonempty-intersection step rather than
+referring to the analogous step in the ordinary META--A2 proof.  Put
+$Z=N\cap N'\ne\varnothing$ and $U'=U\setminus Z$.  The cases
+$R\cap Z\ne\varnothing$, $x\in Z$, or $v\in Z$ have a zero factor and
+are immediate.  Otherwise expose the set $s\subseteq U'$ of vertices
+having at least one open pair to $Z$.  The indicators defining $s$ use
+disjoint blocks of pair coordinates, so its law is a product law.  With
+$N_0=N\setminus Z$ and $N'_0=N'\setminus Z$, source-cluster exploration
+gives the following four exact residual functions:
+\[
+ \begin{array}{ll}
+ e(s)=E_{X,R}^{U'}(N_0\cup s),
+ &y(s)=Y_{h}^{x,U'}(N'_0\cup s),\\[2mm]
+ m(s)=M_X^{U'}(N_0\cup N'_0\cup s),
+ &\chi(s)=X_{R,h}^{x,U'}(s).
+ \end{array}
+\]
+The extra source guard has an exact recursion here: on the nonzero
+branch, $R\ncon N$ in $U$ is equivalent to
+$R\ncon(N_0\cup s)$ in $U'$.  Thus no residual avoidance event has been
+factored.
+
+For two possible neighbour sets $s,t\subseteq U'$, define the
+cross-deleted arguments
+\[
+ P=s\cup(N_0\setminus t),\qquad
+ P'=t\cup(N'_0\setminus s).
+\]
+Both $E_{X,R}$ and $Y_h^x$ are antitone.  Since
+$P\subseteq N_0\cup s$ and $P'\subseteq N'_0\cup t$, nonnegativity and
+the induction hypothesis in $U'$ give
+\[
+ e(s)y(t)
+ \leq E_{X,R}^{U'}(P)Y_h^{x,U'}(P')
+ \leq M_X^{U'}(P\cup P')X_{R,h}^{x,U'}(P\cap P').
+\]
+As $N_0\cap N'_0=\varnothing$, elementary set algebra gives
+\[
+ P\cup P'=N_0\cup N'_0\cup(s\cup t),
+ \qquad P\cap P'=s\cap t.
+\]
+Consequently
+\[
+ e(s)y(t)\leq m(s\cup t)\chi(s\cap t).
+\]
+All four functions are nonnegative, and the product density of the
+neighbour set satisfies
+$\pi(s)\pi(t)=\pi(s\cap t)\pi(s\cup t)$.  The
+Ahlswede--Daykin four-functions theorem therefore integrates this
+pointwise inequality to \eqref{eq:guard-A2}.  Together with the empty
+intersection case, this proves \eqref{eq:guard-A2} by strong induction
+on $|U|$.
+
+Take $N=N'=Y$ in \eqref{eq:guard-A2}.  With
+$U_Y=V\setminus C_Y$ it says
+\begin{multline}\label{eq:guard-Htw}
+ \PP(R\ncon X\cup Y,R\con v)
+ \EE[\one\{x\ncon Y\}h(U_Y)]\\
+ \leq \PP(v\ncon X\cup Y)
+ \EE[\one\{x\ncon Y,R\ncon Y\}q_R(U_Y)h(U_Y)].
+\end{multline}
+
+We also need the following guarded version of the four-point transfer.
+Inside any fixed world put
+\[
+ h_R(U)=\operatorname{Cov}_U(\psi(C_x),\one\{R\con X\}),
+ \qquad h_v(U)=\operatorname{Cov}_U(\psi(C_x),\one\{v\con X\}).
+\]
+Then
+\begin{equation}\label{eq:guard-fourpoint}
+ h_R(U)\geq q_R(U)h_v(U).
+\end{equation}
+Here is a proof, included because the superficially stronger coefficient
+$\PP(R\con v\mid v\ncon X)$ is in general false for a disconnected
+source $R$.  Put
+\[
+ A=\{R\con X\},\quad B=\{R\con v\},\quad
+ D=\{v\ncon X\},\quad J=\{R\ncon X,R\con v\}.
+\]
+The increasing event $A\cup B$ and Harris give, with
+$m=\EE_U\psi(C_x)$,
+\begin{equation}\label{eq:guard-fourpoint-harris}
+ h_R(U)\geq m\PP_U(J)-\EE_U[\psi(C_x);J],
+\end{equation}
+because $(A\cup B)\setminus A=J$.  On $D$ the event $J$ is
+\[
+ \{C_v\cap R\ne\varnothing\}\cap\{C_X\cap R=\varnothing\}.
+\]
+It is increasing in $C_v$ and decreasing in $C_X$, whereas
+$\psi(C_x)$ is constant in the first cluster and increasing in the
+second.  The two-set BHK conditional association theorem therefore gives
+\begin{equation}\label{eq:guard-fourpoint-bhk}
+ \PP_U(D)\EE_U[\psi(C_x);J]
+ \leq \PP_U(J)\EE_U[\psi(C_x);D].
+\end{equation}
+Since
+$h_v(U)=\PP_U(D)m-\EE_U[\psi(C_x);D]$, equations
+\eqref{eq:guard-fourpoint-harris}--\eqref{eq:guard-fourpoint-bhk}
+prove \eqref{eq:guard-fourpoint}; the zero-denominator case is again
+immediate.
+
+Divide
+\eqref{eq:guard-Htw} by its positive denominator and combine it with
+\eqref{eq:guard-fourpoint}.  The resulting horizontal margin is
+\begin{equation}\label{eq:guard-horizontal}
+ \EE[\one\{x\ncon Y,R\ncon Y\}h_R(U_Y)]
+ -p_{R,v}\EE[\one\{x\ncon Y\}h_v(U_Y)]\geq0.
+\end{equation}
+
+\emph{3. The repaired guarded unfolding.}
+We spell out the point at which the guard changes the existing
+\lean{CSH.slForm\_jn} calculation.  Fix an outer configuration, let $Z$
+be the already exposed cluster of $Y$, and work in the residual graph.
+For its connectivity relation write
+\[
+ j_{S\mid Z}(R)=\one\{R\cap Z=\varnothing,\ R\con S\},\qquad
+ a_{S,d\mid Z}(R)=\one\{R\cap Z=\varnothing,\ R\ncon S,\ R\con d\}.
+\]
+Then \eqref{eq:guard-split} is the pointwise identity
+\begin{equation}\label{eq:guard-j-split}
+ j_{S\cup\{d\}\mid Z}(R)=j_{S\mid Z}(R)+a_{S,d\mid Z}(R).
+\end{equation}
+If $e_{d,Z}=\one\{d\notin Z\}$, the singleton dichotomy is
+\begin{equation}\label{eq:guard-singleton-dichotomy}
+ j_{S\mid Z}(\{d\})=e_{d,Z}-a_{S,d\mid Z}(\{d\}).
+\end{equation}
+Consequently one level step, with any coefficient function $c$, is
+\begin{multline}\label{eq:guard-level-step}
+ j_{S\mid Z}(R)-c(R)j_{S\mid Z}(\{d\})\\
+ =j_{S\cup\{d\}\mid Z}(R)
+  -\bigl(a_{S,d\mid Z}(R)-c(R)a_{S,d\mid Z}(\{d\})\bigr)
+  -c(R)e_{d,Z}.
+\end{multline}
+The last term is constant in the residual configuration and therefore
+has zero covariance.  Iterating \eqref{eq:guard-level-step} is the exact
+guarded replacement for \lean{CSH.slForm\_jn}; it produces the marker
+$S=\{x,d_1,\ldots,d_\ell\}$ and one centred bracket for each decoy.
+
+We now record the extra exploration which is essential for a set-valued
+source.  It is useful to distinguish edge and vertex clusters.  Write
+$\cC_R(\omega)$ for the union of the open \emph{edge} clusters rooted in
+$R$, and put
+\[
+ V_R(F):=R\cup\{u:\exists e\in F,\ u\in e\},
+ \qquad C_R(\omega)=V_R(\cC_R(\omega)).
+\]
+Thus isolated source vertices are retained.  In the Lean notation let
+$g$ be the edge-cluster reading of $\psi$ and set
+\[
+ \Theta(\omega):=\lean{CSH.resid}(w,x,Y,g,\omega),\qquad
+ \widehat\Phi(K):=\lean{CSH.phiFun}(w,x,Y,g,K).
+\]
+The correctly typed functional on an edge cluster of $d$ is
+\begin{equation}\label{eq:typed-phi}
+ \Psi_d(F):=\widehat\Phi\bigl(\{d\}\cup
+                    \{u:\exists e\in F,\ u\in e\}\bigr),
+ \qquad
+ \Psi_d(\cC_d)=\widehat\Phi(C_d).
+\end{equation}
+The existing lemmas \lean{CSH.phiFun\_nonneg} and
+\lean{CSH.phiFun\_mono} say that $\widehat\Phi$, and hence $\Psi_d$, is
+nonnegative and increasing.
+
+Let $S$ contain $x$, let $d\notin S\cup Y$, and put $B=S\cup Y$.  For an
+arbitrary finite source $R$ abbreviate
+\[
+ E_R:=\mathsf H_{\{d\}\mid B}(R)
+     =\{C_R\cap B=\varnothing,\ d\in C_R\},
+ \qquad E_d:=\{d\ncon B\}.
+\]
+The correct set-cluster Markov identity is
+\begin{equation}\label{eq:guard-markov-a}
+ \EE[\Theta;E_R]=-\EE[\widehat\Phi(C_R);E_R].
+\end{equation}
+Here is a finite-sum proof, included to make the replacement formalizable.
+For an edge set $F$ let
+\[
+ \iota(F)=\one\{V_R(F)\cap B=\varnothing,\ d\in V_R(F)\},
+\]
+and let $\overline F_R$ be the set of pairs meeting $V_R(F)$.  Part~(a)
+of Lemma $\Phi$, in residual form, gives
+\[
+ \sum_\eta {\rm wt}(\eta)\,
+   \Theta(\eta\setminus\overline F_R)
+ =-\widehat\Phi(V_R(F)).
+\]
+Apply the set-cluster conditioning identity
+\lean{CSH.set\_sum\_cond\_sdiff\_off} to the kernel
+$(F,\beta)\mapsto\iota(F)\Theta(\beta)$.  On
+$\{\iota(\cC_R)=1\}$ the whole union $C_R$ avoids
+$\{x\}\cup Y\subseteq B$, so deleting all pairs meeting $C_R$ changes
+neither $C_x$, $C_Y$, nor the residual $\Theta$.  The left side of the
+conditioning identity is therefore the left side of
+\eqref{eq:guard-markov-a}; the displayed residual identity turns its
+right side into the right side of \eqref{eq:guard-markov-a}.  The point
+is that the exploration is of the \emph{whole} source union $C_R$, not
+only the one component $C_d$.
+
+On $E_R$ one has $C_d\subseteq C_R$.  Define the unnormalised correction
+\begin{equation}\label{eq:guard-error}
+ \operatorname{Err}_{d,B}(R):=
+ \EE\!\left[
+   \widehat\Phi(C_R)-\Psi_d(\cC_d);E_R\right].
+\end{equation}
+Monotonicity of $\widehat\Phi$ gives
+\begin{equation}\label{eq:guard-error-sign}
+ \operatorname{Err}_{d,B}(R)\geq0.
+\end{equation}
+For every vertex $u$,
+\begin{equation}\label{eq:guard-error-singleton}
+ \operatorname{Err}_{d,B}(\{u\})=0,
+\end{equation}
+because on $E_{\{u\}}$ the connection $u\con d$ gives $C_u=C_d$.
+Impossible events and the case $u=d$ are included.
+
+Equations \eqref{eq:guard-markov-a}--\eqref{eq:guard-error} give
+\[
+ \EE[\Theta;E_R]
+ =-\EE[\Psi_d(\cC_d);E_R]-\operatorname{Err}_{d,B}(R),
+\]
+whereas the singleton source gives the exact identity
+\begin{equation}\label{eq:guard-markov-d}
+ \EE[\Theta;E_d]
+ =-\EE[\Psi_d(\cC_d);E_d].
+\end{equation}
+Put $e_d=\PP(E_d)$ and $q_R=\PP(E_R)$.  The division-free form, valid
+also when $e_d=0$, is
+\begin{equation}\label{eq:guard-one-decoy-cross}
+ e_d\EE[\Theta;E_R]-q_R\EE[\Theta;E_d]
+ =-\Gamma_{d,B}^{\widehat\Phi}(R)
+  -e_d\operatorname{Err}_{d,B}(R).
+\end{equation}
+Under the present nondegeneracy assumptions $e_d>0$.  With
+$c(R)=q_R/e_d$, and after the $C_Y$ Markov merge, the two $a$-terms are
+the indicators of $E_R$ and $E_d$.  Hence the corrected one-decoy
+identity is
+\begin{equation}\label{eq:guard-one-decoy}
+ \EE\!\left[\Theta
+   \bigl(a_{S,d\mid C_Y}(R)-c(R)a_{S,d\mid C_Y}(\{d\})\bigr)\right]
+ =-e_d^{-1}\Gamma_{d,B}^{\widehat\Phi}(R)
+  -\operatorname{Err}_{d,B}(R).
+\end{equation}
+
+We now make every quantity in the unfolding explicit.  Let $\mu$ be the
+original product law, put
+\[
+ D=\{x\ncon Y\},\qquad \delta=\PP(D)>0,
+\]
+and, for an outer configuration $\omega\in D$, let
+$Z_\omega=C_Y(\omega)$.  Denote by $\mu_\omega$ the product law obtained
+from $\mu$ by setting to zero every pair meeting $Z_\omega$.  Thus
+$\mu_\omega$ is the residual-world law after the $Y$-cluster has been
+exposed.  For a residual configuration $\eta$ define
+\begin{align*}
+ j^\omega_S(R;\eta)
+   &=\one\{R\cap Z_\omega=\varnothing,\ C_R(\eta)\cap S\ne\varnothing\},\\
+ a^\omega_{S,d}(R;\eta)
+   &=\one\{R\cap Z_\omega=\varnothing,\ C_R(\eta)\cap S=\varnothing,
+                    \ d\in C_R(\eta)\},\\
+ \kappa^\omega_S(R)
+   &=\operatorname{Cov}_{\mu_\omega}
+       \bigl(\psi(C_x),j^\omega_S(R;\mathord\cdot)\bigr).
+\end{align*}
+The cluster symbols in these three formulas are evaluated in the residual
+configuration.  These are precisely $j_{S\mid Z_\omega}$,
+$a_{S,d\mid Z_\omega}$, and their world covariance from
+\eqref{eq:guard-level-step}.
+
+We shall also need tail level forms.  For $0\leq j\leq k\leq\ell$ put
+\[
+ L_{j,j}h=h,\qquad
+ (L_{j,k}h)(R)=(L_{j,k-1}h)(R)
+       -c_k(R)(L_{j,k-1}h)(\{d_k\}),
+ \qquad L_{>j}:=L_{j,\ell}.
+\]
+Thus $L_{>0}=L_\ell$, while $L_{>j}$ uses exactly the later decoys
+$d_{j+1},\ldots,d_\ell$.  Write
+\[
+ X=\{x,d_1,\ldots,d_\ell\},\qquad p=p_{O,v}.
+\]
+The unnormalised averaged within-world and horizontal margins are
+\begin{align}
+ \mathcal W_{x,Y,{\bf d}}^{O,v}(\psi)
+   &:={\int_D}\Bigl[
+       (L_{>0}\kappa^\omega_{\{x\}})(O)
+       -p(L_{>0}\kappa^\omega_{\{x\}})(\{v\})\Bigr]d\mu(\omega),
+       \label{eq:guard-W-def}\\
+ \mathcal H_{x,Y,{\bf d}}^{O,v}(\psi)
+   &:={\int_D}\Bigl[
+       \kappa^\omega_X(O)-p\kappa^\omega_X(\{v\})\Bigr]d\mu(\omega).
+       \label{eq:guard-H-def}
+\end{align}
+By cluster exploration, the second quantity is exactly
+\[
+ \EE[\one\{x\ncon Y,O\ncon Y\}h_O(U_Y)]
+ -p\EE[\one\{x\ncon Y\}h_v(U_Y)],
+\]
+the left side of \eqref{eq:guard-horizontal} with $R=O$.  If
+$v\in C_Y$, its residual-world contact indicator is zero.  Hence
+$\mathcal H\geq0$.
+
+For the $j$-th decoy set
+\[
+ S_j=\{x,d_i:i<j\},\qquad B_j=S_j\cup Y,\qquad
+ e_j=\PP(d_j\ncon B_j),\qquad
+ \operatorname{Err}_j=\operatorname{Err}_{d_j,B_j},
+ \qquad \Psi_j=\Psi_{d_j}.
+\]
+The exact bridge between the residual-world calculation and the global
+one-decoy identity is the following function of the source $R$:
+\begin{align}
+ I_j(R)
+ &:={\int_D}\operatorname{Cov}_{\mu_\omega}\!\left(
+       \psi(C_x),
+       a^\omega_{S_j,d_j}(R;\mathord\cdot)
+       -c_j(R)a^\omega_{S_j,d_j}(\{d_j\};\mathord\cdot)
+       \right)d\mu(\omega)                                      \notag\\
+ &=\EE[\Theta;\mathsf H_{\{d_j\}\mid B_j}(R)]
+   -c_j(R)\EE[\Theta;d_j\ncon B_j]                              \notag\\
+ &=-e_j^{-1}\Gamma_{d_j,B_j}^{\widehat\Phi}(R)
+   -\operatorname{Err}_j(R).
+ \label{eq:guard-world-global-bridge}
+\end{align}
+The second line is a kernel-valued $C_Y$ set-cluster Markov merge; unlike
+a fixed-test conditioning statement, it retains the full guard
+$R\ncon Y$.  For completeness, here is the finite-sum identity being
+used.  Write $\operatorname{cut}(Z)$ for all pairs meeting $Z$ and put
+\[
+ \bar g(Z)=\sum_\eta {\rm wt}(\eta)\,
+   \psi\bigl(C_x(\eta\setminus\operatorname{cut}(Z))\bigr).
+\]
+For every bounded two-argument test $F$ set-cluster conditioning gives
+\begin{multline}\label{eq:guard-kernel-merge}
+ \sum_\omega {\rm wt}(\omega)\one\{x\notin Z_\omega\}
+ \sum_\eta {\rm wt}(\eta)
+ \left[\psi\bigl(C_x(\eta\setminus\operatorname{cut}(Z_\omega))\bigr)
+       -\bar g(Z_\omega)\right]
+ F(Z_\omega,\eta\setminus\operatorname{cut}(Z_\omega))\\
+ =\sum_\zeta {\rm wt}(\zeta)\Theta(\zeta)
+ F(Z_\zeta,\zeta\setminus\operatorname{cut}(Z_\zeta)).
+\end{multline}
+This is the set-cluster tower identity applied to the kernel
+$(Z,\beta)\mapsto\one\{x\notin Z\}
+(\psi(C_x(\beta))-\bar g(Z))F(Z,\beta)$.  On the guarded branch,
+$a^{\zeta}_{S_j,d_j}(R;\zeta\setminus\operatorname{cut}(Z_\zeta))$
+is exactly the indicator of
+$\mathsf H_{\{d_j\}\mid S_j\cup Y}(R)$ in $\zeta$.  This proves the
+second line of \eqref{eq:guard-world-global-bridge}; its third line is
+\eqref{eq:guard-one-decoy}.
+
+Define the lower-level margin
+\begin{equation}
+ \mathcal M_j
+ :=(L_{>j}\Gamma_{d_j,B_j}^{\widehat\Phi})(O)
+   -p(L_{>j}\Gamma_{d_j,B_j}^{\widehat\Phi})(\{v\}).
+ \label{eq:guard-M-def}
+\end{equation}
+There is no change of constants hidden here: for every $k>j$ the tail
+profile in the guarded hierarchy with owner $d_j$, avoided set $B_j$,
+and tail $(d_{j+1},\ldots,d_\ell)$ is $c_k$, and
+\[
+ B_j\cup\{d_j,d_{j+1},\ldots,d_\ell\}=B_*.
+\]
+Consequently its observer price is the same $p$, and $\mathcal M_j$ is
+exactly the left side of \eqref{eq:guardCSH} for that lower-level datum.
+
+Iterating the pointwise identity \eqref{eq:guard-level-step}, taking
+world covariances, and then performing the final $O-pv$ subtraction gives
+\begin{equation}
+ \mathcal W
+ =\mathcal H-
+   \sum_{j=1}^{\ell}\Bigl[
+      (L_{>j}I_j)(O)-p(L_{>j}I_j)(\{v\})\Bigr].
+ \label{eq:guard-unfold-before-markov}
+\end{equation}
+All omitted terms here are constant in the residual configuration and
+therefore have zero world covariance.  Moreover
+\eqref{eq:guard-error-singleton} implies, by induction through the tail
+steps, that $L_{>j}\operatorname{Err}_j=\operatorname{Err}_j$.
+Substitution of \eqref{eq:guard-world-global-bridge} into
+\eqref{eq:guard-unfold-before-markov} therefore gives the exact repaired
+unfolding
+\begin{equation}\label{eq:guard-unfold}
+ \mathcal W_{x,Y,{\bf d}}^{O,v}(\psi)
+ =\mathcal H_{x,Y,{\bf d}}^{O,v}(\psi)
+  +\sum_{j=1}^{\ell}e_j^{-1}\mathcal M_j
+  +\sum_{j=1}^{\ell}\operatorname{Err}_j(O).
+\end{equation}
+In particular,
+\begin{equation}\label{eq:guard-unfold-lower}
+ \mathcal W_{x,Y,{\bf d}}^{O,v}(\psi)
+ \geq\mathcal H_{x,Y,{\bf d}}^{O,v}(\psi)
+  +\sum_{j=1}^{\ell}e_j^{-1}\mathcal M_j.
+\end{equation}
+
+We prove Theorem~\ref{thm:guardCSH} by strong induction on $\ell$.  If
+$\ell=0$, then $\mathcal W=\mathcal H\geq0$, and part~4 below turns this
+within-world inequality into the level-zero theorem.  For $\ell>0$,
+assume the theorem for every shorter decoy list.  Each $\mathcal M_j$
+has only $\ell-j$ decoys and is nonnegative by that induction hypothesis,
+applied to the increasing vertex functional $\widehat\Phi$; its correctly
+typed edge-cluster reading in Lean is $\Psi_j$.  Since $e_j>0$ and every
+error is nonnegative, \eqref{eq:guard-unfold} gives $\mathcal W\geq0$.
+Part~4 turns this into the level-$\ell$ guarded CSH margin and closes the
+induction.
+
+\begin{remark}[regression test for the repaired identity]
+The error term cannot be omitted, even with all weights strictly between
+zero and one.  Take
+$V=\{x,d,r_1,r_2\}$, give the pairs $\{x,r_2\}$ and $\{d,r_1\}$ weight
+$1/2$ and every other pair weight $1/4$, and let
+$Y=\varnothing$, $S=\{x\}$, $R=\{r_1,r_2\}$, and
+$g(C_x)=\one\{r_2\in C_x\}$.  Exact enumeration gives
+\[
+ \EE[\Theta a_{S,d}(R)]=-\frac{1665}{16384},\qquad
+ -\EE[\widehat\Phi(C_d);E_R]=-\frac{1017}{16384},
+\]
+and their discrepancy is
+$-81/2048=-\operatorname{Err}_{d,B}(R)$.  Thus the former
+$C_d$-only equality is false, while
+\eqref{eq:guard-markov-a}--\eqref{eq:guard-one-decoy} give the exact
+replacement.
+\end{remark}
+
+\emph{4. The two-cluster reduction, including the missing half-step.}
+This is the point at which the source guard must be retained.  Recall
+$D=\{x\ncon Y\}$ and $\delta=\PP(D)>0$.  Under the conditional law
+$\PP(\,\cdot\mid D)$ put $A=C_x$ and $B=C_Y$, viewed as their vertex
+sets, and define
+\[
+ b_R(A,B)=\one\{A\cap R\ne\varnothing\}\one\{B\cap R=\varnothing\}.
+\]
+Then $b_R(C_x,C_Y)$ is exactly the indicator of
+$\mathsf H_{\{x\}\mid Y}(R)$.  Apply the level form and the final observer
+subtraction to $R\mapsto b_R(A,B)$, and call the resulting bounded test
+$\mathfrak h(A,B)$.  Its coefficient at the primary source $O$ is $+1$;
+every other evaluation is at a singleton $u\in\{d_1,\ldots,d_\ell,v\}$.
+Since $A\cap B=\varnothing$ on $D$,
+\begin{equation}\label{eq:pair-test-shape}
+ \mathfrak h(A,B)=b_O(A,B)+
+   \sum_{u\in\{d_1,\ldots,d_\ell,v\}}\lambda_u\one\{u\in A\}
+\end{equation}
+for constants $\lambda_u$.  In particular, for fixed $A$ the map
+$B\mapsto\mathfrak h(A,B)$ is antitone.  This observation is why the
+argument works for one set-valued primary source but keeps all decoys and
+the second observer singleton-valued.
+
+Here is the exact reduction lemma.  Under the conditional law on $D$, let
+$P_A$ and $P_B$ denote conditional expectation given $A$ and $B$,
+respectively, and put $T=P_A P_B$ on functions of $A$.  For every bounded
+$g=g(A)$, with $u=P_B g$, the elementary conditional-covariance identity is
+\begin{multline}\label{eq:two-half-cov}
+ \operatorname{Cov}_D(g,\mathfrak h)
+ -\operatorname{Cov}_D(Tg,\mathfrak h)\\
+ =\EE_D[\operatorname{Cov}(g,\mathfrak h\mid B)]
+  +\EE_D[\operatorname{Cov}(u,\mathfrak h\mid A)].
+\end{multline}
+The conditional cluster decomposition and \eqref{eq:guard-W-def} give
+the exact normalization
+\[
+ \EE_D[\operatorname{Cov}(g,\mathfrak h\mid B)]
+ =\delta^{-1}\mathcal W_{x,Y,{\bf d}}^{O,v}(g).
+\]
+Here and below $\mathcal W(g)$ denotes \eqref{eq:guard-W-def} with the
+cluster functional $\psi$ replaced by $g$.
+Thus the first term is nonnegative.  The factor $\delta^{-1}$ is
+essential: $\mathcal W$ is the unnormalised integral over $D$, whereas
+\eqref{eq:two-half-cov} is written under the conditional law.  If $g$ is
+increasing, then
+$u(B)=\EE[g(A)\mid B]$ is antitone: conditionally on $B$, the cluster
+$A$ is the $x$-cluster in the graph with every pair meeting $B$ deleted,
+and the common-edge coupling for $B\subseteq B'$ makes the latter cluster
+smaller.  This is the existing lemma \lean{BHK2006.condS\_antitone}.
+By \eqref{eq:pair-test-shape}, $B\mapsto\mathfrak h(A,B)$ is also
+antitone for fixed $A$.  Conditional on $A$, write
+$B=\lean{BHK2006.halfT}(A,\eta)$, where $\eta$ is a fresh product
+configuration in the graph with the pairs meeting $A$ deleted.  The map
+$\eta\mapsto B$ is increasing.  Thus both
+$u(B)$ and $\mathfrak h(A,B)$ are decreasing functions of $\eta$, and
+\lean{BHK2006.harris\_anti\_anti} makes the second term in
+\eqref{eq:two-half-cov} nonnegative.
+
+For clarity, the other property needed in the iteration follows from the
+same coupling.  If $A\subseteq A'$, then the conditional $Y$-cluster
+sampled after deleting $A'$ is contained in the one sampled after
+deleting $A$.  Since $u$ is antitone,
+\[
+ (Tg)(A)=\EE[u(B)\mid A]
+ \leq \EE[u(B)\mid A']=(Tg)(A').
+\]
+Hence the BHK Gibbs operator $T$ preserves monotonicity; it plainly
+preserves constants and bounds.  Under the present nondegeneracy
+assumption it also has a uniform regeneration.  If $Y\ne\varnothing$,
+close every pair meeting $Y$ in the $B$-resampling half-step.  This has
+conditional probability at least
+\[
+ \epsilon:=\prod_{e:e\cap Y\ne\varnothing}(1-p_e)>0,
+\]
+independently of the old $A$, and forces $B=Y$.  The following
+$A$-resampling then has a fixed law, independent of the old state.  Thus
+the transition kernel is of the form
+$\epsilon\nu+(1-\epsilon)Q_A$, and
+\[
+ \operatorname{osc}(T^n g)
+ \leq(1-\epsilon)^n\operatorname{osc}(g).
+\]
+If $Y=\varnothing$, the first application of $T$ is already constant.
+Since minima of $T^n g$ increase and maxima decrease, $T^n g$ converges
+uniformly to a constant.  The same statements apply with $g$ replaced by
+$T^n g$: the operator $T$ preserves nonnegativity and monotonicity, so the
+first term in \eqref{eq:two-half-cov} is
+$\delta^{-1}\mathcal W(T^n g)\geq0$, and the second is nonnegative by the
+same antitone--antitone Harris argument.  Iterating
+\eqref{eq:two-half-cov} consequently
+gives
+\[
+ \operatorname{Cov}_D(g,\mathfrak h)
+ \geq \operatorname{Cov}_D(T^n g,\mathfrak h)\longrightarrow0.
+\]
+Finally, direct expansion of \eqref{eq:guardGamma} and linearity of the
+level forms give
+\[
+ L_\ell\Gamma_{x,Y}^{\psi}(O)
+ -pL_\ell\Gamma_{x,Y}^{\psi}(\{v\})
+ =\delta^2\operatorname{Cov}_D(g,\mathfrak h).
+\]
+Thus the last nonnegative covariance is exactly the guarded CSH margin
+up to the positive factor $\delta^2$.  This proves the theorem.  Notice
+that this
+two-half-step calculation is essential: a fixed global kernel
+$\alpha_{R,Y}^{V}$ does \emph{not} become $j_{\{x\}\mid Z}(R)$ merely by
+conditioning on $C_Y=Z$.
+\end{proof}
+
+\begin{remark}[what is new, and what is reused]
+The genuinely new declarations are the guarded event
+\eqref{eq:guard-event}, the kernel \eqref{eq:alpha-kernel}, the exchange
+lemma \eqref{eq:guard-exchange}, the additional $R\ncon N$ guard in
+the generic two-source induction, the set-source Markov identity
+\eqref{eq:guard-markov-a}, its nonnegative correction
+\eqref{eq:guard-error}, and the two-half-step reduction
+\eqref{eq:two-half-cov}.  The BHK four-product theorem,
+set-cluster exploration, stopped Harris, Ahlswede--Daykin, the general
+Gibbs reduction, and the residual functional are already proved in the
+repository.  In particular, Theorem~\ref{thm:guardCSH} does not assume a
+new correlation conjecture.  Omitting the guard would make the later
+peeling step false; factoring the unevaluated source components would
+incorrectly delete the positive error in \eqref{eq:guard-unfold}.
+\end{remark}
+
+\subsection{Set-source surplus transfer}
+
+For $B\subseteq V$ write $D_B(k)=\{k\ncon B\}$.  If $k\notin Y\cup T$,
+put
+\begin{equation}\label{eq:EkJk}
+ E_k:=D_{Y\cup T}(k),\qquad
+ Q_{S,k}:=D_{Y\cup T}(S)\cap\{S\con k\}.
+\end{equation}
+For later use abbreviate the guarded one-decoy profile by
+\begin{equation}\label{eq:c-general}
+ c_{z,B}(R):=
+ \frac{\PP(\mathsf H_{\{z\}\mid B}(R))}{\PP(z\ncon B)}.
+\end{equation}
+For a relay set $T$ and an additional decoy list
+${\bf d}=(d_1,\ldots,d_\ell)$, set
+\[
+ B_j=Y\cup T\cup\{d_i:i<j\},\qquad
+ B_*=Y\cup T\cup\{d_1,\ldots,d_\ell\}.
+\]
+Use the profiles $c_{d_j,B_j}$ in the recursion \eqref{eq:guard-slack}
+and the price
+\[
+ p_{O,v}^{Y,T,{\bf d}}
+ =\frac{\PP(\mathsf H_{\{v\}\mid B_*}(O))}
+        {\PP(v\ncon B_*)}.
+\]
+We write
+\begin{equation}\label{eq:surplus-general-margin}
+ \operatorname{Marg}_{Y,T,{\bf d}}^{O,v}[h]
+ :=L_\ell h(O)-p_{O,v}^{Y,T,{\bf d}}L_\ell h(\{v\}).
+\end{equation}
+This definition removes a possible ambiguity below: the base avoided set
+for a surplus margin is $Y\cup T$, not merely $Y$.
+
+\begin{theorem}[set-source avoided surplus transfer]\label{thm:setS5}
+Let $\Phi$ be increasing and let $r$ be compatible with the conditional
+means \eqref{eq:condmean}.  Suppose that $S,Y,T,\{k\}$ are pairwise
+disjoint.  Then, for arbitrary edge weights in $[0,1]$,
+\begin{equation}\label{eq:setS5}
+ \PP(E_k)\,\Sur_{S,Y}(T;r,\Phi)
+ \ \geq\
+ \PP(Q_{S,k})\,\Sur_{k,Y}(T;r,\Phi).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+First take nondegenerate weights and decoys disjoint from all displayed
+sets.  We prove, simultaneously for every such decoy list ${\bf d}$ and
+singleton $v$, the stronger statement
+\begin{equation}\label{eq:setS5D}
+ \operatorname{Marg}_{Y,T,{\bf d}}^{S,v}
+       [R\mapsto\Sur_{R,Y}(T;r,\Phi)]\geq0.
+\end{equation}
+Induct on $|T|$.
+
+If $T=\varnothing$, then $R\con T$ is impossible and
+$\Sur_{R,Y}(T)=0$ for every source $R$.  Thus
+\eqref{eq:setS5D}, and hence \eqref{eq:setS5}, holds with equality.
+Assume from now on that $T\ne\varnothing$.
+
+Let $z$ have maximal rank and write $T'=T\setminus\{z\}$.  Set
+\[
+ E_z=D_{Y\cup T'}(z),\quad d_z=\PP(E_z),\quad
+ \kappa_z=m_z^Y d_z-\EE[\Phi(C_z);E_z]
+\]
+and
+\begin{equation}\label{eq:theta-z}
+ \Theta_z(R)=\EE[(\Phi(C_z)-m_z^Y);
+                    \mathsf H_{\{z\}\mid Y\cup T'}(R)].
+\end{equation}
+For a singleton $R=\{u\}$, the usual first-pattern partition gives the
+exact peeling identity
+\begin{equation}\label{eq:singleton-peel-Y}
+ \Sur_{u,Y}(T)=\Sur_{u,Y}(T')+\Theta_z(\{u\}).
+\end{equation}
+For $R=S$, the same partition leaves
+$\Phi(C_S)$ in the new term, on the \emph{same guarded event} appearing
+in \eqref{eq:theta-z}.  On that event $S\con z$, hence
+$C_z\subseteq C_S$; monotonicity gives the one-sided inequality
+\begin{equation}\label{eq:set-peel-Y}
+ \Sur_{S,Y}(T)\geq\Sur_{S,Y}(T')+\Theta_z(S).
+\end{equation}
+This is the only point at which a source union differs from a singleton.
+In the level margin the value at $S$ occurs with coefficient $+1$ and
+all other evaluations are the singleton decoys and $v$.  Therefore
+\eqref{eq:set-peel-Y} and \eqref{eq:singleton-peel-Y} preserve the
+inequality after applying the level form.
+
+For every finite source $R$, direct expansion of
+\eqref{eq:guardGamma}
+gives
+\begin{equation}\label{eq:theta-cov}
+ d_z\Theta_z(R)=
+ \Gamma_{z,Y\cup T'}^{\Phi}(R)
+ -\kappa_z d_z c_{z,Y\cup T'}(R).
+\end{equation}
+The guarded-source CSH theorem makes the margin of the first term
+nonnegative.  Apply it once more to the increasing vertex-cluster
+functional
+\[
+ \psi_{{\rm iso},z}(K)=\one\{K\setminus\{z\}\ne\varnothing\}.
+\]
+Every evaluated source is distinct from $z$.  If
+$D=\{z\ncon Y\cup T'\}$ and
+$\rho_z=\PP(D,C_z=\{z\})$, direct expansion gives
+\begin{equation}\label{eq:iso-guard-identity}
+ \Gamma_{z,Y\cup T'}^{\psi_{{\rm iso},z}}(R)
+ =\rho_z\,\PP(\mathsf H_{\{z\}\mid Y\cup T'}(R))
+ =\rho_z d_z c_{z,Y\cup T'}(R).
+\end{equation}
+Under nondegenerate weights $\rho_z d_z>0$.  Guarded CSH for
+$\psi_{{\rm iso},z}$ therefore says precisely that the required margin of
+$c_{z,Y\cup T'}$ is nonnegative.  Using a vertex-cluster indicator here
+of the event $K\ne\varnothing$ would be wrong, because a vertex cluster
+is never empty; the isolated state is $C_z=\{z\}$.
+
+Finally, centering over $D_Y(z)$ and partitioning according as $z$ hits
+$T'$ or avoids it gives
+\begin{equation}\label{eq:kappasur-transfer}
+ \Sur_{z,Y}(T')-\kappa_z
+ =\sum_{x\in T'}\PP(J_x^{\{z\},Y})(m_z^Y-m_x^Y)\geq0.
+\end{equation}
+The last inequality is exactly maximality of the rank of $z$.  Prepending
+$z$ to the decoy list gives the algebraic identity
+\[
+ \operatorname{Marg}_{z::{\bf d}}[\Sur(T')]
+ =\operatorname{Marg}_{\bf d}[\Sur(T')]
+  -\Sur_{z,Y}(T')\operatorname{Marg}_{\bf d}[c_z].
+\]
+Equations \eqref{eq:set-peel-Y}--\eqref{eq:kappasur-transfer}, the two
+nonnegative CSH margins, and the induction hypothesis therefore give
+\[
+ d_z\operatorname{Marg}_{\bf d}[\Sur(T)]
+ \geq d_z\operatorname{Marg}_{z::{\bf d}}[\Sur(T')]
+ \geq0.
+\]
+At decoy level zero, multiply out the observer price.  With $v=k$ this
+is precisely \eqref{eq:setS5}.
+
+It remains to remove the nondegeneracy restriction.  This closure is
+proved explicitly just below; it applies to the cross-multiplied
+inequality \eqref{eq:setS5} and completes the proof.
+\end{proof}
+
+\subsection{Ranks, zero denominators, and boundary weights}
+
+The closure used above is short but essential.  Call $x\in T$ active if
+$d_Y(x)>0$.  If $x$ is inactive, every event
+$D_Y(S)\cap\{S\con x\}$ is null, because it is contained in
+$D_Y(x)$.  Inactive relays can therefore be deleted without changing any
+integral or first-pattern term.  For the active relays, every compatible
+rank gives the rank-free identity
+\begin{equation}\label{eq:rank-free-surplus}
+ \Sur_{S,Y}(T;r,\Phi)=
+ \EE\!\left[
+  \one\{D_Y(S),S\con T\}
+  \left(\Phi(C_S)-
+   \min_{x\in T\cap C_S}m_x^Y\right)\right].
+\end{equation}
+Indeed, the first relay in $C_S$ has the least conditional mean among
+$T\cap C_S$; ties have the same value.  Formula
+\eqref{eq:rank-free-surplus} also proves independence from tie-breaking.
+
+Approximate an arbitrary weight vector $w\in[0,1]^E$ by nondegenerate
+vectors $w_n\in(0,1)^E$.  There are only finitely many relay orders, so
+pass to a subsequence on which the compatible order is fixed.  For every
+relay active at $w$, its avoidance probability stays positive and its
+conditional mean converges to the mean at $w$.  Terms involving a relay
+inactive at $w$ are supported on $D_Y(x)$ and hence tend to zero.  Thus
+both surpluses in \eqref{eq:setS5} converge to the active-relay
+expressions at $w$.  The two probability prefactors are polynomials in
+the edge weights.  Passing to the limit proves \eqref{eq:setS5} at $w$.
+This argument neither chooses a limiting minimizer nor divides by a
+quantity that may vanish.
+
+\subsection{The conditional top-relay estimate}
+
+The following elementary lemma is useful both for checking the signs and
+for formalization.
+
+\begin{lemma}[set-source top-relay estimate]\label{lem:toprelay}
+Let $T_0\subseteq V\setminus Y$, let $k\notin Y\cup T_0$, and set
+\[
+ E=D_{Y\cup T_0}(k),\qquad
+ J=D_{Y\cup T_0}(S)\cap\{S\con k\},\qquad
+ \kappa=m_k^Y\PP(E)-\EE[\Phi(C_k);E].
+\]
+Then
+\begin{equation}\label{eq:toprelay}
+ \PP(E)\,
+ \EE[(\Phi(C_S)-m_k^Y);J]
+ \geq-\PP(J)\kappa.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+On $J$ one has $C_k\subseteq C_S$, hence it is enough to replace
+$\Phi(C_S)$ by $\Phi(C_k)$ on the left.
+
+We claim
+\begin{equation}\label{eq:conditional-assoc-source}
+ \PP(E)\EE[\Phi(C_k);J]
+ \geq \PP(J)\EE[\Phi(C_k);E].
+\end{equation}
+To see this directly, condition on $E$ and then on $C_k=K$.  Here
+$K\cap(Y\cup T_0)=\varnothing$.  Given $K$, the unexplored edges off $K$
+are fresh, and the conditional probability of $J$ is
+\[
+ q(K)=\one\{K\cap S\ne\varnothing\}
+ \PP_{G\setminus K}\bigl(C_{S\setminus K}\cap(Y\cup T_0)=\varnothing\bigr),
+\]
+where $G\setminus K$ means that all pairs meeting $K$ are deleted.  If
+$K\subseteq K'$ and both avoid $Y\cup T_0$, then $q(K)\leq q(K')$:
+the first indicator can only increase, the residual source shrinks, and
+the residual graph loses edges.  Thus both $K\mapsto\Phi(K)$ and $q(K)$
+are increasing.  Conditional positive association for $C_k$ given
+$k\ncon Y\cup T_0$ gives \eqref{eq:conditional-assoc-source}.
+
+Subtracting $m_k^Y\PP(E)\PP(J)$ from the two sides of
+\eqref{eq:conditional-assoc-source} gives \eqref{eq:toprelay}.
+\end{proof}
+
+\subsection{Source-set avoided GEN}
+
+The transfer theorem was stated for disjoint sources and relays.  The
+following one-cluster estimate handles all overlaps and is also useful as
+a separate formalization target.
+
+\begin{lemma}[overlapping source relay]\label{lem:source-overlap}
+Let $t\in S\setminus Y$ and let $\Phi$ be increasing.  Then
+\begin{equation}\label{eq:source-overlap}
+ d_Y(t)\,\EE[\Phi(C_S);D_Y(S)]
+ \geq
+ \PP(D_Y(S))\,\EE[\Phi(C_t);D_Y(t)].
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+If $d_Y(t)=0$, then $D_Y(S)\subseteq D_Y(t)$ is null and both sides
+vanish.  Suppose it is positive.  For a possible cluster $K=C_t$ with
+$K\cap Y=\varnothing$, put
+\[
+ \alpha(K)=\PP_{G\setminus K}
+  \bigl(C_{S\setminus K}\cap Y=\varnothing\bigr).
+\]
+If $K\subseteq K'$, the residual source shrinks and the residual graph
+loses pairs, so $\alpha(K)\leq\alpha(K')$.  Exploration of $C_t$ gives
+the two exact tower identities
+\begin{align*}
+ \EE[\alpha(C_t);D_Y(t)]&=\PP(D_Y(S)),\\
+ \EE[\Phi(C_t)\alpha(C_t);D_Y(t)]
+   &=\EE[\Phi(C_t);D_Y(S)].
+\end{align*}
+Conditional positive association of $C_t$ given $D_Y(t)$, applied to
+the increasing functions $K\mapsto\Phi(K)$ and $K\mapsto\alpha(K)$,
+therefore yields
+\[
+ d_Y(t)\EE[\Phi(C_t);D_Y(S)]
+ \geq
+ \EE[\Phi(C_t);D_Y(t)]\PP(D_Y(S)).
+\]
+The association statement is unchanged after adding a constant to
+$\Phi$, so no sign assumption is needed.  Finally
+$C_t\subseteq C_S$ pointwise, and monotonicity of $\Phi$ proves
+\eqref{eq:source-overlap}.
+\end{proof}
+
+\begin{theorem}[source-set avoided first-relay inequality]\label{thm:SAG}
+Let $S,Y,T\subseteq V$, with $T\cap Y=\varnothing$.  Let $\Phi:2^V\to
+\mathbb R$ be increasing, and rank $T$ compatibly with the conditional
+means $m_x^Y$.  Then
+\begin{equation}\label{eq:SAG}
+ \boxed{\quad
+ \sum_{x\in T}\PP(J_x^{S,Y})m_x^Y
+ \leq
+ \EE[\Phi(C_S);D_Y(S),S\con T].
+ \quad}
+\end{equation}
+Equivalently, $\Sur_{S,Y}(T;r,\Phi)\geq0$.
+\end{theorem}
+
+\begin{proof}
+If $S\cap Y\ne\varnothing$, then $D_Y(S)$ is empty and both sides of
+\eqref{eq:SAG} vanish.  Suppose next that $t\in S\cap T$.  If $t$ is
+inactive, then $D_Y(S)\subseteq D_Y(t)$ is null.  Otherwise $S\con T$
+is automatic, and on every first-relay pattern the relay met first has
+conditional mean at most $m_t^Y$, since $t\in C_S$ is itself available.
+Hence Lemma~\ref{lem:source-overlap} gives
+\[
+ \sum_{x\in T}\PP(J_x^{S,Y})m_x^Y
+ \leq \PP(D_Y(S))m_t^Y
+ \leq \EE[\Phi(C_S);D_Y(S)],
+\]
+which is \eqref{eq:SAG}.  We may therefore assume for the rest of the
+proof that $S,Y,T$ are pairwise disjoint; this is exactly the domain in
+which Theorem~\ref{thm:setS5} is used.
+
+Adding a constant to $\Phi$ adds that constant times the two equal
+quantities in \eqref{eq:partition}; hence we may assume $\Phi\geq0$.
+The empty relay case is immediate.  Suppose $T\ne\varnothing$.
+
+Let $k$ be the rank-maximal relay and put $T_0=T\setminus\{k\}$.  Set
+\[
+ E=D_{Y\cup T_0}(k),\qquad
+ J=D_{Y\cup T_0}(S)\cap\{S\con k\},
+\]
+and define $\kappa$ as in Lemma~\ref{lem:toprelay}.  The pattern $J$ is
+exactly the new first-relay pattern for $k$, and therefore
+\begin{equation}\label{eq:surplus-peel}
+ \Sur_{S,Y}(T;r,\Phi)
+ =\Sur_{S,Y}(T_0;r,\Phi)
+  +\EE[(\Phi(C_S)-m_k^Y);J].
+\end{equation}
+
+The centered integral of $\Phi(C_k)$ over $D_Y(k)$ is zero.  Splitting
+$D_Y(k)$ according as $k$ hits $T_0$ or avoids it gives
+\begin{align}
+ \kappa
+ &=\EE[(\Phi(C_k)-m_k^Y);D_Y(k),k\con T_0],\label{eq:kappa1}\\
+ \Sur_{k,Y}(T_0;r,\Phi)-\kappa
+ &=\sum_{x\in T_0}\PP(J_x^{\{k\},Y})
+       (m_k^Y-m_x^Y)\geq0.\label{eq:kappa2}
+\end{align}
+The last inequality uses maximality of the rank of $k$.
+
+Multiply \eqref{eq:surplus-peel} by $\PP(E)$.  Apply
+Theorem~\ref{thm:setS5} to the first term and
+Lemma~\ref{lem:toprelay} to the second.  We obtain
+\[
+ \PP(E)\Sur_{S,Y}(T;r,\Phi)
+ \geq \PP(J)\bigl(\Sur_{k,Y}(T_0;r,\Phi)-\kappa\bigr)\geq0
+\]
+by \eqref{eq:kappa2}.  In the nondegenerate case $\PP(E)>0$, so the
+desired surplus is nonnegative.  The denominator-free boundary argument
+and rank-free continuity argument preceding this subsection pass the
+inequality to arbitrary weights.
+\end{proof}
+
+\section{The monotone projection}\label{sec:projection}
+
+We now turn Theorem~\ref{thm:SAG} into a comparison with a fixed relay.
+Fix $a\in V$.  For $K\subseteq V$ with $a\notin K$, let $G\setminus K$
+denote the random graph obtained by deleting all pairs with an endpoint in
+$K$, and define
+\begin{equation}\label{eq:projection}
+ \phi_a(K):=F(K)-\EE F(C_a^{G\setminus K}).
+\end{equation}
+
+\begin{lemma}[projection facts]\label{lem:projection}
+Suppose $F$ is increasing.
+\begin{enumerate}[label=\textup{(P\arabic*)},leftmargin=3em]
+\item The map $K\mapsto\phi_a(K)$ is increasing on
+  $\{K:a\notin K\}$ and has an increasing extension to $2^V$.
+\item For every source set $S$ and every event $H$ determined by $C_S$,
+  \begin{equation}\label{eq:projection-source}
+   \EE[(F(C_S)-F(C_a));S\ncon a,H]
+   =\EE[\phi_a(C_S);S\ncon a,H].
+  \end{equation}
+\item For every vertex $x$,
+  \begin{equation}\label{eq:projection-mean}
+   \EE[\phi_a(C_x);x\ncon a]
+   =\EE F(C_x)-\EE F(C_a).
+  \end{equation}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+If $K\subseteq L$ and neither contains $a$, then $F(K)\leq F(L)$, while
+deleting all pairs meeting $L$ leaves no more open paths from $a$ than
+deleting all pairs meeting $K$.  Thus the second term in
+\eqref{eq:projection} decreases, proving (P1) on the indicated subposet.
+Give every set containing $a$ the value
+$\max_{a\notin K}\phi_a(K)$; this is an increasing extension.  A final
+constant shift makes it nonnegative if desired.
+
+On $S\ncon a$, condition on $C_S=K$.  Every pair from $K$ to its
+complement is closed, and the edges wholly outside $K$ retain their
+independent laws.  Consequently the conditional law of $C_a$ is exactly
+the law of $C_a^{G\setminus K}$.  This proves (P2).  Apply (P2) with
+$S=\{x\}$ and $H$ the sure event.  On $x\con a$ the two clusters, and
+hence their $F$-values, agree.  Adding this zero contribution proves
+(P3).
+\end{proof}
+
+The repository already contains the singleton versions:
+\begin{itemize}[nosep]
+\item \lean{CovTau.monotone\_projFun};
+\item \lean{CovTau.tower\_clusterFun};
+\item \lean{CovTau.setIntegral\_sub\_eq\_projFun}.
+\end{itemize}
+The proof above shows that the same interface works for the explored
+cluster of a source set.
+
+\section{A fixed minimizer works: Conjecture 4}\label{sec:C4}
+
+\begin{theorem}[fixed-minimizer source-set comparison]\label{thm:fixedmin}
+Let $F:2^V\to\mathbb R$ be increasing, let $A\ne\varnothing$, and choose
+$a\in A$ such that
+\begin{equation}\label{eq:amin}
+ \EE F(C_a)=\min_{x\in A}\EE F(C_x).
+\end{equation}
+Then, for every finite source set $S$,
+\begin{equation}\label{eq:fixedavoid}
+ \EE[(F(C_S)-F(C_a));S\ncon a,\ S\con A\setminus\{a\}]
+ \geq0.
+\end{equation}
+Consequently
+\begin{equation}\label{eq:fixedfull}
+ \EE[F(C_S);S\con A]\geq\EE[F(C_a);S\con A].
+\end{equation}
+For $S=\{o\}$, the contribution on $o\con a$ vanishes identically, so
+\eqref{eq:fixedfull} holds with equality removed only on the avoided part.
+\end{theorem}
+
+\begin{proof}
+Put $Y=\{a\}$ and $T=A\setminus\{a\}$.  Use the increasing projection
+$\phi_a$ from Lemma~\ref{lem:projection}.  By
+\eqref{eq:projection-mean} and \eqref{eq:amin}, every conditional relay
+mean is nonnegative:
+\begin{equation}\label{eq:positive-projmean}
+ \EE[\phi_a(C_x)\mid x\ncon a]
+ =\frac{\EE F(C_x)-\EE F(C_a)}{\PP(x\ncon a)}\geq0.
+\end{equation}
+Relays for which the denominator is zero never occur in an $a$-avoiding
+first pattern and may be removed.  Rank the others by the quantities in
+\eqref{eq:positive-projmean}.  Theorem~\ref{thm:SAG}, followed by
+Lemma~\ref{lem:projection}\textup{(P2)}, gives
+\begin{align*}
+ &\EE[(F(C_S)-F(C_a));S\ncon a,S\con T]\\
+ &\quad=\EE[\phi_a(C_S);S\ncon a,S\con T]\\
+ &\quad\geq
+ \sum_{x\in T}\PP(J_x^{S,\{a\}})
+       \EE[\phi_a(C_x)\mid x\ncon a]\geq0.
+\end{align*}
+This is \eqref{eq:fixedavoid}.
+
+On the remaining part of $\{S\con A\}$, the source cluster union meets
+$a$.  Hence $C_a\subseteq C_S$ and $F(C_a)\leq F(C_S)$.  Adding that
+nonnegative contribution proves \eqref{eq:fixedfull}.
+\end{proof}
+
+\begin{corollary}[Conjecture 4, in a stronger form]\label{cor:C4}
+For a singleton source $S=\{o\}$, Theorem~\ref{thm:fixedmin} says that the
+particular unconditional minimizer $a$ in \eqref{eq:amin} satisfies
+\begin{equation}\label{eq:C4fixed}
+ \EE[F(C_o);o\con A]\geq\EE[F(C_a);o\con A].
+\end{equation}
+Thus Conjecture~4 holds.  This also answers the first \KN\ Question~7:
+the minimizer of the post-FKG quantity is a valid relay in the pre-FKG
+comparison.
+\end{corollary}
+
+\section{Conjectures 2, 1, and 3}\label{sec:C123}
+
+\begin{corollary}[strong Conjecture 2]\label{cor:C2}
+For all $o,b,A$,
+\begin{equation}\label{eq:C2strong-proof}
+ \PP(o\con b,o\con A)
+ \geq \min_{x\in A}\PP(x\con b,o\con A).
+\end{equation}
+In particular, Conjecture~2 holds.
+\end{corollary}
+
+\begin{proof}
+Apply Corollary~\ref{cor:C4} to
+$F(K)=\one\{b\in K\}$.  Then $F(C_x)=\one\{x\con b\}$, and
+\eqref{eq:C4fixed} is at least as strong as
+\eqref{eq:C2strong-proof}.  Finally
+$\PP(o\con b)\geq\PP(o\con b,o\con A)$.
+\end{proof}
+
+\begin{corollary}[Conjecture 1]\label{cor:C1}
+The multiplicative inequality \eqref{eq:C1} holds for every finite
+weighted graph.
+\end{corollary}
+
+\begin{proof}
+Both $\{o\con A\}$ and $\{x\con b\}$ are increasing events.  Harris--FKG
+and Corollary~\ref{cor:C2} give
+\begin{align*}
+ \PP(o\con b)
+ &\geq\min_{x\in A}\PP(o\con A,x\con b)\\
+ &\geq\min_{x\in A}\PP(o\con A)\PP(x\con b)\\
+ &=\PP(o\con A)\min_{x\in A}\PP(x\con b).
+\end{align*}
+\end{proof}
+
+\begin{remark}
+Conjecture~1 also follows directly from the repository's unavoided GEN
+theorem by taking $F(K)=\one\{b\in K\}$ and ordering relays by
+$\PP(x\con b)$.  The route above is included to display the implication
+chain in the Kozma--Nitzan paper.
+\end{remark}
+
+\begin{corollary}[Conjecture 3]\label{cor:C3}
+Conjecture~3 holds; for $0<\varepsilon\leq1$ one may take
+$\delta=\varepsilon/2$.
+\end{corollary}
+
+\begin{proof}
+Under its hypotheses, Corollary~\ref{cor:C1} gives
+\[
+ \PP(o\con b)>(1-\delta)^2
+ =1-\varepsilon+\frac{\varepsilon^2}{4}>1-\varepsilon.
+\]
+For $\varepsilon>1$ the assertion is trivial, for example with
+$\delta=1/2$.
+\end{proof}
+
+\begin{proposition}[countable-graph closure]\label{prop:countable}
+On a countable graph with independent, possibly inhomogeneous bond
+weights, Conjecture~1 holds with $\inf_{x\in A}$ in place of the minimum
+when $A$ is infinite.  Consequently Conjecture~3 holds there with the
+same graph-independent choice $\delta=\varepsilon/2$.
+\end{proposition}
+
+\begin{proof}
+First let $A$ be finite.  Exhaust the countable edge set by finite edge
+sets, retaining their original weights and declaring every other edge
+closed.  Each connection event between specified vertices increases to
+the corresponding event in the full graph, because every connecting path
+is finite.  Apply Corollary~\ref{cor:C1} at every finite stage and use
+continuity from below; the minimum of finitely many convergent sequences
+converges to the minimum of their limits.
+
+For countably infinite $A$, exhaust it by nonempty finite sets $A_m$.
+Then $\{o\con A_m\}$ increases to $\{o\con A\}$ and
+$\min_{x\in A_m}\PP(x\con b)$ decreases to
+$\inf_{x\in A}\PP(x\con b)$.  Passing to the limit proves the first
+claim.  Under the hypotheses of Conjecture~3, continuity from below also
+provides a finite $A_0\subseteq A$ with
+$\PP(o\con A_0)>1-\delta$.  The already proved finite-relay inequality
+then gives the same estimate as in Corollary~\ref{cor:C3}.
+\end{proof}
+
+\begin{corollary}[the main critical-percolation consequence]
+For Bernoulli bond percolation on $\mathbb Z^d$, $d\geq2$,
+\[
+ \PP_{p_c}(|C(0)|=\infty)=0.
+\]
+\end{corollary}
+
+\begin{proof}
+Proposition~\ref{prop:countable} supplies Conjecture~3 in the uniform form
+assumed by Theorem~6 of Kozma--Nitzan.  That theorem gives the displayed
+conclusion.
+\end{proof}
+
+\section{The new edge argument: Conjecture 6}\label{sec:C6}
+
+The source-set extension makes the edge-contraction conjecture a short
+corollary.  We isolate the deterministic observation on which it rests.
+
+\begin{lemma}[an internal edge does not change a source union]\label{lem:internal}
+Let $e=\{v,w\}$, let $S=\{v,w\}$, and couple all weightings of $e$ by
+using the same states for every other pair.  Then the following objects do
+not depend on the state of $e$:
+\begin{enumerate}[label=\textup{(E\arabic*)},leftmargin=3em]
+\item the vertex set $C_S=C_v\cup C_w$;
+\item every event $\{S\con B\}$ and $\{S\ncon B\}$;
+\item on $S\ncon a$, the cluster $C_a$.
+\end{enumerate}
+When $e$ is forced open, $C_v=C_w=C_S$.
+\end{lemma}
+
+\begin{proof}
+Opening an edge with both endpoints in the source set merely joins two
+components already included in their union; it adds no vertex to that
+union.  This proves (E1), and (E2) follows.  On $S\ncon a$, the cluster of
+$a$ contains neither endpoint of $e$, so changing $e$ cannot change that
+cluster.  The last assertion is immediate when $e$ is open.
+\end{proof}
+
+\begin{theorem}[fixed-minimizer contraction; stronger than Conjecture 6]
+\label{thm:C6strong}
+Let $e=\{v,w\}$ and let $a\in A$ minimize $\PP_G(x\con b)$ over $A$.
+Then, without any endpoint hypotheses,
+\begin{equation}\label{eq:pinned-preFKG}
+ \PP_{G/e}(v\con b,v\con A)
+ \geq \PP_{G/e}(a\con b,v\con A),
+\end{equation}
+and consequently
+\begin{equation}\label{eq:C6proved}
+ \PP_{G/e}(v\con b)
+ \geq\PP_{G/e}(v\con A)\PP_{G/e}(a\con b).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Use $F(K)=\one\{b\in K\}$ in Theorem~\ref{thm:fixedmin}, in the original
+weighted graph $G$, with the source set $S=\{v,w\}$.  It gives
+\begin{equation}\label{eq:source-edge-positive}
+ \EE_G[(F(C_S)-F(C_a));S\ncon a,S\con A\setminus\{a\}]
+ \geq0.
+\end{equation}
+By Lemma~\ref{lem:internal}, the random variable and event in
+\eqref{eq:source-edge-positive} are independent of the state of $e$.
+We may therefore evaluate them with $e$ forced open.  In $G/e$, the
+source union $C_S$ is $C_v$.  Moreover, on $v\con a$ the two indicators
+$F(C_v)$ and $F(C_a)$ agree, while on $v\ncon a$ the event $v\con A$ is
+the event $v\con A\setminus\{a\}$.  It follows that the left side of
+\eqref{eq:source-edge-positive} is exactly
+\[
+ \PP_{G/e}(v\con b,v\con A)
+ -\PP_{G/e}(a\con b,v\con A).
+\]
+This proves \eqref{eq:pinned-preFKG}.
+
+Finally, Harris--FKG in $G/e$ gives
+\[
+ \PP_{G/e}(a\con b,v\con A)
+ \geq\PP_{G/e}(a\con b)\PP_{G/e}(v\con A).
+\]
+Together with
+$\PP_{G/e}(v\con b)\geq\PP_{G/e}(v\con b,v\con A)$ and
+\eqref{eq:pinned-preFKG}, this proves \eqref{eq:C6proved}.
+\end{proof}
+
+\begin{corollary}[Conjecture 6]\label{cor:C6}
+Conjecture~6 holds.  Its two assumptions concerning $v$ and $w$ are
+superfluous.
+\end{corollary}
+
+\section{The numbered questions: common coefficients and candidate relays}
+\label{sec:questions}
+
+We now dispose of Questions~5 and 7--9.  The coefficient conclusion below
+is stronger than the one printed in the paper.
+
+\begin{theorem}[common coefficients; Question 5]\label{thm:Q5}
+For fixed $G,o,A$ there are coefficients $c_x\geq0$, $x\in A$, with
+$\sum_{x\in A}c_x=1$, such that simultaneously for every $b\in V$,
+\begin{equation}\label{eq:Q5strong}
+ \sum_{x\in A}c_x\PP(o\con A,x\con b)
+ \leq \PP(o\con b,o\con A)
+ \leq \PP(o\con b).
+\end{equation}
+In particular, Question~5 has an affirmative answer.
+\end{theorem}
+
+\begin{proof}
+Let $E=\{o\con A\}$ and regard the following as vectors indexed by
+$b\in V$:
+\[
+ r_b=\PP(E,o\con b),\qquad q_b^x=\PP(E,x\con b)\quad(x\in A).
+\]
+For every vector $\lambda=(\lambda_b)_{b\in V}\geq0$, the functional
+\[
+ F_\lambda(K)=\sum_{b\in K}\lambda_b
+\]
+is nonnegative and increasing.  Conjecture~4, already proved in
+Corollary~\ref{cor:C4}, gives
+\begin{equation}\label{eq:Q5-separation-test}
+ \lambda\mathbin{\cdot}r
+ =\EE[F_\lambda(C_o);E]
+ \geq\min_{x\in A}\EE[F_\lambda(C_x);E]
+ =\min_{x\in A}\lambda\mathbin{\cdot}q^x.
+\end{equation}
+
+Put $K=\operatorname{conv}\{q^x:x\in A\}\subseteq\mathbb R^V$ and
+$D=r-\mathbb R_{\geq0}^{V}$.  Suppose $K\cap D=\varnothing$.  Strict
+separation of the compact convex set $K$ from the closed convex set $D$
+then gives a nonzero vector $\lambda$ such that
+\[
+ \inf_{z\in K}\lambda\mathbin{\cdot}z
+ >\sup_{y\in D}\lambda\mathbin{\cdot}y.
+\]
+Since $D$ is unbounded in every negative coordinate direction, finiteness
+of the supremum forces $\lambda\geq0$, and that supremum is
+$\lambda\mathbin{\cdot}r$.  The infimum over $K$ is
+$\min_{x\in A}\lambda\mathbin{\cdot}q^x$, contradicting
+\eqref{eq:Q5-separation-test}.  Hence $K\cap D\ne\varnothing$.
+Write a point in the intersection as
+$\sum_{x\in A}c_x q^x=r-u$, where $c_x\geq0$, $\sum_x c_x=1$, and
+$u\geq0$.  Coordinatewise this is the first inequality in
+\eqref{eq:Q5strong}; the second is event inclusion.  The single vector
+$(c_x)$ was chosen using all coordinates at once and is therefore
+independent of $b$.
+\end{proof}
+
+\begin{corollary}[Questions 7 and 8]\label{cor:Q78}
+Questions~7 and 8 both have affirmative answers, including every choice
+among tied minimizers.
+\end{corollary}
+
+\begin{proof}
+For Question~7, take $F(K)=\one\{b\in K\}$ in
+Corollary~\ref{cor:C4}: the specified minimizer of
+$\PP(x\con b)$ satisfies \eqref{eq:Qcandidate}.  For Question~8, the
+specified $a$ realizes
+$\min_{x\in A}\PP(o\con A,x\con b)$, so the strong form
+\eqref{eq:C2strong-proof} of Conjecture~2 is exactly
+\eqref{eq:Qcandidate}.
+\end{proof}
+
+\begin{theorem}[deleted-star minimizer; Question 9]\label{thm:Q9}
+Let $H$ be obtained from $G$ by deleting every pair incident to $o$, and
+let $a\in A$ minimize $\PP_H(x\con b)$ over $x\in A$.  Then
+\eqref{eq:Qcandidate} holds in $G$.  Thus Question~9 has an affirmative
+answer, again for every tied minimizer.
+\end{theorem}
+
+\begin{proof}
+Expose all pairs incident to $o$.  For a fixed star configuration $\eta$,
+let
+\[
+ N_\eta=\{u\ne o:\{o,u\}\text{ is open in }\eta\},
+ \qquad S_\eta=\{o\}\cup N_\eta.
+\]
+The unexposed pairs have exactly the percolation law of $H$, and,
+pointwise in their configuration,
+\begin{equation}\label{eq:star-source-identities}
+ C_o^G=C_{S_\eta}^{H},\qquad
+ \{o\con_G A\}=\{S_\eta\con_H A\}.
+\end{equation}
+The inclusion of the isolated vertex $o$ in $S_\eta$ makes these formulas
+valid without exceptions when $o\in A$ or $b=o$.
+
+Put $F_b(K)=\one\{b\in K\}$.  On
+$S_\eta\con_H a$, the full $G$-clusters of $o$ and $a$ coincide, so the
+two integrands in \eqref{eq:Qcandidate} agree.  On
+$S_\eta\ncon_H a$, no open star pair can change $C_a$, whence
+$C_a^G=C_a^H$; moreover, on this event a hit of $A$ is a hit of
+$A\setminus\{a\}$.  Therefore the difference between the two sides of
+\eqref{eq:Qcandidate} has the exact decomposition
+\begin{multline}\label{eq:Q9-decomposition}
+ \PP_G(o\con b,o\con A)-\PP_G(a\con b,o\con A)\\
+ =\sum_\eta\PP(\eta)\,
+ \EE_H\!\left[(F_b(C_{S_\eta})-F_b(C_a));
+ S_\eta\ncon a,\ S_\eta\con A\setminus\{a\}\right].
+\end{multline}
+The minimizer assumption is
+$\EE_H F_b(C_a)\leq\EE_H F_b(C_x)$ for every $x\in A$.  Apply
+Theorem~\ref{thm:fixedmin} in the graph $H$ to each deterministic source
+set $S_\eta$.  Every expectation on the right of
+\eqref{eq:Q9-decomposition} is nonnegative.  Averaging proves the theorem.
+This also handles source--relay overlaps and star configurations of zero
+probability; no division is used.
+\end{proof}
+
+\section{Dependency graph and audit checklist}\label{sec:audit}
+
+The logical chain is
+\[
+ \boxed{\mathrm{CSH}_{\mathrm{set\ source}}}
+ \Longrightarrow
+ \boxed{\mathrm{SAG}}
+ \Longrightarrow
+ \boxed{\text{fixed-minimizer C4}}
+ \Longrightarrow
+ \boxed{\mathrm{C4}\Rightarrow\mathrm{C2}\Rightarrow\mathrm{C1}
+        \Rightarrow\mathrm{C3}},
+\]
+and independently
+\[
+ \boxed{\text{fixed-minimizer C4 for }S=\{v,w\}}
+ \Longrightarrow
+ \boxed{\text{fixed-minimizer pre-FKG in }G/e}
+ \Longrightarrow
+ \boxed{\mathrm{C6}}.
+\]
+The remaining numbered questions branch off as follows:
+\[
+ \boxed{\mathrm{C4}}\Longrightarrow\boxed{\mathrm{Q5}},\qquad
+ \boxed{\text{fixed-minimizer C4}}\Longrightarrow\boxed{\mathrm{Q7}},
+ \qquad
+ \boxed{\text{strong C2}}\Longrightarrow\boxed{\mathrm{Q8}},
+\]
+and
+\[
+ \boxed{\text{fixed-minimizer C4 for arbitrary }S}
+ \mathrel{+}\boxed{\text{deleted-star conditioning}}
+ \Longrightarrow\boxed{\mathrm{Q9}}.
+\]
+
+For auditing, the sign-sensitive steps are only these:
+\begin{enumerate}[leftmargin=2.2em]
+\item The set-source Markov exploration gives
+  $-\widehat\Phi(C_R)$, not $-\widehat\Phi(C_d)$.  Their difference is
+  the nonnegative error \eqref{eq:guard-error}; because the level split
+  subtracts the centred bracket, that error enters
+  \eqref{eq:guard-unfold} with a plus sign.
+\item Every evaluation made by a tail level form or the final observer is
+  a singleton.  Hence \eqref{eq:guard-error-singleton}, rather than a
+  positivity-preservation assertion for a signed level operator, is what
+  preserves the preceding inequality.
+\item In the nonempty-intersection proof of \eqref{eq:guard-A2}, the
+  cross-deleted sets $P,P'$ are essential: they make the arguments exactly
+  $s\cup t$ and $s\cap t$ before applying four-functions.
+\item In \eqref{eq:kappa2}, the peeled relay is rank \emph{maximal}, so
+  $m_k^Y-m_x^Y\geq0$.
+\item In Lemma~\ref{lem:toprelay}, $C_k\subseteq C_S$ and $\Phi$ is
+  increasing, so replacing $\Phi(C_S)$ by $\Phi(C_k)$ is a lower bound.
+\item The residual probability $q(K)$ in that lemma is increasing: a
+  larger explored cluster deletes more possible paths to the forbidden
+  set.
+\item In the projection, $K\subseteq L$ makes the first term increase and
+  the conditional $a$-cluster term decrease.
+\item The disjoint transfer theorem is used only when
+  $S\cap(Y\cup T)=\varnothing$.  If the source already contains a relay,
+  Lemma~\ref{lem:source-overlap} supplies the missing branch.
+\item In the edge step one must restrict first to $S\ncon a$.  Without
+  that restriction, $C_a$ can change when $e$ is opened.
+\item In Question~5, the separating vector is forced into the positive
+  orthant because $r-\mathbb R_{\geq0}^{V}$ is unbounded in every
+  negative coordinate direction.  This is what permits the use of an
+  increasing linear cluster functional.
+\item In Question~9, the random source is
+  $S_\eta=\{o\}\cup N_\eta$, not merely $N_\eta$.  Retaining $o$ covers
+  $o\in A$, $a=o$, and $b=o$ without exceptional cases.
+\end{enumerate}
+
+No limiting argument chooses a minimizer.  This is important at weights
+$0$ or $1$ and in the presence of ties: the proof fixes the specified
+minimizer $a$ throughout.
+
+\section{Lean formalization plan}\label{sec:lean}
+
+This section gives declarations at a granularity suitable for parallel
+formalization.  Names are proposals; the mathematical interfaces are the
+important part.
+
+\subsection*{Block A: source clusters and event identities}
+
+Reuse \lean{CovTau.sC} from
+\lean{Percolation/Continuity/CovTau/A2Defs.lean}, or add a measure-level
+wrapper \lean{openClusterSet} with mathematical specification
+\[
+ \operatorname{openClusterSet}(\omega,S)
+ :=\{x:\exists s\in S,\ \operatorname{Reachable}_{\omega}(s,x)\}.
+\]
+Prove:
+\begin{itemize}
+\item singleton and union formulas;
+\item monotonicity in the configuration and in $S$;
+\item the pattern partition \eqref{eq:partition};
+\item \lean{clusterSet\_pair\_independent\_internalEdge}, which is
+  Lemma~\ref{lem:internal} in pointwise form.
+\end{itemize}
+
+\subsection*{Block B: avoided means and source surplus}
+
+Define denominator-free numerators first:
+\[
+ M_x^Y=\EE[\Phi(C_x);x\ncon Y],\qquad d_x^Y=\PP(x\ncon Y).
+\]
+Define \lean{sourceFirstPattern} and \lean{sourceAvoidSurplus}.  Keep the
+rank compatibility assumption in cross-multiplied form
+\[
+ M_x^Y d_z^Y\leq M_z^Y d_x^Y
+\]
+to avoid division at the boundary of the weight cube.
+
+\subsection*{Block C: guarded CSH and corrected unfolding}
+
+Formalize \eqref{eq:guardGamma}--\eqref{eq:guard-slack} first in
+denominator-free form.  Make the whole-source exploration identity
+\eqref{eq:guard-markov-a}, the correction \eqref{eq:guard-error}, and
+the two facts \eqref{eq:guard-error-sign}--
+\eqref{eq:guard-error-singleton} separate lemmas.  Prove the
+cross-multiplied one-decoy identity \eqref{eq:guard-one-decoy-cross}
+before the recursive unfolding \eqref{eq:guard-unfold}.  This order
+prevents accidental reuse of the false identity with $C_d$ in place of
+$C_R$.
+
+Package the nonempty-intersection proof of \eqref{eq:guard-A2} as a
+strong induction on the residual vertex set, exposing the cross-deleted
+sets $P,P'$ in its four-functions input.  The two-half Gibbs step should
+call the existing antitonicity and conditional-association declarations
+before closing the regeneration contraction.  The output is
+Theorem~\ref{thm:guardCSH}, first at nondegenerate weights and then in a
+cross-multiplied boundary form.
+
+\subsection*{Block D: set-source surplus transfer}
+
+Generalize the outer observer in
+\lean{CSH.surplusMargin\_nonneg\_of\_csh}.  The required repository pieces
+already accept sets:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+role & existing declaration/file\\
+\midrule
+set cluster & \lean{CovTau.sC}, \lean{A2Defs.lean}\\
+set marker covariance & \lean{CovTau.BfS}, \lean{StarBridgeS.lean}\\
+two-source horizontal inequality & \lean{CovTau.a2H},
+  \lean{CovTau.p1H\_univ}\\
+two-set conditional association &
+  \lean{BHK2006\_twoSetConditionalAssociation}\\
+four-product exchange & \lean{setTwoClusterExchange}\\
+ordinary CSH peeling & \lean{CSH/Peel.lean}\\
+\bottomrule
+\end{tabular}
+\end{center}
+The target declaration is the denominator-free form of
+\eqref{eq:setS5}.  The proof follows the seven labelled stages in
+\lean{CSH/Peel.lean}; insert $Y$ into every avoided set and use
+$C_z\subseteq C_S$ at the source evaluation.
+
+\subsection*{Block E: top-relay estimate and SAG}
+
+Formalize Lemma~\ref{lem:toprelay} separately.  The Markov/tower step can
+reuse the set-cluster exploration API; the monotonicity of $q(K)$ should
+be its own lemma.  Then formalize the four displayed equations
+\eqref{eq:surplus-peel}--\eqref{eq:kappa2} and close the induction with
+Block~C.  Export both the ratio form \eqref{eq:SAG} (under positive
+denominators) and a cross-multiplied boundary form.
+
+\subsection*{Block F: set-source projection}
+
+Generalize
+\lean{CovTau.monotone\_projFun} and
+\lean{CovTau.setIntegral\_sub\_eq\_projFun} from a singleton explored
+cluster to \lean{openClusterSet}.  Prove precisely
+\eqref{eq:projection-source} and \eqref{eq:projection-mean}.
+
+\subsection*{Block G: common coefficients}
+
+Formalize Theorem~\ref{thm:Q5} as a finite-dimensional alternative:
+either a point of $\operatorname{conv}\{q^x:x\in A\}$ lies below $r$
+coordinatewise, or a nonnegative separating functional contradicts
+Conjecture~4 applied to $F_\lambda$.  A Mathlib theorem of alternatives
+may replace strict separation, but the output must be one simplex vector
+shared by every target $b$.
+
+\subsection*{Block H: deleted-star conditioning}
+
+Represent the incident-pair coordinates as a finite product and prove
+\eqref{eq:star-source-identities} pointwise for each star state $\eta$.
+Split on $S_\eta\con_H a$, prove the exact finite-sum identity
+\eqref{eq:Q9-decomposition}, and apply the arbitrary-source version of
+Theorem~\ref{thm:fixedmin}.  State the source as
+$S_\eta=\{o\}\cup N_\eta$ to cover all overlap and endpoint cases.
+
+\subsection*{Block I: final theorem statements}
+
+Add named propositions for:
+\begin{itemize}
+\item \lean{kozmaNitzan\_conjecture4\_fixedMin};
+\item \lean{kozmaNitzan\_conjecture2\_strong};
+\item \lean{kozmaNitzan\_conjecture1};
+\item the existing Conjecture~3 theorem as a corollary;
+\item \lean{kozmaNitzan\_conjecture6\_strong}, whose statement omits the
+  endpoint assumptions.
+\item \lean{kozmaNitzan\_question5\_commonCoefficients};
+\item \lean{kozmaNitzan\_question8};
+\item \lean{kozmaNitzan\_question9}.
+\end{itemize}
+
+The recommended kernel audit is
+\[
+ \lean{\#print\ axioms kozmaNitzan\_conjecture6\_strong}
+\]
+followed by the corresponding commands for Conjectures 4, 2, and 1.
+Question~7 is already represented by \lean{KNAll.question7\_holds};
+Question~8 should be exported as a named one-line corollary of the
+strong Conjecture~2 declaration.
+
+\section{Conclusion}
+
+The missing idea is not another estimate for a single observer.  It is to
+retain the entire explored union $C_S$ when several possible observer
+components are present.  The CSH proof was already built from set-cluster
+exploration and two-set conditional association, so the source-set lift
+preserves its induction.  With $S=\{o\}$ it selects the unconditional
+minimizer in the pre-FKG comparison.  With $S=\{v,w\}$ it makes the state
+of the edge $\{v,w\}$ internal to the source union, which is exactly the
+invariance needed to force that edge open.  This proves all five numbered
+Kozma--Nitzan conjectures.  Convex separation, the fixed-minimizer
+specialization, and deleted-star conditioning then answer Questions
+5 and 7--9.  Hence every numbered conjecture and question in the supplied
+Kozma--Nitzan paper is resolved within the finite weighted-graph model.
+The countable-graph closure then feeds Conjecture~3 into their reduction
+and yields the paper's stated critical-percolation consequence.
+
+\begin{thebibliography}{9}
+
+\bibitem{KN}
+G.~Kozma and S.~Nitzan,
+\emph{A reduction of the $\theta(p_c)=0$ problem to a conjectured
+inequality}, arXiv:2401.12397 (2024),
+\url{https://arxiv.org/abs/2401.12397}.
+
+\bibitem{BHK}
+J.~van den Berg, O.~H\"aggstr\"om, and J.~Kahn,
+\emph{Some conditional correlation inequalities for percolation and
+related processes}, Random Structures Algorithms 29 (2006), 417--435.
+
+\bibitem{Harris}
+T.~E.~Harris,
+\emph{A lower bound for the critical probability in a certain
+percolation process}, Proc. Cambridge Philos. Soc. 56 (1960), 13--20.
+
+\end{thebibliography}
+
+\end{document}
