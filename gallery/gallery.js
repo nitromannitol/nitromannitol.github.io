@@ -41,8 +41,7 @@ const PAGE_MAKERS = {
     'apollonian':        ['apollointro', 'apollo'],
     'f-lattice':         ['flatticeintro', 'flattice', 'fareytree'],
     'random-sandpile':   ['randomintro', 'randombg', 'explosive', 'explosionproof'],
-    'divisible':         ['divisibleintro', 'divisiblepanels', 'mcrtbuild', 'matedcrt',
-                          'matedidla', 'lqgball'],
+    'divisible':         ['divisiblepanels', 'mcrtbuild', 'matedcrt', 'matedidla'],
     'idla-cylinder':     ['cylinderintro', 'cylinder', 'cylinder3d'],
     'idla':              ['idlaintro', 'aggregation'],
     'rotor-aggregation': ['rotoraggintro', 'rotoraggregation'],
@@ -99,7 +98,7 @@ const TITLES = {
     'apollonian': 'Integer superharmonic matrices on Z\u00b2',
     'f-lattice': 'Integer superharmonic matrices on the F-lattice',
     'random-sandpile': 'Sandpile on a random background',
-    'divisible': 'Divisible sandpile on a mated-CRT map',
+    'divisible': 'Internal DLA on mated-CRT maps',
     'idla-cylinder': 'Internal DLA on cylinders',
     'idla': 'Internal DLA',
     'rotor-aggregation': 'Rotor-router aggregation',
@@ -12159,29 +12158,19 @@ const Instruments = (function () {
         const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
         const note = $('#mcrt-idla-note'), outParticles = $('#mcrt-idla-particles');
         const outSteps = $('#mcrt-idla-steps'), outRadius = $('#mcrt-idla-radius');
-        const MAP_BUTTONS = $$('[data-mcrt-idla-map]');
         /* settled cells take the site's attachment ramp by settlement order,
            as the key under the stage says */
         const ORDER_RAMP = rampOf([[111,94,224], [204,121,167], [150,205,240], [255,248,232]]);
-        const EDGE_RATE = 110, SPAWN_HOLD = .10, LOOP_HOLD = 2.2;
-        /* the first walks are slow enough to be followed edge by edge; the
-           pace then rises to the rate that fills the cluster */
-        function edgeRate() {
-            return particles < 20 ? 9 : particles < 60 ? 9 + (particles - 20) / 40 * (EDGE_RATE - 9) : EDGE_RATE;
-        }
+        const REVEAL_RATE = 60, LOOP_HOLD = 4;
         const ghost = document.createElement('canvas'); ghost.width = W; ghost.height = H;
         const ghostCtx = ghost.getContext('2d');
+        const cluster = document.createElement('canvas'); cluster.width = W; cluster.height = H;
+        const clusterCtx = cluster.getContext('2d');
 
-        let DATA = null, G = null, key = 'sqrt2', mesh = null, ready = false;
-        let occupied, order, distance, centres, target = 0, particles = 0, steps = 0;
-        let radius = 0, active = null, spawnClock = 0, doneAt = 0, ghostAlpha = 0;
-        let runSeed = 0x617e3b29, seed = runSeed;
+        let DATA = null, G = null, mesh = null, ready = false;
+        let occupied, order, centres, target = 0, particles = 0, steps = 0;
+        let radius = 0, revealCarry = 0, doneAt = 0, ghostAlpha = 0;
         let raf = 0, running = false, pageAwake = true, userPaused = false, lastNow = 0;
-
-        function random() {
-            seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
-            return (seed >>> 0) / 4294967296;
-        }
         function cellPath(c, i) {
             const raw = G.cells[i]; if (!raw || !raw.length) return false;
             const pieces = typeof raw[0] === 'number' ? [raw] : raw;
@@ -12212,90 +12201,52 @@ const Instruments = (function () {
                     ? [x / m * W / 960, y / m * H / 960]
                     : [G.xy[i][0] * W / 960, G.xy[i][1] * H / 960];
             }
-            distance = new Int16Array(n); distance.fill(-1); distance[G.source] = 0;
-            const q = new Int32Array(n); let head = 0, tail = 1; q[0] = G.source;
-            while (head < tail) {
-                const v = q[head++];
-                for (let k = G.off[v]; k < G.off[v + 1]; k++) {
-                    const u = G.nbr[k];
-                    if (distance[u] < 0) { distance[u] = distance[v] + 1; q[tail++] = u; }
-                }
-            }
         }
         function colour(i) {
             const j = Math.max(0, Math.min(255, Math.round(255 * order[i] / Math.max(1, target - 1)))) * 3;
             return 'rgb(' + ORDER_RAMP[j] + ',' + ORDER_RAMP[j + 1] + ',' + ORDER_RAMP[j + 2] + ')';
         }
+        function paintCell(v) {
+            if (cellPath(clusterCtx, v)) {
+                clusterCtx.fillStyle = colour(v); clusterCtx.fill();
+                clusterCtx.strokeStyle = 'rgba(8,7,11,.76)';
+                clusterCtx.lineWidth = 1.15; clusterCtx.stroke();
+            } else {
+                const p = centres[v];
+                clusterCtx.beginPath();
+                clusterCtx.arc(p[0], p[1], 2.6 * W / 960, 0, 2 * Math.PI);
+                clusterCtx.fillStyle = colour(v); clusterCtx.fill();
+            }
+        }
         function resetState() {
             occupied = new Uint8Array(G.n); order = new Int16Array(G.n); order.fill(-1);
-            particles = 0; steps = 0; radius = 0; active = null; spawnClock = 0; doneAt = 0;
-            seed = runSeed; target = Math.min(360, Math.max(180, Math.floor(.18 * G.n)));
-            settle(G.source);             // the first particle starts and settles at the source
-            if (!REDUCED) beginParticle();
+            particles = 0; steps = 0; radius = 0; revealCarry = 0; doneAt = 0;
+            target = G.order.length;
+            clusterCtx.clearRect(0, 0, W, H);
+            settle(G.order[0]);
         }
         function settle(v) {
             if (occupied[v]) return;
-            occupied[v] = 1; order[v] = particles; particles++;
-            radius = Math.max(radius, distance[v]);
-            active = null; spawnClock = SPAWN_HOLD;
-            if (particles >= target) doneAt = performance.now();
-        }
-        function chooseEdge() {
-            if (!active) return;
-            const lo = G.off[active.at], hi = G.off[active.at + 1];
-            if (hi <= lo) { active = null; return; }
-            active.from = active.at;
-            active.to = G.nbr[lo + Math.floor(random() * (hi - lo))];
-            active.u = 0;
-        }
-        function beginParticle() {
-            if (particles >= target) return;
-            active = { at: G.source, from: G.source, to: G.source, u: 0,
-                       path: [G.source] };
-            spawnClock = SPAWN_HOLD;
-        }
-        function finishEdge() {
-            active.at = active.to; active.path.push(active.at); steps++;
-            if (!occupied[active.at]) { settle(active.at); return; }
-            chooseEdge();
+            const k = particles;
+            occupied[v] = 1; order[v] = k; particles++;
+            steps = G.steps[k]; radius = G.radius[k];
+            paintCell(v);
+            if (particles >= target) {
+                steps = G.boundary_hit_steps;
+                doneAt = performance.now();
+            }
         }
         function advance(dt) {
             if (particles >= target) return;
-            if (!active) {
-                spawnClock -= dt;
-                if (spawnClock <= 0) beginParticle();
-                return;
-            }
-            if (spawnClock > 0) {
-                spawnClock -= dt;
-                if (spawnClock <= 0) chooseEdge();
-                return;
-            }
-            active.u += dt * edgeRate();
-            /* dt is capped below so this loop normally executes once.  It is
-               kept exact for a delayed frame: every traversed graph edge is
-               still appended to the visible walk before the next is chosen. */
-            while (active && active.u >= 1) {
-                active.u -= 1; finishEdge();
+            revealCarry += dt * REVEAL_RATE;
+            while (revealCarry >= 1 && particles < target) {
+                revealCarry -= 1;
+                settle(G.order[particles]);
             }
         }
         function finishStatic() {
-            while (particles < target) {
-                let v = G.source;
-                while (occupied[v]) {
-                    const lo = G.off[v], hi = G.off[v + 1];
-                    if (hi <= lo) break;
-                    v = G.nbr[lo + Math.floor(random() * (hi - lo))]; steps++;
-                }
-                if (!occupied[v]) settle(v); else break;
-            }
-            active = null; doneAt = performance.now();
-        }
-        function activePoint() {
-            if (!active) return null;
-            const a = centres[active.from], b = centres[active.to];
-            return [ruleMix(a[0], b[0], ruleClamp(active.u)),
-                    ruleMix(a[1], b[1], ruleClamp(active.u))];
+            while (particles < target) settle(G.order[particles]);
+            doneAt = performance.now();
         }
         function paint() {
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W,H);
@@ -12308,33 +12259,7 @@ const Instruments = (function () {
                 ctx.drawImage(mesh, 0, 0, W, H);
                 ctx.globalAlpha = 1;
             }
-            for (let i = 0; i < G.n; i++) if (occupied[i] && cellPath(ctx, i)) {
-                ctx.fillStyle = colour(i); ctx.fill();
-                ctx.strokeStyle = 'rgba(8,7,11,.76)';
-                ctx.lineWidth = 1.15; ctx.stroke();
-            }
-            /* Vertices not incident to a bounded face have no cell to fill.
-               Draw only the occupied ones, at their actual Tutte position. */
-            for (let i = 0; i < G.n; i++) if (occupied[i] && (!G.cells[i] || !G.cells[i].length)) {
-                const p = centres[i];
-                ctx.beginPath(); ctx.arc(p[0], p[1], 2.6 * W / 960, 0, 2 * Math.PI);
-                ctx.fillStyle = colour(i); ctx.fill();
-            }
-            if (active && active.path.length) {
-                const first = Math.max(0, active.path.length - 100);
-                ctx.beginPath(); let p = centres[active.path[first]]; ctx.moveTo(p[0], p[1]);
-                for (let k = first + 1; k < active.path.length; k++) {
-                    p = centres[active.path[k]]; ctx.lineTo(p[0], p[1]);
-                }
-                p = activePoint(); if (p) ctx.lineTo(p[0], p[1]);
-                ctx.strokeStyle = 'rgba(246,241,230,.72)'; ctx.lineWidth = Math.max(1.1, W / 960);
-                ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
-                if (p) {
-                    ctx.beginPath(); ctx.arc(p[0], p[1], 6.2 * W / 960, 0, 2 * Math.PI);
-                    ctx.fillStyle = '#F6F1E6'; ctx.fill();
-                    ctx.strokeStyle = '#15131A'; ctx.lineWidth = 1.6; ctx.stroke();
-                }
-            }
+            ctx.drawImage(cluster, 0, 0);
             const s = centres[G.source];
             ctx.beginPath(); ctx.arc(s[0], s[1], 8 * W / 960, 0, 2 * Math.PI);
             ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 2 * W / 960; ctx.stroke();
@@ -12348,9 +12273,8 @@ const Instruments = (function () {
             if (outSteps) outSteps.textContent = nf.format(steps);
             if (outRadius) outRadius.textContent = String(radius);
             if (note) {
-                if (particles >= target) note.textContent = 'Complete';
-                else if (active && spawnClock <= 0) note.textContent = 'Particle ' + (particles + 1) + ' \u00b7 walking';
-                else note.textContent = 'Particle ' + (particles + 1) + ' \u00b7 at the source';
+                if (particles >= target) note.textContent = 'Boundary reached';
+                else note.textContent = 'Settling particle ' + (particles + 1);
             }
         }
         function captureGhost() {
@@ -12364,18 +12288,7 @@ const Instruments = (function () {
             if (REDUCED) { finishStatic(); ghostAlpha = 0; }
             paint(); sync();
         }
-        function selectMap(k) {
-            if (!DATA || !DATA[k]) return;
-            captureGhost(); key = k; G = DATA[k]; buildGeometry(); resetState();
-            if (REDUCED) { finishStatic(); ghostAlpha = 0; }
-            paint(); sync();
-        }
         function sync() {
-            MAP_BUTTONS.forEach(function (b) {
-                const on = b.dataset.mcrtIdlaMap === key;
-                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
-                b.disabled = !ready;
-            });
             const b = $('[data-mcrt-idla-run="pause"]');
             if (b) {
                 b.textContent = REDUCED ? 'Paused' : (running ? 'Pause' : 'Play');
@@ -12391,7 +12304,7 @@ const Instruments = (function () {
             if (ghostAlpha > 0) ghostAlpha = Math.max(0, ghostAlpha - dt / 1.15);
             if (particles < target) advance(dt);
             else if (now - doneAt > LOOP_HOLD * 1000) {
-                runSeed = (runSeed + 0x9e3779b9) >>> 0; restart(true);
+                restart(true);
             }
             paint(); raf = requestAnimationFrame(frame);
         }
@@ -12402,27 +12315,20 @@ const Instruments = (function () {
         }
 
         Promise.all([
-            fetch((window.galleryAssets && window.galleryAssets.mcrtRun)
-                || 'plates/p-mcrt-run.json').then(function (r) {
+            fetch((window.galleryAssets && window.galleryAssets.mcrtIdla)
+                || 'plates/p-mcrt-idla.json').then(function (r) {
                     if (!r.ok) throw new Error('HTTP ' + r.status); return r.json();
                 }),
             loadImage((window.galleryAssets && window.galleryAssets.mcrtMeshSqrt2)
                 || 'plates/p-mcrt-mesh-sqrt2-void.png')
         ]).then(function (got) {
                 DATA = got[0]; mesh = got[1];
-                Object.keys(DATA).forEach(function (k) {
-                    const g = DATA[k];
-                    g.off = Int32Array.from(g.off); g.nbr = Int32Array.from(g.nbr);
-                });
-                key = DATA[key] ? key : Object.keys(DATA)[0]; G = DATA[key]; ready = true;
+                G = DATA.idla; ready = true;
                 buildGeometry(); restart(false); if (!REDUCED) start();
             }).catch(function (err) {
                 console.warn('mated-CRT internal DLA:', err);
                 if (note) note.textContent = 'Could not load finite graph';
             });
-        MAP_BUTTONS.forEach(function (b) {
-            b.addEventListener('click', function () { if (b.dataset.mcrtIdlaMap !== key) selectMap(b.dataset.mcrtIdlaMap); });
-        });
         $$('[data-mcrt-idla-run]').forEach(function (b) {
             b.addEventListener('click', function () {
                 const a = b.dataset.mcrtIdlaRun;
@@ -12432,10 +12338,6 @@ const Instruments = (function () {
                 }
                 if (a === 'replay') {
                     stop(); userPaused = REDUCED; restart(true); if (!userPaused) start();
-                }
-                if (a === 'new') {
-                    stop(); runSeed = (runSeed + 0x9e3779b9) >>> 0;
-                    userPaused = REDUCED; restart(true); if (!userPaused) start();
                 }
             });
         });

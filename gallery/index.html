@@ -89,7 +89,7 @@
     </span>
     <span class="card-label">
         <span class="card-no" aria-hidden="true">05</span>
-        <span class="card-name">Divisible sandpile on a mated-CRT map</span>
+        <span class="card-name">Internal DLA on mated-CRT maps</span>
     </span>
 </a>
 <a class="card" href="#percolation" data-plate="percolation">
@@ -608,7 +608,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Previous</span><span class="nav-name">Pareto peeling</span></a>
-            <a class="nav-next" href="#divisible" data-plate-link="divisible"><span class="nav-dir">Next</span><span class="nav-name">Divisible sandpile on a mated-CRT map</span></a>
+            <a class="nav-next" href="#divisible" data-plate-link="divisible"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA on mated-CRT maps</span></a>
         </div>
     </nav>
 </section>
@@ -616,19 +616,14 @@
 <section class="study" id="study-divisible" data-plate="divisible" aria-labelledby="t-divisible" role="dialog" aria-modal="true" hidden>
     <div class="study-bar">
         <button type="button" class="study-back" data-close>&larr;&ensp;Models</button>
-        <span class="study-title">Divisible sandpile on a mated-CRT map</span>
+        <span class="study-title">Internal DLA on mated-CRT maps</span>
     </div>
 
     <section class="band band--paper band--head">
         <div class="col">
-            <p class="family">Sandpiles</p>
-            <h2 id="t-divisible">Divisible sandpile on a mated-CRT map</h2>
-            <p class="def"><b>Definition.</b> Fix \(\gamma\in(0,2)\) and \(\varepsilon&gt;0\). Let \((L,R)\) be a two-sided planar Brownian motion normalized so that, for \(s,t\in\mathbb R\), \(\operatorname{Var}(L_t-L_s)=\operatorname{Var}(R_t-R_s)=|t-s|\) and \(\operatorname{Cov}(L_t-L_s,R_t-R_s)=-\cos(\pi\gamma^2/4)|t-s|\). The \(\varepsilon\)-mated-CRT map has vertex set \(\varepsilon\mathbb Z\). Consecutive vertices are joined by one edge. For nonconsecutive \(a_1&lt;a_2\), each coordinate \(Z\in\{L,R\}\) contributes an edge when \[\max\!\left\{\inf_{[a_1-\varepsilon,a_1]}Z,\inf_{[a_2-\varepsilon,a_2]}Z\right\}\le\inf_{[a_1,a_2-\varepsilon]}Z.\] Thus a nonconsecutive pair has two edges when both coordinates satisfy the condition. Start the divisible sandpile from \(t\varepsilon^{-1}\delta_0\); a vertex retains mass 1 and distributes its excess equally among its incident edges. If \(s_t^\varepsilon\) and \(v_t^\varepsilon\) are the stabilized mass and odometer, then \(D^\varepsilon(t\varepsilon^{-1})=\{s_t^\varepsilon&gt;0\}=\operatorname{cl}\{v_t^\varepsilon&gt;0\}\), where \(\operatorname{cl}S=S\cup\{v\notin S:v\sim w\text{ for some }w\in S\}\).</p>
-            <figure class="rulefig">
-                <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-divisible" width="1080" height="1080" data-rule-anim="divisible" role="img" aria-label="topple excess mass on a Brownian-encoded planar map"></canvas>
-                </div>
-            </figure>
+            <p class="family">Aggregation</p>
+            <h2 id="t-divisible">Internal DLA on mated-CRT maps</h2>
+            <p class="def"><b>Definition.</b> Fix \(\gamma\in(0,2)\) and \(\varepsilon&gt;0\). Let \((L,R)\) be a two-sided planar Brownian motion normalized so that, for \(s,t\in\mathbb R\), \(\operatorname{Var}(L_t-L_s)=\operatorname{Var}(R_t-R_s)=|t-s|\) and \(\operatorname{Cov}(L_t-L_s,R_t-R_s)=-\cos(\pi\gamma^2/4)|t-s|\). The \(\varepsilon\)-mated-CRT map has vertex set \(\varepsilon\mathbb Z\). Consecutive vertices are joined by one edge. For nonconsecutive \(a_1&lt;a_2\), each coordinate \(Z\in\{L,R\}\) contributes an edge when \[\max\!\left\{\inf_{[a_1-\varepsilon,a_1]}Z,\inf_{[a_2-\varepsilon,a_2]}Z\right\}\le\inf_{[a_1,a_2-\varepsilon]}Z.\] Thus a nonconsecutive pair has two edges when both coordinates satisfy the condition. IDLA releases independent simple random walks from 0, each settling at the first vertex outside the current cluster. The divisible sandpile started from \(t\varepsilon^{-1}\delta_0\) stabilizes by having each vertex retain mass 1 and distribute its excess equally among its incident edges.</p>
         </div>
     </section>
 
@@ -657,6 +652,21 @@
     </section>
 
 
+    <section class="band band--paper">
+        <div class="col">
+            <p class="family">Common scaling-limit setup</p>
+            <h3>LQG harmonic balls</h3>
+            <p><b>Setup.</b> Fix \(\gamma\in(0,2)\). Let \(h\) be the field of a \(\gamma\)-quantum cone, let \(\mu_h\) be its LQG area measure, and let \(G^\varepsilon\) be the \(\varepsilon\)-mated-CRT map in its SLE/LQG embedding. Write \(H_a^\varepsilon\) for the cell corresponding to \(a\in\varepsilon\mathbb Z\). Let \(\Lambda_t\) be the \(h\)-harmonic ball centered at 0 with \(\mu_h(\Lambda_t)=t\); in particular, \[\frac1t\int_{\Lambda_t}f\,d\mu_h=f(0)\] for every function \(f\) harmonic on a neighbourhood of \(\overline{\Lambda_t}\). For \(\delta&gt;0\), define \[B_\delta^+(X)=\{x:\operatorname{dist}(x,X)\le\delta\},\qquad B_\delta^-(X)=\{x\in X:\operatorname{dist}(x,X^c)\ge\delta\}.\]</p>
+        </div>
+    </section>
+
+
+    <section class="band band--paper">
+        <div class="col">
+            <p class="statement"><b>Theorem (divisible sandpile).</b> Let \(D^\varepsilon(t\varepsilon^{-1})\) be the positive-final-mass cluster of the divisible sandpile started from mass \(t\varepsilon^{-1}\) at 0, and set \(\mathcal D^\varepsilon(t\varepsilon^{-1})=\bigcup_{a\in D^\varepsilon(t\varepsilon^{-1})}H_a^\varepsilon\). For every \(t,\delta&gt;0\), with probability tending to one as \(\varepsilon\to0\), \[B_\delta^-(\Lambda_t)\subset\mathcal D^\varepsilon(t\varepsilon^{-1})\subset B_\delta^+(\Lambda_t).\] <span class="src">(Bou-Rabee&ndash;Gwynne, <a href="https://arxiv.org/abs/2211.04891">Theorem 1.6</a>)</span></p>
+        </div>
+    </section>
+
     <section class="band band--void band--model-live">
         <div class="instrument instrument--model" data-model-theme="divisible">
             <div class="model-control-shelf" aria-label="Divisible sandpile controls">
@@ -682,15 +692,21 @@
     </section>
 
 
+    <section class="band band--paper">
+        <div class="col">
+            <p class="statement"><b>Theorem (IDLA).</b> Let \(A^\varepsilon(0)=\varnothing\). For \(n\ge1\), obtain \(A^\varepsilon(n)\) by starting an independent simple random walk from 0 and adjoining the first vertex it visits outside \(A^\varepsilon(n-1)\). Set \(\mathcal A^\varepsilon(n)=\bigcup_{a\in A^\varepsilon(n)}H_a^\varepsilon\). For every \(t,\delta&gt;0\), with probability tending to one as \(\varepsilon\to0\), \[B_\delta^-(\Lambda_t)\subset\mathcal A^\varepsilon(\lfloor t\varepsilon^{-1}\rfloor)\subset B_\delta^+(\Lambda_t).\] <span class="src">(Bou-Rabee&ndash;Gwynne, <a href="https://arxiv.org/abs/2211.04891">Theorem 1.4</a>)</span></p>
+        </div>
+    </section>
+
     <section class="band band--void band--model-live">
         <div class="instrument instrument--model" data-model-theme="divisible">
             <div class="model-control-shelf" aria-label="Mated-CRT internal DLA controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-mcrt-idla-run="pause">Pause</button><button type="button" class="btn" data-mcrt-idla-run="replay">Replay</button><button type="button" class="btn" data-mcrt-idla-run="new">New</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-mcrt-idla-run="pause">Pause</button><button type="button" class="btn" data-mcrt-idla-run="replay">Replay</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:660px">
-                <canvas id="mcrt-idla-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on an exact finite mated-CRT graph. Each particle performs simple random walk along graph edges from the marked source and settles at its first unoccupied cell. Colour records settlement order."></canvas>
+                <canvas id="mcrt-idla-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on the full finite 10,000-vertex mated-CRT disk. Settled cells are revealed in the exact order of a precomputed run stopped when an explorer first reaches the boundary."></canvas>
                 <span class="model-phase-chip" id="mcrt-idla-note">Loading exact finite graph</span>
             </div>
             <dl class="readout model-readout">
@@ -699,42 +715,18 @@
                 <div><dt>Maximum graph distance from the source over occupied vertices</dt><dd id="mcrt-idla-radius">0</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption">Internal DLA on the same finite \(\gamma=\sqrt2\) disk map. Each particle starts at the source, follows an incident edge chosen uniformly at every step (parallel edges counted separately), and settles at the first unoccupied vertex. Colour records settlement order.</p>
-        </div>
-    </section>
-
-
-    <section class="band band--void band--model-live">
-        <div class="instrument instrument--model" data-model-theme="divisible">
-            <div class="model-control-shelf" aria-label="Variable-capacity obstacle-problem controls">
-                <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Source mass / total grid capacity</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-lqg-mass=".25" aria-pressed="false">0.25</button><button type="button" class="btn is-on" data-lqg-mass=".5" aria-pressed="true">0.50</button><button type="button" class="btn" data-lqg-mass=".75" aria-pressed="false">0.75</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-lqg-view="mass" aria-pressed="true">Mass</button><button type="button" class="btn" data-lqg-view="odometer" aria-pressed="false">Odometer</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-lqg-run="pause">Pause</button><button type="button" class="btn" data-lqg-run="replay">Replay</button></div></div>
-                </div>
-            </div>
-            <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="lqg-ball-canvas" width="1440" height="1440" role="img" aria-label="Legal topplings for a divisible sandpile on a finite variable-capacity grid, halted when the maximum excess is at most 10 to the minus 6. The deterministic multiscale capacity field is shown either through current mass or the odometer."></canvas>
-                <span class="model-phase-chip" id="lqg-ball-note">Legal topplings on a finite variable-capacity grid</span>
-            </div>
-            <dl class="readout model-readout">
-                <div><dt>Toppled cells (current / final)</dt><dd id="lqg-ball-cells">0</dd></div>
-                <div><dt>Maximum excess above capacity</dt><dd id="lqg-ball-error">0</dd></div>
-            </dl>
-            <div class="model-key lqg-ball-key"><span>Variable-capacity obstacle problem</span><span>source marked in yellow</span></div>
-            <p class="caption">Divisible sandpile with site-dependent capacity on a 31-by-31 grid. Site x holds mass up to c(x) before toppling; c is a fixed positive field with mean 1; mass sent off the grid is lost. Initial mass: the selected fraction of the total capacity, at the centre. Legal topplings run until every excess is below 10⁻⁶. Mass: mass held relative to capacity. Odometer: mass sent per edge. Yellow outline: sites toppling for the first time.</p>
+            <p class="caption">Internal DLA on the full 10,000-vertex finite \(\gamma=\sqrt2\) disk map. Each explorer starts at the source, follows an incident edge chosen uniformly at each step (parallel edges counted separately), and settles at its first unoccupied vertex. The run has 3,087 settled explorers before the next walk reaches the boundary. Cells appear in settlement order; the step count includes the boundary-hitting walk.</p>
         </div>
     </section>
 
 
     <section class="band band--paper">
         <div class="col">
-            <p class="statement"><b>Theorem.</b> Fix \(\gamma\in(0,2)\). Let \(h\) be the field of a \(\gamma\)-quantum cone, let \(\mu_h\) be its LQG area measure, and let \(G^\varepsilon\) be the \(\varepsilon\)-mated-CRT map in its SLE/LQG embedding; write \(H_a^\varepsilon\) for the cell of \(a\in\varepsilon\mathbb Z\). Let \(\Lambda_t:=\Lambda_t(0)\) be the \(h\)-harmonic ball of \(\mu_h\)-mass \(t\) centered at 0. Let \(D^\varepsilon(t\varepsilon^{-1})\) be the positive-final-mass vertex cluster of the divisible sandpile started with mass \(t\varepsilon^{-1}\) at 0, and set \(\mathcal D^\varepsilon(t\varepsilon^{-1})=\bigcup_{a\in D^\varepsilon(t\varepsilon^{-1})}H_a^\varepsilon\). Let \(A^\varepsilon(n)\) be the mated-CRT IDLA cluster after \(n\) explorers. Define \(B_\delta^+(X)=\{x:\operatorname{dist}(x,X)\le\delta\}\) and \(B_\delta^-(X)=\{x\in X:\operatorname{dist}(x,X^c)\ge\delta\}\). For every \(t,\delta&gt;0\), with probability tending to one as \(\varepsilon\to0\), \[B_\delta^-(\Lambda_t)\subset\mathcal D^\varepsilon(t\varepsilon^{-1})\subset B_\delta^+(\Lambda_t).\] The same inclusions hold with \(\mathcal D^\varepsilon(t\varepsilon^{-1})\) replaced by \(\bigcup_{a\in A^\varepsilon(\lfloor t\varepsilon^{-1}\rfloor)}H_a^\varepsilon\). <span class="src">(Bou-Rabee&ndash;Gwynne, <a href="https://arxiv.org/abs/2211.04891">arXiv:2211.04891</a>, Theorems 1.4 and 1.6)</span></p>
             <p class="statement"><b>Theorem.</b> Fix \(\gamma\in(0,2)\), set \(Q=2/\gamma+\gamma/2\), and let \(h=h^{\mathbb C}-\alpha_0\log|\cdot|\), where \(h^{\mathbb C}\) is a whole-plane GFF normalized to have zero circle average on \(\partial B_1(0)\), and \(\alpha_0&lt;Q\). Let \(\mu_h\) be the associated \(\gamma\)-LQG area measure. An \(h\)-harmonic ball \(\Lambda_t(z)\) has \(\mu_h(\Lambda_t(z))=t\) and satisfies \[\frac1t\int_{\Lambda_t(z)}f\,d\mu_h=f(z)\] for every \(f=f_1+f_2\), where \(f_1\) is harmonic on a neighbourhood of \(\overline{\Lambda_t(z)}\) and \(f_2(x)=\int_O G_O(x,y)\,\nu(dy)\) for a bounded open set \(O\supset\Lambda_t(z)\) and a signed Radon measure \(\nu\) supported in \(O\setminus\Lambda_t(z)\). Almost surely, for every \(z\in\mathbb C\) there is a unique family \((\Lambda_t(z))_{t&gt;0}\) in this class such that \(\mu_h(\partial\Lambda_t(z))=0\), each \(\Lambda_t(z)\) is bounded, connected, contains \(z\), and equals the interior of its closure; the family increases continuously in the Hausdorff topology and \(\bigcap_{t&gt;0}\Lambda_t(z)=\{z\}\). For Lebesgue-almost every \(t&gt;0\), \(\Lambda_t(0)\) is neither a Lipschitz domain nor an LQG metric ball; for every \(t&gt;0\), each connected component of \(\mathbb C\setminus\overline{\Lambda_t(0)}\) has Jordan-curve boundary. <span class="src">(Bou-Rabee&ndash;Gwynne, <a href="https://arxiv.org/abs/2208.11795">arXiv:2208.11795</a>, Theorems 1.1&ndash;1.2)</span></p>
             <p class="statement"><b>Question.</b> Prove convergence of embedded divisible-sandpile and IDLA clusters to LQG harmonic balls on other random planar maps, in particular maps in the \(\gamma=\sqrt{8/3}\) universality class. Determine convergence rates and fluctuations.</p>
             <details class="deeper"><summary>Details</summary>
             <p><b>Proof idea.</b> The divisible-sandpile odometer is the least nonnegative supersolution of a discrete obstacle problem. Convergence of mated-CRT Green functions and discrete harmonic functions identifies its continuum obstacle limit and yields the inner inclusion. A stopped-IDLA comparison transfers that lower bound to IDLA; the abelian property, random-walk convergence to Liouville Brownian motion, and a no-long-tentacles estimate give the outer inclusion.</p>
-            <p>Toppling every unstable vertex at once is a Jacobi iteration for the obstacle problem, and the model is abelian, so the final state does not depend on toppling order. At tolerance \(10^{-6}\), the fixed \(\gamma=\sqrt2\) replay terminates after 842 parallel sweeps and the fixed \(\gamma=\sqrt{8/3}\) replay after 700; in each case the maximum excess on a topple-enabled cell is below \(10^{-6}\). The computation conserves total mass.</p>
+            <p>Toppling every unstable vertex at once is a Jacobi iteration for the obstacle problem, and the model is abelian, so the final state does not depend on toppling order.</p>
             <p>The mated-CRT cells have a multifractal area distribution, so equal numbers of graph vertices need not represent comparable Euclidean areas. On \(\mathbb{Z}^{d}\), the one-source divisible sandpile differs from a Euclidean ball by at most an additive constant; with \(k\) sources it converges to a quadrature domain whose planar boundary lies on an algebraic curve of degree \(2k\) (Levine&ndash;Peres). The random-map limit is instead an LQG harmonic ball.</p>
             </details>
             <p class="cite">A. Bou-Rabee and E. Gwynne, &ldquo;Internal DLA on mated-CRT maps&rdquo;, <em>Ann. Probab.</em> 52 (2024), <a href="https://arxiv.org/abs/2211.04891">arXiv:2211.04891</a>; and &ldquo;Harmonic balls in Liouville quantum gravity&rdquo; (2022), <a href="https://arxiv.org/abs/2208.11795">arXiv:2208.11795</a>. The mated-CRT map is from B. Duplantier, J. Miller and S. Sheffield, &ldquo;Liouville quantum gravity as a mating of trees&rdquo;, <a href="https://arxiv.org/abs/1409.7055">arXiv:1409.7055</a>; its Tutte embedding is treated in E. Gwynne, J. Miller and S. Sheffield, &ldquo;The Tutte embedding of the mated-CRT map converges to Liouville quantum gravity&rdquo;, <em>Ann. Probab.</em> 49 (2021), <a href="https://arxiv.org/abs/1705.11161">arXiv:1705.11161</a>. For the divisible sandpile on \(\mathbb{Z}^{d}\), L. Levine and Y. Peres, <em>Potential Anal.</em> 30 (2009), <a href="https://arxiv.org/abs/0704.0688">arXiv:0704.0688</a>, and <em>J. Analyse Math.</em> 111 (2010), <a href="https://arxiv.org/abs/0712.3378">arXiv:0712.3378</a>. D. Zidarov and L. Levine introduced the model independently.</p>
@@ -806,7 +798,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#divisible" data-plate-link="divisible"><span class="nav-dir">Previous</span><span class="nav-name">Divisible sandpile on a mated-CRT map</span></a>
+            <a href="#divisible" data-plate-link="divisible"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on mated-CRT maps</span></a>
             <a class="nav-next" href="#percolation" data-plate-link="percolation"><span class="nav-dir">Next</span><span class="nav-name">Rigidity of harmonic functions on the supercritical percolation cluster</span></a>
         </div>
     </nav>
@@ -1879,6 +1871,7 @@ window.galleryAssets = {
     fareyTree: 'plates/p-farey-tree.json?v=d5c063ee',
     fareyAtlas: 'plates/p-farey-atlas.png?v=fbf1cbdc',
     mcrtRun: 'plates/p-mcrt-run.json?v=96e1ff57',
+    mcrtIdla: 'plates/p-mcrt-idla.json?v=e89ae5dd',
     mcrtMeshSqrt2: 'plates/p-mcrt-mesh-sqrt2-void.png?v=c2391813',
     randomEmpty: 'plates/p6-deterministic-hero-void.png?v=fd428ee8',
     randomHoles: 'plates/p6-random-hero-void.png?v=189a2a4a',
@@ -1906,6 +1899,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=fde11edb"></script>
+<script defer src="gallery.js?v=f16e02d8"></script>
 </body>
 </html>
