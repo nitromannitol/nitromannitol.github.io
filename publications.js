@@ -195,7 +195,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     abstract: 'Bounded harmonic functions are constant. However, there are non-constant harmonic functions on R<sup>d</sup> that are bounded on all but a tiny fraction of space (see, <a href="https://link.springer.com/book/10.1007/978-3-642-61983-0">[Ch 3, Problems 158-160]</a>). These functions have no immediate discrete analogue, and, it turns out, cannot exist on periodic planar graphs. We prove that for any periodic planar graph G, there exists a constant &alpha;(G) such that any discrete harmonic function which is bounded on a (1 - &alpha;(G))-density of the graph is constant. A key aspect of the argument is a new unique continuation result for periodic planar graphs. Our proof is based on the maximum principle and elementary geometric arguments. It generalizes and simplifies earlier work by <a href="https://arxiv.org/abs/1712.07902">Lev Buhovsky, Alexander Logunov, Eugenia Malinnikova, and Mikhail Sodin</a>, who established this result on the square lattice using techniques specific to that setting. The ideas in Buhovsky-Logunov-Malinnikova-Sodin were later applied by <a href="https://arxiv.org/abs/1809.09041">Charles Smart and Jian Ding</a> to establish localization near the edge for the Anderson-Bernoulli model on the square lattice.',
     thumbnail: "images/unique_continuation.png",
     thumbnailAnimation: "unique-continuation",
-    altText: "Sign domains and zero edges of discrete harmonic functions on a hexagonal lattice ball.",
+    altText: "A candidate nonzero component inside a planar graph ball is enclosed by a zero cycle and then disappears from the inner ball, as required by unique continuation.",
     year: 2025
   },
   {

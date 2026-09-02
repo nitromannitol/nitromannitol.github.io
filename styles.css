@@ -281,6 +281,7 @@ html:not(.js) .content-placeholder {
 
 .publication .thumbnail-link canvas.pub-thumbnail-canvas {
     display: block;
+    background: transparent;
 }
 
 .publication .thumbnail-link img.pub-thumbnail:hover {
