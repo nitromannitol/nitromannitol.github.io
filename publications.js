@@ -276,7 +276,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
 ,
     thumbnail: "images/flattice.png",
     thumbnailAnimation: "f-lattice",
-    altText: "Fixed-height sections of the cones in the F-lattice classification, drawn as congruent circles centered on the parameter lattice."
+    altText: "A highlighted branch descending the ternary modified Farey recursion for F-lattice odometers."
   },
   {
     id: "hamilton-jacobi-scaling-limits",
@@ -360,3 +360,31 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
     altText: "An exact random-background Abelian sandpile viewed from microscopic lattice scale to its macroscopic profile."
   }
 ];
+
+const galleryAnchorByAnimation = {
+  "parking": "parking",
+  "divisible-percolation": "divisible-percolation",
+  "rotor-walk": "rotor-walk",
+  "einstein-relation": "einstein-relation",
+  "long-range-walk": "long-range-walk",
+  "idla-cylinder": "idla-cylinder",
+  "sandpile-rwrs": "sandpile-rwrs",
+  "algebraic-superdiffusion": "superdiffusion",
+  "sphere-packing": "sphere-packing",
+  "critical-superdiffusion": "superdiffusion",
+  "unique-continuation": "unique-continuation",
+  "percolation-harmonic": "percolation",
+  "mated-crt-idla": "divisible",
+  "harmonic-ball": "divisible",
+  "f-lattice": "f-lattice",
+  "pareto-peeling": "pareto-peeling",
+  "exploding-sandpile": "random-sandpile",
+  "dimensional-reduction": "dimensional-reduction",
+  "random-sandpile": "random-sandpile"
+};
+
+publications.forEach(publication => {
+  const anchor = galleryAnchorByAnimation[publication.thumbnailAnimation];
+  if (!anchor || publication.links.some(link => link.type === "Gallery")) return;
+  publication.links.push({ type: "Gallery", url: `gallery/#${anchor}` });
+});
