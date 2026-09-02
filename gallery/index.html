@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=04d597de">
+<link rel="stylesheet" href="gallery.css?v=679d5c30">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -129,7 +129,7 @@
     </span>
     <span class="card-label">
         <span class="card-no" aria-hidden="true">09</span>
-        <span class="card-name">Rotor walk</span>
+        <span class="card-name">Eulerian walkers on Z&sup2;</span>
     </span>
 </a>
 <a class="card card--wide" href="#einstein-relation" data-plate="einstein-relation">
@@ -267,7 +267,7 @@
         <div class="instrument instrument--model" data-model-theme="random-sandpile">
             <div class="model-control-shelf" aria-label="Random-background sandpile controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Background</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-p6-mode="empty" aria-pressed="false">Empty</button><button type="button" class="btn is-on" data-p6-mode="random" aria-pressed="true">Random holes</button><button type="button" class="btn" data-p6-mode="exploding" aria-pressed="false">Explosive</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Background</span><div class="model-segmented"><button type="button" class="btn" data-p6-mode="empty" aria-pressed="false">Empty</button><button type="button" class="btn is-on" data-p6-mode="random" aria-pressed="true">Holes</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-p6-run="pause">Pause</button><button type="button" class="btn" data-p6-run="replay">Replay</button></div></div>
                 </div>
             </div>
@@ -279,8 +279,28 @@
                 <div><dt id="p6-round-label">Toppling sweep</dt><dd id="p6-round">0</dd></div>
                 <div><dt>Sites fired at least once</dt><dd id="p6-fired">0</dd></div>
             </dl>
-            <div class="model-key" id="p6-key"><span id="p6-key-title">First toppling</span><span class="p6-time-items" id="p6-time-items" aria-hidden="true"><i class="p6-time-early"></i>earlier <i class="p6-time-late"></i>recent <i class="p6-time-front"></i>front</span><span class="model-swatches p6-height-items" id="p6-height-items" aria-hidden="true" hidden><i>0</i><i>1</i><i>2</i><i>3</i></span></div>
-            <p class="caption"><b>Stored computations.</b> Empty uses \(\eta\equiv0\) and \(n=4{,}200{,}000\). Random holes uses iid \(\eta(x)\in\{-1,0\}\), each with probability \(1/2\), and the same \(n\). Both stabilize; their colours are tie-preserving empirical-area quantiles of exact first legal-sweep times. Explosive uses iid \(\eta(x)=2+\operatorname{Bernoulli}(1/4)\), \(n=2\), and fixed 24-round bands of synchronous first-toppling time; it remains active at round 1,858.</p>
+            <div class="model-key" id="p6-key"><span id="p6-key-title">Stable height</span><span class="model-swatches p6-height-items" id="p6-height-items" aria-hidden="true"><i>0</i><i>1</i><i>2</i><i>3</i></span></div>
+            <p class="caption">Two stored runs. Empty: background 0 at every site. Holes: background −1 or 0 at each site, independently, each with probability 1/2. In both, 4,200,000 grains are added at the origin and the configuration stabilizes. A site is coloured by its final stable height (0, 1, 2 or 3) from the first legal sweep in which it topples. Cream line: the boundary of the set of sites that have toppled.</p>
+        </div>
+    </section>
+
+
+    <section class="band band--void band--model-live">
+        <div class="instrument instrument--model" data-model-theme="random-sandpile">
+            <div class="model-control-shelf" aria-label="Explosive-background sandpile controls">
+                <div class="model-control-groups model-control-groups--two">
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run model-run--two"><button type="button" class="btn is-on" data-p6x-run="pause">Pause</button><button type="button" class="btn" data-p6x-run="replay">Replay</button></div></div>
+                </div>
+            </div>
+            <div class="stage model-stage" style="--stage-max:720px">
+                <canvas id="p6x-canvas" width="1440" height="1440" role="img" aria-label="One exact sandpile computation on an explosive random background, shown through parallel round 1858; it is still active at the cutoff."></canvas>
+                <span class="model-phase-chip" id="p6x-note">Loading data</span>
+            </div>
+            <dl class="readout model-readout">
+                <div><dt id="p6x-round-label">Parallel round</dt><dd id="p6x-round">0</dd></div>
+                <div><dt>Sites fired at least once</dt><dd id="p6x-fired">0</dd></div>
+            </dl>
+            <p class="caption">Stored run. Background 2 or 3 at each site, independently, 3 with probability 1/4; 2 grains are added at the origin; toppling is parallel. A site is shown once it has toppled, in bands of 24 rounds by the round of its first toppling. The run ends at round 1,858 with unstable sites remaining.</p>
         </div>
     </section>
 
@@ -303,7 +323,7 @@
                 <div><dt>Scheduled toppling legal</dt><dd id="explosion-proof-legal">yes &middot; height 4</dd></div>
             </dl>
             <div class="model-key explosion-proof-key"><span>Background</span><span class="explosion-proof-key-items" aria-hidden="true"><i class="explosion-height-two"></i>2 <i class="explosion-height-three"></i>3 <i class="explosion-toppled"></i>toppled</span></div>
-            <p class="caption"><b>Cell problem.</b> Let \(Q_k=\{1,\ldots,k\}^2\), with \(k=19\) in the display, and let \(\eta:Q_k\to\{2,3\}\). Each horizontal line is sampled conditionally on containing a height-3 site. Once the frozen line below \(Q_k\) fires, every site of the next line receives one grain; a height-3 site reaches threshold 4, and legal topplings propagate from it across that line. Iteration makes every site of \(Q_k\) topple within \(k^2\) legal topplings. The proof uses this crossing event to dominate a high-density independent site-percolation process on coarse boxes.</p>
+            <p class="caption">A 19-by-19 box with background 2 or 3, each row sampled conditionally on containing at least one site of height 3. The row below the box topples once, adding one grain to every site of the bottom row; a height-3 site of that row reaches 4, and legal topplings propagate along the row. Repeated row by row, this topples every site of the box within 361 legal topplings. The proof uses this crossing event to dominate a high-density site percolation on coarse boxes.</p>
         </div>
     </section>
 
@@ -371,7 +391,7 @@
                 <div><dt>Central-plane mismatches (cumulative site-rounds)</dt><dd id="dimred-diff">0</dd></div>
                 <div><dt>Selected-plane mismatches (cumulative site-rounds)</dt><dd id="dimred-cube">0</dd></div>
             </dl>
-            <p class="caption"><b>Parallel toppling.</b> The lower-left panel is one positive-coordinate quadrant of the selected cube plane; the lower-right panel is the corresponding quadrant of the independent square. Cream marks sites firing in the current round. The central-plane and square firing indicators agree at every site and round. Counts refer to one 34-by-34 positive-coordinate quadrant; the display mirrors it to side 68.</p>
+            <p class="caption">Parallel toppling of a 34-cube with every site at height 6 and a 34-square with every site at height 4, each computed on one positive quadrant with reflection and mirrored to side 68. Left: the selected plane of the cube. Right: the square. Cream: sites toppling in the current round. Lighter blue: sites that toppled in the previous round. On the central plane the cream set equals the square&rsquo;s in every round. Counts refer to the 34-by-34 quadrant.</p>
         </div>
     </section>
 
@@ -380,7 +400,7 @@
         <div class="instrument instrument--model" data-model-theme="dimensional-reduction">
             <div class="model-control-shelf" aria-label="Self-similarity controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-dimred-scale-view="firing" aria-pressed="true">Firing set</button><button type="button" class="btn" data-dimred-scale-view="odometer" aria-pressed="false">Odometer</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-dimred-scale-view="firing" aria-pressed="true">Firing</button><button type="button" class="btn" data-dimred-scale-view="odometer" aria-pressed="false">Odometer</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-dimred-scale-run="pause">Pause</button><button type="button" class="btn" data-dimred-scale-run="replay">Replay</button></div></div>
                 </div>
             </div>
@@ -394,7 +414,7 @@
                 <div><dt>Mismatched compared sites</dt><dd id="dimred-scale-mismatch">0</dd></div>
             </dl>
             <div class="model-key dimred-scale-key"><span>Marked corners</span><span class="dimred-scale-key-items" aria-hidden="true"><span><i class="dimred-scale-large"></i>\(C_{64}\)</span><span><i class="dimred-scale-small"></i>corresponding \(C_{32}\) quadrant</span><span><i class="dimred-scale-bad"></i>mismatch</span></span></div>
-            <p class="caption"><b>Self-similarity computation.</b> With \(j=16\), each marked 16-by-16 corner block of \(\mathcal C_{64}^{(2)}\) is paired by a corner-dependent translation with the corresponding quadrant of \(\mathcal C_{32}^{(2)}\). Both piles start from height 4 and use synchronous toppling. Define \[\tau_{16}=\min\!\left\{t\ge1:\min_{x\in\partial^\circ\mathcal C_{32}^{(2)}}v_t^{(2,32)}(x)\ge16\right\}=241.\] Their integer odometers, and hence their firing indicators, agree at all 1,024 paired sites for every \(t\le\tau_{16}\).</p>
+            <p class="caption">Two piles with every site at height 4, toppled in parallel: one on a 64-by-64 box, one on a 32-by-32 box. Each outlined 16-by-16 corner of the larger box is compared site by site with the corresponding corner of the smaller box. Cream: sites toppling in the current round. Pink: a mismatch. The odometers agree on all four corners through round 241, the first round at which the odometer of the smaller box reaches 16 on its boundary.</p>
         </div>
     </section>
 
@@ -447,7 +467,7 @@
                 <div class="model-control-groups model-control-groups--four">
                     <div class="model-control-group"><span class="model-control-label">Facet polygon</span><div class="buttons buttons--balls" role="group" aria-label="Polygon defining the facet cones"><button type="button" class="btn btn--ball" data-peel-norm="tri" aria-pressed="false" title="triangle"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.000,-0.860 -0.745,0.430 0.745,0.430" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">triangle</span></button><button type="button" class="btn btn--ball is-on" data-peel-norm="l1" aria-pressed="true" title="diamond"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.860,-0.000 0.000,-0.860 -0.860,-0.000 -0.000,0.860" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">diamond</span></button><button type="button" class="btn btn--ball" data-peel-norm="linf" aria-pressed="false" title="square"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.608,-0.608 -0.608,-0.608 -0.608,0.608 0.608,0.608" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">square</span></button><button type="button" class="btn btn--ball" data-peel-norm="pent" aria-pressed="false" title="pentagon"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.000,-0.860 -0.818,-0.266 -0.505,0.696 0.505,0.696 0.818,-0.266" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">pentagon</span></button><button type="button" class="btn btn--ball" data-peel-norm="hex" aria-pressed="false" title="hexagon"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.860,-0.000 0.430,-0.745 -0.430,-0.745 -0.860,-0.000 -0.430,0.745 0.430,0.745" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">hexagon</span></button><button type="button" class="btn btn--ball" data-peel-norm="oct" aria-pressed="false" title="octagon"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.795,-0.329 0.329,-0.795 -0.329,-0.795 -0.795,-0.329 -0.795,0.329 -0.329,0.795 0.329,0.795 0.795,0.329" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">octagon</span></button><button type="button" class="btn btn--ball" data-peel-norm="deca" aria-pressed="false" title="decagon"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.000,-0.860 -0.505,-0.696 -0.818,-0.266 -0.818,0.266 -0.505,0.696 -0.000,0.860 0.505,0.696 0.818,0.266 0.818,-0.266 0.505,-0.696" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">decagon</span></button><button type="button" class="btn btn--ball" data-peel-norm="dodeca" aria-pressed="false" title="dodecagon"><svg viewBox="-1 -1 2 2" width="24" height="24" aria-hidden="true" focusable="false"><polygon points="0.860,-0.000 0.745,-0.430 0.430,-0.745 0.000,-0.860 -0.430,-0.745 -0.745,-0.430 -0.860,-0.000 -0.745,0.430 -0.430,0.745 -0.000,0.860 0.430,0.745 0.745,0.430" fill="none" stroke="currentColor" stroke-width="0.15" stroke-linejoin="round"></polygon></svg><span class="sr-only">dodecagon</span></button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Pace</span><div class="model-segmented"><button type="button" class="btn" data-peel-pace="watch" aria-pressed="false">Watch</button><button type="button" class="btn is-on" data-peel-pace="grow" aria-pressed="true">Grow</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Overlay</span><div class="model-segmented"><button type="button" class="btn is-on" data-peel="curves" aria-pressed="true">PDE levels</button><button type="button" class="btn is-on" data-peel="hull" aria-pressed="true">Active front</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Overlay</span><div class="model-segmented"><button type="button" class="btn is-on" data-peel="curves" aria-pressed="true">Levels</button><button type="button" class="btn is-on" data-peel="hull" aria-pressed="true">Front</button></div></div>
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-peel="pause">Pause</button><button type="button" class="btn" data-peel="step">Step</button><button type="button" class="btn" data-peel="reset">New</button></div></div>
                 </div>
             </div>
@@ -463,7 +483,7 @@
             </dl>
             <div class="model-key model-key--age"><span>Removed layer index: 1</span><span class="model-age-ramp" aria-hidden="true"></span><span>current layer</span></div>
             <span id="peel-limit" hidden></span>
-            <p class="caption"><b>Finite sample.</b> The point set is a Poisson process of intensity 30,000 on \((0,1)^2\). For adjacent vertices \(v,w\) of the selected polygon, let \(C=\{av+bw:a,b\ge0\}\). A surviving point \(x\) is \(C\)-minimal if there is no other surviving point \(y\) with \(x-y\in C\). Each layer is the union of the \(C\)-minimal sets over all adjacent pairs; remove that union and iterate. For a centrally symmetric polygon this is Pareto peeling for its polygonal norm. For the diamond and square, the overlays are level sets of the corresponding explicit unit-square PDE solutions.</p>
+            <p class="caption">Poisson point process of intensity 30,000 in the unit square. Norm: the polygonal norm whose unit ball is the selected polygon. Each layer is the Pareto hull of the surviving points; it is removed and the next hull is taken. Colour: the layer in which a point was removed. Yellow: the current hull. For the diamond and the square, the curves are level sets of the explicit solution of the limiting PDE on the unit square.</p>
         </div>
     </section>
 
@@ -526,7 +546,7 @@
                 <div><dt>View width</dt><dd id="flattice-view">80 sites</dd></div>
             </dl>
             <div class="model-key model-key--heights"><span>Stable height</span><span class="model-swatches flattice-height-swatches" aria-hidden="true"><i>0</i><i>1</i></span></div>
-            <p class="caption"><b>Stable configuration.</b> The camera moves from a site-resolved view to the full configuration produced by stabilizing 1,300,000 grains at the origin. Every displayed pixel is an exact stable height, 0 or 1.</p>
+            <p class="caption">The stable configuration after 1,300,000 grains are added at the origin. Black: height 0. Blue: height 1. The view starts 132 sites across and widens to the full configuration, 1,481 sites across.</p>
         </div>
     </section>
 
@@ -543,7 +563,7 @@
             <div class="stage stage--wide" style="--stage-max:1240px">
                 <img src="plates/p-flattice-bug-void.png?v=db766eaa" width="3280" height="2200" alt="Fixed-height sections of the individual positive-semidefinite cones in the F-lattice classification, drawn as congruent overlapping circles. One intersection chord and finite standard-tile patterns for selected rational boundary points are shown below." decoding="async" loading="lazy">
             </div>
-            <p class="caption"><b>Individual cone sections.</b> In the coordinates \(M(a,b,c)=\tfrac12\bigl(\begin{smallmatrix}c+a&amp;b\\b&amp;c-a\end{smallmatrix}\bigr)\), the cone with apex \(M(\lambda_1,\lambda_2,0)\) intersects \(c=-r\) in the disk \((a-\lambda_1)^2+(b-\lambda_2)^2\le r^2\). In the rendered section \(r=0.92\), and \(\lambda\in\Lambda=\{(s-t,s+t):s,t\in\mathbb Z\}\). Nearest centres are \(\sqrt2\) apart, so the disks overlap. The lower swatches are finite standard-tile height patterns used in the recursive odometer construction; the extended odometers have periodic Laplacians.</p>
+            <p class="caption">Sections of the individual cones. M(a, b, c) is the symmetric matrix with diagonal entries (c+a)/2, (c−a)/2 and off-diagonal entry b/2. The cone with apex M(λ₁, λ₂, 0) meets the plane c = −r in the disk of radius r centred at (λ₁, λ₂). Shown: r = 0.92, apexes at the lattice points (s−t, s+t) for integers s, t. Nearest apexes are √2 apart, so the disks overlap. Below: the finite height patterns of the standard tiles used in the recursive construction of the odometers; the extended odometers have periodic Laplacians.</p>
         </div>
     </section>
 
@@ -614,7 +634,7 @@
 
     <section class="band band--void band--build">
         <div class="wide">
-            <div class="stage" style="--stage-max:1080px">
+            <div class="stage stage--wide" style="--stage-max:1080px">
                 <canvas id="build-divisible" width="2160" height="1350" data-build-anim="matedcrt" role="img" aria-label="Construction of a 20-cell mated-CRT multigraph from two correlated Brownian coordinate functions. An upper or lower arc joins two cells exactly when the corresponding coordinate satisfies the mated-CRT minimum condition between their time intervals; a nonconsecutive pair with both arcs has two edges."></canvas>
                 <span class="stage-note">\(\gamma=\sqrt2\) &middot; upper edges from \(L\) &middot; lower edges from \(R\) &middot; both conditions give two edges</span>
             </div>
@@ -624,8 +644,8 @@
     <section class="band band--void">
         <div class="wide">
             <p class="dataline"><b>Toppling rule.</b> On a locally finite multigraph, a vertex of mass \(m(v)&gt;1\) keeps mass 1 and sends \((m(v)-1)/\deg(v)\) along each incident edge, where parallel edges are counted in \(\deg(v)\). Here \(m(v)=2.5\) and \(\deg(v)=6\), so each of the six edges carries 0.25. Total mass is conserved: \(2.5+6(0.50)=1+6(0.75)=5.5\).</p>
-            <div class="stage" style="--stage-max:1080px">
-                <canvas id="div-def-canvas" width="1560" height="440" role="img" aria-label="Four panels of one toppling step on a seven-vertex graph: the masses, the unstable centre, the equal shares leaving along the six edges, and the result."></canvas>
+            <div class="stage stage--wide" style="--stage-max:1080px">
+                <canvas id="div-def-canvas" width="2160" height="610" role="img" aria-label="Four panels of one toppling step on a seven-vertex graph: the masses, the unstable centre, the equal shares leaving along the six edges, and the result."></canvas>
             </div>
             <div class="quad-captions">
                 <p class="dataline"><b>Initial state.</b> Assign a non-negative mass to every vertex.</p>
@@ -650,7 +670,7 @@
                 <canvas id="mcrt-canvas" width="1440" height="1230" role="img" aria-label="A finite divisible-sandpile computation using parallel toppling on a mated-CRT map. Dim cells contain positive mass but have not toppled; solid colours record each cell's first-toppling sweep; yellow outlines mark cells that have newly acquired positive mass."></canvas>
                 <span class="model-phase-chip" id="mcrt-note">Loading map</span>
             </div>
-            <dl class="readout model-readout">
+            <dl class="readout model-readout model-readout--five">
                 <div><dt>Sweeps</dt><dd id="mcrt-sweeps">0</dd></div>
                 <div><dt>Positive-mass cells (current / final)</dt><dd id="mcrt-cells">0</dd></div>
                 <div><dt>Toppled / positive-mass cells</dt><dd id="mcrt-ball">&mdash;</dd></div>
@@ -658,7 +678,7 @@
                 <div><dt>Total excess \(\sum_{v\in I}(m(v)-1)^+\)</dt><dd id="mcrt-excess">&mdash;</dd></div>
             </dl>
             <div class="model-key model-key--settle"><span>Dim: positive mass &middot; solid: toppled</span><span class="model-swatches" aria-hidden="true"><i></i><i></i><i></i></span></div>
-            <p class="caption"><b>Finite replay.</b> An offline 60,000-vertex computation starts with mass 600 at the source and stops when its maximum excess is below \(10^{-12}\). The displayed vertex set is \(\{v:m_{\mathrm{final}}(v)&gt;10^{-12}\}\). Let \(I=\{v:u_{\mathrm{final}}(v)&gt;0\}\) be the set of vertices that topple in that computation; every incident-edge endpoint of a vertex in \(I\) is displayed. The browser permits topplings exactly at \(I\), sends one equal share along each incident edge using the full multigraph degree, and stops when \(\max_{v\in I}(m(v)-1)^+\le10^{-6}\); the excess readout is \(\sum_{v\in I}(m(v)-1)^+\). For the exactly stabilized full process, \(D^\varepsilon(t\varepsilon^{-1})=\{s_t^\varepsilon&gt;0\}=\operatorname{cl}\{v_t^\varepsilon&gt;0\}\).</p>
+            <p class="caption">Divisible sandpile on a mated-CRT map with 60,000 vertices: mass 600 at the source, run offline until the maximum excess is below 10⁻¹². Drawn: the vertices with positive final mass and the neighbours of every vertex that topples. The browser repeats the same parallel toppling on these vertices: a vertex with mass above 1 keeps 1 and sends equal shares of the excess along its incident edges, parallel edges counted separately. Solid colour: vertices that have toppled. Dim colour: vertices holding mass that have not toppled. Yellow outline: vertices toppling in the current sweep.</p>
         </div>
     </section>
 
@@ -668,7 +688,7 @@
             <div class="model-control-shelf" aria-label="Mated-CRT internal DLA controls">
                 <div class="model-control-groups">
                     <div class="model-control-group"><span class="model-control-label">Finite map</span><div class="model-segmented"><button type="button" class="btn is-on" data-mcrt-idla-map="sqrt2" aria-pressed="true">\(\gamma=\sqrt2\)</button><button type="button" class="btn" data-mcrt-idla-map="uniform" aria-pressed="false">\(\gamma=\sqrt{8/3}\)</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-mcrt-idla-run="pause">Pause</button><button type="button" class="btn" data-mcrt-idla-run="replay">Replay</button><button type="button" class="btn" data-mcrt-idla-run="new">New walks</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-mcrt-idla-run="pause">Pause</button><button type="button" class="btn" data-mcrt-idla-run="replay">Replay</button><button type="button" class="btn" data-mcrt-idla-run="new">New</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:660px">
@@ -681,7 +701,7 @@
                 <div><dt>Maximum graph distance from the source over occupied vertices</dt><dd id="mcrt-idla-radius">0</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption"><b>Finite IDLA.</b> The multigraph is induced by the displayed positive-final-mass vertex set from the offline computation above. Each particle starts at the marked source, chooses an incident edge uniformly at its current vertex, and settles upon first reaching an unoccupied vertex; parallel edges are distinct choices. The canvas linearly interpolates the actual edge sequence. A run ends after \(\min\{128,\max\{72,\lfloor0.16|V|\rfloor\}\}\) particles.</p>
+            <p class="caption">Internal DLA on the same map. Each particle starts at the source, at each step follows an incident edge chosen uniformly (parallel edges counted separately), and settles at the first unoccupied vertex. Colour: order of settlement. A run places min{128, max{72, ⌊0.16|V|⌋}} particles, where |V| is the number of vertices.</p>
         </div>
     </section>
 
@@ -704,7 +724,7 @@
                 <div><dt>Maximum excess above capacity</dt><dd id="lqg-ball-error">0</dd></div>
             </dl>
             <div class="model-key lqg-ball-key"><span>Variable-capacity obstacle problem</span><span>source marked in yellow</span></div>
-            <p class="caption"><b>Finite obstacle problem.</b> For \(x,y\in\{0,\ldots,30\}\), set \[c_{xy}=Z^{-1}\exp\!\left\{\frac12\sum_{k=0}^{4}2^{-0.28k}\sin\!\left(\frac{2\pi2^k(x+1/2)}{31}+0.73k\right)\sin\!\left(\frac{2\pi2^k(y+1/2)}{31}+1.17k\right)\right\},\] where \(Z\) is chosen so that \(31^{-2}\sum_{x,y}c_{xy}=1\). For the selected \(q\in\{0.25,0.50,0.75\}\), \(m_0=q(\sum_{x,y}c_{xy})\delta_{(15,15)}\). Put \(u=0\) off the grid and \(\Delta u(x)=\sum_{|e|_1=1}(u(x+e)-u(x))\). Exact stabilization gives the pointwise least \(u\ge0\) satisfying \(m_0+\Delta u\le c\). The displayed computation has current mass \(m=m_0+\Delta u\) and stops when \(\max_x(m(x)-c(x))^+\le10^{-6}\).</p>
+            <p class="caption">Divisible sandpile with site-dependent capacity on a 31-by-31 grid. Site x holds mass up to c(x) before toppling; c is a fixed positive field with mean 1; mass sent off the grid is lost. Initial mass: the selected fraction of the total capacity, at the centre. Legal topplings run until every excess is below 10⁻⁶. Mass: mass held relative to capacity. Odometer: mass sent per edge. Yellow outline: sites toppling for the first time.</p>
         </div>
     </section>
 
@@ -755,7 +775,7 @@
             <div class="model-control-shelf" aria-label="Random-scenery divisible-sandpile controls">
                 <div class="model-control-groups">
                     <div class="model-control-group"><span class="model-control-label">Reward shift \(a\) in \(g=a+\xi\)</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-rwrs-mu=".75" aria-pressed="false">&minus;0.25</button><button type="button" class="btn is-on" data-rwrs-mu="1" aria-pressed="true">0</button><button type="button" class="btn" data-rwrs-mu="1.2" aria-pressed="false">+0.20</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-rwrs-run="pause">Pause</button><button type="button" class="btn" data-rwrs-run="replay">Replay</button><button type="button" class="btn" data-rwrs-run="new">New walk</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-rwrs-run="pause">Pause</button><button type="button" class="btn" data-rwrs-run="replay">Replay</button><button type="button" class="btn" data-rwrs-run="new">New</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
@@ -767,7 +787,7 @@
                 <div><dt>\(\max_{x\in D}w_{n+1}(x)\)</dt><dd id="rwrs-value">0.000</dd></div>
             </dl>
             <div class="model-key rwrs-key"><span>Reward field \(g\)</span><span class="rwrs-key-items" aria-hidden="true"><i class="rwrs-negative"></i>negative <i class="rwrs-positive"></i>positive <i class="rwrs-stop"></i>stop</span></div>
-            <p class="caption"><b>Finite-horizon recursion.</b> On the displayed finite domain \(D\subset\mathbb Z^2\), define \((Ph)(x)=\tfrac14\sum_{y\in D:\,|y-x|_1=1}h(y)\); the missing transition mass is killing. Starting from \(w_0=0\), put \(q_n=g+Pw_n\) and \(w_{n+1}=q_n^+\), with fixed \(g=a+\xi\) and \(\xi(x)\in[-0.58,0.58)\). Here \(g\) has the role of \(\zeta=(\sigma-1)/\deg\) in the odometer recursion. The displayed walk starts at an element of \(\operatorname*{arg\,max}_{x\in D}w_{72}(x)\). New walk resamples only this path; \(g\) remains fixed.</p>
+            <p class="caption">Odometer recursion of the parallel divisible sandpile on the displayed finite subgraph D of Z², with missing neighbours as killing: w₀ = 0, qₙ = g + Pwₙ, wₙ₊₁ = max(qₙ, 0), where (Ph)(x) is the average of h over the neighbours of x in D and g = a + ξ for a fixed field ξ with values in [−0.58, 0.58) and the selectable constant a. Blue: qₙ &gt; 0. Pink: qₙ &lt; 0. Disc radius: |qₙ|. Ring: the set {qₙ &gt; 0}. Yellow: a random walk started at a maximizer of w₇₂, continued only while qₙ &gt; 0. New resamples the walk; g is unchanged.</p>
         </div>
     </section>
 
@@ -816,8 +836,8 @@
     <section class="band band--void">
         <div class="wide">
             <p class="dataline"><b>Bond percolation.</b> Retain each edge of \(\mathbb Z^2\) independently with probability \(p\). Here \(p_c(2)=1/2\): for \(p\le p_c(2)\) there is almost surely no infinite open cluster, whereas for \(p&gt;p_c(2)\) there is almost surely a unique infinite open cluster. The plot records largest-component density on one 64-by-64 vertex grid at each of 41 values of \(p\).</p>
-            <div class="stage" style="--stage-max:1080px">
-                <canvas id="perc-def-canvas" width="1560" height="470" role="img" aria-label="Three bond percolation configurations on a 64-by-64 vertex grid at p = 0.35, 0.50 and 0.65, with the largest component highlighted, beside the largest-component density as a function of p."></canvas>
+            <div class="stage stage--wide" style="--stage-max:1080px">
+                <canvas id="perc-def-canvas" width="2160" height="650" role="img" aria-label="Three bond percolation configurations on a 64-by-64 vertex grid at p = 0.35, 0.50 and 0.65, with the largest component highlighted, beside the largest-component density as a function of p."></canvas>
             </div>
             <div class="quad-captions">
                 <p class="dataline"><b>\(p = 0.35 &lt; p_c\).</b> The largest component has 74 of the 4,096 vertices: density 0.0181.</p>
@@ -849,7 +869,7 @@
                 <div><dt>Maximum interior mean-value residual</dt><dd id="harmonic-residual">&mdash;</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>Mean endpoint displacement / final maximum: 0</span><span class="model-age-ramp" aria-hidden="true"></span><span>1</span></div>
-            <p class="caption"><b>Finite Dirichlet problem.</b> The graph is the largest open component in a fixed 48-by-48 bond-percolation sample; its boundary vertices are the component vertices on the boundary of the box. Let \(\Phi_0(v)=v\) and keep \(\Phi_k\) fixed on this boundary. At each interior vertex the lazy Jacobi update is \(\Phi_{k+1}(v)=\tfrac12\Phi_k(v)+\tfrac1{2\deg(v)}\sum_{w\sim v}\Phi_k(w)\). The residual is \(\max_v\lVert\deg(v)^{-1}\sum_{w\sim v}\Phi_k(w)-\Phi_k(v)\rVert_2\), over interior vertices. Mean displacement is \(|V|^{-1}\sum_v\lVert\Phi_k(v)-v\rVert_2\). Once the residual is below \(10^{-5}\), the displayed coordinates are replaced by the stored direct linear-system solution.</p>
+            <p class="caption">The largest open cluster of a bond-percolation sample on a 48-by-48 box, p = 0.62 or 0.85. Boundary vertices (yellow): the cluster vertices on the boundary of the box; they are fixed. One sweep replaces every interior vertex by the midpoint of its position and the average position of its neighbours. Edge colour: the mean displacement of its endpoints. When the residual falls below 10⁻⁵, the exact solution of the linear system is displayed.</p>
         </div>
     </section>
 
@@ -872,7 +892,7 @@
                 <div><dt>Lower bound on a nonzero integer terminal gap</dt><dd id="perc-gadget-gap">3 &gt; 3^0</dd></div>
             </dl>
             <div class="model-key perc-gadget-key"><span>Harmonic value</span><span class="perc-gadget-key-items" aria-hidden="true"><i class="perc-gadget-zero"></i>\(u(s)=0\) <i class="perc-gadget-one"></i>\(u(t)&gt;0\)</span></div>
-            <p class="caption"><b>Integer-rigidity gadget.</b> Let \(T_n\) have vertex set \(\bigl(([1,4]\times\{1\})\cup([2,3]\times[1,n])\bigr)\cap\mathbb Z^2\), nearest-neighbour edges, terminals \(s=(1,1)\), \(t=(4,1)\), and \(a=(2,1)\). With unit edge resistances, the effective resistance between \(s\) and \(t\) is \(R_n=A_{n+1}/B_n\) in lowest terms, where \(R_1=3\) and \(R_{n+1}=(3R_n+2)/(R_n+1)\). After subtracting \(u(s)\), harmonicity at nonterminal vertices gives \(u(a)=B_nu(t)/A_{n+1}\). Hence an integer-valued harmonic \(u\) with \(u(t)\ne u(s)\) satisfies \(|u(t)-u(s)|\ge A_{n+1}&gt;3^{n-1}\). Copies of arbitrarily large \(T_n\) contradict linear growth.</p>
+            <p class="caption">Tₙ: vertices (x, 1) for x = 1, …, 4 and (x, y) for x = 2, 3, y = 1, …, n, with nearest-neighbour edges and unit resistances; s = (1, 1), t = (4, 1), a = (2, 1). The effective resistance between s and t is Rₙ = Aₙ₊₁/Bₙ in lowest terms, with R₁ = 3 and Rₙ₊₁ = (3Rₙ + 2)/(Rₙ + 1). If u is harmonic at the non-terminal vertices and u(s) = 0, then u(a) = Bₙ u(t)/Aₙ₊₁. Hence an integer-valued harmonic u with u(t) ≠ u(s) satisfies |u(t) − u(s)| ≥ Aₙ₊₁ &gt; 3ⁿ⁻¹. Node colour: u from 0 (pink) to 1 (blue). Integer u: the values Aₙ₊₁ u.</p>
         </div>
     </section>
 
@@ -914,7 +934,7 @@
             <p class="def"><b>Definition.</b> Let \(\mathcal G=(\mathcal V,\mathcal E)\) be a connected planar graph embedded periodically in \(\mathbb R^2\), invariant under a rank-two lattice \(L\), and let the positive conductances \(\mathbf a\) be \(L\)-periodic. Fix an origin and let \(B_n\) be its graph-metric ball. The weighted Laplacian is \(\Delta f(u)=\sum_{w\sim u}\mathbf a(u,w)(f(u)-f(w))\); \(f\) is harmonic when \(\Delta f=0\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-unique-continuation" width="1080" height="1080" data-rule-anim="unique-continuation" role="img" aria-label="a harmonic value is the conductance-weighted average of its neighbours"></canvas>
+                    <canvas id="rule-unique-continuation" width="1080" height="1080" data-rule-anim="unique-continuation" role="img" aria-label="a harmonic value is the average of its neighbours, so from any vertex a non-decreasing path and a non-increasing path lead to the boundary"></canvas>
                 </div>
             </figure>
         </div>
@@ -924,20 +944,21 @@
         <div class="instrument instrument--model" data-model-theme="percolation">
             <div class="model-control-shelf" aria-label="Unique-continuation controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Level \(c\)</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-unique-level="minus" aria-pressed="false">&minus;0.18</button><button type="button" class="btn is-on" data-unique-level="zero" aria-pressed="true">0</button><button type="button" class="btn" data-unique-level="plus" aria-pressed="false">+0.18</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-unique-run="pause">Pause</button><button type="button" class="btn" data-unique-run="replay">Replay</button><button type="button" class="btn" data-unique-run="next">Next cycle</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Graph</span><div class="model-segmented model-segmented--three"><button type="button" class="btn is-on" data-unique-graph="square" aria-pressed="true">Z²</button><button type="button" class="btn" data-unique-graph="tri" aria-pressed="false">Triangular</button><button type="button" class="btn" data-unique-graph="honey" aria-pressed="false">Honeycomb</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-unique-run="pause">Pause</button><button type="button" class="btn" data-unique-run="replay">Replay</button><button type="button" class="btn" data-unique-run="next">Next</button></div></div>
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="unique-canvas" width="1440" height="1200" role="img" aria-label="A weighted-harmonic function on a 25-by-25 finite planar graph. Yellow marks vertices within 0.035 of the selected level. Cyan and rose retain portions of two graph paths where the field differs from the selected level by more than 0.025 with the indicated sign."></canvas>
-                <span class="model-phase-chip" id="unique-note">Weighted harmonic function</span>
+                <canvas id="unique-canvas" width="1440" height="1200" role="img" aria-label="Harmonic functions with unit conductances on a graph-metric ball of the square, triangular or honeycomb lattice, drawn as a mosaic of vertex cells coloured by sign, blue positive and pink negative, with the zero set of f drawn as light curves along the cell sides across which f changes sign and the zeros of the boundary values as dots on the sphere. The number of boundary zeros rises step by step; the zero curves multiply and cut the ball into ever thinner sectors, and the readouts count the boundary zeros, the edges the zero set crosses, and the share of the ball no zero curve touches."></canvas>
+                <span class="model-phase-chip" id="unique-note">Harmonic function</span>
             </div>
             <dl class="readout model-readout">
-                <div><dt>Percentage of all 625 vertices satisfying \(\lvert f-c\rvert\le0.035\)</dt><dd id="unique-zero-density">0.000</dd></div>
-                <div><dt>Number of \(\gamma\)-vertices with \(\lvert f-c\rvert\le0.035\)</dt><dd id="unique-boundary">0</dd></div>
+                <div><dt>Zeros of \(f\) on the boundary \(S_{2n+1}\)</dt><dd id="unique-zero-density">2</dd></div>
+                <div><dt>Edges of \(B_{2n+1}\) across which \(f\) changes sign</dt><dd id="unique-boundary">0</dd></div>
+                <div><dt>Share of \(B_{2n}\), and of \(B_n\), with no sign change on any incident edge</dt><dd id="unique-components">0.0% · 0.0%</dd></div>
             </dl>
-            <div class="model-key unique-key"><span>Relative to \(c\)</span><span class="unique-key-items" aria-hidden="true"><i class="unique-negative"></i>\(f&lt;c-0.035\) <i class="unique-zero"></i>\(\lvert f-c\rvert\le0.035\) <i class="unique-positive"></i>\(f&gt;c+0.035\)</span></div>
-            <p class="caption"><b>Finite harmonic field.</b> A horizontal edge from \((x,y)\) to \((x+1,y)\) has conductance \(a_x\), where \(a_x\) periodically repeats \((1,1.8,0.7,1.35)\); a vertical edge has conductance \(b_y\), periodically repeating \((1.45,0.75,1.7,0.95,1.2)\). Set \(F(12)=G(12)=0\), \(F(x+1)-F(x)=a_x^{-1}\), and \(G(y+1)-G(y)=b_y^{-1}\). Then \[f(x,y)=\frac{F(x)G(y)}{\max_{0\le i,j\le24}|F(i)G(j)|}\] is weighted harmonic at all 529 interior vertices. Here \(\gamma\) is the 64-vertex boundary of \([4,20]^2\cap\mathbb Z^2\); yellow denotes \(\lvert f-c\rvert\le0.035\).</p>
+            <div class="model-key unique-key"><span>Sign of \(f\)</span><span class="unique-key-items" aria-hidden="true"><span class="unique-key-item"><i class="unique-positive"></i>\(f&gt;0\)</span> <span class="unique-key-item"><i class="unique-negative"></i>\(f&lt;0\)</span> <span class="unique-key-item"><i class="unique-zero"></i>\(f=0\), zero set</span> <span class="unique-key-item"><i class="unique-nodal"></i>boundary zeros</span></span></div>
+            <p class="caption">Unit conductances on graph-metric balls of the square, triangular, and honeycomb lattices, with \(n=19,15,22\), respectively. Boundary data \(f_k(b)=100\sin(k\theta_b)\) on \(S_{2n+1}\) are extended harmonically to \(B_{2n}\); \(\theta_b\) parametrizes the boundary by harmonic measure from \(o\). The two fixed-luminance colors show only the sign of \(f_k\). Light cell-side segments are the edges across which the endpoint signs differ, boundary dots mark sign changes around \(S_{2n+1}\), and the dashed curve is \(S_n\). Play interpolates through \(k=1,\ldots,K\), where \(K=46,69,49\); Next advances by one pair of boundary zeros and pauses. The readouts give the boundary-zero count, the number of sign-changing edges, and the shares of \(B_{2n}\) and \(B_n\) having no sign-changing incident edge. No magnitude threshold is applied.</p>
         </div>
     </section>
 
@@ -983,7 +1004,7 @@
 
     <section class="band band--void band--build">
         <div class="wide">
-            <div class="stage" style="--stage-max:1080px">
+            <div class="stage stage--wide" style="--stage-max:1080px">
                 <canvas id="build-superdiffusion" width="2160" height="1350" data-build-anim="sdrace" role="img" aria-label="The upper panel shows 220 displacement samples from each of two independent 3,000-particle runs in the same fixed 1,024-periodic stream field. The runs use the same initial-position law, time step, integrator and Brownian variance; the control omits the drift. The lower graph uses all 3,000 particles to estimate \(\mathbf E|X_t-X_0|^2/t\)."></canvas>
                 <span class="stage-note">\(\widehat M(t)=3000^{-1}\sum_{i=1}^{3000}|X_i(t)-X_i(0)|^2\) &middot; control: time-average of \(\widehat M(t)/t\) over saved times = 0.040294, while \(4\nu=0.0400\) &middot; drift: \(\widehat M(10)/10=0.72266\), \(\widehat M(1600)/1600=1.85565\) &middot; OLS slope of \(\log(\widehat M(t)/t)\) on \(\log\log t\) over saved \(t\ge200\): 0.5440</span>
             </div>
@@ -1012,7 +1033,7 @@
             <div class="stage model-stage" style="--stage-max:720px">
 	                <canvas id="sd-canvas" width="1440" height="1440" role="img" aria-label="One continuously interpolated numerical trajectory, computed with Heun integration for the drift and Euler-Maruyama noise, in a fixed random incompressible flow. Low-pass contours show the fixed flow at four spatial scales; the expanding camera retains the full trajectory."></canvas>
             </div>
-            <p class="caption"><b>Frozen-field path.</b> On one 3,072-periodic stream field \(\psi\), the stored path solves \(dX_t=\nabla^\perp\psi(X_t)\,dt+\sqrt{2\kappa}\,dW_t\) with \(\kappa=0.25\), time step 0.05, Heun integration for the drift, and Euler&ndash;Maruyama noise. The four registered backgrounds are crops of the same field with half-widths 108, 252, 588, and 1,372; each is low-pass filtered at 1/44 of its crop width. Displayed simulation time accelerates in proportion to the square of the camera half-width. Seed 20260832 is the first of the 24 seeds 20260830&ndash;20260853 satisfying radius-1,300 coverage and frame containment; the path is one continuous trajectory with no spliced segments.</p>
+            <p class="caption">One stored path of dX = ∇⊥ψ dt + √(2κ) dW with κ = 0.25 and time step 0.05, on a fixed 3,072-periodic stream field ψ. The path is one continuous trajectory. Background: the same field at four scales, crops of half-width 108, 252, 588 and 1,372, each smoothed at 1/44 of its width. Playback speed is proportional to the square of the camera half-width.</p>
         </div>
     </section>
 
@@ -1035,7 +1056,7 @@
                 <div><dt>Finite field</dt><dd id="algebraic-sd-scale">five frequencies; \(\kappa=0.045\)</dd></div>
             </dl>
             <div class="model-key algebraic-sd-key"><span>Contours of the fixed stream function</span><span>one Euler&ndash;Maruyama path</span></div>
-            <p class="caption"><b>Five-scale periodic flow.</b> Put \(\omega_k=(2\pi/24)2^k\), \(a_k=0.62\,\omega_k^{-1-\gamma}\), and \(\psi_\gamma(x)=\sum_{k=0}^{4}a_k\sin(\omega_kx_1+p_k)\sin(\omega_kx_2+q_k)\), where \((p_k)=(0.31,1.47,2.28,4.01,5.18)\) and \((q_k)=(1.09,2.76,0.58,3.34,4.63)\). The simulated SDE is \(dX_t=\nabla^\perp\psi_\gamma(X_t)\,dt+\sqrt{2\kappa}\,dW_t\), with \(\kappa=0.045\) and Euler&ndash;Maruyama time step 0.0045. At sufficiently long times this finite periodic diffusion homogenizes diffusively. For the infinite self-similar model stated below, the theorem proves the exponent \(1/(2-\gamma)\) when \(0&lt;\gamma\le\gamma_0(d,c_*)\).</p>
+            <p class="caption">ψ(x) = Σₖ aₖ sin(ωₖx₁ + pₖ) sin(ωₖx₂ + qₖ), k = 0, …, 4, with ωₖ = 2ᵏ·2π/24, aₖ = 0.62 ωₖ⁻¹⁻ᵞ, p = (0.31, 1.47, 2.28, 4.01, 5.18), q = (1.09, 2.76, 0.58, 3.34, 4.63). One path of dX = ∇⊥ψ dt + √(2κ) dW with κ = 0.045 and time step 0.0045. This finite periodic flow is diffusive at long times. The theorem below concerns the infinite self-similar model, with exponent 1/(2−γ).</p>
         </div>
     </section>
 
@@ -1123,7 +1144,7 @@
                 <div><dt>\(|\widehat\mu_t-\widehat\Sigma_{11,t}|\)</dt><dd id="einstein-error">0.00</dd></div>
             </dl>
             <div class="model-key einstein-key"><span>Path</span><span class="einstein-key-items" aria-hidden="true"><i class="einstein-unforced"></i>unforced <i class="einstein-tilted"></i>tilted <i class="einstein-error"></i>difference</span></div>
-            <p class="caption"><b>Coupled Euler&ndash;Maruyama ensembles.</b> The fixed potential is \[V(x,y)=0.46\sin(x+0.23)+0.31\cos(y-0.41)+0.22\sin(x+0.73y)+0.15\cos(1.7x-0.8y).\] With \(B_t\) standard two-dimensional Brownian motion, the simulated equations are \(dX_t^0=-\nabla V(X_t^0)\,dt+dB_t\) and \(dX_t^\lambda=(-\nabla V(X_t^\lambda)+\lambda e_1)\,dt+dB_t\). Forty pairs are simulated, with shared Brownian increments within each pair. Let \(\bar X^0_{t,1}\) and \(\bar X^\lambda_{t,1}\) be the ensemble means. The readout is \(|\widehat\mu_t-\widehat\Sigma_{11,t}|\), where \(\widehat\mu_t=(\bar X^\lambda_{t,1}-\bar X^0_{t,1})/(\lambda t)\) and \(\widehat\Sigma_{11,t}=(40t)^{-1}\sum_i(X^{0,i}_{t,1}-\bar X^0_{t,1})^2\). The scales \(\lambda t\) and \(\sqrt t\) agree at \(t=\lambda^{-2}\). The time step is 0.01; the forty initial points are equally spaced on the circle of radius 0.035. The theorem below concerns stationary finite-range random fields.</p>
+            <p class="caption">V(x, y) = 0.46 sin(x + 0.23) + 0.31 cos(y − 0.41) + 0.22 sin(x + 0.73y) + 0.15 cos(1.7x − 0.8y). Forty pairs of diffusions, dX = −∇V(X) dt + dB and dY = (−∇V(Y) + λe₁) dt + dB, with the same Brownian increments within a pair; time step 0.01; initial points equally spaced on the circle of radius 0.035. Blue: X. Yellow: Y. Pink: Y − X for one pair. Readout: |μ̂<sub>t</sub> − Σ̂<sub>t</sub>|, where μ̂<sub>t</sub> is the mean horizontal displacement of Y divided by λt and Σ̂<sub>t</sub> is the horizontal variance of X divided by t. Rulers: √t and λt; they are equal at t = λ⁻².</p>
         </div>
     </section>
 
@@ -1186,8 +1207,8 @@
                 <div><dt>Visited tessellation area / total area</dt><dd id="gw-area">&mdash;</dd></div>
                 <div><dt>Unvisited cells</dt><dd id="gw-unseen">3,000</dd></div>
             </dl>
-            <div class="model-key model-key--settle"><span>First-visit order (18-cell bands)</span><span class="model-swatches" aria-hidden="true"><i></i><i></i><i></i></span></div>
-            <p class="caption"><b>Finite conductance-weighted walk.</b> The generators are sampled without replacement from distinct cells of a 96-by-96 discretization, with probabilities proportional to the mass in a depth-1/24 slab of a \(\gamma=1.4\) three-dimensional Gaussian-multiplicative-chaos approximation; each generator is uniform in the middle half of its selected cell. For adjacent Voronoi cells \(P_v,P_w\), set \(a(v,w)=\operatorname{length}(P_v\cap P_w)/\lVert v-w\rVert_2\), \(a(v)=\sum_{z\sim v}a(v,z)\), and \(p(v,w)=a(v,w)/a(v)\). The 3,000-generator cloud is mirrored across all four sides. A facet against a reflected generator contributes a self-loop with conductance \(\ell/\lVert v-v_{\mathrm{ref}}\rVert_2\), where \(\ell\) is the facet length.</p>
+            <div class="model-key model-key--age"><span>First-visit order: first</span><span class="model-age-ramp gw-ramp" aria-hidden="true"></span><span>last</span></div>
+            <p class="caption">3,000 points sampled from a slab of a three-dimensional Gaussian multiplicative chaos with γ = 1.4, at most one per cell of a 96-by-96 grid, mirrored across the four sides; the tiling is their Voronoi tessellation. From cell v the walk moves to an adjacent cell w with probability proportional to a(v, w) = length(P<sub>v</sub> ∩ P<sub>w</sub>)/|v − w|. Colour: order of first visit.</p>
         </div>
     </section>
 
@@ -1241,7 +1262,7 @@
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="cylinder-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on a periodic cylinder. Each walk starts uniformly on height zero, follows the exact lazy cylinder kernel, and settles at the first unoccupied site. Growth colors record settlement time; Field shows signed discrepancy from the flat shape."></canvas>
+                <canvas id="cylinder-canvas" width="1440" height="1160" role="img" aria-label="Internal DLA on a periodic cylinder. Each walk starts uniformly on height zero, follows the exact lazy cylinder kernel, and settles at the first unoccupied site. Growth colors record settlement time; Field shows signed discrepancy from the flat shape."></canvas>
             </div>
             <dl class="readout model-readout">
                 <div><dt>Particles</dt><dd id="cylinder-count">0</dd></div>
@@ -1249,8 +1270,8 @@
                 <div><dt>Maximum interface error</dt><dd id="cylinder-span">0</dd></div>
                 <div><dt>\(N^{-1}\sum_{\mathrm{settled}}\sqrt2\cos(2\pi x/N)\)</dt><dd id="cylinder-mode">0.00</dd></div>
             </dl>
-            <div class="model-key cylinder-key"><span>Growth: settlement order · Field: rose = occupied above \(n/N\), cyan = hole below \(n/N\)</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption"><b>Finite cylinder computation.</b> On \(V_{48}=\mathbb Z_{48}\), \(P_{48}(x,x)=1/2\) and \(P_{48}(x,x\pm1)=1/4\). Each of 1,728 walks starts uniformly at height zero and uses the product kernel defined above; negative excursions are sampled from their exact return law. If \(A_n\) is the occupied set after \(n\) particles, put \(h_{\mathrm{out}}=\max\{y:(x,y)\in A_n\}\) and \(h_{\mathrm{in}}=\max\{h:V_{48}\times\{1,\ldots,h\}\subset A_n\}\), with \(h_{\mathrm{in}}=0\) when the set is empty. The deviation readout is \(\max\{h_{\mathrm{out}}-n/48,n/48-h_{\mathrm{in}}\}\). Field shows the signed discrepancy from \(\{y\le n/48\}\); the last readout is \(48^{-1}\sum_{(x,y)\in A_n,\ y&gt;0}\sqrt2\cos(2\pi x/48)\).</p>
+            <div class="model-key cylinder-key"><span>Growth: settlement order · Field: coral = occupied above \(n/N\), cyan = hole below \(n/N\)</span><span class="model-age-ramp" aria-hidden="true"></span></div>
+            <p class="caption">Internal DLA on Z₄₈ × Z with the kernel of the definition: from (x, y), up or down with probability 1/4 each; otherwise x moves by the lazy simple random walk on Z₄₈. 1,728 particles start uniformly on height 0; excursions below height 0 are sampled from their exact return law. Colour: settlement order. Dashed line: height n/48 after n particles. Field: coral, occupied sites above n/48; cyan, unoccupied sites at or below n/48. Readouts: n/48; max{h<sub>out</sub> − n/48, n/48 − h<sub>in</sub>}, where h<sub>out</sub> is the highest occupied height and h<sub>in</sub> the highest fully occupied height; and (1/48) Σ √2 cos(2πx/48) over occupied sites (x, y) with y &gt; 0.</p>
         </div>
 </section>
 
@@ -1263,7 +1284,7 @@
                     <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-cyl3d-run="pause">Pause</button><button type="button" class="btn" data-cyl3d-run="step">Step</button><button type="button" class="btn" data-cyl3d-run="replay">Replay</button></div></div>
                 </div>
             </div>
-            <div class="stage model-stage cylinder3d-stage" style="--stage-max:840px">
+            <div class="stage model-stage cylinder3d-stage" style="--stage-max:720px">
                 <canvas id="cylinder3d-canvas" width="1680" height="1400" role="img" aria-label="Internal DLA on three-dimensional discrete cylinders over a square torus, a triangular torus, or the Nauru graph. Occupied vertices above height zero are rendered as prisms, with color recording settlement order. Drag horizontally to rotate the projection."></canvas>
             </div>
             <dl class="readout model-readout">
@@ -1273,7 +1294,7 @@
                 <div><dt>Highest occupied layer</dt><dd id="cylinder3d-outer">0</dd></div>
             </dl>
             <div class="model-key cylinder3d-key"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption"><b>Three cylinder bases.</b> The selectable graphs are the three bases in Figure 1 of the paper: the \(15\times15\) square torus (\(N=225\), degree 4), the \(9\times9\) triangular torus (\(N=81\), degree 6), and the Nauru graph \(\mathrm{GP}(12,5)\) (\(N=24\), degree 3). In every case \(P_N(x,x)=1/2\) and \(P_N(x,y)=1/(2\deg x)\) for \(x\sim y\). Each occupied vertex of \(V_N\times\mathbb Z_{&gt;0}\) is represented by a prism whose cross-section is determined by the displayed embedding. The simulation uses the cylinder kernel in the definition; excursions below height zero are sampled from the spectral return kernel on \(V_N\). If \(h_{\mathrm{out}}\) is the highest occupied layer and \(h_{\mathrm{in}}\) is the largest completely occupied layer, the interface-error readout is \(\max\{h_{\mathrm{out}}-n/N,n/N-h_{\mathrm{in}}\}\). Color records settlement order. Drag horizontally to rotate the projection.</p>
+            <p class="caption">The same process over the three bases in Figure 1 of the paper: the 15-by-15 square torus (225 vertices, degree 4), the 9-by-9 triangular torus (81 vertices, degree 6) and the Nauru graph (24 vertices, degree 3), each with its lazy simple random walk: P(x, x) = 1/2 and P(x, y) = 1/(2 deg x) for neighbours x, y. Occupied vertices above height 0 are drawn as prisms over the cells of the displayed embedding. Colour: settlement order. Readout: max{h<sub>out</sub> − n/N, n/N − h<sub>in</sub>}. Drag horizontally to rotate.</p>
         </div>
     </section>
 
@@ -1383,7 +1404,7 @@
                 <div><dt>\(|X_n|/\sqrt{\max(1,n)}\)</dt><dd id="longrange-ratio">0.00</dd></div>
             </dl>
             <div class="model-key longrange-key"><span>Path age</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption"><b>Truncated embedded chain.</b> At \(x\), propose \(z\) with probability proportional to \(|z|^{-4}\) on \(0&lt;|z|\le48\), and accept with probability \(a(x,x+z)/1.35\), resampling after rejection. Thus the accepted jump law is proportional to \(a(x,x+z)|z|^{-4}\). The fixed symmetric conductances are deterministic hash values in \([0.65,1.35]\); the path seed was selected only to exclude an anomalously local 4,000-step run. The cutoff gives a finite second moment, so the readout uses \(\sqrt n\). The theorem below concerns the untruncated continuous-time process.</p>
+            <p class="caption">Jump chain of the long-range conductance model on Z², truncated at distance 48. From x, propose z with probability proportional to |z|⁻⁴ on 0 &lt; |z| ≤ 48 and accept with probability a(x, x+z)/1.35; the conductances a are fixed, symmetric, with values in [0.65, 1.35]. Colour: age of the step. The truncated jumps have finite variance, so the displacement readout is scaled by √n. The theorem below concerns the untruncated continuous-time walk.</p>
         </div>
     </section>
 
@@ -1403,7 +1424,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on cylinders</span></a>
-            <a class="nav-next" href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Next</span><span class="nav-name">Rotor walk</span></a>
+            <a class="nav-next" href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Next</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
         </div>
     </nav>
 </section>
@@ -1411,17 +1432,17 @@
 <section class="study" id="study-rotor-walk" data-plate="rotor-walk" aria-labelledby="t-rotor-walk" role="dialog" aria-modal="true" hidden>
     <div class="study-bar">
         <button type="button" class="study-back" data-close>&larr;&ensp;Models</button>
-        <span class="study-title">Rotor walk</span>
+        <span class="study-title">Eulerian walkers on Z&sup2;</span>
     </div>
 
     <section class="band band--paper band--head">
         <div class="col">
             <p class="family">Walks</p>
-            <h2 id="t-rotor-walk">Rotor walk</h2>
-            <p class="def"><b>Definition.</b> Every site initially stores an independent uniform random arrow. Start the walker at \(X_0=0\). At each step, turn the arrow at the walker&rsquo;s site 90 degrees clockwise, move one edge in its new direction, and leave it turned. Once the arrows are sampled, the walk is deterministic. Let \(R_t=\{X_0,\ldots,X_t\}\).</p>
+            <h2 id="t-rotor-walk">Eulerian walkers on Z&sup2;</h2>
+            <p class="def"><b>Definition.</b> At each \(v\in\mathbb Z^2\), choose \(\rho_0(v)\) independently and uniformly from the four outgoing edges. The clockwise rotor mechanism has cyclic order \(N,E,S,W\). Starting from \(X_0=0\), define \(\rho_{t+1}(X_t)\) by advancing \(\rho_t(X_t)\) once in this order, leave every other rotor unchanged, and let \(X_{t+1}\) be the head of \(\rho_{t+1}(X_t)\). Once \(\rho_0\) is fixed, the walk is deterministic. Its range is \(R_t=\{X_0,\ldots,X_t\}\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-rotor-walk" width="1080" height="1080" data-rule-anim="rotor" role="img" aria-label="turn the local arrow, follow it, and leave it turned"></canvas>
+                    <canvas id="rule-rotor-walk" width="1080" height="1080" data-rule-anim="rotor" role="img" aria-label="advance the rotor clockwise, then traverse the edge it indicates"></canvas>
                 </div>
             </figure>
         </div>
@@ -1429,7 +1450,7 @@
 
 <section class="band band--void band--rotor-live">
         <div class="instrument instrument--rotor">
-            <div class="rotor-control-shelf" aria-label="Rotor walk controls">
+            <div class="rotor-control-shelf" aria-label="Eulerian walker controls">
                 <div class="rotor-control-groups">
                     <div class="rotor-control-group"><span class="rotor-control-label">Pace</span><div class="rotor-segmented" role="group" aria-label="Animation pace"><button type="button" class="btn is-on" data-euler="watch" aria-pressed="true">Watch</button><button type="button" class="btn" data-euler="shape" aria-pressed="false">Grow</button></div></div>
                     <div class="rotor-control-group"><span class="rotor-control-label">View</span><div class="rotor-segmented" role="group" aria-label="Camera view"><button type="button" class="btn is-on" data-euler="follow" aria-pressed="true">Follow</button><button type="button" class="btn" data-euler="whole" aria-pressed="false">Whole</button></div></div>
@@ -1438,28 +1459,83 @@
                 <div class="rotor-speed" id="euler-grow-speed" hidden><label for="euler-speed"><span>Speed</span><output id="euler-speed-value">2,500 steps/s</output></label><input type="range" id="euler-speed" min="0" max="6" value="3" step="1"></div>
             </div>
             <div class="stage rotor-stage" style="--stage-max:720px">
-                <canvas id="euler-canvas" width="1440" height="1440" role="img" aria-label="An animated rotor walk. The active arrow turns clockwise, the walker follows it, and visited rotors are coloured by the return-to-origin excursion on which their sites first appeared."></canvas>
+                <canvas id="euler-canvas" width="1440" height="1440" role="img" aria-label="An animated Eulerian walker. The active arrow turns clockwise, the walker follows it, and visited sites are coloured by the circuit in which they first appeared."></canvas>
                 <span class="rotor-phase-chip" id="euler-note">Turn</span>
                 <span class="sr-only" id="euler-live" aria-live="polite"></span>
             </div>
             <dl class="readout rotor-readout">
                 <div><dt>Steps</dt><dd id="euler-steps">0</dd></div>
-                <div><dt>Visited sites</dt><dd id="euler-range">1</dd></div>
-                <div><dt>Returns to origin</dt><dd id="euler-circuits">0</dd></div>
+                <div><dt>Visited sites \(|R_t|\)</dt><dd id="euler-range">1</dd></div>
+                <div><dt>Circuit clock</dt><dd id="euler-circuits">0</dd></div>
                 <div><dt>Maximum Euclidean radius</dt><dd id="euler-radius">0</dd></div>
                 <div><dt>OLS slope of \(\log|R_s|\) versus \(\log s\) over geometric samples with \(s\in[t/10,t]\)</dt><dd id="euler-exponent">&mdash;</dd></div>
             </dl>
-            <div class="rotor-excursion-key"><span>Return excursion</span><span class="rotor-excursion-swatches" aria-hidden="true"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i></span></div>
+            <div class="rotor-excursion-key"><span>First-visit circuit</span><span class="rotor-excursion-swatches" aria-hidden="true"></span></div>
+            <p class="caption">Eulerian walker on Z² with independent uniform initial rotors. One circuit is four consecutive returns to the origin; the clock reads the number of completed circuits plus a quarter per further return. A site is coloured by the circuit during which it was first visited. Between the completion times T(n) and T(n+1), every directed edge is traversed at most once, and if T(n+1) &lt; ∞ the walker leaves every site of the range at time T(n) exactly four times.</p>
         </div>
     </section>
 
     <section class="band band--paper">
         <div class="col">
-            <p class="statement"><b>Theorem.</b> Let \(R_t\) be the set of sites visited by time \(t\), with i.i.d. uniform initial rotors on \(\mathbb Z^2\). There exist a deterministic compact convex set \(B\subset\mathbb R^2\), containing the origin in its interior, and a deterministic constant \(\kappa&gt;0\) such that, almost surely, every site is visited infinitely often, \(t^{-1/3}R_t\) converges in Hausdorff distance to \(\kappa B\), and \(t^{-2/3}|R_t|\) converges to a deterministic constant in \((0,\infty)\). <span class="src">(Bou-Rabee&ndash;Peres, <a href="https://arxiv.org/abs/2608.23545">arXiv:2608.23545</a>, Theorem 1.1)</span></p>
+            <div class="theorem-suite">
+                <section class="theorem-common">
+                    <p class="theorem-kicker">Theorem 1.1 &middot; setup</p>
+                    <p>Let \(G\) be either the square lattice with its clockwise rotor mechanism, or a doubly periodic graph in \(\mathbb R^2\) of maximum degree \(3\) with a doubly periodic rotor mechanism. At every vertex choose the initial rotor independently and uniformly among its outgoing edges, and start the walk at a fixed vertex \(o\).</p>
+                </section>
+
+                <article class="theorem-card">
+                    <p class="theorem-kicker">Circuit and time parametrizations</p>
+                    <h3>Range, circuit range, and completion time</h3>
+                    <div class="theorem-setup">
+                        <p><b>Range.</b> \(R_t=\{X_0,\ldots,X_t\}\).</p>
+                        <p><b>Circuit.</b> One circuit consists of \(\deg(o)\) successive returns to \(o\). Put
+                        \[N_o(t)=\#\{0\le s&lt;t:X_s=o\},\]
+                        \[T(n)=\inf\{t\ge0:X_t=o\ \text{and}\ N_o(t)\ge n\deg(o)\},\]
+                        and \(A_n=R_{T(n)}\) whenever \(T(n)&lt;\infty\), with \(A_0=\{o\}\).</p>
+                    </div>
+                    <div class="theorem-result theorem-result--list">
+                        <p class="theorem-result-label">Almost-sure conclusions</p>
+                        <ol class="theorem-conclusions">
+                            <li><b>Recurrence.</b> Every vertex is visited infinitely often.</li>
+                            <li><b>Shape.</b> There are a deterministic compact convex set \(B\subset\mathbb R^2\), containing \(0\) in its interior, and a deterministic \(\kappa&gt;0\) such that, in Hausdorff distance,
+                            \[n^{-1}A_n\longrightarrow B,\qquad t^{-1/3}R_t\longrightarrow\kappa B.\]</li>
+                            <li><b>Range exponent.</b> The limit
+                            \[\lim_{t\to\infty}|R_t|t^{-2/3}\]
+                            exists, is deterministic, and belongs to \((0,\infty)\).</li>
+                        </ol>
+                    </div>
+                    <p class="src">(Bou-Rabee&ndash;Peres, <a href="https://arxiv.org/abs/2608.23545">arXiv:2608.23545</a>, Theorem 1.1)</p>
+                </article>
+
+                <article class="theorem-card proof-card">
+                    <p class="theorem-kicker">Proof mechanism</p>
+                    <h3>Circuits induce a random passage metric</h3>
+                    <div class="proof-chain">
+                        <section>
+                            <p class="proof-step">1 &middot; circuit routing</p>
+                            <p>Between \(T(n)\) and \(T(n+1)\), each directed edge is traversed at most once. If \(T(n+1)&lt;\infty\), the walk departs exactly \(\deg(x)\) times from every \(x\in A_n\). Boundary routing therefore defines a monotone map \(\Phi\) with</p>
+                            \[A_{n+1}=\Phi(A_n),\qquad A_n=\Phi^n(\{o\}).\]
+                        </section>
+                        <section>
+                            <p class="proof-step">2 &middot; passage shape</p>
+                            <p>The circuit passage time
+                            \[\tau(x,y)=\min\{n:y\in\Phi^n(\{x\})\}\]
+                            satisfies a triangle inequality and is stationary in law. The almost-live-path estimate rules out a zero time constant; the subadditive ergodic theorem then gives the deterministic convex limit \(n^{-1}A_n\to B\).</p>
+                        </section>
+                        <section>
+                            <p class="proof-step">3 &middot; circuit clock</p>
+                            <p>Write \(d(S)=\sum_{x\in S}\deg(x)\). For every \(n\),</p>
+                            \[d(A_n)\le T(n+1)-T(n)\le d(A_{n+1}).\]
+                            <p>If \(|A_n|=\alpha n^2+o(n^2)\) and \(d(A_n)=\beta n^2+o(n^2)\), then</p>
+                            \[T(n)=\frac{\beta}{3}n^3+o(n^3).\]
+                            <p>This converts linear growth in circuit number into radius \(t^{1/3}\) and range \(t^{2/3}\).</p>
+                        </section>
+                    </div>
+                </article>
+            </div>
             <details class="deeper"><summary>Details</summary>
-            <p><b>Circuits.</b> A circuit consists of \(\deg(o)\) successive returns to the starting vertex \(o\), hence four returns on \(\mathbb Z^2\). If \(T(n)\) is the completion time of the first \(n\) circuits and \(A_n=R_{T(n)}\), then the paper first proves \(n^{-1}A_n\to B\). The colour bands mark individual return-to-origin excursions, which refine the circuit partition used in the proof.</p>
-            <p><b>Proof idea.</b> Circuit ranges are iterates of a monotone routing map. The associated circuit-passage times form a stationary subadditive process. A live-path estimate rules out abnormally fast passage, the subadditive ergodic theorem yields the deterministic convex circuit shape, and a circuit-clock estimate converts circuit number to physical time.</p>
-            <p>The recent range slope above is the least-squares slope of \(\log |R_s|\) against \(\log s\), using geometrically spaced samples from the most recent decade of the live run. The theorem identifies the limiting exponent as \(2/3\).</p>
+            <p><b>Square-lattice input.</b> A circuit that reaches far in too few iterations forces a long path at which the live condition fails only rarely. On \(\mathbb Z^2\), the proof rotates suitable primal edges to directed dual edges. The resulting open dual configuration has two adjacent open sides at every dual square and forbids a fixed five-edge path; an exploration transfers subcritical crossing estimates back to almost-live rotor paths.</p>
+            <p><b>Displayed statistic.</b> The range slope is the least-squares slope of \(\log |R_s|\) against \(\log s\), using geometrically spaced samples from the most recent decade of the live run. It is a finite-run diagnostic; the theorem identifies the limiting exponent as \(2/3\).</p>
             </details>
             <p class="cite">A. Bou-Rabee and Y. Peres, &ldquo;Eulerian walkers on \(\mathbb{Z}^{2}\) have range exponent 2/3&rdquo; (2026), <a href="https://arxiv.org/abs/2608.23545">arXiv:2608.23545</a>. The model is due to V. B. Priezzhev, D. Dhar, A. Dhar and S. Krishnamurthy, <em>Phys. Rev. Lett.</em> 77 (1996), <a href="https://arxiv.org/abs/cond-mat/9611019">cond-mat/9611019</a>. On the shape of the visited region, R. Kapri and D. Dhar, <em>Phys. Rev. E</em> 80 (2009), <a href="https://arxiv.org/abs/0906.5506">arXiv:0906.5506</a>; on the range, L. Florescu, L. Levine and Y. Peres, <em>Amer. Math. Monthly</em> 123 (2016), <a href="https://arxiv.org/abs/1408.5533">arXiv:1408.5533</a>.</p>
         </div>
@@ -1512,7 +1588,7 @@
                 <div><dt>View width</dt><dd id="dla-view-width">0</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>Attachment time</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption"><b>Finite launch-and-kill computation.</b> The board has side length \(N=2{,}201\). Before particle \(k\), let \(R_{k-1}\) be the maximum Euclidean radius of the current cluster. Choose \(\theta\) uniformly on \([0,2\pi)\) and launch at the nearest lattice point to \((R_{k-1}+4)(\cos\theta,\sin\theta)\). Run simple random walk until it first reaches an unoccupied site adjacent to the cluster. If its radius exceeds \(\min\{2.2(R_{k-1}+4)+20,N/2-3\}\), relaunch it with a new independent angle. The stored 60,000-particle run uses this finite approximation to harmonic measure from infinity.</p>
+            <p class="caption">Diffusion-limited aggregation on a board of side N = 2,201, replayed from a stored run of 60,000 particles. Before particle k, let R be the maximum Euclidean radius of the cluster: choose θ uniformly, start at the lattice point nearest (R + 4)(cos θ, sin θ), and run simple random walk until it reaches an unoccupied site adjacent to the cluster; if its distance from the origin exceeds min{2.2(R + 4) + 20, N/2 − 3}, restart it with a new θ. Colour: order of attachment.</p>
         </div>
     </section>
 
@@ -1530,7 +1606,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Previous</span><span class="nav-name">Rotor walk</span></a>
+            <a href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Previous</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
             <a class="nav-next" href="#idla" data-plate-link="idla"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA</span></a>
         </div>
     </nav>
@@ -1575,7 +1651,7 @@
                 <div><dt>Outer radius</dt><dd id="idla-radius">0</dd></div>
             </dl>
             <div class="model-key model-key--settle"><span>Equal-area radius at settlement</span><span class="model-swatches" aria-hidden="true"><i></i><i></i><i></i></span></div>
-            <p class="caption"><b>Finite computation.</b> Independent simple random walks start at the origin of a 141-by-141 square grid and settle at their first unoccupied sites. For the occupied set \(A\), define \(r_{\mathrm{out}}=\max_{x\in A}|x|_2\) and \(r_{\mathrm{in}}=\min_{x\notin A}|x|_2\). The readouts are \(r_{\mathrm{out}}\) and \(r_{\mathrm{out}}-r_{\mathrm{in}}\). The computation stops when the cluster reaches the board boundary.</p>
+            <p class="caption">Internal DLA on a 141-by-141 grid: independent simple random walks start at the origin and settle at the first unoccupied site. Colour: settlement order, in bands. Readouts: r<sub>out</sub> = max{|x| : x occupied} and r<sub>out</sub> − r<sub>in</sub> with r<sub>in</sub> = min{|x| : x unoccupied}. The run stops when the cluster reaches the boundary of the board.</p>
         </div>
     </section>
 
@@ -1641,7 +1717,7 @@
             </dl>
             <div class="model-key model-key--age"><span>Attachment time: early</span><span class="model-age-ramp" aria-hidden="true"></span><span>late</span></div>
             <span id="wilson-branch" hidden>&mdash;</span>
-            <p class="caption"><b>Wilson&rsquo;s algorithm.</b> The 96-by-96 grid is rooted at its central vertex. Cyan is the current loop-erased path, coral is the loop currently being erased, yellow marks contact with the tree, and permanent edges are coloured by attachment order. On completion the tree has \(96^2-1=9{,}215\) edges.</p>
+            <p class="caption">Wilson&rsquo;s algorithm on the 96-by-96 grid rooted at the central vertex; vertices are taken nearest the root first. Cyan: the current loop-erased path. Coral: the loop being erased. Yellow: the vertex at which the walk hits the tree. Tree edges are coloured by the order in which they were added. The finished tree has 9,215 edges.</p>
         </div>
     </section>
 
@@ -1706,7 +1782,7 @@
                 <div><dt>Boundary width</dt><dd id="rotoragg-error">0</dd></div>
             </dl>
             <div class="model-key model-key--directions"><span>Rotor direction</span><span class="model-swatches" aria-hidden="true"><i>E</i><i>S</i><i>W</i><i>N</i></span></div>
-            <p class="caption"><b>Finite computation.</b> On a 141-by-141 grid, every rotor initially points east. Each particle starts at the origin, advances the rotor clockwise before traversing its edge, and settles at the first unoccupied site. For the occupied set \(A\), define \(r_{\mathrm{out}}=\max_{x\in A}|x|_2\) and \(r_{\mathrm{in}}=\min_{x\notin A}|x|_2\). The boundary-width readout is \(r_{\mathrm{out}}-r_{\mathrm{in}}\). The computation stops when \(r_{\mathrm{out}}\) reaches the three-site board buffer.</p>
+            <p class="caption">Rotor-router aggregation on a 141-by-141 grid; every rotor initially points east. Each particle starts at the origin; at an occupied site it turns the rotor clockwise and follows it; it settles at the first unoccupied site. Site colour: the current direction of its rotor. Readouts: r<sub>out</sub> = max{|x| : x occupied} and r<sub>out</sub> − r<sub>in</sub> with r<sub>in</sub> = min{|x| : x unoccupied}. The run stops when r<sub>out</sub> reaches the boundary of the board.</p>
         </div>
     </section>
 
@@ -1765,12 +1841,12 @@
             </div>
             <dl class="readout model-readout">
                 <div><dt>Generation</dt><dd id="apollo-generation">1 / 4</dd></div>
-                <div><dt>New circle curvature \\(\\kappa=1/r\\)</dt><dd id="apollo-curv">4</dd></div>
+                <div><dt>New circle curvature \(\kappa=1/r\)</dt><dd id="apollo-curv">4</dd></div>
                 <div><dt>Parent curvatures</dt><dd id="apollo-parents">0 &middot; 1 &middot; 1</dd></div>
                 <div><dt>Boundary line</dt><dd id="apollo-wall">yes</dd></div>
             </dl>
             <div class="model-key apollo-key"><span>Circles</span><span class="apollo-key-items"><i class="apollo-key-parent"></i>parents <i class="apollo-key-child"></i>reflection</span></div>
-            <p class="caption"><b>Descartes reflection.</b> Starting from the two boundary lines and the chain of unit circles, the canvas applies exact reflections in augmented curvature&ndash;centre coordinates. The tour displays the reflected circles of curvatures 4, 9, 28, and 81; Explore retains circles of curvature at most 500 through generation 24.</p>
+            <p class="caption">The band packing: two parallel lines at distance 2, the chain of unit circles tangent to both, and the Soddy circles of every pairwise-tangent triple, recursively. Tour: the four reflections producing the circles of curvature 4, 9, 28 and 81. Explore: all circles of curvature at most 500 through generation 24; drag to pan, scroll to zoom.</p>
         </div>
     </section>
 
@@ -1833,6 +1909,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=8c197da7"></script>
+<script defer src="gallery.js?v=588ba153"></script>
 </body>
 </html>
