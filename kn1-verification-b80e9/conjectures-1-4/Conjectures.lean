@@ -168,6 +168,40 @@ theorem conjecture2Strong_holds : Conjecture2Strong := by
   simp only [hint] at h4
   exact h4
 
+/-- **Question 7 (affirmative)**: the minimiser of `P(a ↔ b)` is a valid relay in the pre-FKG comparison (41). -/
+theorem question7_holds : Question7 := by
+  intro n w A o b a haA hmin
+  set μ := prodBernoulli w with hμ
+  have hmeas : ∀ S : Set (BondConfig (Fin n)), MeasurableSet S := fun _ => MeasurableSet.of_discrete
+  set F : Set (Fin n) → ℝ := fun M => if b ∈ M then 1 else 0 with hF
+  have hFmono : ∀ S T : Set (Fin n), S ⊆ T → F S ≤ F T := by
+    intro S T hST
+    simp only [hF]
+    by_cases hS : b ∈ S
+    · rw [if_pos hS, if_pos (hST hS)]
+    · rw [if_neg hS]; split_ifs <;> norm_num
+  have hFind : ∀ x : Fin n, (fun ω : BondConfig (Fin n) => F (openCluster ω x)) =
+      (openConn x b : Set (BondConfig (Fin n))).indicator 1 := by
+    intro x
+    funext ω
+    simp only [hF]
+    by_cases hω : ω ∈ (openConn x b : Set (BondConfig (Fin n)))
+    · rw [Set.indicator_of_mem hω, Pi.one_apply, if_pos (show b ∈ openCluster ω x from hω)]
+    · rw [Set.indicator_of_notMem hω, if_neg (show b ∉ openCluster ω x from hω)]
+  have hint : ∀ x : Fin n, ∫ ω in ⋃ y ∈ A, openConn o y, F (openCluster ω x) ∂μ =
+      μ.real (openConn x b ∩ ⋃ y ∈ A, openConn o y) := by
+    intro x
+    rw [hFind x, ← integral_indicator (hmeas _), Set.indicator_indicator, integral_indicator_one ((hmeas _).inter (hmeas _)),
+      Set.inter_comm]
+  have hmean : ∀ x ∈ A, ∫ ω, F (openCluster ω a) ∂μ ≤ ∫ ω, F (openCluster ω x) ∂μ := by
+    intro x hx
+    have e : ∀ z : Fin n, ∫ ω, F (openCluster ω z) ∂μ = μ.real (openConn z b) := fun z => by
+      rw [hFind z, integral_indicator_one (hmeas _)]
+    rw [e, e]; exact hmin x hx
+  have h4 := conjecture4Fixed_holds n w A o a F haA hFmono hmean
+  rw [← hμ, hint, hint] at h4
+  exact h4
+
 /-- **Conjecture 2.** -/
 theorem conjecture2_holds : Conjecture2 := fun n w A hA o b =>
   le_trans (conjecture2Strong_holds n w A hA o b) (measureReal_mono inter_subset_left (measure_ne_top _ _))
@@ -187,5 +221,6 @@ end
 #print axioms KNAll.conjecture4_holds
 #print axioms KNAll.conjecture2Strong_holds
 #print axioms KNAll.conjecture2_holds
+#print axioms KNAll.question7_holds
 #print axioms KNAll.conjecture1_holds
 #print axioms KNAll.conjecture3_holds

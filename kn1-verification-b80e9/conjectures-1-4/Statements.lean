@@ -46,4 +46,13 @@ def Conjecture1 : Prop :=
     (prodBernoulli w).real (⋃ a ∈ A, openConn o a) * A.inf' hA (fun a => (prodBernoulli w).real (openConn a b)) ≤
       (prodBernoulli w).real (openConn o b)
 
+
+/-- **Question 7** (arXiv:2401.12397, p. 36, display (41)): if `a ∈ A` minimises `P(a ↔ b)` over `A` then
+`P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A)`. -/
+def Question7 : Prop :=
+  ∀ (n : ℕ) (w : Sym2 (Fin n) → unitInterval) (A : Finset (Fin n)) (o b a : Fin n),
+    a ∈ A → (∀ x ∈ A, (prodBernoulli w).real (openConn a b) ≤ (prodBernoulli w).real (openConn x b)) →
+    (prodBernoulli w).real (openConn a b ∩ ⋃ y ∈ A, openConn o y) ≤
+      (prodBernoulli w).real (openConn o b ∩ ⋃ y ∈ A, openConn o y)
+
 end KNAll

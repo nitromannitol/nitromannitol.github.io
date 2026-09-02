@@ -1,4 +1,4 @@
-# KN modules (Conjectures 1–4): clean sequential recompile (2026-09-02T22:46Z); Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
+# KN modules (Conjectures 1–4, Question 7): clean sequential recompile (2026-09-02T22:52Z); Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
 ## KN/AvoidedDefs.lean (      79 lines)
 
 
@@ -15,13 +15,14 @@ EXIT=0
 EXIT=0
 ## KN/AvoidedClosure.lean (     243 lines)
 EXIT=0
-## KN/Statements.lean (      49 lines)
+## KN/Statements.lean (      58 lines)
 EXIT=0
-## KN/Conjectures.lean (     191 lines)
+## KN/Conjectures.lean (     226 lines)
 'KNAll.conjecture4Fixed_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture4_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture2Strong_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture2_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.question7_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture1_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture3_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
