@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Kozma–Nitzan Conjectures 1–4: Lean verification</title>
+    <title>Kozma–Nitzan Conjectures 2 and 4: Lean verification</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
     <style>
         .kn1 code, .kn1 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
         .kn1 pre { overflow-x: auto; padding: 0.8em 1em; background: rgba(127,127,127,0.08); border-radius: 6px; }
-        .kn1 .display { text-align: center; font-size: 1.15em; margin: 1.2em 0; }
         .kn1 table { border-collapse: collapse; margin: 1em 0; }
         .kn1 td, .kn1 th { padding: 0.35em 0.8em; border-bottom: 1px solid rgba(127,127,127,0.35); text-align: left; vertical-align: top; }
         .kn1 ul { padding-left: 1.3em; }
@@ -19,100 +18,90 @@
 </head>
 <body>
     <header>
-        <h1>Kozma–Nitzan Conjectures 1–4 on top of the Lean proof of θ(p<sub>c</sub>) = 0</h1>
+        <h1>Kozma–Nitzan's Conjectures 2 and 4, formalized on top of the Lean proof of θ(p<sub>c</sub>) = 0</h1>
     </header>
 
     <main class="kn1">
         <section>
-
-            <p>The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all
-            dimensions d ≥ 2</em> (written by Claude, Anthropic, under the direction of Justin Leder; Lean v4.32.0,
-            Mathlib commit <code>81a5d257</code>) states in its README, proof guide and metadata that Kozma–Nitzan's
-            Conjecture 1 is not claimed beyond three relays ("Not claimed: Kozma–Nitzan's Conjecture 1 beyond three
-            relays"). Its own theorems already imply the full conjecture.</p>
-
-            <p><strong>Conjecture 1</strong> (Kozma–Nitzan, <a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>, p. 3).
-            For Bernoulli bond percolation on any finite graph with arbitrary edge probabilities, any nonempty set A of vertices
-            and any vertices o, b,</p>
-            <p class="display">P(o ↔ b) ≥ P(o ↔ A) · min<sub>a ∈ A</sub> P(a ↔ b).</p>
-
-            <p>The three Lean files below prove this for every finite weighted graph, every nonempty finite A and all o, b,
-            from theorems already in the development, and Lean accepts the proof with exactly the standard axioms
-            <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> and no <code>sorry</code>.</p>
+            <p>The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions
+            d ≥ 2</em> (written by Claude, Anthropic, under the direction of Justin Leder; Lean v4.32.0, Mathlib commit
+            <code>81a5d257</code>) proves Conjecture 3 of Kozma–Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>)
+            through a family of conditioned correlation inequalities, the conditioned slack hierarchy. The Lean files in
+            <a href="conjectures-1-4/">conjectures-1-4/</a> prove, on top of that development, the paper's Conjectures 2 and 4 and answer its
+            Question 7. Lean accepts every theorem with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
+            <code>Quot.sound</code>, and no <code>sorry</code> (<a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>).</p>
         </section>
-
 
         <section>
-            <h2>Conjectures 2, 3 and 4 (and 1 again)</h2>
-            <p>Folder <a href="conjectures-1-4/">conjectures-1-4/</a> (nine Lean modules, two agent reports, and
-            <a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>; details in its
-            <a href="conjectures-1-4/README.md">README</a>). For a nonempty relay set A, vertices o, b and an increasing real
-            function F of vertex sets, Lean accepts, with exactly the standard axioms:</p>
+            <h2>What is proved</h2>
+            <p>Bernoulli bond percolation on a finite weighted graph (vertices <code>Fin n</code>, independent pairs with weights in [0,1], an
+            absent edge being weight 0), a nonempty relay set A, vertices o and b, and an increasing real function F of vertex sets:</p>
             <ul>
-                <li><strong>Conjecture 4</strong> (p. 32), fixed-minimiser form: if a ∈ A minimises E F(C<sub>x</sub>) over A then
-                    E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A].</li>
-                <li><strong>Conjecture 2</strong> (p. 3), strong pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
-                    min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b).</li>
-                <li><strong>Question 7</strong> (p. 36), affirmative: if a ∈ A minimises P(a ↔ b) over A then P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A),
-                    the paper's display (41).</li>
-                <li><strong>Conjecture 1</strong> and <strong>Conjecture 3</strong>, re-exported in the same file.</li>
+                <li><strong>Conjecture 4</strong> (p. 32), in the stronger fixed-minimiser form: if a ∈ A minimises E F(C<sub>x</sub>) over A, then
+                    E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]
+                    (<code>conjecture4Fixed_holds</code>, <code>conjecture4_holds</code>).</li>
+                <li><strong>Conjecture 2</strong> (p. 3), in the strong pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
+                    min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b) (<code>conjecture2Strong_holds</code>, <code>conjecture2_holds</code>).</li>
+                <li><strong>Question 7</strong> (p. 36), answered affirmatively: if a ∈ A minimises P(a ↔ b) over A, then
+                    P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A), the paper's display (41) (<code>question7_holds</code>).</li>
             </ul>
-            <p>Conjecture 1 is essentially the development's own result: its first-relay bound gives it in a few lines (the certificate
-            above). Conjectures 2 and 4 are new, and answer more: they were known only for two relays and for an observer isolated in
-            G ∖ A, and the fixed-minimiser form settles Question 7.</p>
-            <p><em>Idea.</em> The development's first-relay bound, Σ<sub>x</sub> P(x is o's first relay)·E F(C<sub>x</sub>) ≤ E[F(C<sub>o</sub>); o ↔ A],
-            is proved here in an <em>avoided</em> form: the observer's cluster must avoid a set Y and the relay means are conditioned on
-            x ↮ Y (the development's hierarchy already carries an avoided set, so its peeling argument goes through with Y inserted into
-            every avoidance set). With Y = {a}, a the relay of least mean, and the increasing projected functional
-            φ<sub>a</sub>(K) = F(K) − E[F(C<sub>a</sub>) | C<sub>o</sub> = K], every conditional relay mean is nonnegative, which gives
-            E[(F(C<sub>o</sub>) − F(C<sub>a</sub>)); o ↮ a, o ↔ A] ≥ 0; on {o ↔ a} the clusters coincide. F = 1{b ∈ ·} gives (3), Harris gives
-            Conjecture 1, Conjecture 1 gives Conjecture 3. The route is the one proposed in the ChatGPT document.</p>
-            <p><em>What it implies.</em> Conjectures 2 and 4 were known only for two relays and for an observer isolated in G ∖ A
-            (the paper's Theorems 1, 4, 7, 8); they now hold in general, so the paper's whole chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0
-            is formal. The fixed-minimiser form shows that the relay minimising the unconditional mean is a valid relay in the pre-FKG
-            comparison; with F = 1{b ∈ ·} that is the paper's Question 7, answered affirmatively. The avoided
-            first-relay bound itself (<code>genY_all</code>) is a general conditioned gluing inequality with no loss in the number of relays.
-            Nothing is claimed about Conjecture 6 or Questions 5, 8, 9.</p>
-            <p class="note">Produced entirely by Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): seven modules by Claude Fable 5.1,
-            two (<code>Projection</code>, <code>AvoidedClosure</code>) by Codex (GPT-5.6 sol) from specifications; the route from the
-            ChatGPT document. Not yet run through the six-pass review used for the Conjecture 1 certificate.</p>
+            <p>Conjectures 2 and 4 were known only for two relays and for an observer isolated in G ∖ A (the paper's Theorems 1, 4, 7 and 8).
+            The same file also exports Conjecture 1, which is essentially the development's own result, and the development's Conjecture 3.</p>
         </section>
+
+        <section>
+            <h2>The idea</h2>
+            <p>The development proves a first-relay bound: ordering the relays by E F(C<sub>x</sub>),
+            Σ<sub>x∈A</sub> P(x is o's first relay)·E F(C<sub>x</sub>) ≤ E[F(C<sub>o</sub>); o ↔ A]. The new ingredient is an <em>avoided</em> version of
+            it, in which the observer's cluster is required to avoid a set Y and the relay means are conditioned on x ↮ Y; the development's
+            hierarchy already carries an avoided set, so its peeling argument goes through with Y inserted into every avoidance set. With
+            Y = {a}, a the relay of least mean, and the projected functional φ<sub>a</sub>(K) = F(K) − E[F(C<sub>a</sub>) | C<sub>o</sub> = K], which is
+            increasing in K because a larger explored cluster leaves a smaller cluster for a, every conditional relay mean equals
+            (E F(C<sub>x</sub>) − E F(C<sub>a</sub>)) / P(x ↮ a) ≥ 0, so E[(F(C<sub>o</sub>) − F(C<sub>a</sub>)); o ↮ a, o ↔ A] ≥ 0; on {o ↔ a} the two clusters
+            coincide. That is Conjecture 4 with the fixed minimiser; F = 1{b ∈ ·} gives (3) and Question 7. The route is the one proposed in the
+            ChatGPT document.</p>
+        </section>
+
+        <section>
+            <h2>What it implies</h2>
+            <ul>
+                <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 is now formal from top to bottom.</li>
+                <li>The relay minimising the unconditional mean is itself a valid relay in the pre-FKG comparison (Question 7); the answer
+                    is uniform in the graph and in the number of relays.</li>
+                <li>The avoided first-relay bound (<code>genY_all</code>) is a general conditioned gluing inequality with no loss in the number of
+                    relays, available for further use.</li>
+            </ul>
+            <p>Nothing is claimed about Conjecture 6 or Questions 5, 8 and 9.</p>
+        </section>
+
         <section>
             <h2>Files</h2>
             <table>
-                <tr><td><a href="KN1Statement.lean">KN1Statement.lean</a></td>
-                    <td>The statement from Mathlib alone (<code>KN1Statement.MultiplicativeGluing</code>); its three definitions are definitionally equal copies of the development's.</td></tr>
-                <tr><td><a href="KozmaNitzanConjecture1.lean">KozmaNitzanConjecture1.lean</a></td>
-                    <td>The proof from the development's theorems: the theorem <code>KN1Corollary.kozmaNitzan_conjecture1</code>, a short file (its declarations live in a fresh namespace, so they cannot be mistaken for theorems of the development).</td></tr>
-                <tr><td><a href="KN1Bridge.lean">KN1Bridge.lean</a></td>
-                    <td>The Mathlib-only statement proved, by definitional unfolding, from the theorem of <code>KozmaNitzanConjecture1.lean</code>.</td></tr>
-                <tr><td><a href="verification.log">verification.log</a></td>
-                    <td>Recorded clean-build summary, the three compilations with <code>#print axioms</code>, and the development's own axiom-audit output.</td></tr>
-                <tr><td><a href="SOURCES.sha256">SOURCES.sha256</a></td>
-                    <td>SHA-256 of the development's 251 Lean source files and three pin files (254 entries) that were checked.</td></tr>
-                <tr><td><a href="LICENSE">LICENSE</a>, <a href="NOTICE">NOTICE</a></td>
-                    <td>Apache License 2.0, and the development's NOTICE reproduced as that licence requires.</td></tr>
-                <tr><td><a href="README.md">README.md</a></td>
-                    <td>The exact commands to re-run the check, and attribution.</td></tr>
+                <tr><td><a href="conjectures-1-4/Statements.lean">Statements.lean</a></td>
+                    <td>The closed statements <code>Conjecture4Fixed</code>, <code>Conjecture4</code>, <code>Conjecture2Strong</code>, <code>Conjecture2</code>, <code>Question7</code>, <code>Conjecture1</code>, in the development's vocabulary.</td></tr>
+                <tr><td><a href="conjectures-1-4/Conjectures.lean">Conjectures.lean</a></td>
+                    <td>The theorems, from the avoided first-relay bound <code>genY_all</code> and the projection lemma.</td></tr>
+                <tr><td><a href="conjectures-1-4/AvoidedDefs.lean">AvoidedDefs</a>, <a href="conjectures-1-4/AvoidedPeelTools.lean">AvoidedPeelTools</a>, <a href="conjectures-1-4/AvoidedPeel.lean">AvoidedPeel</a>, <a href="conjectures-1-4/AvoidedTransfer.lean">AvoidedTransfer</a>, <a href="conjectures-1-4/AvoidedClosure.lean">AvoidedClosure</a>, <a href="conjectures-1-4/AvoidedGen.lean">AvoidedGen</a></td>
+                    <td>The avoided first-relay bound: definitions, the peeling identities, the induction from the development's hierarchy, all observer positions, closure to weights 0 and 1, the induction on the relay set.</td></tr>
+                <tr><td><a href="conjectures-1-4/Projection.lean">Projection.lean</a></td>
+                    <td>The projected functional and its two identities.</td></tr>
+                <tr><td><a href="conjectures-1-4/VERIFICATION.log">VERIFICATION.log</a>, <a href="conjectures-1-4/README.md">README.md</a></td>
+                    <td>Clean sequential recompile with <code>#print axioms</code>; the statements, files and commands in one place.</td></tr>
             </table>
         </section>
 
         <section>
             <h2>How to check</h2>
-            <pre>shasum -a 256 -c /path/to/SOURCES.sha256  # from the development's root: same sources as checked here
-lake exe cache get &amp;&amp; lake build          # build the development, as in its README
-lake env lean -o .lake/build/lib/lean/KozmaNitzanConjecture1.olean KozmaNitzanConjecture1.lean
-lake env lean -o .lake/build/lib/lean/KN1Statement.olean KN1Statement.lean
-lake env lean KN1Bridge.lean</pre>
-            <p>Expected: the <code>#print axioms</code> lines of <code>verification.log</code>, each
-            <code>[propext, Classical.choice, Quot.sound]</code>, no errors, no <code>sorry</code>.</p>
-        </section>
-        <section>
-            <p class="note">The mathematics is entirely the development's, whose internal docstring in
-            <code>Percolation/Continuity/CSH/Defs.lean</code> already notes the multiplicative consequence. This page and its files were produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): ChatGPT pointed out that
-            Conjecture 1 follows by the same methods, and Claude Fable 5.1 wrote and machine-checked the Lean corollary and this page,
-            which was then checked by six AI review passes (three Claude Opus, three OpenAI Codex) before posting.
-            The Lean files are released under the Apache License 2.0, matching the development.</p>
+            <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
+mkdir -p .lake/build/lib/lean/KN         # copy the nine .lean files to KN/, then:
+for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures; do
+  lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
+done</pre>
+            <p>Expected: the seven <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.</p>
+            <p class="note">Produced entirely by Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): the route is from the ChatGPT document;
+            seven modules were written and machine-checked by Claude Fable 5.1, two (<code>Projection</code>, <code>AvoidedClosure</code>) by Codex
+            (GPT-5.6 sol) from specifications. All mathematics below the avoided first-relay bound is the development's. The Lean files are
+            released under the Apache License 2.0, matching the development.</p>
         </section>
     </main>
 </body>
