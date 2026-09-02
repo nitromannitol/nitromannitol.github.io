@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <defs>
+    <style>@media (prefers-reduced-motion: reduce) {.motion {display:none}}</style>
+    <pattern id="c" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="13" height="13" rx="2" fill="#91a6cc" fill-opacity=".14"/></pattern>
+    <clipPath id="divperc-void-reveal"><rect x="20" y="20" height="360"><animate attributeName="width" values="0;760;760;0" keyTimes="0;.68;.88;1" dur="7s" repeatCount="indefinite"/></rect></clipPath>
+  </defs>
+  <rect width="800" height="400" fill="#15131a"/><rect x="20" y="20" width="760" height="360" fill="url(#c)"/>
+  <g fill="#8294b9" opacity=".58"><path d="M40 55h60v16h30v32h28v34h-42v20H72v-18H40zM628 48h72v18h42v56h-34v20h-60v-18h-36V78h16zM58 298h50v-20h60v18h24v54h-44v20H80v-18H42v-36h16zM635 280h72v18h46v44h-32v24h-76v-18h-42v-46h32z"/></g>
+  <path d="M20 235h72v-22h42v-38h56v18h48v-34h38v-50h52v22h42v42h52v38h48v-20h42v46h52v-18h72v56h-70v26h-54v-18h-50v34h-58v-22h-44v26h-58v-38h-48v22h-58v-18H90v16H20z" fill="#56b4e9" opacity=".2"/>
+  <g class="motion" clip-path="url(#divperc-void-reveal)">
+    <path d="M20 235h72v-22h42v-38h56v18h48v-34h38v-50h52v22h42v42h52v38h48v-20h42v46h52v-18h72v56h-70v26h-54v-18h-50v34h-58v-22h-44v26h-58v-38h-48v22h-58v-18H90v16H20z" fill="#56b4e9" opacity=".9"/>
+    <path d="M20 235h72v-22h42v-38h56v18h48v-34h38v-50h52v22h42v42h52v38h48v-20h42v46h52v-18h72" fill="none" stroke="#f0d96b" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 400">
+  <defs>
+    <style>.still {display:none}@media (prefers-reduced-motion: reduce) {.motion {display:none}.still {display:inline}}</style>
+    <pattern id="g" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#efe9dc" stroke-opacity=".09"/></pattern>
+    <radialGradient id="r"><stop stop-color="#d65f83" stop-opacity=".58"/><stop offset="1" stop-color="#d65f83" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="800" height="400" fill="#15131a"/>
+  <g fill="url(#r)"><circle cx="190" cy="225" r="130"/><circle cx="455" cy="155" r="145"/><circle cx="660" cy="285" r="105"/></g>
+  <rect x="25" y="25" width="750" height="350" fill="url(#g)"/>
+  <g fill="none" stroke="#68c7ea" stroke-width="3"><circle cx="100" cy="75" r="8"/><circle cx="300" cy="100" r="8"/><circle cx="700" cy="75" r="8"/><circle cx="625" cy="325" r="8"/><circle cx="350" cy="275" r="8"/></g>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+    <path id="parking-void-path-1" d="M75 325h50v-75h50v-50h75v25h50v50h50" stroke="#e27ca0"/>
+    <path id="parking-void-path-2" d="M525 50v75h-50v50h-75v-50h-50v-25h-50" stroke="#f2c861"/>
+    <path id="parking-void-path-3" d="M725 275h-50v50h-50" stroke="#b38bc1"/>
+  </g>
+  <g class="still" fill="#68c7ea" stroke="#15131a" stroke-width="3"><circle cx="350" cy="275" r="10"/><circle cx="300" cy="100" r="10"/><circle cx="625" cy="325" r="10"/></g>
+  <g class="motion" fill="#f2c861" stroke="#15131a" stroke-width="3">
+    <circle r="10"><animateMotion dur="5.8s" repeatCount="indefinite"><mpath xlink:href="#parking-void-path-1"/></animateMotion><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.72;.82;1" dur="5.8s" repeatCount="indefinite"/></circle>
+    <circle r="10"><animateMotion dur="5.1s" begin="-.9s" repeatCount="indefinite"><mpath xlink:href="#parking-void-path-2"/></animateMotion><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.72;.82;1" dur="5.1s" begin="-.9s" repeatCount="indefinite"/></circle>
+    <circle r="10"><animateMotion dur="3.8s" begin="-1.7s" repeatCount="indefinite"><mpath xlink:href="#parking-void-path-3"/></animateMotion><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.72;.82;1" dur="3.8s" begin="-1.7s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

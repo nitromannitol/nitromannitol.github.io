@@ -28,7 +28,8 @@ const HEIGHTS_VOID = ['#15131A', '#4A4A5E', '#8E4257', '#A8D8E8'];
    an older ordering, so ArrowLeft from the first live page could target a
    nonexistent section. */
 const SECTIONS = ['random-sandpile', 'dimensional-reduction', 'pareto-peeling',
-                  'f-lattice', 'divisible', 'sandpile-rwrs', 'percolation',
+                  'f-lattice', 'divisible', 'sandpile-rwrs', 'parking',
+                  'divisible-percolation', 'percolation',
                   'unique-continuation', 'superdiffusion', 'einstein-relation',
                   'sphere-packing', 'idla-cylinder', 'long-range-walk',
                   'rotor-walk', 'dla', 'idla', 'ust', 'rotor-aggregation',
@@ -56,6 +57,8 @@ const PAGE_MAKERS = {
     'percolation':       ['percolationintro', 'percpanels', 'harmonic', 'percgadget'],
     'einstein-relation': ['einsteinintro', 'einstein'],
     'sandpile-rwrs':     ['rwrsintro', 'rwrs'],
+    'parking':           ['parkingintro', 'parking'],
+    'divisible-percolation': ['divpercintro', 'divperc'],
     'unique-continuation': ['uniqueintro', 'unique']
 };
 
@@ -90,6 +93,8 @@ const MAKER_TARGETS = {
     harmonic: '#harmonic-canvas', percgadget: '#perc-gadget-canvas',
     einsteinintro: '#rule-einstein-relation', einstein: '#einstein-canvas',
     rwrsintro: '#rule-sandpile-rwrs', rwrs: '#rwrs-canvas',
+    parkingintro: '#rule-parking', parking: '#parking-canvas',
+    divpercintro: '#rule-divisible-percolation', divperc: '#divperc-canvas',
     uniqueintro: '#rule-unique-continuation', unique: '#unique-canvas'
 };
 
@@ -112,6 +117,8 @@ const TITLES = {
     'percolation': 'Supercritical percolation cluster',
     'einstein-relation': 'Einstein relation in a random environment',
     'sandpile-rwrs': 'Sandpiles and random walk in random scenery',
+    'parking': 'Sharpness and critical scaling of parking',
+    'divisible-percolation': 'Quantitative explosion and percolation of the divisible sandpile',
     'unique-continuation': 'Unique continuation on planar graphs'
 };
 
@@ -11334,6 +11341,360 @@ const Instruments = (function () {
         reset(); if (!REDUCED) start();
         return { pause:function(){pageAwake=false;stop();},
                  resume:function(){pageAwake=true;paint();if(!userPaused)start();} };
+    };
+
+    /* Parking: each active car uses one stack instruction per parallel round.
+       The finite torus keeps every step visible; wrapped steps are drawn with
+       periodic copies so a car crosses an edge continuously rather than
+       disappearing from one side and jumping to the other. */
+    makers.parkingintro = function () {
+        const paths = [
+            [[1,7],[2,7],[2,6],[2,5],[3,5],[3,4],[4,4],[5,4]],
+            [[7,1],[7,2],[6,2],[6,3],[6,4],[6,5],[5,5]],
+            [[8,7],[7,7],[7,6],[7,5]]
+        ];
+        const spots = [[2,1],[5,4],[5,5],[1,3],[7,5],[3,7]];
+        return loopingRule('parking', 7600, function (ctx, W, p) {
+            const grid = ruleGrid(ctx, W, 9, 72, 504), cell = grid.cell;
+            const q = ruleEase(ruleClamp((p - .06) / .82));
+            const visited = new Set();
+            paths.forEach(function (path) {
+                const z = q * (path.length - 1), end = Math.min(path.length - 1, Math.floor(z));
+                for (let i = 0; i <= end; i++) visited.add(path[i][0] + ',' + path[i][1]);
+            });
+            visited.forEach(function (key) {
+                const a = key.split(',').map(Number);
+                ctx.fillStyle = 'rgba(204,121,167,.18)';
+                ctx.fillRect(grid.left + a[0] * cell + 2, grid.top + a[1] * cell + 2, cell - 4, cell - 4);
+            });
+            spots.forEach(function (s) {
+                const x = grid.left + (s[0] + .5) * cell, y = grid.top + (s[1] + .5) * cell;
+                ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2);
+                ctx.strokeStyle = RULE_VIS.cyanBright; ctx.lineWidth = 3; ctx.stroke();
+            });
+            paths.forEach(function (path, j) {
+                const z = q * (path.length - 1), k = Math.min(path.length - 2, Math.floor(z)), a = z - k;
+                ctx.beginPath();
+                for (let i = 0; i <= k + 1; i++) {
+                    const x = grid.left + (path[i][0] + .5) * cell,
+                          y = grid.top + (path[i][1] + .5) * cell;
+                    if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = j === 1 ? RULE_VIS.rose : RULE_VIS.yellow;
+                ctx.globalAlpha = .48; ctx.lineWidth = 2; ctx.stroke(); ctx.globalAlpha = 1;
+                const u = path[k], v = path[k + 1],
+                      x = grid.left + (ruleMix(u[0], v[0], a) + .5) * cell,
+                      y = grid.top + (ruleMix(u[1], v[1], a) + .5) * cell;
+                ruleParticle(ctx, x, y, 9, j === 1 ? RULE_VIS.rose : RULE_VIS.yellow);
+            });
+        }, .72);
+    };
+
+    makers.parking = function () {
+        const canvas = $('#parking-canvas');
+        if (!canvas) return null;
+        const ctx = canvas.getContext('2d'), W0 = canvas.width, H0 = canvas.height;
+        const outRound = $('#parking-round'), outActive = $('#parking-active'),
+              outOrigin = $('#parking-origin'), note = $('#parking-note');
+        const N = 32, COUNT = N * N, LOGICAL = 720, PAD = 24,
+              CELL = (LOGICAL - 2 * PAD) / N, STEP_MS = 105;
+        const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+        let density = .42, runSeed = 0x5041524b, replaySeed = runSeed;
+        let spot, occupied, odometer, cars, roundNo, activeCount;
+        let phase = 0, lastNow = 0, raf = 0, running = false,
+            pageAwake = true, userPaused = false, completedAt = 0;
+
+        function hash(a, b, c) {
+            let z = (a ^ Math.imul(b + 0x9e37, 0x45d9f3b) ^ Math.imul(c + 0x79b9, 0x119de1f3)) >>> 0;
+            z = Math.imul(z ^ (z >>> 16), 0x45d9f3b) >>> 0;
+            return (z ^ (z >>> 16)) >>> 0;
+        }
+        function randomFactory(seed) {
+            let s = seed >>> 0;
+            return function () { s ^= s << 13; s ^= s >>> 17; s ^= s << 5; return (s >>> 0) / 4294967296; };
+        }
+        function reset(seed) {
+            replaySeed = seed >>> 0;
+            const rand = randomFactory(replaySeed), order = Array.from({length: COUNT}, function (_, i) { return i; });
+            for (let i = COUNT - 1; i > 0; i--) {
+                const j = (rand() * (i + 1)) | 0, q = order[i]; order[i] = order[j]; order[j] = q;
+            }
+            const carCount = Math.floor(density * COUNT);
+            spot = new Uint8Array(COUNT); occupied = new Uint8Array(COUNT);
+            odometer = new Uint32Array(COUNT); cars = [];
+            const isCar = new Uint8Array(COUNT);
+            for (let i = 0; i < carCount; i++) isCar[order[i]] = 1;
+            for (let i = 0; i < COUNT; i++) {
+                if (isCar[i]) {
+                    const x = i % N, y = (i / N) | 0;
+                    cars.push({ id: cars.length, x: x, y: y, px: x, py: y, nx: x, ny: y, active: true });
+                } else spot[i] = 1;
+            }
+            roundNo = 0; activeCount = cars.length; phase = 0; completedAt = 0;
+            paint(); report();
+        }
+        function advanceRound() {
+            if (!activeCount) return;
+            const arrivals = new Array(COUNT);
+            cars.forEach(function (car) {
+                if (!car.active) return;
+                car.px = car.x; car.py = car.y;
+                odometer[car.y * N + car.x]++;
+                const d = dirs[hash(replaySeed, car.id, roundNo) & 3];
+                car.nx = (car.x + d[0] + N) % N; car.ny = (car.y + d[1] + N) % N;
+                car.x = car.nx; car.y = car.ny;
+                const at = car.y * N + car.x;
+                if (spot[at] && !occupied[at]) {
+                    if (!arrivals[at]) arrivals[at] = [];
+                    arrivals[at].push(car);
+                }
+            });
+            arrivals.forEach(function (group, at) {
+                if (!group || occupied[at]) return;
+                const winner = group[hash(replaySeed ^ 0xa511e9b3, at, roundNo) % group.length];
+                winner.active = false; occupied[at] = 1; activeCount--;
+            });
+            roundNo++;
+            if (!activeCount) completedAt = performance.now();
+        }
+        function carPositions(car, a) {
+            let dx = car.nx - car.px, dy = car.ny - car.py;
+            if (dx > N / 2) dx -= N; if (dx < -N / 2) dx += N;
+            if (dy > N / 2) dy -= N; if (dy < -N / 2) dy += N;
+            const x = car.px + dx * a, y = car.py + dy * a, out = [];
+            [-N,0,N].forEach(function (ox) { [-N,0,N].forEach(function (oy) {
+                const xx = x + ox, yy = y + oy;
+                if (xx >= -.5 && xx < N + .5 && yy >= -.5 && yy < N + .5) out.push([xx,yy]);
+            }); });
+            return out;
+        }
+        function paint() {
+            ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0f0e13'; ctx.fillRect(0,0,W0,H0);
+            ctx.save(); ctx.scale(W0 / LOGICAL, H0 / LOGICAL);
+            for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+                const i = y * N + x, v = Math.min(1, Math.log1p(odometer[i]) / Math.log(24));
+                if (v > 0) {
+                    ctx.fillStyle = 'rgba(196,76,119,' + (.08 + .72 * v).toFixed(3) + ')';
+                    ctx.fillRect(PAD + x * CELL + .6, PAD + y * CELL + .6, CELL - 1.2, CELL - 1.2);
+                }
+            }
+            ctx.strokeStyle = 'rgba(226,218,200,.09)'; ctx.lineWidth = .65; ctx.beginPath();
+            for (let i = 0; i <= N; i++) {
+                const q = PAD + i * CELL;
+                ctx.moveTo(PAD,q); ctx.lineTo(LOGICAL-PAD,q);
+                ctx.moveTo(q,PAD); ctx.lineTo(q,LOGICAL-PAD);
+            }
+            ctx.stroke();
+            for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+                const i = y * N + x;
+                if (!spot[i]) continue;
+                const cx = PAD + (x + .5) * CELL, cy = PAD + (y + .5) * CELL;
+                ctx.beginPath(); ctx.arc(cx, cy, occupied[i] ? 2.8 : 3.7, 0, Math.PI * 2);
+                if (occupied[i]) { ctx.fillStyle = '#68c7ea'; ctx.globalAlpha = .62; ctx.fill(); ctx.globalAlpha = 1; }
+                else { ctx.strokeStyle = '#68c7ea'; ctx.globalAlpha = .76; ctx.lineWidth = 1.25; ctx.stroke(); ctx.globalAlpha = 1; }
+            }
+            cars.forEach(function (car) {
+                if (!car.active) return;
+                carPositions(car, phase).forEach(function (p) {
+                    ctx.beginPath(); ctx.arc(PAD + (p[0] + .5) * CELL, PAD + (p[1] + .5) * CELL, 3.6, 0, Math.PI * 2);
+                    ctx.fillStyle = '#f0d96b'; ctx.fill();
+                    ctx.strokeStyle = '#0f0e13'; ctx.lineWidth = 1; ctx.stroke();
+                });
+            });
+            ctx.restore();
+        }
+        function report() {
+            if (outRound) outRound.textContent = nf.format(roundNo);
+            if (outActive) outActive.textContent = nf.format(activeCount);
+            if (outOrigin) outOrigin.textContent = nf.format(odometer[(N >> 1) * N + (N >> 1)]);
+            if (note) note.textContent = activeCount ? (density === .5 ? 'Critical density' : 'Subcritical density') : 'Every car is parked';
+        }
+        function sync() {
+            $$('[data-parking-p]').forEach(function (b) {
+                const on = Math.abs(parseFloat(b.dataset.parkingP) - density) < 1e-12;
+                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+            });
+            const b = $('[data-parking-run="pause"]');
+            if (b) { b.textContent = REDUCED ? 'Paused' : (running ? 'Pause' : 'Play');
+                b.classList.toggle('is-on', running); b.setAttribute('aria-pressed', String(running)); }
+        }
+        function frame(now) {
+            if (!running) return;
+            if (!lastNow) lastNow = now;
+            const dt = Math.min(40, now - lastNow); lastNow = now;
+            if (activeCount) {
+                phase += dt / STEP_MS;
+                if (phase >= 1) { phase -= 1; advanceRound(); report(); }
+            } else if (completedAt && now - completedAt > 2300) {
+                reset(replaySeed);
+            }
+            paint(); raf = requestAnimationFrame(frame);
+        }
+        function stop() { running = false; cancelAnimationFrame(raf); raf = 0; lastNow = 0; sync(); }
+        function start() { if (REDUCED || running || userPaused || !pageAwake) return; running = true; sync(); raf = requestAnimationFrame(frame); }
+        $$('[data-parking-p]').forEach(function (b) { b.addEventListener('click', function () {
+            const p = parseFloat(b.dataset.parkingP); if (!isFinite(p) || p === density) return;
+            stop(); density = p; userPaused = REDUCED; reset(replaySeed); if (!userPaused) start(); sync();
+        }); });
+        $$('[data-parking-run]').forEach(function (b) { b.addEventListener('click', function () {
+            const action = b.dataset.parkingRun;
+            if (action === 'pause') { if (running) { userPaused = true; stop(); } else { userPaused = false; start(); } }
+            if (action === 'replay') { stop(); userPaused = REDUCED; reset(replaySeed); if (!userPaused) start(); }
+            if (action === 'new') { stop(); runSeed = (runSeed + 0x9e3779b9) >>> 0; userPaused = REDUCED; reset(runSeed); if (!userPaused) start(); }
+        }); });
+        reset(runSeed);
+        if (REDUCED) { for (let i = 0; i < 90 && activeCount; i++) advanceRound(); phase = 1; paint(); report(); }
+        else start();
+        return { pause: function () { pageAwake = false; stop(); },
+                 resume: function () { pageAwake = true; paint(); report(); if (!userPaused) start(); } };
+    };
+
+    /* The percolation page starts with one local toppling and then changes
+       scale: the same excess creates a connected finite-time toppled set. */
+    makers.divpercintro = function () {
+        return loopingRule('divisible-percolation', 7000, function (ctx, W, p) {
+            const grid = ruleGrid(ctx, W, 11, 52, 616), cell = grid.cell;
+            const spread = ruleEase(ruleClamp((p - .08) / .72));
+            for (let y = 0; y < 11; y++) for (let x = 0; x < 11; x++) {
+                const dx = x - 5, dy = y - 5, r = Math.hypot(dx, dy),
+                      noise = .9 * Math.sin(1.71 * x + 2.13 * y) + .55 * Math.sin(.63 * x - 1.37 * y),
+                      hit = r < .8 + 6.1 * spread + noise;
+                if (!hit) continue;
+                ctx.fillStyle = r < 2.2 + 3.4 * spread ? 'rgba(86,180,233,.84)' : 'rgba(204,121,167,.52)';
+                ctx.fillRect(grid.left + x * cell + 2, grid.top + y * cell + 2, cell - 4, cell - 4);
+            }
+            const cx = grid.left + 5.5 * cell, cy = grid.top + 5.5 * cell;
+            if (p < .42) {
+                const a = ruleEase(p / .42);
+                [[1,0],[-1,0],[0,1],[0,-1]].forEach(function (d) {
+                    ruleParticle(ctx, cx + d[0] * cell * a, cy + d[1] * cell * a, 7, RULE_VIS.yellow);
+                });
+            }
+        }, .74);
+    };
+
+    makers.divperc = function () {
+        const canvas = $('#divperc-canvas'); if (!canvas) return null;
+        const ctx = canvas.getContext('2d'), W0 = canvas.width, H0 = canvas.height;
+        const outRound = $('#divperc-round'), outToppled = $('#divperc-toppled'),
+              outLargest = $('#divperc-largest'), note = $('#divperc-note');
+        const N = 88, COUNT = N * N, LOGICAL = 720, PAD = 18,
+              CELL = (LOGICAL - 2 * PAD) / N, MAX_T = 900, STEP_MS = 42;
+        let rho = .78, runSeed = 0x53414e44, replaySeed = runSeed;
+        let zeta, u, next, mask, largest, t, setSize, largestSize;
+        let phase = 0, lastNow = 0, raf = 0, running = false,
+            pageAwake = true, userPaused = false, heldAt = 0;
+
+        function hash(seed, i) {
+            let z = (seed ^ Math.imul(i + 0x9e37, 0x45d9f3b)) >>> 0;
+            z = Math.imul(z ^ (z >>> 16), 0x45d9f3b) >>> 0;
+            return ((z ^ (z >>> 16)) >>> 0) / 4294967296;
+        }
+        function poissonQuantile(q, mean) {
+            let k = 0, mass = Math.exp(-mean), cdf = mass;
+            while (q > cdf && k < 16) { k++; mass *= mean / k; cdf += mass; }
+            return k;
+        }
+        function reset(seed) {
+            replaySeed = seed >>> 0; zeta = new Float64Array(COUNT);
+            let total = 0;
+            for (let i = 0; i < COUNT; i++) { const s = poissonQuantile(hash(replaySeed, i), rho); zeta[i] = s; total += s; }
+            const shift = rho === 1 ? (COUNT - total) / COUNT : 0;
+            for (let i = 0; i < COUNT; i++) zeta[i] = (zeta[i] + shift - 1) / 4;
+            u = new Float64Array(COUNT); next = new Float64Array(COUNT);
+            mask = new Uint8Array(COUNT); largest = new Uint8Array(COUNT);
+            t = 0; phase = 0; heldAt = 0; classify(); paint(); report();
+        }
+        function advance() {
+            for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+                const i = y * N + x, l = y * N + (x + N - 1) % N,
+                      r = y * N + (x + 1) % N, a = ((y + N - 1) % N) * N + x,
+                      b = ((y + 1) % N) * N + x;
+                next[i] = Math.max(0, zeta[i] + .25 * (u[l] + u[r] + u[a] + u[b]));
+            }
+            const q = u; u = next; next = q; t++;
+            classify();
+            if (t >= MAX_T) heldAt = performance.now();
+        }
+        function classify() {
+            const level = rho === 1 ? .075 * Math.sqrt(Math.max(1, t)) : 1e-10;
+            setSize = 0; mask.fill(0); largest.fill(0);
+            for (let i = 0; i < COUNT; i++) if (u[i] > level) { mask[i] = 1; setSize++; }
+            const seen = new Uint8Array(COUNT); let best = [];
+            for (let i = 0; i < COUNT; i++) if (mask[i] && !seen[i]) {
+                const stack = [i], comp = []; seen[i] = 1;
+                while (stack.length) {
+                    const v = stack.pop(), x = v % N, y = (v / N) | 0; comp.push(v);
+                    const nbr = [y * N + (x + N - 1) % N, y * N + (x + 1) % N,
+                                 ((y + N - 1) % N) * N + x, ((y + 1) % N) * N + x];
+                    for (let k = 0; k < 4; k++) if (mask[nbr[k]] && !seen[nbr[k]]) { seen[nbr[k]] = 1; stack.push(nbr[k]); }
+                }
+                if (comp.length > best.length) best = comp;
+            }
+            best.forEach(function (i) { largest[i] = 1; }); largestSize = best.length;
+        }
+        function paint() {
+            ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0f0e13'; ctx.fillRect(0,0,W0,H0);
+            ctx.save(); ctx.scale(W0 / LOGICAL, H0 / LOGICAL);
+            const denom = rho === 1 ? Math.max(.4, .55 * Math.sqrt(Math.max(1,t))) : 2.4;
+            for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+                const i = y * N + x, q = Math.min(1, u[i] / denom),
+                      xx = PAD + x * CELL, yy = PAD + y * CELL;
+                if (largest[i]) ctx.fillStyle = '#56b4e9';
+                else if (mask[i]) ctx.fillStyle = '#9275a6';
+                else if (q > 0) ctx.fillStyle = 'rgba(98,83,125,' + (.08 + .3 * q).toFixed(3) + ')';
+                else ctx.fillStyle = 'rgba(121,134,165,.055)';
+                ctx.fillRect(xx + .35, yy + .35, CELL - .7, CELL - .7);
+            }
+            ctx.restore();
+        }
+        function report() {
+            if (outRound) outRound.textContent = nf.format(t);
+            if (outToppled) outToppled.textContent = nf.format(setSize);
+            if (outLargest) outLargest.textContent = nf.format(largestSize);
+            if (note) note.textContent = rho === 1 ? 'Level set {uₜ > 0.075√t}' : 'Finite-time toppled set {uₜ > 0}';
+        }
+        function sync() {
+            $$('[data-divperc-rho]').forEach(function (b) {
+                const on = Math.abs(parseFloat(b.dataset.divpercRho) - rho) < 1e-12;
+                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+            });
+            const b = $('[data-divperc-run="pause"]');
+            if (b) { b.textContent = REDUCED ? 'Paused' : (running ? 'Pause' : 'Play');
+                b.classList.toggle('is-on', running); b.setAttribute('aria-pressed', String(running)); }
+            if (outToppled) {
+                const dt = outToppled.closest('div') && $('dt', outToppled.closest('div'));
+                if (dt) dt.textContent = rho === 1 ? 'Sites in displayed level set' : 'Toppled sites';
+            }
+        }
+        function frame(now) {
+            if (!running) return;
+            if (!lastNow) lastNow = now;
+            const dt = Math.min(40, now - lastNow); lastNow = now;
+            if (t < MAX_T) {
+                phase += dt / STEP_MS;
+                let steps = Math.min(5, Math.floor(phase)); phase -= steps;
+                while (steps-- > 0 && t < MAX_T) advance();
+            } else if (heldAt && now - heldAt > 2600) reset(replaySeed);
+            paint(); report(); raf = requestAnimationFrame(frame);
+        }
+        function stop() { running = false; cancelAnimationFrame(raf); raf = 0; lastNow = 0; sync(); }
+        function start() { if (REDUCED || running || userPaused || !pageAwake) return; running = true; sync(); raf = requestAnimationFrame(frame); }
+        $$('[data-divperc-rho]').forEach(function (b) { b.addEventListener('click', function () {
+            const q = parseFloat(b.dataset.divpercRho); if (!isFinite(q) || q === rho) return;
+            stop(); rho = q; userPaused = REDUCED; reset(replaySeed); sync(); if (!userPaused) start();
+        }); });
+        $$('[data-divperc-run]').forEach(function (b) { b.addEventListener('click', function () {
+            const action = b.dataset.divpercRun;
+            if (action === 'pause') { if (running) { userPaused = true; stop(); } else { userPaused = false; start(); } }
+            if (action === 'replay') { stop(); userPaused = REDUCED; reset(replaySeed); if (!userPaused) start(); }
+            if (action === 'new') { stop(); runSeed = (runSeed + 0x9e3779b9) >>> 0; userPaused = REDUCED; reset(runSeed); if (!userPaused) start(); }
+        }); });
+        reset(runSeed);
+        if (REDUCED) { for (let i = 0; i < 180; i++) advance(); paint(); report(); }
+        else start();
+        return { pause: function () { pageAwake = false; stop(); },
+                 resume: function () { pageAwake = true; paint(); report(); if (!userPaused) start(); } };
     };
 
     /* A symmetric substochastic kernel on an irregular subgraph of Z^2.

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" role="img" aria-labelledby="title desc">
+  <title id="title">Percolation of a divisible-sandpile toppled set</title>
+  <desc id="desc">A connected bright component crosses a square field of smaller toppled components.</desc>
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10141f"/><stop offset="1" stop-color="#1d1826"/>
+    </linearGradient>
+    <pattern id="cells" width="20" height="20" patternUnits="userSpaceOnUse">
+      <rect width="16" height="16" rx="3" fill="#8899bd" fill-opacity=".12"/>
+    </pattern>
+  </defs>
+  <rect width="560" height="560" rx="18" fill="url(#ground)"/>
+  <rect x="30" y="30" width="500" height="500" fill="url(#cells)"/>
+  <g fill="#7e91bd" opacity=".55">
+    <path d="M44 94h32v18h20v18h38v34h-18v18H78v-20H58v-34H44zM402 54h40v20h36v18h20v40h-22v18h-54v-20h-36V92h16zM64 420h42v-18h44v20h18v54h-20v24H92v-18H64zM392 384h54v20h40v36h-20v38h-58v-20h-38v-40h22z"/>
+  </g>
+  <path d="M30 316h44v-26h36v-44h42v18h40v-36h34v-52h42v20h38v40h34v38h44v-20h34v44h42v-18h70v84h-54v32h-56v-18h-54v36h-46v-20h-44v24h-52v-40h-42v24h-48v-20H74v18H30z" fill="#56b4e9" opacity=".92"/>
+  <path d="M30 316h44v-26h36v-44h42v18h40v-36h34v-52h42v20h38v40h34v38h44v-20h34v44h42v-18h70" fill="none" stroke="#f4df72" stroke-width="5" stroke-linejoin="round"/>
+  <g fill="#d45d7d">
+    <circle cx="104" cy="274" r="8"/><circle cx="184" cy="248" r="8"/><circle cx="250" cy="190" r="8"/><circle cx="330" cy="260" r="8"/><circle cx="410" cy="286" r="8"/><circle cx="486" cy="300" r="8"/>
+  </g>
+</svg>

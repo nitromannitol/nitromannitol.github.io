@@ -836,6 +836,36 @@ a:hover { text-decoration-thickness: 1.5px; }
 .model-key .katex, .model-readout dt .katex, .rotor-readout dt .katex,
 .model-control-label .katex, .btn .katex { text-transform: none; letter-spacing: normal; }
 .model-readout dt .katex, .rotor-readout dt .katex { font-size: 1.22em; white-space: nowrap; }
+.parking-key-items,
+.divperc-key-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px 14px;
+}
+.parking-key-items i,
+.divperc-key-items i {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    flex: none;
+}
+.parking-free {
+    border: 1.5px solid #68c7ea;
+    border-radius: 50%;
+    background: transparent;
+}
+.parking-parked {
+    border-radius: 50%;
+    background: #68c7ea;
+}
+.parking-driving {
+    border-radius: 50%;
+    background: #f0d96b;
+}
+.divperc-other { background: #9275a6; }
+.divperc-largest { background: #56b4e9; }
 .sd-key-items {
     display: grid;
     grid-template-columns: 34px auto 34px auto 34px auto;
