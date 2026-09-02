@@ -1,4 +1,4 @@
-# Kozma–Nitzan's Conjectures 1, 2, 3 and 4: Lean certificate
+# Kozma–Nitzan's Conjectures 2 and 4 (and Question 7): Lean certificate
 
 ## What is certified
 
@@ -15,9 +15,9 @@ set of relays, `o, b` vertices and `F` an increasing real function of vertex set
 * Conjecture 1 (p. 3): `P(o ↔ A) · min_{x∈A} P(x ↔ b) ≤ P(o ↔ b)` (`conjecture1_holds`).
 * Conjecture 3 (p. 15): the development's `kozmaNitzan_conjecture3_holds` (`conjecture3_holds`).
 
-Conjecture 1 is essentially the development's own result: its first-relay bound gives it in a few lines (certified separately
-above). Conjectures 2 and 4 are new, and answer more: they were known only for two relays and for an observer isolated in
-`G ∖ A`, and the fixed-minimiser form settles Question 7.
+Conjectures 2 and 4 are new: they were known only for two relays and for an observer isolated in `G ∖ A`, and the
+fixed-minimiser form settles Question 7. Conjecture 1 is essentially the development's own result (its first-relay bound gives
+it in a few lines) and is exported in the same file for completeness.
 
 Every theorem is accepted by Lean 4.32.0 with the pinned Mathlib and reports exactly `[propext, Classical.choice, Quot.sound]`
 (`VERIFICATION.log`, a clean sequential recompile of all nine modules); no `sorry`, no axioms. The statements are
