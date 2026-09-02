@@ -1,0 +1,50 @@
+# Verification log: Kozma–Nitzan Conjecture 1 as a corollary of the Lean development
+# Machine: Apple M2 Max (12 cores, 64 GB), macOS; date: 2026-09-02T19:51:42Z
+# Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release) ; Lake version 5.0.0-src+8c9756b (Lean version 4.32.0)
+# Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (pinned in the development's lake-manifest.json)
+# Sources: the development's 251 Lean files and 3 pin files (254 entries), SHA-256 manifest in SOURCES.sha256 (tree hash b80e9252f08c3495a440fdd6bc4bb444249f77367e0791ca6ae2f57a307fae18)
+
+## 1. Clean build of the development from an empty .lake/build (lake build Percolation Solution), Wed Sep  2 15:27:03 EDT 2026 to Wed Sep  2 15:33:21 EDT 2026
+Build completed successfully (8905 jobs).
+
+## 2. lake env lean -o .lake/build/lib/lean/KozmaNitzanConjecture1.olean KozmaNitzanConjecture1.lean
+'KN1Corollary.gen_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KN1Corollary.multiplicativeGluing_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KN1Corollary.kozmaNitzan_conjecture1' depends on axioms: [propext, Classical.choice, Quot.sound]
+exit code: 0
+
+## 3. lake env lean -o .lake/build/lib/lean/KN1Statement.olean KN1Statement.lean   (Mathlib-only statement file)
+exit code: 0
+
+## 4. lake env lean KN1Bridge.lean   (the Mathlib-only statement is the theorem of KozmaNitzanConjecture1.lean, by definitional unfolding)
+'KN1Statement.multiplicativeGluing_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+exit code: 0
+
+## 5. The development's own audit script, lake env lean scripts/Axioms.lean (complete output; seven theorems, each [propext, Classical.choice, Quot.sound]; Lean wraps the first axiom line)
+Percolation.Continuity.CSH.percolationContinuity_allDimensions : ∀ (d : ℕ),
+  2 ≤ d → Percolation.Literature.PercolationContinuity d
+'Percolation.Continuity.CSH.percolationContinuity_allDimensions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Percolation.Continuity.CSH.percolationContinuity_three : Percolation.Literature.PercolationContinuity 3
+'Percolation.Continuity.CSH.percolationContinuity_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+Percolation.Continuity.CSH.kozmaNitzan_conjecture3_holds : Percolation.Literature.KozmaNitzan2024_conjecture3
+'Percolation.Continuity.CSH.kozmaNitzan_conjecture3_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+Percolation.Continuity.CSH.additiveGluing_holds : Percolation.Continuity.Statements.AdditiveGluing
+'Percolation.Continuity.CSH.additiveGluing_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+@Percolation.Continuity.CSH.cshHolds : ∀ {V : Type u_1} [Fintype V] (w : Sym2 V → ↑unitInterval),
+  (∀ (e : Sym2 V), 0 < w e ∧ w e < 1) →
+    ∀ (x : V) (Y : Set V) (D : List V) (o v : V),
+      x ∉ Y →
+        o ∉ Insert.insert x Y →
+          v ∉ Insert.insert x Y →
+            o ≠ v →
+              D.Nodup →
+                (∀ d ∈ D, d ∉ Insert.insert x Y ∧ d ≠ o ∧ d ≠ v) → Percolation.Continuity.CSH.CSHHolds w x Y D o v
+'Percolation.Continuity.CSH.cshHolds' depends on axioms: [propext, Classical.choice, Quot.sound]
+BondPercolation.percolation_continuity : ∀ (d : ℕ), 2 ≤ d → BondPercolation.PercolationContinuity d
+'BondPercolation.percolation_continuity' depends on axioms: [propext, Classical.choice, Quot.sound]
+BondPercolation.percolation_continuity_Z3 : BondPercolation.PercolationContinuity 3
+'BondPercolation.percolation_continuity_Z3' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## 6. grep -rEn 'sorry|axiom|unsafe|native_decide|implemented_by' over the development's sources: only the two deliberate placeholders in Challenge.lean (not imported) and words inside docstrings.

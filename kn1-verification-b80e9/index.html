@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Kozma–Nitzan Conjecture 1: Lean verification</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .kn1 code, .kn1 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+        .kn1 pre { overflow-x: auto; padding: 0.8em 1em; background: rgba(127,127,127,0.08); border-radius: 6px; }
+        .kn1 .display { text-align: center; font-size: 1.15em; margin: 1.2em 0; }
+        .kn1 table { border-collapse: collapse; margin: 1em 0; }
+        .kn1 td, .kn1 th { padding: 0.35em 0.8em; border-bottom: 1px solid rgba(127,127,127,0.35); text-align: left; vertical-align: top; }
+        .kn1 ul { padding-left: 1.3em; }
+        .kn1 .note { opacity: 0.85; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Kozma–Nitzan Conjecture 1 as a corollary of the Lean proof of θ(p<sub>c</sub>) = 0</h1>
+    </header>
+
+    <main class="kn1">
+        <section>
+            <p class="note">Unlisted verification page, 2 September 2026. Ahmed Bou-Rabee, University of Pennsylvania.</p>
+
+            <p>The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all
+            dimensions d ≥ 2</em> (written by Claude, Anthropic, under the direction of Justin Leder; Lean v4.32.0,
+            Mathlib commit <code>81a5d257</code>) states in its README, proof guide and metadata that Kozma–Nitzan's
+            Conjecture 1 is not claimed beyond three relays ("Not claimed: Kozma–Nitzan's Conjecture 1 beyond three
+            relays"). Its own theorems already imply the full conjecture.</p>
+
+            <p><strong>Conjecture 1</strong> (Kozma–Nitzan, <a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>, p. 3).
+            For Bernoulli bond percolation on any finite graph with arbitrary edge probabilities, any nonempty set A of vertices
+            and any vertices o, b,</p>
+            <p class="display">P(o ↔ b) ≥ P(o ↔ A) · min<sub>a ∈ A</sub> P(a ↔ b).</p>
+
+            <p>The three Lean files below prove this for every finite weighted graph, every nonempty finite A and all o, b,
+            from theorems already in the development, and Lean accepts the proof with exactly the standard axioms
+            <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code> and no <code>sorry</code>.</p>
+        </section>
+
+        <section>
+            <h2>Files</h2>
+            <table>
+                <tr><td><a href="KN1Statement.lean">KN1Statement.lean</a></td>
+                    <td>The statement from Mathlib alone (<code>KN1Statement.MultiplicativeGluing</code>); its three definitions are definitionally equal copies of the development's.</td></tr>
+                <tr><td><a href="KozmaNitzanConjecture1.lean">KozmaNitzanConjecture1.lean</a></td>
+                    <td>The proof from the development's theorems: the theorem <code>KN1Corollary.kozmaNitzan_conjecture1</code>, a short file (its declarations live in a fresh namespace, so they cannot be mistaken for theorems of the development).</td></tr>
+                <tr><td><a href="KN1Bridge.lean">KN1Bridge.lean</a></td>
+                    <td>The Mathlib-only statement proved, by definitional unfolding, from the theorem of <code>KozmaNitzanConjecture1.lean</code>.</td></tr>
+                <tr><td><a href="verification.log">verification.log</a></td>
+                    <td>Recorded clean-build summary, the three compilations with <code>#print axioms</code>, and the development's own axiom-audit output.</td></tr>
+                <tr><td><a href="SOURCES.sha256">SOURCES.sha256</a></td>
+                    <td>SHA-256 of the development's 251 Lean source files and three pin files (254 entries) that were checked.</td></tr>
+                <tr><td><a href="LICENSE">LICENSE</a>, <a href="NOTICE">NOTICE</a></td>
+                    <td>Apache License 2.0, and the development's NOTICE reproduced as that licence requires.</td></tr>
+                <tr><td><a href="README.md">README.md</a></td>
+                    <td>The proof in words, the exact commands to re-run the check, and what is not claimed.</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>How the proof goes</h2>
+            <p>For an increasing F ≥ 0 of vertex sets, order the relays by E F(C<sub>a</sub>) and let P<sup>o</sup><sub>a</sub> be the
+            event that a is the first relay of o. The development proves, for every finite relay set and all weights in [0,1],</p>
+            <p class="display">Σ<sub>a ∈ A</sub> P(P<sup>o</sup><sub>a</sub>) · E F(C<sub>a</sub>) ≤ E[F(C<sub>o</sub>); o ↔ A]</p>
+            <p>(<code>AGloc.gen_firstRank_of_surplusTransfer</code>, fed by the conditioned slack hierarchy <code>CSH.cshAll</code>
+            and the closure over weights 0 and 1 in <code>CSH.surplusTransfer_of_nondegenerate</code>). With F = 1{b ∈ ·} the
+            left side is Σ<sub>a</sub> P(P<sup>o</sup><sub>a</sub>) P(a ↔ b) and the right side is at most P(o ↔ b). The first-relay
+            events partition {o ↔ A}, so their probabilities sum to P(o ↔ A), and pulling out the minimum gives the conjecture.
+            The development's additive gluing theorem comes from the same inequality and then discards the factor P(o ↔ A)
+            by bounding it by one; the file here keeps it. No new mathematical idea is involved.</p>
+        </section>
+
+        <section>
+            <h2>How to check</h2>
+            <pre>shasum -a 256 -c /path/to/SOURCES.sha256  # from the development's root: same sources as checked here
+lake exe cache get &amp;&amp; lake build          # build the development, as in its README
+lake env lean -o .lake/build/lib/lean/KozmaNitzanConjecture1.olean KozmaNitzanConjecture1.lean
+lake env lean -o .lake/build/lib/lean/KN1Statement.olean KN1Statement.lean
+lake env lean KN1Bridge.lean</pre>
+            <p>Expected: the <code>#print axioms</code> lines of <code>verification.log</code>, each
+            <code>[propext, Classical.choice, Quot.sound]</code>, no errors, no <code>sorry</code>.</p>
+        </section>
+
+        <section>
+            <h2>Status</h2>
+            <ul>
+                <li>Correctness rests on the development's kernel-checked chain; the development has not been externally refereed, and the corollary inherits that status.</li>
+                <li>The development's stated GitHub repository was not publicly accessible on 2 September 2026, so it is not redistributed here; its Lean sources and build pins are pinned by hash.</li>
+                <li>Not run through the Palomar comparator, which compares only the development's two θ(p<sub>c</sub>) = 0 statements.</li>
+                <li>Nothing is claimed about Kozma–Nitzan's Conjectures 2 and 4, which are stronger: Conjecture 2 is the pre-FKG form P(o ↔ b) ≥ min<sub>a</sub> P(o ↔ A, a ↔ b), and Conjecture 4 restricts both expectations to {o ↔ A}; the first-relay bound reaches neither.</li>
+                <li>The implication was anticipated inside the development: a module docstring in <code>Percolation/Continuity/CSH/Defs.lean</code> records that the first-relay bound gives "the additive and multiplicative gluing inequalities". What the release does not contain is a theorem stating the multiplicative form for a general relay set (only the three-relay case, <code>CovTau.kn_conj1_three</code>), and its README, proof guide and metadata disclaim it; the files here supply that theorem.</li>
+            </ul>
+            <p class="note">The mathematics is entirely the development's; an internal docstring of its file
+            <code>Percolation/Continuity/CSH/Defs.lean</code> already notes that the first-relay bound yields "the additive and
+            multiplicative gluing inequalities", in spite of the release-level disclaimers, and its proof guide displays the
+            intermediate estimate P(o ↔ A, o ↮ b) ≤ t·P(o ↔ A) before weakening it. AI-assisted reading noticed the
+            inconsistency; the files here were written and machine-checked by Claude (Anthropic, through Claude Code) at my
+            request and checked by six mutually independent AI review passes (three Claude Opus, three OpenAI Codex), run by me, before posting.
+            The Lean files are released under the Apache License 2.0, matching the development.</p>
+        </section>
+    </main>
+</body>
+</html>
