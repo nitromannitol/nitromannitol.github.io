@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:21 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:27 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -66,8 +66,7 @@
             <p>Raising \(p\) opens more sites and can only enlarge open clusters, so \(\theta\) is nondecreasing.
             There is therefore a critical probability \(p_c\) with \(\theta(p)=0\) for \(p&lt;p_c\) and
             \(\theta(p)&gt;0\) for \(p&gt;p_c\). Does \(\theta(p_c)=0\)?</p>
-            <p>In two dimensions the answer is yes. For bond percolation, in which edges rather than sites are open, it is the
-            combination of two theorems: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the
+            <p>In two dimensions the answer is yes. The bond case, in which edges rather than sites are open, is the combination of two theorems: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the
             percolation probability vanishes at \(p = 1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a>
             proved that \(1/2\) is the critical probability. The site case is
             <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who used Kesten's identification of the bond threshold
@@ -98,33 +97,29 @@
         </section>
 
         <section>
-            <h2>A common generalization</h2>
-            <p>It is classical that site percolation is the more general of the two models.
+            <h2>A common generalization of site and bond percolation</h2>
+            <p>Of the two models, site percolation is classically the more general.
             <a href="https://doi.org/10.1063/1.1703746">Fisher</a> observed that bond percolation on a graph is site percolation on the graph
             whose vertices are its edges, two of them adjacent when they share an endpoint. The converse fails:
             <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation cannot simulate site percolation
-            even approximately, already near a vertex of degree three. The site inequality therefore cannot be deduced
-            from the bond one, and a statement covering both models must be proved in a structure containing both.</p>
+            even approximately, already near a vertex of degree three. A statement about connection probabilities covering both models therefore cannot be obtained for site percolation by translating the bond case, and must instead be proved in a structure containing both.</p>
             <p>One such structure is the following. Take a finite set of sites together with a finite set of labels,
             attach to each label a collection of sites, and declare each label open independently of the others. Two sites
             are connected when a chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
             <p>Attaching every label to exactly two sites makes the labels edges, and the structure is bond percolation.
             Giving each site a label of its own, attached to that site and to one further point for each edge at it, makes
-            a label open exactly when its site is open, and the structure is site percolation. In the second case the labels are the sites, so the two models have the
-            same sample space and the same probabilities, and a chain of open labels read at every second step is a path
+            a label open exactly when its site is open, and the structure is site percolation. In the site case the labels are the sites, so the site model and the label model have the same sample space and the same probabilities, and a chain of open labels read at every second step is a path
             of open sites.</p>
-            <p>The inequality at issue is the following. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
+            <p>The inequality to be proved is the following. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
             \[
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
-                \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b).
-            \]
+                \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b). \tag{1} \]
             Read from the right, it says that reaching \(A\) and then continuing to \(b\) from the least favourable
             point of \(A\) is no better than reaching \(b\) directly. For labels attached to two sites, and after
-            dropping the second event on the left, it is the inequality <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> conjectured. The general form
-            implies the bond inequality and its site counterpart together, so one finite theorem serves both models.</p>
+            dropping the second event on the left, (1) is the inequality <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> conjectured. In its general form (1) implies both that inequality and its site counterpart, so a single finite theorem serves both models.</p>
 
             <h2>The exposure record</h2>
-            <p>The induction behind the inequality exposes the labels incident to a set \(Z\) and records what those
+            <p>The induction behind (1) exposes the labels incident to a set \(Z\) and records what those
             labels reach outside \(Z\). Write \(T(I)\) for the set of sites outside \(Z\) reached by a set \(I\) of
             labels.</p>
             <p>For graphs, \(I\) can be recovered from \(T(I)\). A label incident to two sites, one of them in \(Z\),
@@ -141,7 +136,7 @@
             intersections.</p>
 
             <h2>Renormalization</h2>
-            <p>The lattice argument is a renormalization. Partition \(\mathbb{Z}^d\) into blocks, call a block occupied
+            <p>The passage from (1) to the lattice is a renormalization. Partition \(\mathbb{Z}^d\) into blocks, call a block occupied
             when a prescribed connection occurs inside it, and compare the occupied blocks with site percolation on a
             coarser lattice. The step to be justified is that an occupied block is joined to its neighbour with
             probability close to one, conditionally on everything already examined.</p>
@@ -149,11 +144,11 @@
             parameter \(p + \gamma\), and obtain percolation in a slab of finite width for every \(\gamma &gt; 0\).
             They also state that they cannot take \(\gamma = 0\), which is what stops the argument short of the critical
             parameter.</p>
-            <p>The inequality removes the sprinkling. Conditioning on a shell surrounding a block fixes the states there
+            <p>Inequality (1) removes the sprinkling. Conditioning on a shell surrounding a block fixes the states there
             and exposes a set \(A\) of open sites on the shell, each of which reaches the next block with probability
-            close to one. Applying the inequality to \(A\) bounds the probability of reaching the next block from the
-            origin, at the parameter \(p\) and with no additional sites opened. Iterating gives percolation in a slab of finite width, at \(p\) or below it.</p>
-            <p>Either form of the reduction closes the argument. Suppose the reduction gives a slab percolating at some \(q &lt; p\),
+            close to one. Applying (1) to \(A\) bounds the probability of reaching the next block from the
+            origin, at the parameter \(p\) and with no additional sites opened. Iterating gives percolation in a slab of finite width, at \(p\) or below it. Call this the reduction to a slab.</p>
+            <p>Either form of the reduction to a slab closes the argument. Suppose the reduction gives a slab percolating at some \(q &lt; p\),
             and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with \(q &lt; p_c\),
             contradicting the definition of \(p_c\). Suppose instead the reduction gives a slab percolating at \(p\)
             itself. A slab lies in a half-space, and two theorems then apply:
@@ -177,9 +172,9 @@
             <div class="standing">
             <h3>Status</h3>
             <p>Two statements remain unproved, of which only one is a conjecture.</p>
-            <p>The displayed inequality is the conjecture. For labels incident to two sites it is a theorem, proved in
+            <p>Inequality (1) is the conjecture. For labels incident to two sites it is a theorem, proved in
             Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>.</p>
-            <p>The slab reduction is not a conjecture. Kozma and Nitzan derive it from the inequality, and for bond
+            <p>The reduction to a slab is not a conjecture. Kozma and Nitzan derive it from (1), and for bond
             percolation that derivation is formalized here in some fifteen thousand lines; for site percolation it has to
             be carried out again. It also requires two estimates at a supercritical parameter, uniqueness of the large
             cluster in a finite box and the hitting of each face of a box, which are finite-volume forms of the Burton and
