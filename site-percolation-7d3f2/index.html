@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:17 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:19 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -99,13 +99,12 @@
 
         <section>
             <h2>A common generalization</h2>
-            <p>The two models are not independent of one another. Bond percolation is a special case of site percolation,
-            by a construction of <a href="https://doi.org/10.1063/1.1703746">Fisher</a>: site percolation on the graph whose vertices are the
-            edges of the original one, adjacent when they share an endpoint, reproduces bond percolation exactly. The
-            converse fails. <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation cannot simulate
-            site percolation even approximately, already near a vertex of degree three. The site inequality therefore cannot be
-            deduced from the bond one, and any statement covering both models must be proved in a structure containing
-            both.</p>
+            <p>It is classical that site percolation is the more general of the two models.
+            <a href="https://doi.org/10.1063/1.1703746">Fisher</a> observed that bond percolation on a graph is site percolation on the graph
+            whose vertices are its edges, two of them adjacent when they share an endpoint. The converse fails:
+            <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation cannot simulate site percolation
+            even approximately, already near a vertex of degree three. The site inequality therefore cannot be deduced
+            from the bond one, and a statement covering both models must be proved in a structure containing both.</p>
             <p>One such structure is the following. Take a finite set of sites together with a finite set of labels,
             attach to each label a collection of sites, and declare each label open independently of the others. Two sites
             are connected when a chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
