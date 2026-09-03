@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:39 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:43 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -134,65 +134,62 @@
             form (1) implies both (2) and the site counterpart of (2), so a single finite theorem serves both models.</p>
 
             <h2>The exposure record</h2>
-            <p>Inequality (1) is proved by induction on the number of sites. At each step one fixes a set \(Z\), exposes
-            the labels incident to \(Z\), and conditions on which of them are open. The randomness that remains lives
-            outside \(Z\), and the four quantities the induction compares are indexed by the set \(I\) of exposed
-            labels found open.</p>
-            <p>The comparison is made by the four functions theorem, and that theorem requires the indexing to respect
-            unions and intersections: from bounds indexed by \(I\) and by \(J\) it produces bounds indexed by
-            \(I \cup J\) and \(I \cap J\). Whatever record is kept of the exposed labels must therefore carry unions
-            to unions and intersections to intersections.</p>
-            <p>For graphs one may keep less than the labels themselves. Write \(T(I)\) for the set of sites outside
-            \(Z\) reached by the labels in \(I\). A label incident to exactly two sites, one of them in \(Z\), is
-            determined by the single site it reaches outside, so \(I\) can be recovered from \(T(I)\) and the record
-            loses nothing.</p>
-            <p>For labels incident to more than two sites it cannot be recovered. Two labels incident to the same sites
-            have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once \(b\)
-            has been exposed. What survives is only
+            <p>We prove (1) by induction on the number of sites. At each step we fix a set \(Z\), expose the labels
+            incident to \(Z\), and condition on which of them are open. The randomness that remains lives outside
+            \(Z\), and we compare four quantities indexed by the set \(I\) of exposed labels we find open.</p>
+            <p>We make that comparison with the four functions theorem, which from bounds indexed by \(I\) and by
+            \(J\) yields bounds indexed by \(I \cup J\) and \(I \cap J\). Whatever record we keep of the exposed
+            labels must therefore carry unions to unions and intersections to intersections.</p>
+            <p>For graphs we may keep less than the labels themselves. Write \(T(I)\) for the set of sites outside
+            \(Z\) that the labels in \(I\) reach. A label incident to exactly two sites, one of them in \(Z\), is
+            determined by the single site it reaches outside, so we recover \(I\) from \(T(I)\) and lose nothing.</p>
+            <p>For labels incident to more than two sites we cannot recover \(I\). Two labels incident to the same sites
+            have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once we have
+            exposed \(b\). All we retain is
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
             \]
-            and the second inclusion is strict in both of those examples. Unions are preserved and intersections are not,
-            so the four functions theorem no longer applies.</p>
-            <p>Keeping the labels themselves removes the obstruction, since the record is then the identity and both
-            relations hold. This is why the argument is carried out over label sets rather than over the sites they
-            reach.</p>
+            and in both examples the second inclusion is strict. We keep unions and lose intersections, so the four
+            functions theorem no longer applies.</p>
+            <p>We therefore keep the labels themselves. The record is then the identity, both relations hold, and we run
+            the induction over label sets rather than over the sites they reach. This is the one place where the argument
+            for general labels departs from the argument for graphs.</p>
 
             <h2>Renormalization</h2>
-            <p>The passage from (1) to the lattice is a renormalization. Partition \(\mathbb{Z}^d\) into blocks of a
-            fixed size, declare a block occupied when a prescribed connection occurs inside it, and compare the occupied
-            blocks with site percolation on a coarser lattice whose sites are the blocks. If the occupied blocks percolate
-            on the coarse lattice, the open sites percolate on \(\mathbb{Z}^d\).</p>
-            <p>Everything turns on a single estimate: that a block already known to be occupied is joined to a neighbouring
-            block with conditional probability close to one, given everything examined so far.</p>
-            <p>Grimmett and Marstrand obtain that estimate by sprinkling. They allow themselves to open further sites,
-            working at parameter \(p + \gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces
-            percolation in a slab of finite width at \(p + \gamma\), for every \(\gamma &gt; 0\). They state that
-            they cannot take \(\gamma = 0\), and that is what keeps the conclusion away from \(p_c\): applied at
-            \(p = p_c\) it produces a slab percolating at \(p_c + \gamma\), which is above \(p_c\) and therefore
-            says nothing new.</p>
-            <p>Inequality (1) supplies the estimate with no sprinkling. Condition on the configuration in a shell
-            surrounding the block. That fixes the states on the shell, and it exposes a set \(A\) of open sites there,
-            each of which reaches the neighbouring block with conditional probability at least \(1-\delta\). Take
+            <p>We pass from (1) to the lattice by renormalization. We partition \(\mathbb{Z}^d\) into blocks of a fixed
+            size, declare a block occupied when a prescribed connection occurs inside it, and compare the occupied blocks
+            with site percolation on a coarser lattice whose sites are the blocks. If the occupied blocks percolate on the
+            coarse lattice, the open sites percolate on \(\mathbb{Z}^d\).</p>
+            <p>Everything turns on one estimate: that a block we already know to be occupied is joined to a neighbouring
+            block with conditional probability close to one, given everything we have examined so far.</p>
+            <p>Grimmett and Marstrand obtain that estimate by sprinkling. They open further sites, working at
+            \(p + \gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces percolation in a slab
+            of finite width at \(p + \gamma\), for every \(\gamma &gt; 0\). They state that they cannot take
+            \(\gamma = 0\), and that is what keeps the conclusion away from \(p_c\): at \(p = p_c\) it gives a slab
+            percolating at \(p_c + \gamma\), which lies above \(p_c\) and tells us nothing new.</p>
+            <p>We obtain the estimate from (1) instead, and open no extra sites. We condition on the configuration in a
+            shell surrounding the block. This fixes the states on the shell and exposes a set \(A\) of open sites there,
+            each of which reaches the neighbouring block with conditional probability at least \(1-\delta\). We take
             \(o\) to be the origin and \(b\) the target in the neighbouring block. The two factors on the right of (1)
             are then the probability that \(o\) reaches \(A\), which the preceding step has made close to one, and the
-            minimum over \(A\), which is at least \(1-\delta\). Hence the left side of (1) is close to one, and no
-            site has been opened that the configuration did not already provide. Iterating over blocks gives percolation in
-            a slab of finite width, at \(p\) or below it. Call this the reduction to a slab.</p>
-            <p>Either form of the reduction to a slab closes the argument. Suppose the reduction gives a slab percolating at some \(q &lt; p\),
-            and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with \(q &lt; p_c\),
-            contradicting the definition of \(p_c\). Suppose instead the reduction gives a slab percolating at \(p\)
-            itself. A slab lies in a half-space, and two theorems then apply:
-            <a href="https://www.statslab.cam.ac.uk/~grg1000/papers/ptrf90-111.pdf">Barsky, Grimmett and Newman</a> prove that the percolation probability of a
-            half-space vanishes at the critical density of the half-space, for bond and site percolation alike, and
-            Grimmett and Marstrand identify that density with \(p_c\) for \(d \ge 3\).</p>
+            minimum over \(A\), which is at least \(1-\delta\). So the left side of (1) is close to one. Iterating
+            over blocks gives percolation in a slab of finite width, at \(p\) or below it. We call this the reduction to
+            a slab.</p>
+            <p>Either form of the reduction closes the argument. Suppose first that we obtain a slab percolating at some
+            \(q &lt; p\), and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with
+            \(q &lt; p_c\), contradicting the definition of \(p_c\). Suppose instead that we obtain a slab percolating
+            at \(p\) itself. A slab lies in a half-space, and we may then appeal to two theorems:
+            <a href="https://www.statslab.cam.ac.uk/~grg1000/papers/ptrf90-111.pdf">Barsky, Grimmett and Newman</a> prove
+            that the percolation probability of a half-space vanishes at the critical density of the half-space, for bond
+            and site percolation alike, and Grimmett and Marstrand identify that density with \(p_c\) for
+            \(d \ge 3\).</p>
 
             <h2>The formalization</h2>
-            <p>Everything above is formalized in Lean 4 with Mathlib, except the two statements named below. The model,
+            <p>We have formalized everything above in Lean 4 with Mathlib, except the two statements named below. The model,
             the connection events, the percolation probability and the critical parameter are definitions in the files.
             The critical parameter is proved to lie in \([0,1]\), so \(\theta(p_c)\) is defined and the conclusion
             needs no side condition.</p>
-            <p>So are the supporting results. Conditioning on the entire cluster of a set factorizes exactly, two
+            <p>We have also proved the supporting results. Conditioning on the entire cluster of a set factorizes exactly, two
             disjoint clusters factorize in either order, and a probability expands as a finite sum over the possible
             clusters. The percolation probability is monotone in the parameter and in the underlying graph, vanishes below
             \(p_c\), and \(0 &lt; p_c &lt; 1\). An event depending on \(n\) sites has probability Lipschitz in the
