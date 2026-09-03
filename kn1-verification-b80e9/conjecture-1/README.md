@@ -46,8 +46,7 @@ with exactly the standard axioms `propext`, `Classical.choice`, `Quot.sound` and
 
 ## Attribution
 
-Earlier certificate (Conjecture 1 only; superseded by the folder `conjectures-1-4/`, which also covers
-Conjectures 2 and 4 and Question 7). The mathematics is entirely the development's, whose internal docstring in
+Earlier certificate (Conjecture 1 only), extended by the folder `lean/`, which covers Conjectures 1–4 and Question 7 and re-derives Conjecture 1 on its own. `LICENSE` and `NOTICE` are at the root of this site. The mathematics is entirely the development's, whose internal docstring in
 `Percolation/Continuity/CSH/Defs.lean` already notes the multiplicative consequence. Produced entirely by AI
 systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra): ChatGPT pointed out that Conjecture 1 follows by
 the development's methods, and Claude Fable 5.1 wrote and machine-checked the Lean corollary, which was then
