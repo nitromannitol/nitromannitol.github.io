@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Proofs of the Kozma–Nitzan conjectures</title>
+    <title>Percolation at criticality</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
     <script>
@@ -15,159 +15,76 @@
         .kn1 code, .kn1 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
         .kn1 pre { overflow-x: auto; padding: 0.8em 1em; background: rgba(127,127,127,0.08); border-radius: 6px; }
         .kn1 table { border-collapse: collapse; margin: 1em 0; }
-        .kn1 td, .kn1 th { padding: 0.35em 0.8em; border-bottom: 1px solid rgba(127,127,127,0.35); text-align: left; vertical-align: top; }
+        .kn1 td, .kn1 th { padding: 0.4em 0.8em; border-bottom: 1px solid rgba(127,127,127,0.35); text-align: left; vertical-align: top; }
         .kn1 ul { padding-left: 1.3em; }
-        .kn1 li { margin-bottom: 0.5em; }
+        .kn1 li { margin-bottom: 0.45em; }
         .kn1 .note { opacity: 0.85; }
         header .byline { margin: 0.2em 0 0; font-size: 1.02em; opacity: 0.9; }
     </style>
 </head>
 <body>
     <header>
-        <h1>Proofs of the Kozma–Nitzan conjectures</h1>
+        <h1>Percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
     </header>
 
     <main class="kn1">
         <section>
-            <p>Kozma and Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>) reduced the statement
-            \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), to an inequality on finite graphs, their
-            Conjecture 3, and posed four further conjectures and four questions about connection probabilities in finite graphs:
-            Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. Anthropic's Lean 4 / Mathlib proof of
-            \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\) in all dimensions \(d \ge 2\) (written by Claude under the
-            direction of Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a relatively easy
-            consequence of an inequality proved there on the way, as explained below.</p>
-            <p>Here the remaining conjectures and questions of the paper are proved on top of that Lean proof: Conjectures 1, 2, 4
-            and 6 and Questions 5, 7 and 9, each in a stronger form than stated. Question 8 is false as printed. The proofs are in the <a href="document/kn_summary.pdf">summary</a> (PDF);
-            the Lean files are in <a href="lean/">lean/</a>.</p>
+            <p>Whether critical Bernoulli percolation has an infinite cluster is a classical question, settled for bond percolation on
+            \(\mathbb{Z}^d\) in every dimension by Anthropic's Lean proof of Kozma and Nitzan's Conjecture 3
+            (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>). This page collects two pieces of work built on top of that
+            proof.</p>
         </section>
 
         <section>
-            <h2>Notation</h2>
-            <p>Throughout, \(G\) is a finite graph in which each edge \(e\) is open independently with probability \(p_e \in [0,1]\).
-            For vertices \(x\) and \(y\), \(x \leftrightarrow y\) means that \(x\) and \(y\) are joined by a path of open edges, and
-            \(C_x\) is the set of vertices joined to \(x\), the open cluster of \(x\). For a set \(A\) of vertices, \(o \leftrightarrow A\)
-            means that \(o \leftrightarrow x\) for some \(x \in A\), and \(o \nleftrightarrow A\) is its negation. A comma inside a
-            probability means intersection, \(\mathbb{P}(E, F) = \mathbb{P}(E \cap F)\), and \(\mathbb{E}[X;\, E]\) is the expectation of \(X\)
-            on the event \(E\). Increasing functions \(F\) of vertex sets are those with \(F(K) \le F(L)\) whenever \(K \subseteq L\).
-            Page numbers refer to the paper.</p>
-        </section>
-
-        <section>
-            <h2>Conjecture 1 from the Lean proof of Conjecture 3</h2>
-            <p>Fix \(A\), \(o\) and \(b\), and order the vertices of \(A\) so that \(\mathbb{P}(x \leftrightarrow b)\) is nondecreasing. The
-            Lean proof of Conjecture 3 contains the inequality
-            \[
-              \sum_{x \in A} \mathbb{P}\bigl(o \leftrightarrow x \text{ and } o \nleftrightarrow y \text{ for every } y \in A \text{ before } x\bigr)\,
-              \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b).
-            \]
-            The events on the left partition \(\{o \leftrightarrow A\}\), and every factor \(\mathbb{P}(x \leftrightarrow b)\) is at least the
-            minimum over \(A\), so
-            \[
-              \mathbb{P}(o \leftrightarrow A)\, \min_{x \in A} \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b),
-            \]
-            which is Conjecture 1 (p. 3) for every finite graph and every choice of edge probabilities.</p>
-        </section>
-
-        <section>
-            <h2>The results</h2>
+            <h2>The Kozma–Nitzan conjectures and questions</h2>
+            <p>Their paper leaves eight further numbered items open. All of them are settled, and each statement is machine-checked in Lean
+            with the standard axioms and no <code>sorry</code>:</p>
             <ul>
-                <li><strong>Conjecture 4</strong> (p. 32). Let \(F\) be an increasing function of vertex sets and let \(a \in A\) minimise
-                    \(\mathbb{E}\,F(C_x)\) over \(x \in A\). Then
-                    \(\mathbb{E}[F(C_a);\, o \leftrightarrow A] \le \mathbb{E}[F(C_o);\, o \leftrightarrow A]\). In particular
-                    \(\min_{x \in A} \mathbb{E}[F(C_x);\, o \leftrightarrow A] \le \mathbb{E}[F(C_o);\, o \leftrightarrow A]\), which is
-                    Conjecture 4; the same holds in the paper's formulation with a monotone cluster property \(f(v, \omega)\) in place of
-                    \(F(C_v)\).</li>
-                <li><strong>Conjecture 2</strong> (p. 3), in the pre-FKG form (3):
-                    \(\min_{x \in A} \mathbb{P}(x \leftrightarrow b,\, o \leftrightarrow A) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\).
-                    Hence \(\min_{x \in A} \mathbb{P}(o \leftrightarrow A,\, x \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b)\), which is
-                    display (2).</li>
-                <li><strong>Question 7</strong> (p. 36), answered yes. Let \(a \in A\) minimise \(\mathbb{P}(x \leftrightarrow b)\) over
-                    \(x \in A\). Then \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\),
-                    which is display (41).</li>
-                <li><strong>Conjecture 1</strong> (p. 3), as above, and <strong>Conjecture 3</strong> (p. 15) from it: for every
-                    \(\varepsilon > 0\) there is \(\delta > 0\) such that if \(\mathbb{P}(o \leftrightarrow A) > 1 - \delta\) and
-                    \(\mathbb{P}(x \leftrightarrow b) > 1 - \delta\) for every \(x \in A\), then \(\mathbb{P}(o \leftrightarrow b) > 1 - \varepsilon\).</li>
-                <li><strong>Question 5</strong> (p. 32), answered yes. There are numbers \(c_a \ge 0\), \(a \in A\), with
-                    \(\sum_{a \in A} c_a = 1\), depending on \(G\), \(A\) and \(o\) but not on \(b\), such that
-                    \(\sum_{a \in A} c_a\, \mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b)\) for every vertex
-                    \(b\), which is display (38).</li>
-                <li><strong>Conjecture 6</strong> (p. 34). Let \(e = \{v, w\}\) be an edge of \(G\), let \(a \in A\) minimise
-                    \(\mathbb{P}_G(x \leftrightarrow b)\) over \(x \in A\), and let \(G/e\) be the graph with the edge \(e\) shortened, that is,
-                    with the probability that \(e\) is open set to \(1\). Then
-                    \(\mathbb{P}_{G/e}(v \leftrightarrow b,\, v \leftrightarrow A) \ge \mathbb{P}_{G/e}(a \leftrightarrow b,\, v \leftrightarrow A)\),
-                    and therefore
-                    \(\mathbb{P}_{G/e}(v \leftrightarrow b) \ge \mathbb{P}_{G/e}(v \leftrightarrow A)\, \mathbb{P}_{G/e}(a \leftrightarrow b)\),
-                    which is display (40). The paper assumes in addition its display (39); that assumption is not needed, and it is in any
-                    case a consequence of Conjecture 1.</li>
-                <li><strong>Question 9</strong> (p. 36), answered yes. Let \(H\) be \(G\) with every edge at \(o\) removed and let
-                    \(a \in A\) minimise \(\mathbb{P}_H(x \leftrightarrow b)\) over \(x \in A\). Then
-                    \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\).</li>
-                <li><strong>Question 8</strong> (p. 36), which takes a vertex \(a \in A\) minimising \(\mathbb{P}(x \leftrightarrow b,\, o \nleftrightarrow A)\),
-                    is false as printed.</li>
+                <li><strong>Conjectures 1, 2 and 4</strong>, in stronger forms than stated: the pre-FKG inequality keeps the event
+                    \(\{o \leftrightarrow A\}\) on both sides, and the minimising vertex in Conjecture 4 may be named before that event is
+                    imposed. <strong>Conjecture 3</strong> follows from Conjecture 1.</li>
+                <li><strong>Conjecture 6</strong>, without either of its two endpoint hypotheses, one of which turns out to be a consequence
+                    of Conjecture 1.</li>
+                <li><strong>Questions 5, 7 and 9</strong>, affirmatively. Question 5 gives one coefficient vector that works for every
+                    target at once; Question 9 holds for every minimising vertex.</li>
+                <li><strong>Question 8</strong> is false as printed. On the path \(o - a_1 - a_2 - b\) with vertex probabilities
+                    \(1, 1/2, 1\) both vertices of \(A\) minimise, and one of them fails the inequality.</li>
             </ul>
-            <p>In the paper, Conjectures 2 and 4 are proved when \(A\) has two vertices (Theorems 1 and 7), when \(A\) has three
-            vertices under extra hypotheses (Theorems 2, 3 and 11), when \(o\) is isolated in \(G \setminus A\) or joined only to
-            \(A\) and to one further vertex (Theorems 4 and 5), and for the functions \(f = \mathbf{1}\{|C| \ge k\}\) with \(k \le 4\) on
-            every graph (Theorem 9).</p>
+            <p>The method is a comparison for increasing functions of a cluster that remains valid when the cluster is conditioned to avoid
+            a prescribed set, together with the same comparison for the union of the clusters of several vertices. Proofs are in the
+            <a href="document/kn_summary.pdf">summary</a>; the Lean modules are in <a href="lean/">lean/</a>.</p>
         </section>
 
         <section>
-            <h2>The method</h2>
-            <p>The proofs run the argument of the Lean proof of Conjecture 3 with two changes. First, the clusters of the vertices of \(A\) are
-            conditioned on missing a given set \(Y\) of vertices: if the vertices of \(A\) are ordered so that
-            \(\mathbb{E}[F(C_x) \mid x \nleftrightarrow Y]\) is nondecreasing, then
-            \[
-              \sum_{x \in A} \mathbb{P}\bigl(o \nleftrightarrow Y,\; o \leftrightarrow x,\; o \nleftrightarrow y \text{ for every } y \in A \text{ before } x\bigr)\,
-              \mathbb{E}[F(C_x) \mid x \nleftrightarrow Y] \;\le\; \mathbb{E}[F(C_o);\; o \nleftrightarrow Y,\; o \leftrightarrow A].
-            \]
-            Second, \(F(K)\) is replaced by \(F(K)\) minus the expectation of \(F\) at the cluster of \(a\) in the graph with every
-            edge at a vertex of \(K\) removed; this new function is increasing in \(K\). Taking \(Y = \{a\}\) for the vertex \(a \in A\) minimising \(\mathbb{E}\,F(C_x)\) makes
-            every conditional expectation on the left nonnegative, and the inequality becomes Conjecture 4 with the minimiser specified.
-            The other conjectures and questions follow from that statement. For Conjecture 6 and Question 9 the cluster of \(o\) is
-            replaced by the union of the clusters of a set of vertices: the union of the clusters of \(v\) and \(w\) does not depend on
-            whether the edge \(\{v, w\}\) is open, and the cluster of \(o\) is the union of the clusters of \(o\) and of its open
-            neighbours in the graph with the edges at \(o\) removed.</p>
-        </section>
-
-        <section>
-            <h2>Implications</h2>
-            <ul>
-                <li>The paper's chain of implications, Conjecture 4 to (3) to Conjecture 2 to Conjecture 1 to Conjecture 3 to
-                    \(\theta(p_c) = 0\), holds with every link proved, the last one in Anthropic's Lean proof.</li>
-                <li>The vertex of \(A\) minimising \(\mathbb{P}(x \leftrightarrow b)\) is itself a valid choice in the pre-FKG comparison
-                    (Question 7), for every graph and every size of \(A\); so is the minimiser computed in the graph with the edges
-                    at \(o\) removed (Question 9).</li>
-                <li>Conjecture 6 holds without its hypothesis (39), so the paper's Lemma 13 applies without it.</li>
-                <li>The displayed inequality of the previous section holds with the union of the clusters of any finite set of
-                    vertices in place of \(C_o\), and it needs no sign condition on \(F\).</li>
-            </ul>
+            <h2>Site percolation</h2>
+            <p>A separate manuscript, <a href="document/site_percolation_criticality.pdf">Critical Bernoulli site percolation on integer
+            lattices</a>, sets out to prove the corresponding statement for <em>site</em> percolation: that for every \(d \ge 2\) the origin
+            almost surely lies in a finite open cluster at the critical parameter. Its finite input is a gluing inequality for independent
+            hyperedges, which contains site percolation once each open site is replaced by one hyperedge joining its incident ports; a site
+            version of the Kozma–Nitzan block construction then produces a percolating slab at the same parameter, which the half-space
+            theorem excludes at criticality.</p>
+            <p>This manuscript is a draft. It has not been refereed, and unlike the results above it is not machine-checked: what exists in
+            Lean so far is the statement of the theorem and of its finite input (<a href="lean/SiteStatements.lean">SiteStatements.lean</a>),
+            not their proofs. Two independent audits are in progress, directed at the two parts the manuscript itself identifies as most in
+            need of checking: the hyperedge extension of the conditioned covariance hierarchy, and the site exploration in the lattice
+            argument.</p>
         </section>
 
         <section>
             <h2>Files</h2>
             <table>
                 <tr><td><a href="document/kn_summary.pdf">kn_summary.pdf</a></td>
-                    <td>The summary: statements and proofs of all the results above.</td></tr>
+                    <td>The Kozma–Nitzan results above, with proofs.</td></tr>
+                <tr><td><a href="document/site_percolation_criticality.pdf">site_percolation_criticality.pdf</a></td>
+                    <td>The site percolation draft. Not refereed and not machine-checked.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
                     <td>The Lean modules, <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and <a href="lean/README.md">README.md</a>.
-                    Every theorem is accepted with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
-                    <code>Quot.sound</code> and no <code>sorry</code>.</td></tr>
+                    Every theorem is accepted with exactly the axioms <code>propext</code>, <code>Classical.choice</code> and
+                    <code>Quot.sound</code>, and no <code>sorry</code>.</td></tr>
             </table>
-        </section>
-
-        <section>
-            <h2>How to check</h2>
-            <pre>lake exe cache get &amp;&amp; lake build      # build Anthropic's Lean proof, as in its README
-mkdir -p .lake/build/lib/lean/KN         # copy the .lean files to KN/, then:
-for m in AvoidedDefs AvoidedPeelTools AvoidedClosure AvoidedGen AvoidedPeel AvoidedTransfer Projection Statements Conjectures ClusterProperty Statements6 Conjecture6Reduction PairSource GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Question5Dual Question5 Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Interior Question8Sufficient SourceGeneralCSH SourceSurplus SourceProjection Statements9 Question9Reduction Question9; do
-  lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
-done</pre>
-            <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each
-            <code>[propext, Classical.choice, Quot.sound]</code>. The sources of Anthropic's Lean proof can be checked first with
-            <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
-            <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee,
-            with minimal human intervention. Released under the Apache License 2.0, the licence of Anthropic's Lean proof.</p>
+            <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee.
+            Released under the Apache License 2.0, the licence of Anthropic's Lean proof.</p>
         </section>
     </main>
 </body>
