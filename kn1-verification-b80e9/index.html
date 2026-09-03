@@ -101,7 +101,9 @@
                     case a consequence of Conjecture 1.</li>
                 <li><strong>Question 9</strong> (p. 36), answered yes. Let \(H\) be \(G\) with every edge at \(o\) removed and let
                     \(a \in A\) minimise \(\mathbb{P}_H(x \leftrightarrow b)\) over \(x \in A\). Then
-                    \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\).</li>
+                    \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\)
+                    (proof in the summary; the Lean files contain the reduction to Conjecture 4 for the union of the clusters of a set of
+                    vertices).</li>
                 <li><strong>Question 8</strong> (p. 36), which takes a vertex \(a \in A\) minimising \(\mathbb{P}(x \leftrightarrow b,\, o \nleftrightarrow A)\),
                     is false as printed: on the path \(o - a_1 - a_2 - b\) with edge probabilities \(1\), \(1/2\), \(1\) and \(A = \{a_1, a_2\}\),
                     both vertices of \(A\) are minimisers, and for \(a = a_2\) one has \(\mathbb{P}(o \leftrightarrow A,\, a_2 \leftrightarrow b) = 1\) but
@@ -154,7 +156,8 @@
                 <tr><td><a href="lean/">lean/</a></td>
                     <td>The Lean modules, <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and <a href="lean/README.md">README.md</a>.
                     Every theorem is accepted with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
-                    <code>Quot.sound</code> and no <code>sorry</code>. The modules for Question 9 follow.</td></tr>
+                    <code>Quot.sound</code> and no <code>sorry</code>. For Question 9 the Lean files contain the reduction to Conjecture 4 for
+                    the union of the clusters of a set of vertices; that inequality is proved in the summary.</td></tr>
             </table>
         </section>
 

@@ -21,7 +21,7 @@ development's Mathlib pin). Every theorem reports exactly `[propext, Classical.c
   `P(v ↔ A) · P(a ↔ b) ≤ P(v ↔ b)`, display (40) (`Guarded.conjecture6_holds`); the paper's hypothesis (39) follows from Conjecture 1
   (`conjecture6_hypotheses_vacuous`).
 * Question 9 (p. 36): the statement `Question9` (`Statements9`) follows from Conjecture 4 for the union of the clusters of an arbitrary
-  finite set of vertices, `SetSourceFixedMin` (`question9_of_setSourceFixedMin`); the modules proving `SetSourceFixedMin` follow.
+  finite set of vertices, `SetSourceFixedMin` (`question9_of_setSourceFixedMin`); `SetSourceFixedMin` itself is proved in the summary (`../document/kn_summary.pdf`).
 * Question 8 (p. 36): the printed question with the minimiser of `P(a ↔ b, o ↮ A)`, in the reading for every minimiser, is false
   (`not_question8EveryMin`, the four-vertex path); the readings with a unique minimiser and with `P(o ↮ A) > 0` are stated
   (`Question8Strict`, `Question8Positive`) and are equivalent (`q8Strict_iff_q8Positive`); the settled cases (`q8_singleton`, `q8_bEqO`,
