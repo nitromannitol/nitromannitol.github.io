@@ -55,9 +55,4 @@ Expected: the fifteen `#print axioms` lines of `VERIFICATION.log`, all `[propext
 
 ## Attribution
 
-Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). The document is ChatGPT's.
-Claude Fable 5.1 designed the Lean formalization, wrote and machine-checked eight of the fifteen modules and
-this page, and specified the modules Projection, AvoidedClosure, PairSource and Question5, which were written by
-the ChatGPT model through Codex and recompiled by Claude; ClusterProperty, Conjecture6Reduction and
-Question5Dual were contributed by Claude Opus. All mathematics below the conditioned first-relay inequality is
-the development's. Released under the Apache License 2.0, matching the development.
+All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, with minimal human intervention. Released under the Apache License 2.0, matching the development.
