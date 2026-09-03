@@ -5,7 +5,7 @@ development's Mathlib pin). Every theorem reports exactly `[propext, Classical.c
 `sorry`, no axioms. Vocabulary: `prodBernoulli`, `openConn`, `openCluster` of the development; vertices `Fin n`, weights in
 [0,1] on all pairs (absent edge = weight 0); `x ↔ y` = joined by an open path; `C_x` the open cluster; `o ↔ A` = `⋃_{a∈A} {o ↔ a}`.
 
-## Machine-checked
+## Theorems
 
 * Conjecture 4 (p. 32), with the minimiser specified: if `a ∈ A` minimises `E F(C_x)` over `A` then `E[F(C_a); o ↔ A] ≤ E[F(C_o); o ↔ A]`
   (`conjecture4Fixed_holds`); hence `min_{x∈A} E[F(C_x); o ↔ A] ≤ E[F(C_o); o ↔ A]` (`conjecture4_holds`); also in the paper's
@@ -28,10 +28,10 @@ hypotheses (Theorems 2, 3 and 11), for an observer isolated in `G ∖ A` and its
 and 5), and, for every graph and every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem
 9). Both were open in general.
 
-## Not machine-checked
+## Further results
 
 Conjecture 6 (in the form above, no endpoint hypotheses) and Question 9 are proved in the document
-`../document/kozma_nitzan_all_conjectures_proof.pdf` by running the development's argument for the union of the clusters of a set
+`../document/kn_summary.pdf` by running the development's argument for the union of the clusters of a set
 of vertices in place of a single cluster; Lean formalization in progress. Question 8 in the paper's reading (the minimiser of
 `P(a ↔ b, o ↮ A)`) is not settled; the document's Question 8 argument concerns the minimiser of `P(o ↔ A, a ↔ b)`, which is
 form (3) of Conjecture 2.

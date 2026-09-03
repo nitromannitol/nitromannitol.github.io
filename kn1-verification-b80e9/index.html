@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Kozma–Nitzan conjectures: Lean verification</title>
+    <title>The Kozma–Nitzan conjectures</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
     <style>
@@ -18,125 +18,103 @@
 </head>
 <body>
     <header>
-        <h1>Kozma–Nitzan's conjectures and questions: what is machine-checked and what is not</h1>
+        <h1>The conjectures and questions of Kozma and Nitzan</h1>
     </header>
 
     <main class="kn1">
         <section>
             <p>Kozma and Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>) reduced θ(p<sub>c</sub>) = 0 for Bernoulli
-            bond percolation on ℤ<sup>d</sup>, d ≥ 2, to an inequality on finite graphs, their Conjecture 3, and left eight further numbered
-            items open: Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for
-            Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions d ≥ 2</em> (Claude, Anthropic, under the direction of Justin Leder;
-            Lean v4.32.0, Mathlib commit <code>81a5d257</code>) proves Conjecture 3. This page records the status of the other eight on top
-            of that development. Six of the nine items are machine-checked: Conjectures 1, 2, 3 and 4 and Questions 5 and 7, by the Lean files
-            in <a href="lean/">lean/</a>, each theorem accepted with exactly the standard axioms <code>propext</code>,
-            <code>Classical.choice</code> and <code>Quot.sound</code> and no <code>sorry</code>
-            (<a href="lean/VERIFICATION.log">VERIFICATION.log</a>). Conjecture 6 and Question 9 are proved in the accompanying document
-            (<a href="document/kozma_nitzan_all_conjectures_proof.pdf">PDF</a>, <a href="document/kozma_nitzan_all_conjectures_proof.tex">TeX</a>)
-            and not yet machine-checked. Question 8 is open.</p>
+            bond percolation on ℤ<sup>d</sup>, d ≥ 2, to an inequality on finite graphs, their Conjecture 3, and posed four further conjectures
+            and four questions on the correlations of clusters in finite graphs: Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9.
+            The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions d ≥ 2</em>
+            (Claude, Anthropic, under the direction of Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a
+            relatively easy consequence of an inequality it proves on the way: ordering the vertices x of A by P(x ↔ b), the probability that o
+            reaches x before any earlier vertex of A, times P(x ↔ b), summed over A, is at most P(o ↔ b); pulling out the minimum gives
+            P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b), which is Conjecture 1 for every finite weighted graph.</p>
+            <p>Here the remaining conjectures and questions of the paper are proved on top of that development: Conjectures 2, 4 and 6 and
+            Questions 5, 7 and 9, each in a stronger form than stated, and Conjecture 1 as above. Question 8, as printed, has a negative answer
+            when its minimiser is not unique, and is open otherwise. The proofs are in the
+            <a href="document/kn_summary.pdf">summary</a> (PDF); the Lean files are in <a href="lean/">lean/</a>.</p>
         </section>
 
         <section>
-            <h2>Machine-checked</h2>
-            <p>Bernoulli bond percolation on a finite weighted graph (vertices <code>Fin n</code>, independent pairs with weights in [0,1], an
-            absent edge being weight 0), a nonempty set A of vertices, vertices o and b, and an increasing real function F of vertex sets:</p>
+            <h2>The results</h2>
+            <p>Bernoulli bond percolation on a finite weighted graph (independent pairs with weights in [0,1], an absent edge being weight 0), a
+            nonempty set A of vertices, vertices o and b, C<sub>x</sub> the open cluster of x, and an increasing real function F of vertex sets:</p>
             <ul>
                 <li><strong>Conjecture 4</strong> (p. 32), with the minimiser specified: if a ∈ A minimises E F(C<sub>x</sub>) over A, then
-                    E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]
-                    (<code>conjecture4Fixed_holds</code>, <code>conjecture4_holds</code>); also in the paper's vocabulary of monotone cluster
-                    properties f(v, ω) (<code>conjecture4_clusterProperty_holds</code>).</li>
+                    E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A],
+                    also in the paper's vocabulary of monotone cluster properties f(v, ω).</li>
                 <li><strong>Conjecture 2</strong> (p. 3), in the pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
-                    min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b) (<code>conjecture2Strong_holds</code>, <code>conjecture2_holds</code>).</li>
+                    min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b).</li>
                 <li><strong>Question 7</strong> (p. 36), answered affirmatively: if a ∈ A minimises P(a ↔ b) over A, then
-                    P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A), the paper's display (41) (<code>question7_holds</code>).</li>
-                <li><strong>Conjecture 1</strong> (p. 3): P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b) (<code>conjecture1_holds</code>, from (3) by the
-                    Harris inequality).</li>
-                <li><strong>Conjecture 3</strong> (p. 15), from Conjecture 1 (<code>conjecture3_holds</code>).</li>
+                    P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A), the paper's display (41).</li>
+                <li><strong>Conjecture 1</strong> (p. 3): P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b); and <strong>Conjecture 3</strong> (p. 15)
+                    from it.</li>
                 <li><strong>Question 5</strong> (p. 32), answered affirmatively: there are coefficients c<sub>a</sub> ≥ 0, a ∈ A, summing to 1 and not
-                    depending on b, with Σ<sub>a∈A</sub> c<sub>a</sub> P(o ↔ A, a ↔ b) ≤ P(o ↔ b) for every b, the paper's display (38)
-                    (<code>question5_holds</code>; from Conjecture 4 for the functions F(K) = Σ<sub>b</sub> y<sub>b</sub> 1{b ∈ K} with y ≥ 0,
-                    <code>question5_dual</code>, and finite-dimensional separation).</li>
-                <li><strong>Conjecture 6</strong> (p. 34), reductions: the inequality P<sub>G⏚e</sub>(v ↔ b, v ↔ A) ≥ P<sub>G⏚e</sub>(a ↔ b, v ↔ A)
-                    implies the paper's display (40) (<code>conjecture6_of_conjecture6Strong</code>); the paper's hypothesis (39) is a consequence of
-                    Conjecture 1 (<code>conjecture6_hypotheses_vacuous</code>); that inequality holds whenever a minimises P<sub>G⏚e</sub>(x ↔ b)
-                    over A (<code>conjecture6Strong_of_forceOpen_min</code>); and, for S = {v, w} and any event H determined by the union of the
-                    clusters of v and w, E[(F(C<sub>v</sub> ∪ C<sub>w</sub>) − F(C<sub>a</sub>)); S ↮ a, H] = E[φ<sub>a</sub>(C<sub>v</sub> ∪ C<sub>w</sub>); S ↮ a, H]
-                    with φ<sub>a</sub>(K) = F(K) − E F(C<sub>a</sub> in the graph with all pairs meeting K removed), together with
-                    E[(F(C<sub>v</sub> ∪ C<sub>w</sub>) − F(C<sub>a</sub>)); S ↮ a] ≥ 0 when E F(C<sub>a</sub>) ≤ E F(C<sub>v</sub>) (<code>PairSource</code>).
-                    Conjecture 6 itself is not machine-checked.</li>
+                    depending on b, with Σ<sub>a∈A</sub> c<sub>a</sub> P(o ↔ A, a ↔ b) ≤ P(o ↔ b) for every b, the paper's display (38).</li>
+                <li><strong>Conjecture 6</strong> (p. 34), without either of its endpoint hypotheses: for e = {v, w} and a ∈ A minimising
+                    P<sub>G</sub>(x ↔ b) over A, P<sub>G⏚e</sub>(v ↔ b, v ↔ A) ≥ P<sub>G⏚e</sub>(a ↔ b, v ↔ A), where G⏚e is the graph with the edge e
+                    forced open; the paper's display (40) follows, and its hypothesis (39) is itself a consequence of Conjecture 1.</li>
+                <li><strong>Question 9</strong> (p. 36), answered affirmatively: if a ∈ A minimises P<sub>H</sub>(a ↔ b) over A, where H is the graph
+                    with all edges at o removed, then (41) holds in G.</li>
+                <li><strong>Question 8</strong> (p. 36) takes the minimiser of P(a ↔ b, o ↮ A) over A. When P(o ↮ A) = 0 every a ∈ A minimises, and
+                    (41) can fail: on the path o – a<sub>1</sub> – a<sub>2</sub> – b with weights 1, 1/2, 1 and A = {a<sub>1</sub>, a<sub>2</sub>},
+                    P(o ↔ A, a<sub>2</sub> ↔ b) = 1 while P(o ↔ b, o ↔ A) = 1/2. With a unique minimiser the question is open; it is equivalent to
+                    the every-minimiser form restricted to P(o ↮ A) &gt; 0, and it reduces to weights in (0, 1).</li>
             </ul>
-            <p>In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra hypotheses (Theorems 2, 3 and 11), for an observer isolated in G ∖ A and its one-vertex extension (Theorems 4 and 5), and, for every graph and every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem 9). Both were open in general.</p>
+            <p>In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra hypotheses
+            (Theorems 2, 3 and 11), for an observer isolated in G ∖ A and its one-vertex extension (Theorems 4 and 5), and, for every graph and
+            every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem 9).</p>
         </section>
 
         <section>
-            <h2>Proved in the document, not machine-checked</h2>
-            <ul>
-                <li><strong>Conjecture 6</strong>, in the form P<sub>G⏚e</sub>(v ↔ b, v ↔ A) ≥ P<sub>G⏚e</sub>(a ↔ b, v ↔ A) for e = {v, w} and a ∈ A
-                    minimising P<sub>G</sub>(x ↔ b) over A, where G⏚e is the graph with the edge e forced open; display (40) follows, without the
-                    paper's hypothesis (39). The proof conditions on the union of the clusters of v and w, which does not depend on the state of e,
-                    and runs the development's argument for that union in place of a single cluster. A Lean formalization is in progress.</li>
-                <li><strong>Question 9</strong> (p. 36): the minimiser of P<sub>H</sub>(a ↔ b), H the graph with all edges at o removed, satisfies
-                    (41). The proof conditions on the edges at o and applies the same argument to the set of open neighbours of o, a set of
-                    arbitrary size. Not machine-checked.</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>Not settled</h2>
-            <p><strong>Question 8</strong> (p. 36) takes the minimiser of P(a ↔ b, o ↮ A) over A, with o <em>not</em> joined to A. The document's
-            Question 8 argument instead uses the minimiser of P(o ↔ A, a ↔ b), for which (41) is the machine-checked form (3) of Conjecture 2;
-            that is a different question. For the paper's Question 8, in the reading where (41) must hold for every minimiser, there is an exact
-            four-vertex counterexample when P(o ↮ A) = 0, where the minimand vanishes identically. In the reading with a unique minimiser no
-            counterexample is known, and no proof is known.</p>
+            <h2>The method</h2>
+            <p>The development's inequality above is proved with the clusters of the vertices of A conditioned on avoiding a given set Y of
+            vertices; the vertices of A are ordered by E[F(C<sub>x</sub>) | x ↮ Y], and Σ<sub>x</sub> P(o ↮ Y, x is the first vertex of A reached by
+            C<sub>o</sub>) · E[F(C<sub>x</sub>) | x ↮ Y] ≤ E[F(C<sub>o</sub>); o ↮ Y, o ↔ A]. With Y = {a} for the vertex a of least mean and the
+            function φ<sub>a</sub>(K) = F(K) − E F(C<sub>a</sub> in the graph with all pairs meeting K removed), which is increasing in K, every
+            conditional mean on the left is nonnegative, and this is Conjecture 4 with the minimiser specified. Conjecture 6 and Question 9 come
+            from the same inequality with the union of the clusters of several vertices in place of C<sub>o</sub>: the union of the clusters of
+            v and w does not depend on the state of the edge {v, w}, and the cluster of o is the union of the clusters of o and its open
+            neighbours in the graph with the edges at o removed.</p>
         </section>
 
         <section>
             <h2>Implications</h2>
             <ul>
-                <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 is formal from top to bottom: the first four implications
-                    in <code>Conjectures.lean</code>, the last in the development (its formalization of the paper's Theorem 6).</li>
-                <li>Of the paper's nine numbered items, six are machine-checked (Conjectures 1–4, Questions 5 and 7), two are proved in the
-                    document but not yet in Lean (Conjecture 6, Question 9), and one remains open (Question 8).</li>
-                <li>The vertex of A minimising the unconditional connection probability P(x ↔ b) is itself a valid choice in the pre-FKG
-                    comparison (Question 7), uniformly in the graph and in the number of vertices of A.</li>
-                <li>Conjecture 6 holds without either of its endpoint hypotheses (document); hypothesis (39) is in any case a consequence of
-                    Conjecture 1 (Lean).</li>
-                <li>The inequality of <code>genY_all</code>, which conditions the cluster of each x ∈ A on avoiding a given set Y and needs no
-                    nonnegativity of F, is available for further use; run for the union of the clusters of a set of vertices of every size it
-                    would settle Question 9 by the document's argument, and for two vertices it gives Conjecture 6.</li>
+                <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 holds with every link proved, the last in the development.</li>
+                <li>The vertex of A minimising P(x ↔ b) is itself a valid choice in the pre-FKG comparison (Question 7), uniformly in the
+                    graph and in the number of vertices of A; the same holds for the minimiser in the graph with the edges at o removed
+                    (Question 9).</li>
+                <li>Conjecture 6 holds without its endpoint hypotheses, so the paper's Lemma 13 applies without them.</li>
+                <li>The conditioned inequality of the method needs no nonnegativity of F and holds for the union of the clusters of any finite
+                    set of vertices; it is available for further use.</li>
             </ul>
         </section>
 
         <section>
             <h2>Files</h2>
             <table>
-                <tr><td><a href="lean/AvoidedDefs.lean">AvoidedDefs</a>, <a href="lean/AvoidedPeelTools.lean">AvoidedPeelTools</a>, <a href="lean/AvoidedPeel.lean">AvoidedPeel</a>, <a href="lean/AvoidedTransfer.lean">AvoidedTransfer</a>, <a href="lean/AvoidedGen.lean">AvoidedGen</a>, <a href="lean/Projection.lean">Projection</a>, <a href="lean/AvoidedClosure.lean">AvoidedClosure</a></td>
-                    <td>The inequality <code>genY_all</code>: for x ∈ A with P(x ↮ Y) &gt; 0 ordered by E[F(C<sub>x</sub>) | x ↮ Y],
-                    Σ<sub>x</sub> P(o ↮ Y, x is the first vertex of A reached by C<sub>o</sub>) · E[F(C<sub>x</sub>) | x ↮ Y] ≤ E[F(C<sub>o</sub>); o ↮ Y, o ↔ A];
-                    and the function φ<sub>a</sub> above.</td></tr>
-                <tr><td><a href="lean/Statements.lean">Statements.lean</a>, <a href="lean/Statements6.lean">Statements6.lean</a></td>
-                    <td>The closed statements of Conjectures 1, 2, 4 and Question 7, and of Conjecture 6, in the development's vocabulary.</td></tr>
-                <tr><td><a href="lean/Conjectures.lean">Conjectures.lean</a>, <a href="lean/ClusterProperty.lean">ClusterProperty.lean</a></td>
-                    <td>The theorems for Conjectures 1–4 and Question 7; Conjecture 4 in the paper's cluster-property vocabulary.</td></tr>
-                <tr><td><a href="lean/PairSource.lean">PairSource.lean</a>, <a href="lean/Conjecture6Reduction.lean">Conjecture6Reduction.lean</a>, <a href="lean/Question5Dual.lean">Question5Dual.lean</a>, <a href="lean/Question5.lean">Question5.lean</a></td>
-                    <td>The identities and reductions for Conjecture 6 listed above; Question 5.</td></tr>
-                <tr><td><a href="lean/VERIFICATION.log">VERIFICATION.log</a>, <a href="lean/README.md">README.md</a></td>
-                    <td>Clean sequential recompile with <code>#print axioms</code>; the statements, files and commands in one place.</td></tr>
-                <tr><td><a href="document/kozma_nitzan_all_conjectures_proof.pdf">kozma_nitzan_all_conjectures_proof.pdf</a>, <a href="document/kozma_nitzan_all_conjectures_proof.tex">.tex</a></td>
-                    <td>The document (26 pages; SHA-256 <code>8f0e51b3…d4736c92</code>).</td></tr>
+                <tr><td><a href="document/kn_summary.pdf">kn_summary.pdf</a></td>
+                    <td>The summary: statements and proofs of all the results above.</td></tr>
+                <tr><td><a href="lean/">lean/</a></td>
+                    <td>The Lean modules (AvoidedDefs, AvoidedPeelTools, AvoidedPeel, AvoidedTransfer, AvoidedGen, Projection, AvoidedClosure, Statements, Conjectures, ClusterProperty, Statements6, PairSource, Conjecture6Reduction, Question5Dual, Question5), <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and
+                    <a href="lean/README.md">README.md</a>. Every theorem is accepted with exactly the standard axioms <code>propext</code>,
+                    <code>Classical.choice</code>, <code>Quot.sound</code> and no <code>sorry</code>. The modules for Conjecture 6 and Question 9 follow.</td></tr>
             </table>
         </section>
 
         <section>
             <h2>How to check</h2>
             <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
-mkdir -p .lake/build/lib/lean/KN         # copy the fifteen .lean files to KN/, then:
+mkdir -p .lake/build/lib/lean/KN         # copy the .lean files to KN/, then:
 for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
-            <p>Expected: the fifteen <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
+            <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
             The development's sources can be pinned first with <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
-            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). The document is ChatGPT's. Claude Fable 5.1 designed the Lean formalization, wrote and machine-checked eight of the fifteen modules and this page, and specified the modules Projection, AvoidedClosure, PairSource and Question5, which were written by the ChatGPT model through Codex and recompiled by Claude; ClusterProperty, Conjecture6Reduction and Question5Dual were contributed by Claude Opus. All mathematics below the conditioned first-relay inequality is the development's. Released under the Apache License 2.0, matching the development.</p>
+            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max), Claude Opus and ChatGPT 5.6 sol (ultra). Claude Fable 5.1 designed the Lean formalization, wrote and machine-checked eight of the fifteen modules and this page, and specified the modules Projection, AvoidedClosure, PairSource and Question5, which were written by the ChatGPT model through Codex and recompiled by Claude; ClusterProperty, Conjecture6Reduction and Question5Dual were contributed by Claude Opus, which also wrote the summary. The route through the union of the clusters of several vertices was proposed by ChatGPT. All mathematics below the conditioned first-relay inequality is the development's. Released under the Apache License 2.0, matching the development.</p>
         </section>
     </main>
 </body>
