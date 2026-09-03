@@ -1,8 +1,8 @@
-kn1-verification: Kozma–Nitzan's Conjectures 1–4 and Question 7 (and lemmas toward Conjecture 6 and Question 5) as corollaries of the Lean development
+kn1-verification: Kozma–Nitzan's Conjectures 1–4 and Questions 5 and 7 (and lemmas toward Conjecture 6) as corollaries of the Lean development
 "theta(p_c) = 0 for Bernoulli bond percolation on Z^d, d >= 2"
 Produced entirely by Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra), 2 September 2026; released under the Apache License, Version 2.0 (see LICENSE).
 
-The seventeen Lean files in this tree (conjecture-1/: KN1Statement.lean, KozmaNitzanConjecture1.lean, KN1Bridge.lean; lean/: the fourteen KN
+The eighteen Lean files in this tree (conjecture-1/: KN1Statement.lean, KozmaNitzanConjecture1.lean, KN1Bridge.lean; lean/: the fifteen KN
 modules) are corollaries of that development, and KN1Statement.lean reproduces three of its definitions. The development is licensed
 under the Apache License, Version 2.0; its NOTICE file is reproduced below as that licence requires.
 
