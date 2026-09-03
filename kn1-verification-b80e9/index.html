@@ -37,7 +37,8 @@
             consequence of an inequality proved there on the way, as explained below.</p>
             <p>Here the remaining conjectures and questions of the paper are proved on top of that Lean proof: Conjectures 1, 2, 4
             and 6 and Questions 5, 7 and 9, each in a stronger form than stated. Question 8 is false as printed. The proofs are in the <a href="document/kn_summary.pdf">summary</a> (PDF);
-            the Lean files are in <a href="lean/">lean/</a>.</p>
+            the Lean files are in <a href="lean/">lean/</a>. <strong>Warning:</strong> the manuscript has not yet undergone extensive
+            independent proofreading.</p>
         </section>
 
         <section>
@@ -137,8 +138,9 @@
                     (Question 7), for every graph and every size of \(A\); so is the minimiser computed in the graph with the edges
                     at \(o\) removed (Question 9).</li>
                 <li>Conjecture 6 holds without its hypothesis (39), so the paper's Lemma 13 applies without it.</li>
-                <li>The displayed inequality of the previous section holds with the union of the clusters of any finite set of
-                    vertices in place of \(C_o\), and it needs no sign condition on \(F\).</li>
+                <li>The conditional comparison theorem for increasing functions of clusters remains valid with
+                    \(C_R=\bigcup_{r\in R}C_r\), for any finite set \(R\), in place of the single cluster \(C_o\); it also needs no
+                    sign condition on \(F\).</li>
             </ul>
         </section>
 
@@ -146,7 +148,10 @@
             <h2>Files</h2>
             <table>
                 <tr><td><a href="document/kn_summary.pdf">kn_summary.pdf</a></td>
-                    <td>The summary: statements and proofs of all the results above.</td></tr>
+                    <td>The self-contained manuscript, with complete statements, proofs, and three schematic figures. Last updated
+                    2 September 2026. It has not yet undergone extensive independent proofreading.</td></tr>
+                <tr><td><a href="document/kn_summary.tex">kn_summary.tex</a></td>
+                    <td>The LaTeX source of the manuscript.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
                     <td>The Lean modules, <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and <a href="lean/README.md">README.md</a>.
                     Every theorem is accepted with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
