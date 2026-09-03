@@ -25,8 +25,7 @@ coordinate with these two maps.
   `True` is `openSite x`, and to `False` is `closeSite x`.  Hence `pinnedProb_open_eq` and
   `pinnedProb_closed_eq`, which turn every statement below into one about ordinary preimages.
 * `siteBernoulli_real_eq_pinned` — **the splitting identity**
-  `P(A) = w x · P_x^{open}(A) + (1 - w x) · P_x^{closed}(A)`, the identity the Burton–Keane
-  counting argument runs on.  Its proof is the independence of `{x is open}` from the events
+  `P(A) = w x · P_x^{open}(A) + (1 - w x) · P_x^{closed}(A)`.  Its proof is the independence of `{x is open}` from the events
   `openSite x ⁻¹' A` and `closeSite x ⁻¹' A`, which are determined by the coordinates other
   than `x`.
 * `mul_pinnedProb_open_le`, `mul_pinnedProb_closed_le` — **finite energy**, each an immediate
@@ -190,7 +189,10 @@ theorem pinnedProb_site_eq_of_notMem (w : V → unitInterval) (x : V) (val : V �
 Proof: `A ∩ {x is open} = {x is open} ∩ {ω | ω ∪ {x} ∈ A}` because opening an already open vertex
 changes nothing, and the two factors are determined by `{x}` and by its complement, hence
 independent; likewise for `A \ {x is open} = {x is closed} ∩ {ω | ω \ {x} ∈ A}`.  Adding the two
-gives `P(A)`.  This is the identity the Burton–Keane counting argument runs on.
+gives `P(A)`.  The Burton–Keane counting argument does not use this identity: it opens vertices
+and never closes them, so the only probabilistic input it needs is the insertion bound
+`prod_mul_real_preimage_openSites_le` below.  The identity is the sharper statement, recorded
+here because it is denominator-free and so needs no conditioning event of positive mass.
 [cite: GrimmettPercolation1999, §2.2] -/
 theorem siteBernoulli_real_eq_pinned (w : V → unitInterval) (x : V) {A : Set (SiteConfig V)}
     (hA : MeasurableSet A) :

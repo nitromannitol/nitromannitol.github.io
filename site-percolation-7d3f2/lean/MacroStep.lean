@@ -245,7 +245,13 @@ variable {d : ℕ}
 
 /-- **The one-step contract for one setup.**  After every admissible history, every block still
 pending examination is joined with probability at least `1 - rho`, the probability being the pinned
-one of `MacroHistory.prob` rather than a conditional probability. -/
+one of `MacroHistory.prob` rather than a conditional probability.
+
+Note: this over-quantifies.  It demands the bound at every block outside `occupied`, but a
+block already examined and failed is still outside `occupied` and has small conditional
+probability, so the geometry cannot supply it.  Only `S.next h` is ever used; see
+`KNAll.Site.SiteWalk.NextBound` in `KN/ReachCoupling.lean` for the usable form, together with
+`SiteWalk.StepBound.nextBound`. -/
 def MacroSetup.StepBound (S : MacroSetup d) (rho : ℝ) : Prop :=
   ∀ h : MacroHistory d S.Index, S.Admissible h →
     ∀ m : S.Index, m ∉ h.occupied → 1 - rho ≤ h.prob S.density (S.joined m)
@@ -450,8 +456,14 @@ the named hypothesis `ReachTransfer`. -/
 occupied is witnessed, in the product measure, by `k` cells each contributing a site of the cluster
 of `x`.
 
-This is the statement the adaptive coupling has to supply.  It is a hypothesis here, not a theorem:
-`KN.walkProb` is defined by recursion on words and carries no measure. -/
+REFUTED.  This does not follow from the one-step contract, and `MacroSetup` is too weak to make it
+true: the structure has no field relating `joined`, `step`, `occupied` and the configuration, so the
+word a run produces is tied to nothing the measure sees.  `KNAll.Site.not_reachTransfer` of
+`KN/ReachCoupling.lean` exhibits a `MacroSetup` satisfying every field and the full
+`MacroSetup.StepBound 0` whose exploration reaches size one with probability one while the
+corresponding configuration event is empty.  The definition is kept only so that the refutation can
+be stated.  The correct statement is `KNAll.Site.SiteWalk.bernoulliReachProb_le_prob_run`, whose
+transcript is a genuine function of the configuration; use that instead. -/
 def ReachTransfer {V M : Type*} {a : ℝ} (G : SimpleGraph V) (x : V) (p : unitInterval)
     (cell : M → Set V) (E : Exploration M a) (steps : ℕ → ℕ) : Prop :=
   ∀ k : ℕ, E.reachProb (reachesSize k) (steps k) ≤
