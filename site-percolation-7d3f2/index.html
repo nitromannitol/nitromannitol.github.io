@@ -55,31 +55,31 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 3:44 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 3:49 PM EDT</p>
     </header>
 
     <main class="sp">
         <section>
-            <p>In Bernoulli site percolation on \(\mathbb{Z}^d\), each site is open with probability \(p\) and closed with
-            probability \(1-p\), independently of the other sites. An open cluster is a set of open sites any two of which
-            are joined by a path of open sites, and \(\theta_{\mathrm{site}}(p)\) is the probability that the origin lies in an
-            infinite open cluster. It is nondecreasing in \(p\), and \(p_c\) is the parameter above which it is positive.</p>
-            <p>By construction \(\theta_{\mathrm{site}}\) vanishes below \(p_c\) and is positive above it. That leaves
-            exactly one value undetermined, the one at \(p_c\) itself, where an infinite cluster is neither forced nor
-            forbidden by the definition. Whether \(\theta_{\mathrm{site}}(p_c)=0\) is the question.</p>
-            <p>For \(d = 2\) the answer is yes. For bond percolation it is Harris and Kesten; for site percolation
-            it is Russo, whose 1981 paper builds on Kesten's determination of the bond threshold on the square lattice,
-            and proves that \(\theta\) is continuous on all of \([0,1]\). For \(d \ge 3\) it is not known in general.</p>
-            <p>For bond percolation the answer is now yes in every dimension. Anthropic's
-            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">Lean 4 formalization</a> proves \(\theta(p_c)=0\) on \(\mathbb{Z}^d\) for all
-            \(d \ge 2\), settling the cases \(3 \le d \le 10\) that were open, by proving a conjectured inequality of
-            Kozma and Nitzan about finite graphs. The <a href="../kn1-verification-b80e9/">companion page</a> proves the
-            rest of the conjectures and questions of their paper on top of it. This page is the site percolation
-            extension, and it builds on both.</p>
+            <p>Bernoulli site percolation on \(\mathbb{Z}^d\) keeps each site with probability \(p\) and discards it
+            otherwise, independently of every other site. Two kept sites lie in the same cluster when a path of neighbouring
+            kept sites joins them, and a discarded site lies in no cluster at all. Write \(\theta(p)\) for the probability
+            that the origin lies in an infinite cluster.</p>
+            <p>Raising \(p\) keeps more sites and can only enlarge clusters, so \(\theta\) is nondecreasing and has a
+            threshold \(p_c\), below which it vanishes and above which it is positive. That settles \(\theta\) at every
+            parameter but one. At \(p_c\) itself an infinite cluster is neither forced nor forbidden, and whether
+            \(\theta(p_c)=0\) is the question.</p>
+            <p>In two dimensions the answer is yes. For bond percolation, where edges rather than sites are kept, it is due
+            to Harris and Kesten; for site percolation it is due to Russo, whose 1981 argument follows Kesten's
+            determination of the bond threshold on the square lattice and gives continuity of \(\theta\) on all of
+            \([0,1]\). In three or more dimensions the answer is yes for bond percolation, by a recent
+            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked proof</a> that settled
+            the dimensions three to ten. For site percolation in three or more dimensions it is not known, and that is the
+            case treated here. The <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures
+            and questions of the paper the bond proof rests on.</p>
         </section>
 
         <section>
-            <h2>The two models</h2>
+            <h2>Simulations</h2>
             <figure style="margin:0">
                 <div class="panels" id="panels"></div>
                 <div class="controls">
@@ -96,58 +96,70 @@
         </section>
 
         <section>
-            <h2>One finite inequality</h2>
-            <p>Both models are instances of a single structure. Take a finite set of sites and a finite set of labels,
-            attach to each label some collection of sites, and keep each label independently. Two sites are connected when
-            a chain of kept labels joins them, consecutive labels sharing a site. If every label is attached to exactly two
-            sites, the labels are edges and this is bond percolation. If each site carries one label of its own, attached
-            to that site and to one extra point per edge at it, then keeping a label is keeping a site, and this is site
-            percolation.</p>
-            <p>In that setting, for a nonempty set \(A\) of sites and sites \(o\) and \(b\),
+            <h2>A structure containing both models</h2>
+            <p>Both models are instances of one structure. Take a finite set of sites together with a finite set of labels,
+            attach to each label a collection of sites, and keep each label independently of the others. Call two sites
+            connected when a chain of kept labels joins them, consecutive labels in the chain sharing a site.</p>
+            <p>Attaching every label to exactly two sites makes the labels edges, and the structure is bond percolation.
+            Giving each site a label of its own, attached to that site and to one further point for each edge at it, makes
+            keeping a label the same as keeping a site, and the structure is site percolation. The second description is
+            exact rather than analogous. The labels are the sites, so the two models have the same sample space and the
+            same probabilities, and a chain of kept labels read at every second step is a path of kept sites.</p>
+            <p>The inequality at issue is the following. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
             \[
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
                 \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b).
             \]
-            Call this inequality \(\mathrm{G}\). It implies the inequality Kozma and Nitzan conjectured for bond
-            percolation and its site analogue at once,
-            \[
-              \mathrm{G} \;\Longrightarrow\; \texttt{Conjecture1} \;\wedge\; \texttt{SiteGluingUnpinned},
-            \]
-            and that implication is machine-checked. The finite input to both models is therefore one theorem.</p>
-            <p>It has to be stated with labels rather than with the sites those labels reach. For graphs the two records
-            agree, and recording reached sites is what the bond argument does. For labels attached to more than two sites
-            the records differ: two distinct labels can reach exactly the same sites, so passing to reached sites turns an
-            intersection into something strictly larger. A two-label counterexample is machine-checked in the files.</p>
+            Read from the right, it says that reaching \(A\) and then continuing to \(b\) from the least favourable
+            point of \(A\) is no better than reaching \(b\) directly. For labels attached to two sites, and after
+            discarding the second event on the left, it is the inequality Kozma and Nitzan conjectured. The general form
+            implies the bond inequality and its site counterpart together, so one finite theorem serves both models.</p>
+
+            <h2>Why labels, and not the sites they reach</h2>
+            <p>Arguments of this kind expose the labels touching a set and record what those labels reach outside it. For
+            graphs the record may be taken to be the set of outside sites reached, since a label attached to two sites is
+            determined by the one site it reaches outside.</p>
+            <p>For labels attached to more than two sites that record is too coarse, and it fails in one direction only.
+            The sites reached by a union of labels are the union of the sites each reaches, but the sites reached by an
+            intersection can be strictly fewer than the sites reached by both. Two distinct labels touching the same sites
+            already witness this. The inclusion points the right way for the induction, since avoiding a larger set is
+            harder, but the intersection is what a four functions argument needs and it has been lost.</p>
+            <p>The remedy is to record the labels themselves. Under that bookkeeping unions and intersections are both
+            preserved exactly, even when distinct labels reach identical sites, and the induction closes.</p>
 
             <h2>From the inequality to the lattice</h2>
-            <p>Site percolation on a finite graph is exactly the labelled model just described, not merely analogous to
-            it: the labels are the sites, so the two have the same sample space and the same probabilities, and a chain of
-            kept labels is a path of kept sites read off at every second step. Hence \(\mathrm{G}\) gives the same
-            inequality for site percolation on every finite graph, with no site required to be kept in advance.</p>
-            <p>The lattice argument divides space into blocks, calls a block occupied when a suitable connection appears
-            inside it, and compares the occupied blocks with percolation on a coarser lattice. Joining one block to the
-            next is the difficulty. The classical method keeps a few extra sites beyond those already used, which is what
-            Grimmett and Marstrand do; they obtain percolation in a slab of finite width at any slightly larger parameter,
-            and they record that they cannot remove the excess, and that this is what stops their argument from reaching
-            the critical parameter. The inequality \(\mathrm{G}\) is what replaces those extra sites. Kozma and Nitzan condition on a shell,
-            apply the inequality to the relays that shell exposes, and so join the blocks at the original parameter rather
-            than a larger one; that step is where sprinkling used to be. What it yields is a reduction of the lattice to a
-            slab of finite width, at the same parameter or below it.</p>
-            <p>Given that reduction, the conclusion follows, and this last step is machine-checked in two forms. If the
-            reduction produces a strictly smaller parameter, then percolation at the critical parameter would give
-            percolation below it, which contradicts the definition of the critical parameter; this uses nothing else, and
-            in particular no theorem about percolation at a critical point. If instead the reduction holds at the same
-            parameter, the conclusion follows from two published theorems, which are needed together: Barsky, Grimmett and
-            Newman put the percolation probability of a half-space at zero at the critical density of the half-space, for
-            bond and site percolation alike, and Grimmett and Marstrand identify that density with the one of the lattice
-            in three or more dimensions, working throughout with site percolation.</p>
-            <p>Also machine-checked, and used above: that conditioning on the whole cluster of a set factorizes exactly,
-            that two disjoint clusters factorize in either order, and that any probability expands as a finite sum over
-            the possible clusters; that the percolation probability is monotone in the parameter and in the underlying
-            graph, vanishes below the critical parameter, and that the critical parameter is neither \(0\) nor \(1\);
-            that events depending on finitely many sites have probabilities Lipschitz in the parameter; and that an
-            exploration succeeding with probability at least a fixed amount after every history reaches any upward-closed
-            target at least as often as an independent sequence would.</p>
+            <p>The passage from a finite inequality to the lattice is a renormalization. Space is divided into blocks, a
+            block is called occupied when a suitable connection appears inside it, and the occupied blocks are compared
+            with ordinary percolation on a coarser lattice. The difficulty is joining one block to the next.</p>
+            <p>The classical remedy is to keep a few sites beyond those the construction has already used. Grimmett and
+            Marstrand do this and obtain percolation in a slab of finite width at any parameter slightly larger than the
+            one they started from. They also record that they cannot dispense with the excess, and that this is what
+            prevents their argument from reaching the critical parameter.</p>
+            <p>The inequality replaces those extra sites. Conditioning on a shell around a block exposes a set of relays
+            lying on it, and applying the inequality to those relays joins the block to the next at the original parameter.
+            What the construction yields is a reduction of the lattice to a slab of finite width, at the original parameter
+            or below it.</p>
+            <p>Given that reduction the conclusion follows, in either of two ways. If the reduction produces a strictly
+            smaller parameter, then percolation at the critical parameter would give percolation below it, contradicting
+            the definition of the critical parameter, and nothing further is needed. If instead the reduction holds at the
+            same parameter, the conclusion follows from two published theorems, which are needed together: Barsky,
+            Grimmett and Newman show that the percolation probability of a half-space vanishes at the critical density of
+            the half-space, for bond and site percolation alike, and Grimmett and Marstrand identify that density with the
+            one of the lattice in three or more dimensions, working throughout with site percolation.</p>
+
+            <h2>What is formalized</h2>
+            <p>Everything above is formalized in Lean 4 with Mathlib, apart from the two statements named below. The model,
+            the connection events, the percolation probability and the critical parameter are definitions in the files, and
+            the critical parameter is proved to lie in the unit interval, so the conclusion is an equation between two real
+            numbers rather than a statement that could hold for want of content.</p>
+            <p>The formalization also contains the machinery those arguments use: conditioning on the whole cluster of a
+            set factorizes exactly, two disjoint clusters factorize in either order, and any probability expands as a
+            finite sum over the possible clusters; the percolation probability is monotone in the parameter and in the
+            underlying graph, and vanishes below the critical parameter, which is neither \(0\) nor \(1\); events
+            depending on finitely many sites have probabilities Lipschitz in the parameter; and an exploration that
+            succeeds with probability at least a fixed amount after every history reaches any upward-closed target at least
+            as often as an independent sequence would. The counterexample of the previous section is machine-checked as
+            well.</p>
 
             <div class="standing">
             <h3>Status</h3>
