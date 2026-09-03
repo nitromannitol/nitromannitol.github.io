@@ -1474,6 +1474,41 @@ theorem guard_oneSided_unfold (w : Sym2 V → unitInterval)
         ← guardHorizontal_eq_guardResidLevel w x Y (insert x (listSet D))
           ({s₁, s₂} : Set V) v g]
 
+/-- The corrected one-sided unfolding for an arbitrary guarded source set.
+The pair-source theorem above is its specialization to `O = {s₁,s₂}`. -/
+theorem guard_source_oneSided_unfold (w : Sym2 V → unitInterval)
+    (hw : ∀ e, 0 < w e ∧ w e < 1) (x : V) (Y : Set V) (D : List V)
+    (O : Set V) (v : V) (g : Set (Sym2 V) → ℝ)
+    (hnd : D.Nodup) (hout : ∀ d ∈ D, d ∉ insert x Y) :
+    guardWithin w x Y D O v g =
+      guardHorizontal w x Y (insert x (listSet D)) O v g +
+        guardUnfoldTerms w x Y g O v (insert x Y) D := by
+  have hAS : insert x Y = ({x} : Set V) ∪ Y := by
+    ext q
+    simp only [Set.mem_insert_iff, Set.mem_union, Set.mem_singleton_iff]
+  have hAfin : insert x Y ∪ listSet D =
+      insert x (listSet D) ∪ Y := by
+    ext q
+    simp only [Set.mem_union, Set.mem_insert_iff]
+    tauto
+  have hSfin : ({x} : Set V) ∪ listSet D = insert x (listSet D) := by
+    ext q
+    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_insert_iff]
+  calc
+    guardWithin w x Y D O v g =
+        guardResidLevel w x Y g O v (insert x Y) D ({x} : Set V) :=
+      guardWithin_eq_guardResidLevel w x Y D O v g
+    _ = guardResidLevel w x Y g O v
+          (insert x Y ∪ listSet D) [] (({x} : Set V) ∪ listSet D) +
+        guardUnfoldTerms w x Y g O v (insert x Y) D :=
+      guardResidLevel_unfold w hw x Y g O v D
+        (insert x Y) ({x} : Set V) hnd hout Set.Subset.rfl hAS
+    _ = guardHorizontal w x Y (insert x (listSet D)) O v g +
+        guardUnfoldTerms w x Y g O v (insert x Y) D := by
+      rw [hAfin, hSfin,
+        ← guardHorizontal_eq_guardResidLevel w x Y (insert x (listSet D))
+          O v g]
+
 
 end KNAll.Guarded
 

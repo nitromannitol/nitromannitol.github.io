@@ -100,9 +100,7 @@
                     case a consequence of Conjecture 1.</li>
                 <li><strong>Question 9</strong> (p. 36), answered yes. Let \(H\) be \(G\) with every edge at \(o\) removed and let
                     \(a \in A\) minimise \(\mathbb{P}_H(x \leftrightarrow b)\) over \(x \in A\). Then
-                    \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\)
-                    (proof in the summary; the Lean files contain the reduction to Conjecture 4 for the union of the clusters of a set of
-                    vertices).</li>
+                    \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\).</li>
                 <li><strong>Question 8</strong> (p. 36), which takes a vertex \(a \in A\) minimising \(\mathbb{P}(x \leftrightarrow b,\, o \nleftrightarrow A)\),
                     is false as printed.</li>
             </ul>
@@ -152,8 +150,7 @@
                 <tr><td><a href="lean/">lean/</a></td>
                     <td>The Lean modules, <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and <a href="lean/README.md">README.md</a>.
                     Every theorem is accepted with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
-                    <code>Quot.sound</code> and no <code>sorry</code>. For Question 9 the Lean files contain the reduction to Conjecture 4 for
-                    the union of the clusters of a set of vertices; that inequality is proved in the summary.</td></tr>
+                    <code>Quot.sound</code> and no <code>sorry</code>.</td></tr>
             </table>
         </section>
 
@@ -161,7 +158,7 @@
             <h2>How to check</h2>
             <pre>lake exe cache get &amp;&amp; lake build      # build Anthropic's Lean proof, as in its README
 mkdir -p .lake/build/lib/lean/KN         # copy the .lean files to KN/, then:
-for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5 GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Statements9 Question9Reduction Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Sufficient Question8Interior; do
+for m in AvoidedDefs AvoidedPeelTools AvoidedClosure AvoidedGen AvoidedPeel AvoidedTransfer Projection Statements Conjectures ClusterProperty Statements6 Conjecture6Reduction PairSource GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Question5Dual Question5 Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Interior Question8Sufficient SourceGeneralCSH SourceSurplus SourceProjection Statements9 Question9Reduction Question9; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
             <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each

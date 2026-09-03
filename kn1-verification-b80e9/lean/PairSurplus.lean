@@ -45,7 +45,7 @@ theorem sourceSurplusY_singleton_eq_surplusY (w : Sym2 V → unitInterval)
   simp_rw [KNAll.Guarded.sourceCluster_singleton]
 
 /-- Exact bookkeeping identity behind items 34 and 35. -/
-private theorem sourceSurplusY_insert_add (w : Sym2 V → unitInterval)
+theorem sourceSurplusY_insert_add (w : Sym2 V → unitInterval)
     (Y : Set V) (T : Finset V) (r : V → ℕ) (F : Set V → ℝ)
     (R : Set V) (z : V) (hzT : z ∉ T) (hmax : ∀ u ∈ T, r u < r z) :
     sourceSurplusY w Y (insert z T) r F R =
@@ -1030,7 +1030,7 @@ private theorem pairTower_sum_weight_sdiff_bar
     integral_indicator_one MeasurableSet.of_discrete]
   rfl
 
-private theorem sourceKernel_tower_mul (w : Sym2 V → unitInterval)
+theorem sourceKernel_tower_mul (w : Sym2 V → unitInterval)
     (U R B : Set V) (z : V) (Q : Set V → ℝ)
     (hinside : insert z (R ∪ B) ⊆ U) :
     (∫ ω in sourceAvoid ({z} : Set V) B,
