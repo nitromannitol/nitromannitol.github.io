@@ -127,8 +127,10 @@
             next is the difficulty. The classical method keeps a few extra sites beyond those already used, which is what
             Grimmett and Marstrand do; they obtain percolation in a slab of finite width at any slightly larger parameter,
             and they record that they cannot remove the excess, and that this is what stops their argument from reaching
-            the critical parameter. The inequality \(\mathrm{G}\) is meant to replace those extra sites. What it should
-            deliver is a reduction of the lattice to a slab of finite width, at the same parameter or below it.</p>
+            the critical parameter. The inequality \(\mathrm{G}\) is what replaces those extra sites. Kozma and Nitzan condition on a shell,
+            apply the inequality to the relays that shell exposes, and so join the blocks at the original parameter rather
+            than a larger one; that step is where sprinkling used to be. What it yields is a reduction of the lattice to a
+            slab of finite width, at the same parameter or below it.</p>
             <p>Given that reduction, the conclusion follows, and this last step is machine-checked in two forms. If the
             reduction produces a strictly smaller parameter, then percolation at the critical parameter would give
             percolation below it, which contradicts the definition of the critical parameter; this uses nothing else, and
@@ -147,12 +149,17 @@
 
             <div class="standing">
             <h3>Status</h3>
-            <p>Two statements remain. The first is the inequality \(\mathrm{G}\) for labels attached to any number of
-            sites; for labels attached to two it is proved, in Anthropic's
-            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>. The second is the slab
-            reduction. Both appear in the files as named hypotheses, so every statement depending on them displays them,
-            and the reduction of the problem to exactly these two is itself machine-checked. Everything else stated on this
-            page is proved, with no unfinished step and with only the three axioms Lean itself provides.</p>
+            <p>One conjecture remains, and one derivation from it. They are not on the same footing. The conjecture is the
+            inequality \(\mathrm{G}\) for labels attached to any number of sites; for labels attached to two it is proved,
+            in Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>. The
+            derivation is the slab reduction, and it is not a second conjecture: Kozma and Nitzan derive it from their
+            inequality, and for bond percolation that derivation is itself machine-checked, in some fifteen thousand lines
+            of this development. What is left for sites is to redo it, which is long but is not open mathematics. It also
+            consumes standard facts about a supercritical parameter in a finite box, local uniqueness and face hitting,
+            which are the finite-volume face of the Burton and Keane theorem and are not formalized here.</p>
+            <p>All of these appear in the files as named hypotheses, so every statement depending on them displays them,
+            and the reduction of the problem to them is itself machine-checked. Everything else stated on this page is
+            proved, with no unfinished step and with only the three axioms Lean itself provides.</p>
             </div>
 
             <h2>Files</h2>
