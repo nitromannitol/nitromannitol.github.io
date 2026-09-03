@@ -7,12 +7,17 @@
     <title>The Kozma–Nitzan conjectures</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
+    <script>
+    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, chtml: { scale: 0.98 } };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
     <style>
         .kn1 code, .kn1 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
         .kn1 pre { overflow-x: auto; padding: 0.8em 1em; background: rgba(127,127,127,0.08); border-radius: 6px; }
         .kn1 table { border-collapse: collapse; margin: 1em 0; }
         .kn1 td, .kn1 th { padding: 0.35em 0.8em; border-bottom: 1px solid rgba(127,127,127,0.35); text-align: left; vertical-align: top; }
         .kn1 ul { padding-left: 1.3em; }
+        .kn1 li { margin-bottom: 0.5em; }
         .kn1 .note { opacity: 0.85; }
     </style>
 </head>
@@ -23,73 +28,124 @@
 
     <main class="kn1">
         <section>
-            <p>Kozma and Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>) reduced θ(p<sub>c</sub>) = 0 for Bernoulli
-            bond percolation on ℤ<sup>d</sup>, d ≥ 2, to an inequality on finite graphs, their Conjecture 3, and posed four further conjectures
-            and four questions on the correlations of clusters in finite graphs: Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9.
-            The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions d ≥ 2</em>
-            (Claude, Anthropic, under the direction of Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a
-            relatively easy consequence of an inequality it proves on the way: ordering the vertices x of A by P(x ↔ b), the probability that o
-            reaches x before any earlier vertex of A, times P(x ↔ b), summed over A, is at most P(o ↔ b); pulling out the minimum gives
-            P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b), which is Conjecture 1 for every finite weighted graph.</p>
-            <p>Here the remaining conjectures and questions of the paper are proved on top of that development: Conjectures 2, 4 and 6 and
-            Questions 5, 7 and 9, each in a stronger form than stated, and Conjecture 1 as above. Question 8, as printed, has a negative answer
-            when its minimiser is not unique, and is open otherwise. The proofs are in the
-            <a href="document/kn_summary.pdf">summary</a> (PDF); the Lean files are in <a href="lean/">lean/</a>.</p>
+            <p>Kozma and Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>) reduced the statement
+            \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), to an inequality on finite graphs, their
+            Conjecture 3, and posed four further conjectures and four questions about connection probabilities in finite graphs:
+            Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for
+            Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions d ≥ 2</em> (Claude, Anthropic, under the direction of
+            Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a relatively easy consequence of
+            an inequality it proves on the way, as explained below.</p>
+            <p>Here the remaining conjectures and questions of the paper are proved on top of that development: Conjectures 1, 2, 4
+            and 6 and Questions 5, 7 and 9, each in a stronger form than stated. Question 8, as printed, has a negative answer when its
+            minimiser is not unique, and is open otherwise. The proofs are in the <a href="document/kn_summary.pdf">summary</a> (PDF);
+            the Lean files are in <a href="lean/">lean/</a>.</p>
+        </section>
+
+        <section>
+            <h2>Notation</h2>
+            <p>Throughout, \(G\) is a finite graph in which each edge \(e\) is open independently with probability \(p_e \in [0,1]\).
+            For vertices \(x\) and \(y\), \(x \leftrightarrow y\) means that \(x\) and \(y\) are joined by a path of open edges, and
+            \(C_x\) is the set of vertices joined to \(x\), the open cluster of \(x\). For a set \(A\) of vertices, \(o \leftrightarrow A\)
+            means that \(o \leftrightarrow x\) for some \(x \in A\), and \(o \nleftrightarrow A\) is its negation. A comma inside a
+            probability means intersection, \(\mathbb{P}(E, F) = \mathbb{P}(E \cap F)\), and \(\mathbb{E}[X;\, E]\) is the expectation of \(X\)
+            on the event \(E\). Increasing functions \(F\) of vertex sets are those with \(F(K) \le F(L)\) whenever \(K \subseteq L\).
+            Page numbers refer to the paper.</p>
+        </section>
+
+        <section>
+            <h2>Conjecture 1 from the development</h2>
+            <p>Fix \(A\), \(o\) and \(b\), and order the vertices of \(A\) so that \(\mathbb{P}(x \leftrightarrow b)\) is nondecreasing. The
+            development proves
+            \[
+              \sum_{x \in A} \mathbb{P}\bigl(o \leftrightarrow x \text{ and } o \nleftrightarrow y \text{ for every } y \in A \text{ before } x\bigr)\,
+              \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b).
+            \]
+            The events on the left partition \(\{o \leftrightarrow A\}\), and every factor \(\mathbb{P}(x \leftrightarrow b)\) is at least the
+            minimum over \(A\), so
+            \[
+              \mathbb{P}(o \leftrightarrow A)\, \min_{x \in A} \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b),
+            \]
+            which is Conjecture 1 (p. 3) for every finite graph and every choice of edge probabilities.</p>
         </section>
 
         <section>
             <h2>The results</h2>
-            <p>Bernoulli bond percolation on a finite weighted graph (independent pairs with weights in [0,1], an absent edge being weight 0), a
-            nonempty set A of vertices, vertices o and b, C<sub>x</sub> the open cluster of x, and an increasing real function F of vertex sets:</p>
             <ul>
-                <li><strong>Conjecture 4</strong> (p. 32), with the minimiser specified: if a ∈ A minimises E F(C<sub>x</sub>) over A, then
-                    E[F(C<sub>a</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A]; hence min<sub>x∈A</sub> E[F(C<sub>x</sub>); o ↔ A] ≤ E[F(C<sub>o</sub>); o ↔ A],
-                    also in the paper's vocabulary of monotone cluster properties f(v, ω).</li>
-                <li><strong>Conjecture 2</strong> (p. 3), in the pre-FKG form (3): min<sub>x∈A</sub> P(x ↔ b, o ↔ A) ≤ P(o ↔ b, o ↔ A); hence
-                    min<sub>x∈A</sub> P(o ↔ A, x ↔ b) ≤ P(o ↔ b).</li>
-                <li><strong>Question 7</strong> (p. 36), answered affirmatively: if a ∈ A minimises P(a ↔ b) over A, then
-                    P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A), the paper's display (41).</li>
-                <li><strong>Conjecture 1</strong> (p. 3): P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b); and <strong>Conjecture 3</strong> (p. 15)
-                    from it.</li>
-                <li><strong>Question 5</strong> (p. 32), answered affirmatively: there are coefficients c<sub>a</sub> ≥ 0, a ∈ A, summing to 1 and not
-                    depending on b, with Σ<sub>a∈A</sub> c<sub>a</sub> P(o ↔ A, a ↔ b) ≤ P(o ↔ b) for every b, the paper's display (38).</li>
-                <li><strong>Conjecture 6</strong> (p. 34), without either of its endpoint hypotheses: for e = {v, w} and a ∈ A minimising
-                    P<sub>G</sub>(x ↔ b) over A, P<sub>G⏚e</sub>(v ↔ b, v ↔ A) ≥ P<sub>G⏚e</sub>(a ↔ b, v ↔ A), where G⏚e is the graph with the edge e
-                    forced open; the paper's display (40) follows, and its hypothesis (39) is itself a consequence of Conjecture 1.</li>
-                <li><strong>Question 9</strong> (p. 36), answered affirmatively: if a ∈ A minimises P<sub>H</sub>(a ↔ b) over A, where H is the graph
-                    with all edges at o removed, then (41) holds in G.</li>
-                <li><strong>Question 8</strong> (p. 36) takes the minimiser of P(a ↔ b, o ↮ A) over A. When P(o ↮ A) = 0 every a ∈ A minimises, and
-                    (41) can fail: on the path o – a<sub>1</sub> – a<sub>2</sub> – b with weights 1, 1/2, 1 and A = {a<sub>1</sub>, a<sub>2</sub>},
-                    P(o ↔ A, a<sub>2</sub> ↔ b) = 1 while P(o ↔ b, o ↔ A) = 1/2. With a unique minimiser the question is open; it is equivalent to
-                    the every-minimiser form restricted to P(o ↮ A) &gt; 0, and it reduces to weights in (0, 1).</li>
+                <li><strong>Conjecture 4</strong> (p. 32). Let \(F\) be an increasing function of vertex sets and let \(a \in A\) minimise
+                    \(\mathbb{E}\,F(C_x)\) over \(x \in A\). Then
+                    \(\mathbb{E}[F(C_a);\, o \leftrightarrow A] \le \mathbb{E}[F(C_o);\, o \leftrightarrow A]\). In particular
+                    \(\min_{x \in A} \mathbb{E}[F(C_x);\, o \leftrightarrow A] \le \mathbb{E}[F(C_o);\, o \leftrightarrow A]\), which is
+                    Conjecture 4; the same holds in the paper's formulation with a monotone cluster property \(f(v, \omega)\) in place of
+                    \(F(C_v)\).</li>
+                <li><strong>Conjecture 2</strong> (p. 3), in the pre-FKG form (3):
+                    \(\min_{x \in A} \mathbb{P}(x \leftrightarrow b,\, o \leftrightarrow A) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\).
+                    Hence \(\min_{x \in A} \mathbb{P}(o \leftrightarrow A,\, x \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b)\), which is
+                    display (2).</li>
+                <li><strong>Question 7</strong> (p. 36), answered yes. Let \(a \in A\) minimise \(\mathbb{P}(x \leftrightarrow b)\) over
+                    \(x \in A\). Then \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\),
+                    which is display (41).</li>
+                <li><strong>Conjecture 1</strong> (p. 3), as above, and <strong>Conjecture 3</strong> (p. 15) from it: for every
+                    \(\varepsilon > 0\) there is \(\delta > 0\) such that if \(\mathbb{P}(o \leftrightarrow A) > 1 - \delta\) and
+                    \(\mathbb{P}(x \leftrightarrow b) > 1 - \delta\) for every \(x \in A\), then \(\mathbb{P}(o \leftrightarrow b) > 1 - \varepsilon\).</li>
+                <li><strong>Question 5</strong> (p. 32), answered yes. There are numbers \(c_a \ge 0\), \(a \in A\), with
+                    \(\sum_{a \in A} c_a = 1\), depending on \(G\), \(A\) and \(o\) but not on \(b\), such that
+                    \(\sum_{a \in A} c_a\, \mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b)\) for every vertex
+                    \(b\), which is display (38).</li>
+                <li><strong>Conjecture 6</strong> (p. 34). Let \(e = \{v, w\}\) be an edge of \(G\), let \(a \in A\) minimise
+                    \(\mathbb{P}_G(x \leftrightarrow b)\) over \(x \in A\), and let \(G/e\) be the graph with the edge \(e\) shortened, that is,
+                    with the probability that \(e\) is open set to \(1\). Then
+                    \(\mathbb{P}_{G/e}(v \leftrightarrow b,\, v \leftrightarrow A) \ge \mathbb{P}_{G/e}(a \leftrightarrow b,\, v \leftrightarrow A)\),
+                    and therefore
+                    \(\mathbb{P}_{G/e}(v \leftrightarrow b) \ge \mathbb{P}_{G/e}(v \leftrightarrow A)\, \mathbb{P}_{G/e}(a \leftrightarrow b)\),
+                    which is display (40). The paper assumes in addition its display (39); that assumption is not needed, and it is in any
+                    case a consequence of Conjecture 1.</li>
+                <li><strong>Question 9</strong> (p. 36), answered yes. Let \(H\) be \(G\) with every edge at \(o\) removed and let
+                    \(a \in A\) minimise \(\mathbb{P}_H(x \leftrightarrow b)\) over \(x \in A\). Then
+                    \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\).</li>
+                <li><strong>Question 8</strong> (p. 36) asks the same for a vertex \(a \in A\) minimising
+                    \(\mathbb{P}(x \leftrightarrow b,\, o \nleftrightarrow A)\). If \(\mathbb{P}(o \nleftrightarrow A) = 0\) then every vertex of \(A\)
+                    is a minimiser, and the inequality can fail: on the path \(o - a_1 - a_2 - b\) with edge probabilities \(1\),
+                    \(1/2\), \(1\) and \(A = \{a_1, a_2\}\), one has \(\mathbb{P}(o \leftrightarrow A,\, a_2 \leftrightarrow b) = 1\) but
+                    \(\mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A) = 1/2\). When the minimiser is unique the question is open; it is
+                    then equivalent to the version for every minimiser under the restriction \(\mathbb{P}(o \nleftrightarrow A) > 0\), and
+                    it suffices to treat edge probabilities in \((0, 1)\).</li>
             </ul>
-            <p>In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra hypotheses
-            (Theorems 2, 3 and 11), for an observer isolated in G ∖ A and its one-vertex extension (Theorems 4 and 5), and, for every graph and
-            every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem 9).</p>
+            <p>In the paper, Conjectures 2 and 4 are proved when \(A\) has two vertices (Theorems 1 and 7), when \(A\) has three
+            vertices under extra hypotheses (Theorems 2, 3 and 11), when \(o\) is isolated in \(G \setminus A\) or joined only to
+            \(A\) and to one further vertex (Theorems 4 and 5), and for the functions \(f = \mathbf{1}\{|C| \ge k\}\) with \(k \le 4\) on
+            every graph (Theorem 9).</p>
         </section>
 
         <section>
             <h2>The method</h2>
-            <p>The development's inequality above is proved with the clusters of the vertices of A conditioned on avoiding a given set Y of
-            vertices; the vertices of A are ordered by E[F(C<sub>x</sub>) | x ↮ Y], and Σ<sub>x</sub> P(o ↮ Y, x is the first vertex of A reached by
-            C<sub>o</sub>) · E[F(C<sub>x</sub>) | x ↮ Y] ≤ E[F(C<sub>o</sub>); o ↮ Y, o ↔ A]. With Y = {a} for the vertex a of least mean and the
-            function φ<sub>a</sub>(K) = F(K) − E F(C<sub>a</sub> in the graph with all pairs meeting K removed), which is increasing in K, every
-            conditional mean on the left is nonnegative, and this is Conjecture 4 with the minimiser specified. Conjecture 6 and Question 9 come
-            from the same inequality with the union of the clusters of several vertices in place of C<sub>o</sub>: the union of the clusters of
-            v and w does not depend on the state of the edge {v, w}, and the cluster of o is the union of the clusters of o and its open
-            neighbours in the graph with the edges at o removed.</p>
+            <p>The proofs run the development's argument with two changes. First, the clusters of the vertices of \(A\) are
+            conditioned on missing a given set \(Y\) of vertices: if the vertices of \(A\) are ordered so that
+            \(\mathbb{E}[F(C_x) \mid x \nleftrightarrow Y]\) is nondecreasing, then
+            \[
+              \sum_{x \in A} \mathbb{P}\bigl(o \nleftrightarrow Y,\; o \leftrightarrow x,\; o \nleftrightarrow y \text{ for every } y \in A \text{ before } x\bigr)\,
+              \mathbb{E}[F(C_x) \mid x \nleftrightarrow Y] \;\le\; \mathbb{E}[F(C_o);\; o \nleftrightarrow Y,\; o \leftrightarrow A].
+            \]
+            Second, \(F\) is replaced by the function
+            \(K \mapsto F(K) - \mathbb{E}\,F(C_a')\), where \(C_a'\) is the cluster of \(a\) in the graph with every edge at a vertex of
+            \(K\) removed; this function is increasing in \(K\). Taking \(Y = \{a\}\) for the vertex \(a\) of least mean makes every
+            conditional expectation on the left nonnegative, and the inequality becomes Conjecture 4 with the minimiser specified.
+            The other conjectures and questions follow from that statement. For Conjecture 6 and Question 9 the cluster of \(o\) is
+            replaced by the union of the clusters of a set of vertices: the union of the clusters of \(v\) and \(w\) does not depend on
+            whether the edge \(\{v, w\}\) is open, and the cluster of \(o\) is the union of the clusters of \(o\) and of its open
+            neighbours in the graph with the edges at \(o\) removed.</p>
         </section>
 
         <section>
             <h2>Implications</h2>
             <ul>
-                <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 holds with every link proved, the last in the development.</li>
-                <li>The vertex of A minimising P(x ↔ b) is itself a valid choice in the pre-FKG comparison (Question 7), uniformly in the
-                    graph and in the number of vertices of A; the same holds for the minimiser in the graph with the edges at o removed
-                    (Question 9).</li>
-                <li>Conjecture 6 holds without its endpoint hypotheses, so the paper's Lemma 13 applies without them.</li>
-                <li>The conditioned inequality of the method needs no nonnegativity of F and holds for the union of the clusters of any finite
-                    set of vertices; it is available for further use.</li>
+                <li>The paper's chain of implications, Conjecture 4 to (3) to Conjecture 2 to Conjecture 1 to Conjecture 3 to
+                    \(\theta(p_c) = 0\), holds with every link proved, the last one in the development.</li>
+                <li>The vertex of \(A\) minimising \(\mathbb{P}(x \leftrightarrow b)\) is itself a valid choice in the pre-FKG comparison
+                    (Question 7), for every graph and every size of \(A\); so is the minimiser computed in the graph with the edges
+                    at \(o\) removed (Question 9).</li>
+                <li>Conjecture 6 holds without its hypothesis (39), so the paper's Lemma 13 applies without it.</li>
+                <li>The conditioned inequality of the method holds for the union of the clusters of any finite set of vertices in
+                    place of \(C_o\), and it needs no sign condition on \(F\).</li>
             </ul>
         </section>
 
@@ -99,9 +155,9 @@
                 <tr><td><a href="document/kn_summary.pdf">kn_summary.pdf</a></td>
                     <td>The summary: statements and proofs of all the results above.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
-                    <td>The Lean modules (AvoidedDefs, AvoidedPeelTools, AvoidedPeel, AvoidedTransfer, AvoidedGen, Projection, AvoidedClosure, Statements, Conjectures, ClusterProperty, Statements6, PairSource, Conjecture6Reduction, Question5Dual, Question5), <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and
-                    <a href="lean/README.md">README.md</a>. Every theorem is accepted with exactly the standard axioms <code>propext</code>,
-                    <code>Classical.choice</code>, <code>Quot.sound</code> and no <code>sorry</code>. The modules for Conjecture 6 and Question 9 follow.</td></tr>
+                    <td>The Lean modules, <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and <a href="lean/README.md">README.md</a>.
+                    Every theorem is accepted with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
+                    <code>Quot.sound</code> and no <code>sorry</code>. The modules for Conjecture 6 and Question 9 follow.</td></tr>
             </table>
         </section>
 
@@ -112,9 +168,11 @@ mkdir -p .lake/build/lib/lean/KN         # copy the .lean files to KN/, then:
 for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
-            <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
-            The development's sources can be pinned first with <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
-            <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, with minimal human intervention. Released under the Apache License 2.0, matching the development.</p>
+            <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each
+            <code>[propext, Classical.choice, Quot.sound]</code>. The development's sources can be pinned first with
+            <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
+            <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, with minimal human intervention.
+            Released under the Apache License 2.0, matching the development.</p>
         </section>
     </main>
 </body>
