@@ -30,8 +30,7 @@
             items: Conjectures 1, 2, 3, 4 and 6 and Questions 5, 7, 8 and 9. The document
             <a href="document/kozma_nitzan_all_conjectures_proof.pdf">kozma_nitzan_all_conjectures_proof</a>
             (<a href="document/kozma_nitzan_all_conjectures_proof.tex">TeX</a>) proposes proofs of all nine on top of the development's
-            methods. The Lean files in <a href="lean/">lean/</a> machine-check the part concerning Conjectures 1, 2, 3 and 4, Question 7 and
-            the probabilistic half of Question 5; Lean accepts every theorem with exactly the standard axioms <code>propext</code>,
+            methods. The Lean files in <a href="lean/">lean/</a> machine-check the part concerning Conjectures 1, 2, 3 and 4 and Questions 5 and 7; Lean accepts every theorem with exactly the standard axioms <code>propext</code>,
             <code>Classical.choice</code>, <code>Quot.sound</code>, and no <code>sorry</code>
             (<a href="lean/VERIFICATION.log">VERIFICATION.log</a>). Conjecture 6 and Question 9 are proved in the document only; Question 8
             is not settled. The status of each item is stated below.</p>
@@ -53,9 +52,10 @@
                 <li><strong>Conjecture 1</strong> (p. 3): P(o ↔ A) · min<sub>x∈A</sub> P(x ↔ b) ≤ P(o ↔ b) (<code>conjecture1_holds</code>, from (3) by the
                     Harris inequality; it is also a short corollary of the development's own first-relay bound).</li>
                 <li><strong>Conjecture 3</strong> (p. 15), from Conjecture 1 (<code>conjecture3_holds</code>).</li>
-                <li><strong>Question 5</strong> (p. 32), probabilistic half: for every nonnegative weight vector y on the vertices some relay a ∈ A
-                    satisfies Σ<sub>b</sub> y<sub>b</sub> P(o ↔ A, a ↔ b) ≤ Σ<sub>b</sub> y<sub>b</sub> P(o ↔ b) (<code>question5_dual</code>). The
-                    coefficient vector asked for in (38) follows by finite-dimensional separation; that step is being formalized.</li>
+                <li><strong>Question 5</strong> (p. 32), answered affirmatively: there are coefficients c<sub>a</sub> ≥ 0, a ∈ A, summing to 1 and not
+                    depending on b, with Σ<sub>a∈A</sub> c<sub>a</sub> P(o ↔ A, a ↔ b) ≤ P(o ↔ b) for every b, the paper's display (38)
+                    (<code>question5_holds</code>; from Conjecture 4 for weighted vertex counts, <code>question5_dual</code>, and
+                    finite-dimensional separation).</li>
                 <li><strong>Conjecture 6</strong> (p. 34), reductions: its strong form implies the paper's display (40)
                     (<code>conjecture6_of_conjecture6Strong</code>); its hypothesis (39) is a consequence of Conjecture 1
                     (<code>conjecture6_hypotheses_vacuous</code>); the strong form holds whenever the minimiser is taken in the graph with the
@@ -80,8 +80,6 @@
                     (41). The document's proof conditions on the edges at o and applies the source-set theorem to the random set of open
                     neighbours; it needs that theorem for source sets of every size. Not machine-checked. Exhaustive searches over
                     four-vertex weighted graphs found no counterexample, in either reading of the minimiser.</li>
-                <li><strong>Question 5</strong>: the separation step (a compact convex set of coefficient vectors, a point outside it, a
-                    separating functional, then Conjecture 4 for a weighted vertex count). Standard; formalization in progress.</li>
                 <li><strong>Countable graphs</strong>: the document extends the inequalities to countable graphs and re-derives
                     θ(p<sub>c</sub>) = 0 through the paper's Theorem 6. The development already contains θ(p<sub>c</sub>) = 0 as a Lean theorem, so
                     this adds no new statement.</li>
@@ -102,9 +100,9 @@
             <ul>
                 <li>The paper's chain 4 ⟹ (3) ⟹ 2 ⟹ 1 ⟹ 3 ⟹ θ(p<sub>c</sub>) = 0 is formal from top to bottom: the first four implications
                     in <code>Conjectures.lean</code>, the last in the development (its formalization of the paper's Theorem 6).</li>
-                <li>Of the paper's nine numbered items, five are machine-checked (Conjectures 1–4, Question 7), one is machine-checked up to a
-                    standard convexity step (Question 5), two have written proofs in the document that passed independent audits but are not
-                    yet in Lean (Conjecture 6, Question 9), and one remains open (Question 8).</li>
+                <li>Of the paper's nine numbered items, six are machine-checked (Conjectures 1–4, Questions 5 and 7), two have written proofs
+                    in the document that passed independent audits but are not yet in Lean (Conjecture 6, Question 9), and one remains open
+                    (Question 8).</li>
                 <li>The relay minimising the unconditional connection probability is itself a valid relay in the pre-FKG comparison
                     (Question 7), uniformly in the graph and in the number of relays.</li>
                 <li>Conjecture 6 holds without either of its endpoint hypotheses (document); hypothesis (39) is in any case a consequence of
@@ -123,8 +121,8 @@
                     <td>The closed statements of Conjectures 1, 2, 4 and Question 7, and of Conjecture 6 (strong and paper forms), in the development's vocabulary.</td></tr>
                 <tr><td><a href="lean/Conjectures.lean">Conjectures.lean</a>, <a href="lean/ClusterProperty.lean">ClusterProperty.lean</a></td>
                     <td>The theorems for Conjectures 1–4 and Question 7; Conjecture 4 in the paper's cluster-property vocabulary.</td></tr>
-                <tr><td><a href="lean/PairSource.lean">PairSource.lean</a>, <a href="lean/Conjecture6Reduction.lean">Conjecture6Reduction.lean</a>, <a href="lean/Question5Dual.lean">Question5Dual.lean</a></td>
-                    <td>Lemmas toward Conjecture 6 (pair-source projection identities, overlap lemma, reductions) and the probabilistic half of Question 5.</td></tr>
+                <tr><td><a href="lean/PairSource.lean">PairSource.lean</a>, <a href="lean/Conjecture6Reduction.lean">Conjecture6Reduction.lean</a>, <a href="lean/Question5Dual.lean">Question5Dual.lean</a>, <a href="lean/Question5.lean">Question5.lean</a></td>
+                    <td>Lemmas toward Conjecture 6 (pair-source projection identities, overlap lemma, reductions); Question 5.</td></tr>
                 <tr><td><a href="lean/VERIFICATION.log">VERIFICATION.log</a>, <a href="lean/README.md">README.md</a></td>
                     <td>Clean sequential recompile with <code>#print axioms</code>; the statements, files and commands in one place.</td></tr>
                 <tr><td><a href="document/kozma_nitzan_all_conjectures_proof.pdf">kozma_nitzan_all_conjectures_proof.pdf</a>, <a href="document/kozma_nitzan_all_conjectures_proof.tex">.tex</a></td>
@@ -135,13 +133,13 @@
         <section>
             <h2>How to check</h2>
             <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
-mkdir -p .lake/build/lib/lean/KN         # copy the fourteen .lean files to KN/, then:
-for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual; do
+mkdir -p .lake/build/lib/lean/KN         # copy the fifteen .lean files to KN/, then:
+for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
-            <p>Expected: the fourteen <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
+            <p>Expected: the fifteen <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each <code>[propext, Classical.choice, Quot.sound]</code>.
             The development's sources can be pinned first with <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
-            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). The document is ChatGPT's; its Conjecture 6 argument was corrected after a Codex audit found the error described above. Claude Fable 5.1 designed the Lean formalization, wrote and machine-checked eight of the fourteen modules and this page, and specified the modules Projection, AvoidedClosure and PairSource, which were written by the ChatGPT model through Codex and recompiled by Claude; ClusterProperty, Conjecture6Reduction and Question5Dual were contributed by Claude Opus audit and research passes. All mathematics below the avoided first-relay bound is the development's. Review status: three independent Claude Opus audit passes of the Lean certificate (statement fidelity, proof validity, public text) found no mathematical error; their edits are incorporated. The development itself has not been refereed by external experts (see its README, 'Provenance and review status'). Released under the Apache License 2.0, matching the development.</p>
+            <p class="note">Produced entirely by AI systems, Claude Fable 5.1 (max) and ChatGPT 5.6 sol (ultra). The document is ChatGPT's; its Conjecture 6 argument was corrected after a Codex audit found the error described above. Claude Fable 5.1 designed the Lean formalization, wrote and machine-checked eight of the fifteen modules and this page, and specified the modules Projection, AvoidedClosure, PairSource and Question5, which were written by the ChatGPT model through Codex and recompiled by Claude; ClusterProperty, Conjecture6Reduction and Question5Dual were contributed by Claude Opus audit and research passes. All mathematics below the avoided first-relay bound is the development's. Review status: three independent Claude Opus audit passes of the Lean certificate (statement fidelity, proof validity, public text) found no mathematical error; their edits are incorporated. The development itself has not been refereed by external experts (see its README, 'Provenance and review status'). Released under the Apache License 2.0, matching the development.</p>
         </section>
     </main>
 </body>

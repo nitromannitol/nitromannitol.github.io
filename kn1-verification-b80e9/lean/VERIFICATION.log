@@ -1,4 +1,4 @@
-# KN modules: clean sequential recompile (2026-09-02T23:56Z)
+# KN modules: clean sequential recompile (2026-09-03T00:08Z)
 # Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
 # Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the development's pin)
 ## KN/AvoidedDefs.lean (      79 lines)
@@ -44,4 +44,7 @@ EXIT=0
 EXIT=0
 ## KN/Question5Dual.lean (      82 lines)
 'KNAll.question5_dual' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question5.lean (     150 lines)
+'KNAll.question5_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
