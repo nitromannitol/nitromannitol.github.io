@@ -1,6 +1,6 @@
 # Proofs of the Kozma–Nitzan conjectures: Lean files
 
-Thirty-seven Lean modules on top of Anthropic's Lean proof of θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d (Lean 4.32.0,
+Thirty-eight Lean modules on top of Anthropic's Lean proof of θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d (Lean 4.32.0,
 that proof's Mathlib pin). Every theorem reports exactly `[propext, Classical.choice, Quot.sound]` (`VERIFICATION.log`); no
 `sorry`, no axioms. Vocabulary: `prodBernoulli`, `openConn`, `openCluster` of that proof; vertices `Fin n`, weights in
 [0,1] on all pairs (absent edge = weight 0); `x ↔ y` = joined by an open path; `C_x` the open cluster; `o ↔ A` = `⋃_{a∈A} {o ↔ a}`.
@@ -35,7 +35,7 @@ every graph and every `A`, for the cluster properties `f = 1{|C| ≥ k}` with `k
 
 ## Files
 
-`AvoidedDefs`, `AvoidedPeelTools`, `AvoidedClosure`, `AvoidedGen`, `AvoidedPeel`, `AvoidedTransfer`, `Projection`, `Statements`, `Conjectures`, `ClusterProperty`, `Statements6`, `Conjecture6Reduction`, `PairSource`, `GuardedDefs`, `GuardedBasic`, `GuardedKernel`, `GuardedDecoy`, `GuardedTwoCluster`, `PairGuardedCSH`, `PairSurplus`, `PairSurplusClosure`, `PairFixedMin`, `Conjecture6Proof`, `Question5Dual`, `Question5`, `Question8Defs`, `Question8Cases`, `Question8Counterexample`, `Question8Equivalence`, `Question8Interior`, `Question8Sufficient`, `SourceGeneralCSH`, `SourceSurplus`, `SourceProjection`, `Statements9`, `Question9Reduction`, `Question9` (`.lean`, compile in this order); `Projection.REPORT.md`, `AvoidedClosure.REPORT.md`; `VERIFICATION.log`.
+`AvoidedDefs`, `AvoidedPeelTools`, `AvoidedClosure`, `AvoidedGen`, `AvoidedPeel`, `AvoidedTransfer`, `Projection`, `Statements`, `Conjectures`, `ClusterProperty`, `Statements6`, `Conjecture6Reduction`, `PairSource`, `GuardedDefs`, `GuardedBasic`, `GuardedKernel`, `GuardedDecoy`, `GuardedTwoCluster`, `PairGuardedCSH`, `PairSurplus`, `PairSurplusClosure`, `PairFixedMin`, `Conjecture6Proof`, `Question5Dual`, `Question5`, `Question8Defs`, `Question8Cases`, `Question8Counterexample`, `Question8Equivalence`, `Question8Interior`, `Question8Sufficient`, `SourceGeneralCSH`, `SourceSurplus`, `SourceProjection`, `Statements9`, `Question9Reduction`, `Question9`, `SiteStatements` (`.lean`, compile in this order); `Projection.REPORT.md`, `AvoidedClosure.REPORT.md`; `VERIFICATION.log`.
 
 ## How to check
 
@@ -43,7 +43,7 @@ From the root of Anthropic's Lean proof (optionally first `shasum -a 256 -c /pat
 `lake exe cache get && lake build`, copy the `.lean` files to `KN/` and run
 
     mkdir -p .lake/build/lib/lean/KN
-    for m in AvoidedDefs AvoidedPeelTools AvoidedClosure AvoidedGen AvoidedPeel AvoidedTransfer Projection Statements Conjectures ClusterProperty Statements6 Conjecture6Reduction PairSource GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Question5Dual Question5 Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Interior Question8Sufficient SourceGeneralCSH SourceSurplus SourceProjection Statements9 Question9Reduction Question9; do
+    for m in AvoidedDefs AvoidedPeelTools AvoidedClosure AvoidedGen AvoidedPeel AvoidedTransfer Projection Statements Conjectures ClusterProperty Statements6 Conjecture6Reduction PairSource GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Question5Dual Question5 Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Interior Question8Sufficient SourceGeneralCSH SourceSurplus SourceProjection Statements9 Question9Reduction Question9 SiteStatements; do
       lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
     done
 
@@ -54,3 +54,7 @@ Expected: the `#print axioms` lines of `VERIFICATION.log`, all `[propext, Classi
 All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee. Released under
 the
 Apache License 2.0, the licence of Anthropic's Lean proof.
+
+The module `SiteStatements` states the site percolation model, the critical statement for site percolation, and the
+finite hyperedge inequality that the accompanying draft `../document/site_percolation_criticality.pdf` sets out to prove.
+It contains definitions and statements only; those results are not proved here.
