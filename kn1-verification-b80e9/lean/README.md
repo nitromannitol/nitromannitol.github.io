@@ -23,9 +23,9 @@ development's Mathlib pin). Every theorem reports exactly `[propext, Classical.c
   `E[(F(C_v ∪ C_w) − F(C_a)); S ↮ a, H] = E[φ_a(C_v ∪ C_w); S ↮ a, H]` with `φ_a(K) = F(K) − E F(C_a in the graph with all pairs meeting
   K removed)`, and `E[(F(C_v ∪ C_w) − F(C_a)); S ↮ a] ≥ 0` when `E F(C_a) ≤ E F(C_v)` (`PairSource`).
 
-In print, Conjectures 2 and 4 are proved for two relays (Theorems 1 and 7), for three relays under extra
-hypotheses (Theorems 2, 3 and 11), for an observer isolated in `G ∖ A` and its one-vertex extension (Theorems 4
-and 5), and, for every graph and every relay set, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem
+In print, Conjectures 2 and 4 are proved when `A` has two vertices (Theorems 1 and 7), three vertices under extra
+hypotheses (Theorems 2, 3 and 11), when `o` is isolated in `G ∖ A` or joined only to `A` and one further vertex (Theorems 4
+and 5), and, for every graph and every `A`, for the cluster properties f = 1{|C| ≥ k} with k ≤ 4 (Theorem
 9). Both were open in general.
 
 ## Further results
