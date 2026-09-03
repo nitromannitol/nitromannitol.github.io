@@ -1,0 +1,658 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage{microtype}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\PP}{\mathbb P}
+\newcommand{\E}{\mathbb E}
+\newcommand{\con}{\leftrightarrow}
+\newcommand{\ncon}{\nleftrightarrow}
+\newcommand{\1}{\mathbf 1}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+
+\title{Kozma--Nitzan Question 8:\\
+exact statement, boundary counterexample, and a formalization-ready core}
+\author{}
+\date{September 2, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The printed Question 8 in Kozma--Nitzan minimizes
+\(\PP(a\con b,\,o\ncon A)\), not
+\(\PP(o\con A,\,a\con b)\).  This distinction is essential.  Under the
+usual reading that the desired inequality must hold for every chosen
+minimizer, the printed question is false when edge probabilities in
+\([0,1]\) are allowed: an exact four-vertex example is given below.  The
+unique-minimizer and positive-avoidance versions are not refuted by that
+example and remain open here.
+
+This note gives a statement-faithful formulation, the complete
+counterexample, several proved reductions, and an atomized proof interface
+for Lean.  In particular, the global unique-minimizer version is equivalent
+to the version for every minimizer under the hypothesis
+\(\PP(o\ncon A)>0\).  The reduction uses a support-graph lemma for a
+zero score and a pendant-relay tie breaker for a positive score.  No open
+claim is used as a proved lemma.
+\end{abstract}
+
+\section{Model and exact notation}
+
+Let \(G=(V,E)\) be a finite graph.  Every edge \(e\in E\) is independently
+open with probability \(p_e\in[0,1]\).  Connectivity in the random open
+subgraph is denoted by \(x\con y\), and connectivity to a nonempty finite
+set \(A\subseteq V\) by \(x\con A\).  Connectivity is reflexive.  Fix
+vertices \(o,b\in V\), and put
+\begin{equation}\label{eq:U}
+ U:=\{o\con A\},\qquad D:=U^{\mathrm c}=\{o\ncon A\}.
+\end{equation}
+For every \(x\in A\), define
+\begin{equation}\label{eq:three-quantities}
+ L_x:=\PP(U,\,x\con b),\qquad
+ \rho_x:=\PP(D,\,x\con b),\qquad
+ R:=\PP(U,\,o\con b).
+\end{equation}
+The elementary partition \(U\sqcup D\) gives
+\begin{equation}\label{eq:total-split}
+ \PP(x\con b)=L_x+\rho_x\qquad(x\in A).
+\end{equation}
+
+With this notation, display (41) in the paper is \(L_a\le R\), while the
+selection rule in its Question 8 is
+\begin{equation}\label{eq:q8-selection}
+ a\in\argmin_{x\in A}\rho_x
+ =\argmin_{x\in A}\PP(x\con b,\,o\ncon A).
+\end{equation}
+The slash in \(o\ncon A\) is visible in the rendered original PDF.  Text
+extraction from that PDF can display the glyph incorrectly as ``\(o=A\)'',
+which is the source of the earlier transcription error.
+
+\section{The formulations that must not be conflated}
+
+The phrase ``let \(a\) be the point minimising'' is ambiguous when there
+is a tie.  The following statements make the possible quantifiers explicit.
+
+\begin{definition}[Every-minimizer form]\label{def:every}
+For every finite graph \(G=(V,E)\), every weight vector
+\((p_e)_{e\in E}\in[0,1]^E\), every nonempty \(A\subseteq V\), every
+\(o,b\in V\), and every \(a\in A\),
+\begin{equation}\label{eq:every}
+ a\in A,\quad \rho_a\le \rho_x\ \text{for every }x\in A
+ \quad\Longrightarrow\quad L_a\le R.
+\end{equation}
+\end{definition}
+
+\begin{definition}[Strict-minimizer form]\label{def:strict}
+For every finite graph \(G=(V,E)\), every weight vector
+\((p_e)_{e\in E}\in[0,1]^E\), every nonempty \(A\subseteq V\), every
+\(o,b\in V\), and every \(a\in A\),
+\begin{equation}\label{eq:strict}
+ a\in A,\quad \rho_a<\rho_x\ \text{for every }x\in A\setminus\{a\}
+ \quad\Longrightarrow\quad L_a\le R.
+\end{equation}
+\end{definition}
+
+\begin{definition}[Positive-avoidance form]\label{def:positive}
+With the same closed quantifiers as in Definition~\ref{def:every}, the
+implication \eqref{eq:every} is required under the additional hypothesis
+\(\PP(D)>0\).
+\end{definition}
+
+\begin{definition}[Existential form]\label{def:exists}
+For every finite graph \(G=(V,E)\), every weight vector in \([0,1]^E\),
+every nonempty \(A\subseteq V\), and every \(o,b\in V\), there is at least
+one \(a\in\argmin_{x\in A}\rho_x\) for which \(L_a\le R\).
+\end{definition}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Formulation & Status established in this note \\
+\midrule
+Every minimizer, probabilities in \([0,1]\) & False; Theorem~\ref{thm:counterexample} \\
+Strict or unique minimizer & Open \\
+Every minimizer with \(\PP(D)>0\) & Open; equivalent to the strict form \\
+Some minimizing relay is good & Open in general \\
+Minimizer of \(L_x\), rather than \(\rho_x\) & True by strong Conjecture 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Thus the unqualified assertion ``Question 8 is proved'' is not justified.
+The every-minimizer form is refuted, and the other natural readings still
+require a new argument.
+
+\section{Exact four-vertex calculation}
+
+The counterexample is most transparent as a symbolic three-parameter
+calculation.
+
+\begin{lemma}[Weighted four-vertex path]\label{lem:path}
+Let
+\[
+ V=\{o,a_1,a_2,b\},\qquad A=\{a_1,a_2\},
+\]
+let \(s,q,t\in[0,1]\), and consider the path
+\[
+ o\;\text{---}\;a_1\;\text{---}\;a_2\;\text{---}\;b.
+\]
+Give its three consecutive edges probabilities \(s,q,t\), respectively,
+and give every other edge weight zero.  Then
+\begin{align}
+ \PP(U)&=s,                         & R&=sqt,\label{eq:path1}\\
+ L_{a_1}&=sqt,                      & L_{a_2}&=st,\label{eq:path2}\\
+ \rho_{a_1}&=(1-s)qt,              & \rho_{a_2}&=(1-s)t.\label{eq:path3}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Write \(X,Y,Z\) for the indicators that the three consecutive edges are
+open.  The vertex \(o\) has only the first edge available, and \(a_1\in A\),
+so \(U=\{X=1\}\).  The event \(\{o\con b\}\) is
+\(\{X=Y=Z=1\}\).  The connection \(a_1\con b\) requires
+\(Y=Z=1\), whereas \(a_2\con b\) requires only \(Z=1\).
+Independence now gives all six identities.
+\end{proof}
+
+\begin{theorem}[The every-minimizer form is false]\label{thm:counterexample}
+Definition~\ref{def:every} is false in the percolation model of the paper.
+The failure occurs with four distinct vertices and with \(o,b\notin A\).
+\end{theorem}
+
+\begin{proof}
+In Lemma~\ref{lem:path}, set
+\[
+ s=1,\qquad q=\frac12,\qquad t=1.
+\]
+These weights are admissible because the model permits probabilities in
+\([0,1]\).  Equation \eqref{eq:path3} gives
+\(\rho_{a_1}=\rho_{a_2}=0\), so both relays are minimizers in
+\eqref{eq:q8-selection}.  If the selected minimizer is \(a_2\), however,
+\[
+ L_{a_2}=1>\frac12=R
+\]
+by \eqref{eq:path1}--\eqref{eq:path2}.  This is precisely a failure of
+display (41).
+\end{proof}
+
+\begin{remark}[Why the obvious perturbation is not a strict counterexample]
+Keep \(0<s<1\), \(0\le q<1\), and \(t>0\).  Then
+\(\rho_{a_1}<\rho_{a_2}\), so \(a_1\) is the unique Question 8 minimizer;
+but \(L_{a_1}=R=sqt\).  The displayed boundary counterexample therefore
+does not refute Definition~\ref{def:strict}.
+\end{remark}
+
+\section{Diagnosis of the earlier argument}
+
+The already proved strong form of Conjecture 2 is
+\begin{equation}\label{eq:strongC2}
+ R\ge \min_{x\in A}L_x.
+\end{equation}
+Consequently, a relay minimizing \(L_x=\PP(o\con A,x\con b)\) satisfies
+display (41).  The earlier manuscript used exactly this observation, but
+it transcribed the selection rule in Question 8 as minimization of \(L_x\).
+The printed selection rule is minimization of \(\rho_x\).
+
+Identity \eqref{eq:total-split} says
+\[
+ \rho_x=\PP(x\con b)-L_x.
+\]
+It supplies no equivalence between the two rankings.  In the
+counterexample, both \(\rho\)-scores vanish while
+\(L_{a_1}=1/2\) and \(L_{a_2}=1\).  Hence the strong Conjecture 2 argument
+proves a useful neighboring statement, but it proves neither the strict
+nor the every-minimizer form of the printed Question 8.
+
+\section{Elementary cases that are settled}
+
+\begin{proposition}[One relay]\label{prop:singleton}
+If \(A=\{a\}\), then \(L_a=R\).
+\end{proposition}
+
+\begin{proof}
+On \(U=\{o\con a\}\), the open clusters of \(o\) and \(a\) coincide.
+Thus \(\1_{\{a\con b\}}=\1_{\{o\con b\}}\) on \(U\).
+\end{proof}
+
+\begin{proposition}[The degenerate locus]\label{prop:degenerate}
+If \(\PP(D)=0\), then every \(x\in A\) minimizes \(\rho_x\).  Moreover,
+\eqref{eq:strongC2} guarantees at least one minimizing relay \(x\) with
+\(L_x\le R\), but Theorem~\ref{thm:counterexample} shows that another
+minimizing relay can fail the inequality.
+\end{proposition}
+
+\begin{proof}
+The hypothesis makes \(\rho_x=\PP(D,x\con b)=0\) for every \(x\in A\).
+The existence assertion is \eqref{eq:strongC2}; the failure of the universal
+assertion was computed above.
+\end{proof}
+
+\begin{proposition}[Overlap with Question 7]\label{prop:q7}
+Suppose \(a\) is a Question 8 minimizer and also satisfies
+\[
+ \PP(a\con b)\le \PP(x\con b)\qquad(x\in A).
+\]
+Then \(L_a\le R\).
+\end{proposition}
+
+\begin{proof}
+This is exactly the already machine-checked affirmative answer to
+Question 7, applied to the specified unconditional minimizer.
+\end{proof}
+
+\begin{proposition}[Observer as target]\label{prop:b=o}
+If \(b=o\), then every \(a\in A\) satisfies \(L_a\le R\).
+\end{proposition}
+
+\begin{proof}
+Here \(R=\PP(U)\), whereas
+\(L_a=\PP(o\con A,a\con o)\le\PP(U)\).
+\end{proof}
+
+\section{Zero score under positive avoidance}
+
+The next lemma removes one boundary case from the open problem.  It is
+stated without assuming that all edge weights lie strictly between zero
+and one.
+
+\begin{lemma}[Support-graph lemma]\label{lem:zero-score}
+Assume \(\PP(D)>0\), let \(a\in A\), and suppose \(\rho_a=0\).  Then,
+up to a null event,
+\begin{equation}\label{eq:inclusion-zero}
+ \{a\con b\}\subseteq\{o\con b,\ o\con A\}.
+\end{equation}
+In particular, \(L_a\le R\).
+\end{lemma}
+
+\begin{proof}
+Let \(E_1=\{e:p_e=1\}\) be the forced-open edges and
+\(E_*=\{e:0<p_e<1\}\) the genuinely random edges.  Every prescribed
+subset of \(E_*\), together with all of \(E_1\), has positive probability.
+Since \(\PP(D)>0\), the component of \(o\) in the forced-open graph
+\((V,E_1)\) contains no point of \(A\).
+
+Suppose that a supported configuration contains an open path from \(a\)
+to \(b\), but does not connect \(o\) to \(b\).  Choose a simple open
+\(a\)-to-\(b\) path \(P\).  Form a new supported configuration by retaining
+all forced-open edges and retaining among the genuinely random edges only
+those belonging to \(P\).  It still connects \(a\) to \(b\).
+
+It cannot connect \(o\) to \(A\).  Indeed, a connection using no edge of
+\(P\cap E_*\) would put a point of \(A\) in the forced-open component of
+\(o\).  A connection using such an edge would connect \(o\) to the path
+\(P\), and hence to \(b\), already in the original configuration.  Both
+alternatives contradict the preceding paragraph or the choice of the
+original configuration.  The new configuration therefore belongs to
+\(\{a\con b\}\cap D\) and has positive probability, contradicting
+\(\rho_a=0\).
+
+Thus \(a\con b\) implies \(o\con b\) almost surely.  Whenever both
+connections hold, \(o\con a\) through \(b\); since \(a\in A\), the event
+\(U\) also holds.  This proves \eqref{eq:inclusion-zero}, and taking
+probabilities gives \(L_a\le R\).
+\end{proof}
+
+\section{A pendant-relay reduction}
+
+The strict-minimizer version and the positive-avoidance every-minimizer
+version are essentially the same conjecture.  This reduces the remaining
+work to a single precise target.
+
+\begin{lemma}[Pendant tie breaker]\label{lem:pendant}
+Assume \(\PP(D)>0\).  Let \(a\in A\) minimize \(\rho_x\), and suppose
+\(\rho_a>0\).  For \(0<q<1\), add a new vertex \(\widehat a\), joined only
+to \(a\) by an edge of probability \(q\), and replace \(a\) in the relay set:
+\[
+ \widehat A=(A\setminus\{a\})\cup\{\widehat a\}.
+\]
+Use hats for the quantities \eqref{eq:three-quantities} in the enlarged
+graph.  Then \(\widehat a\) is the unique minimizer of the new Question 8
+score.  More precisely,
+\begin{align}
+ \widehat\rho_{\widehat a}(q)&=q\rho_a,
+ \label{eq:pendant-rhoa}\\
+ \widehat\rho_x(q)&=q\rho_x+(1-q)
+   \PP(x\con b,\ o\ncon A\setminus\{a\})
+   \ge \rho_x \qquad(x\in A\setminus\{a\}),
+ \label{eq:pendant-rhox}\\
+ \widehat L_{\widehat a}(q)&=qL_a,
+ \label{eq:pendant-L}\\
+ \widehat R(q)&=qR+(1-q)
+   \PP(o\con b,\ o\con A\setminus\{a\}).
+ \label{eq:pendant-R}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Condition on the state of the new pendant edge.  If it is open, wiring
+\(\widehat a\) to \(a\) identifies the new events with the original ones.
+If it is closed, \(\widehat a\) cannot connect to the old target \(b\), and
+the new observer-to-relay event is \(\{o\con A\setminus\{a\}\}\).
+This proves all four identities.  Since
+\[
+ \{o\ncon A\}\subseteq\{o\ncon A\setminus\{a\}\},
+\]
+the last probability in \eqref{eq:pendant-rhox} is at least \(\rho_x\),
+which proves the displayed lower bound.  Therefore, for every old relay
+\(x\ne a\),
+\[
+ \widehat\rho_{\widehat a}=q\rho_a<\rho_a
+ \le\rho_x\le\widehat\rho_x.
+\]
+Thus \(\widehat a\) is the unique minimizer.
+\end{proof}
+
+\begin{theorem}[Equivalence of the two open cores]\label{thm:equivalence}
+The following global assertions are equivalent.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item The strict-minimizer form, Definition~\ref{def:strict}, holds for
+every finite weighted graph.
+\item The positive-avoidance form, Definition~\ref{def:positive}, holds for
+every finite weighted graph and every choice among tied minimizers.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Assume (i), suppose \(\PP(D)>0\), and choose any minimizing relay \(a\).
+If \(\rho_a=0\), Lemma~\ref{lem:zero-score} proves \(L_a\le R\).  If
+\(\rho_a>0\), apply (i) to the unique minimizer \(\widehat a\) constructed
+in Lemma~\ref{lem:pendant}.  Equations \eqref{eq:pendant-L} and
+\eqref{eq:pendant-R} give
+\[
+ qL_a\le qR+(1-q)\PP(o\con b,\ o\con A\setminus\{a\})
+ \qquad(0<q<1).
+\]
+Letting \(q\uparrow1\) gives \(L_a\le R\).  No limit theorem is needed
+for a formal proof: if \(\Delta=L_a-R>0\), then \(0<\Delta\le1\), and the
+choice \(q=1-\Delta/4\) makes
+\(q\Delta>(1-q)\PP(o\con b,o\con A\setminus\{a\})\), contradicting the
+last display.  Hence (ii) holds.
+
+Conversely, suppose (ii) and let \(a\) be a strict minimizer.  If
+\(\PP(D)>0\), apply (ii).  If \(\PP(D)=0\), all the scores are zero, so a
+strict minimizer can exist only when \(A=\{a\}\); Proposition~\ref{prop:singleton}
+then applies.  Thus (i) holds.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:equivalence} does not restore the false every-minimizer
+claim on \(\PP(D)=0\).  The positive-avoidance hypothesis is indispensable
+in the stated equivalence.
+\end{remark}
+
+\section{Reduction to interior edge weights}
+
+\begin{proposition}[Boundary closure for a strict minimizer]
+\label{prop:interior}
+It is enough to prove Definition~\ref{def:strict} when every edge weight
+lies in \((0,1)\).
+\end{proposition}
+
+\begin{proof}
+The claim is immediate for a singleton relay set.  Otherwise, a strict
+minimizer has a positive gap
+\[
+ \delta:=\min_{x\in A\setminus\{a\}}(\rho_x-\rho_a)>0.
+\]
+Every event probability on a finite graph is a multilinear polynomial in
+the edge weights.  Approximate an arbitrary weight vector \(p\in[0,1]^E\)
+by vectors \(p^{(n)}\in(0,1)^E\).  By continuity, the same relay \(a\)
+remains the strict minimizer for all sufficiently large \(n\).  The desired
+inequality at \(p^{(n)}\), followed by another use of continuity, gives the
+inequality at \(p\).
+\end{proof}
+
+Combining Proposition~\ref{prop:interior}, Theorem~\ref{thm:equivalence},
+and Lemma~\ref{lem:zero-score}, the genuinely open case may be stated with
+all of the following assumptions:
+\begin{equation}\label{eq:open-core-assumptions}
+ p_e\in(0,1),\quad |A|\ge2,\quad \PP(D)>0,\quad \rho_a>0,
+ \quad \rho_a<\rho_x\ (x\ne a).
+\end{equation}
+The conclusion still needed is \(L_a\le R\).
+
+\section{An exact event reduction and a proved sufficient condition}
+
+Fix \(a\in A\), put \(T=A\setminus\{a\}\), and define
+\begin{equation}\label{eq:Ea}
+ E_a:=\{o\ncon a,\ o\con T\}.
+\end{equation}
+
+\begin{lemma}[Cancellation on the connected branch]\label{lem:cancel}
+For every \(a\in A\),
+\begin{equation}\label{eq:delta-core}
+ L_a-R
+ =\PP(a\con b,E_a)-\PP(o\con b,E_a).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Partition \(U\) according as \(o\con a\) or \(o\ncon a\).  On
+\(\{o\con a\}\), the clusters of \(o\) and \(a\) coincide, so the two
+contributions cancel.  On \(\{o\ncon a\}\), the event \(U\) is exactly
+\(\{o\con T\}\), giving \eqref{eq:delta-core}.
+\end{proof}
+
+The next proposition records a route already supported by the avoided
+first-relay machinery.  It is a sufficient condition, not a proof that the
+Question 8 selection rule implies the condition.
+
+Let
+\begin{equation}\label{eq:Tplus}
+ T_+:=\{x\in T:\PP(x\ncon a)>0\}.
+\end{equation}
+For a relay \(x\in T_+\), set
+\begin{equation}\label{eq:mx}
+ m_x^{a}:=\PP(x\con b\mid x\ncon a).
+\end{equation}
+Choose an injective rank on \(T_+\) that is nondecreasing in these
+conditional probabilities, breaking ties arbitrarily.  Let \(J_x\) be the
+event that \(o\ncon a\) and \(x\) is the first relay of \(T_+\), in that
+rank, reached by \(o\).  These events are disjoint and their union is
+\(E_a\), up to a null event.  Indeed, if
+\(x\in T\setminus T_+\), then
+\(\{o\ncon a,o\con x\}\subseteq\{x\ncon a\}\) is null.  A finite union
+over the inactive relays is still null, so deleting them makes no
+contribution to \(E_a\).
+
+\begin{proposition}[A formalizable sufficient criterion]
+\label{prop:sufficient}
+Assume \(\PP(o\ncon a)>0\).  If
+\begin{equation}\label{eq:sufficient}
+ \PP(a\con b,a\ncon o)\,\PP(E_a)
+ \le \PP(a\ncon o)\sum_{x\in T_+}\PP(J_x)m_x^a,
+\end{equation}
+then \(L_a\le R\).  In particular, it is sufficient that
+\begin{equation}\label{eq:strong-sufficient}
+ \PP(a\con b\mid a\ncon o)
+ \le \min_{x\in T_+}
+       \PP(x\con b\mid x\ncon a),
+\end{equation}
+provided \(E_a\) has positive probability.
+\end{proposition}
+
+\begin{proof}
+The assumption \(\PP(o\ncon a)>0\) in particular implies \(a\ne o\).
+The denominator-free form of the two-cluster BHK inequality, conditioned
+on \(o\ncon a\), gives
+\begin{equation}\label{eq:BHK-use}
+ \PP(o\ncon a)\PP(a\con b,E_a)
+ \le \PP(a\con b,a\ncon o)\PP(E_a).
+\end{equation}
+The avoided first-relay inequality with avoided set \(\{a\}\), active
+relay set \(T_+\), and cluster functional
+\(K\mapsto\1_{\{b\in K\}}\) gives
+\begin{equation}\label{eq:GEN-use}
+ \PP(o\con b,E_a)\ge\sum_{x\in T_+}\PP(J_x)m_x^a.
+\end{equation}
+Combining \eqref{eq:sufficient}, \eqref{eq:BHK-use}, and
+\eqref{eq:GEN-use}, then cancelling the positive factor
+\(\PP(o\ncon a)\) and using Lemma~\ref{lem:cancel}, proves the first claim.
+For \eqref{eq:strong-sufficient}, use
+\(\sum_{x\in T_+}\PP(J_x)=\PP(E_a)\).  If \(E_a\) has positive
+probability, then \(T_+\) is nonempty, so the minimum in
+\eqref{eq:strong-sufficient} is defined.
+\end{proof}
+
+The missing bridge is now explicit: no proof is presently supplied that
+the Question 8 hypothesis \(\rho_a\le\rho_x\) forces
+\eqref{eq:sufficient}.  Numerical agreement of the final inequality cannot
+replace this implication.
+
+\subsection{A sharper conjectural bridge}
+
+The following inequality is a useful research target, but it is
+\emph{not proved in this note}.  Work under the strict assumptions
+\eqref{eq:open-core-assumptions}.  For \(x\in T\), put
+\begin{equation}\label{eq:beta}
+ d_x:=\PP(x\ncon a),\qquad
+ \beta_x:=\frac{\rho_x-\rho_a}{d_x}.
+\end{equation}
+Every \(d_x\) is positive: if \(x\con a\) almost surely, then the
+indicators of \(x\con b\) and \(a\con b\) agree almost surely, forcing
+\(\rho_x=\rho_a\) and contradicting strictness.  Rank \(T\) increasingly
+by \(\beta_x\), and define the associated first-relay events \(J_x\) on
+\(\{o\ncon a\}\) as above.  The candidate inequality is
+\begin{equation}\label{eq:conjectural-bridge}
+ \boxed{
+ R-L_a\ \ge\ \sum_{x\in T}\PP(J_x)
+       \frac{\rho_x-\rho_a}{\PP(x\ncon a)}.}
+\end{equation}
+It would immediately settle the strict case because every term on the
+right is nonnegative.  It has survived small-graph computational tests,
+but that is evidence only.
+
+The direct attempted derivation has a specific obstruction.  The natural
+cluster projection whose avoided relay integral equals
+\(\rho_x-\rho_a\) is not monotone, so the existing avoided first-relay
+theorem cannot be applied to it.  Any proof of
+\eqref{eq:conjectural-bridge} therefore needs either a monotone correction
+whose error has a controlled sign or a new signed version of the
+first-relay inequality.  A Lean development may state
+\eqref{eq:conjectural-bridge} as a closed proposition for future work, but
+must not import it as an axiom or use it in the proved chain above.
+
+\section{Lean handoff}
+
+The formalization should keep false, proved, and open declarations in
+separate namespaces or files.  A minimal declaration list is as follows.
+
+\begin{enumerate}[label=\texttt{Q8.\arabic*},leftmargin=4em]
+\item \texttt{U}, \texttt{q8L}, \texttt{q8Score}, and \texttt{q8R},
+corresponding to \eqref{eq:U}--\eqref{eq:three-quantities}.
+\item \texttt{IsQ8Min} and \texttt{IsQ8StrictMin}.
+\item Closed propositions \texttt{Question8EveryMin},
+\texttt{Question8Strict}, \texttt{Question8Positive}, and
+\texttt{Question8ExistsGoodMin}.  The first is to be refuted; the other
+three are statements only.
+\item \texttt{q8\_total\_split}, the identity \eqref{eq:total-split}.
+\item The six identities \eqref{eq:path1}--\eqref{eq:path3} on
+\texttt{Fin 4}, followed by \texttt{not\_question8EveryMin}.
+\item \texttt{q8\_singleton}, \texttt{q8\_bEqO}, and
+\texttt{q8\_degenerate\_allMin}.
+\item A support-atom lemma: a configuration has positive product-Bernoulli
+mass exactly when it contains every pair of weight one and contains no pair
+of weight zero.  Use it in \texttt{q8\_zeroScore},
+Lemma~\ref{lem:zero-score}, rather than introducing conditional
+probabilities.
+\item The four pendant identities \eqref{eq:pendant-rhoa}--\eqref{eq:pendant-R},
+then \texttt{q8Strict\_iff\_q8Positive}.  Concretely, enlarge
+\texttt{Fin n} to \texttt{Fin (n+1)}, embed old vertices with
+\texttt{Fin.castSucc}, use \texttt{Fin.last n} for \(\widehat a\), and
+define the new \texttt{Sym2} weight by cases: the pendant pair has weight
+\(q\), embedded old pairs retain \(w\), and all other new pairs have weight
+zero.
+\item \texttt{q8\_target\_split}, identity \eqref{eq:delta-core}.
+\item \texttt{q8\_of\_firstRelayCriterion},
+Proposition~\ref{prop:sufficient}, importing the already formalized avoided
+first-relay theorems \texttt{KNAll.genY\_all} and
+\texttt{sum\_le\_setIntegral\_of\_genY}, together with
+\texttt{BHK2006\_twoClusterConditionalAssociation.negCorrelation}.
+\item A statement-only declaration \texttt{Question8Bridge} for
+\eqref{eq:conjectural-bridge}.  It is not a theorem and must have no role in
+the proofs of the preceding declarations.
+\end{enumerate}
+
+For Proposition~\ref{prop:interior}, reuse
+\texttt{prodBernoulli\_real\_continuous}; the positive strict-minimum gap
+keeps the same relay minimizing along the approximating sequence.
+
+No theorem named \texttt{question8\_holds} should be introduced unless the
+open core \eqref{eq:open-core-assumptions} is actually proved.  In
+particular, the theorem
+\[
+ R\ge\min_{x\in A}L_x
+\]
+must not be used with a \(\rho\)-minimizer without an additional argument
+relating the two rankings.
+
+\subsection*{Suggested dependency graph}
+
+\[
+\begin{array}{c}
+\text{event definitions}
+\\[2mm]
+\swarrow\qquad\downarrow\qquad\searrow
+\\[-1mm]
+\text{path identities}
+\qquad
+\text{support lemma}
+\qquad
+\text{pendant identities}
+\\[1mm]
+\downarrow\hspace{35mm}\searrow\qquad\swarrow
+\\[-1mm]
+\neg\text{EveryMin}
+\hspace{24mm}
+\text{Strict}\Longleftrightarrow\text{PositiveAvoidance}
+\end{array}
+\]
+
+Separately,
+\[
+\text{BHK}+\text{avoided first-relay}+\eqref{eq:delta-core}
+\Longrightarrow\text{Proposition~\ref{prop:sufficient}}.
+\]
+This organization lets a checker certify every result in the present note
+without inserting a placeholder proof for the genuinely open implication.
+
+\section{Final status}
+
+The exact conclusion is:
+\begin{enumerate}[label=\arabic*.]
+\item The printed score is \(\rho_x=\PP(x\con b,o\ncon A)\).
+\item The every-minimizer reading over weights in \([0,1]\) is false by an
+exact four-vertex counterexample.
+\item The previous manuscript proved the different statement obtained by
+minimizing \(L_x=\PP(o\con A,x\con b)\).
+\item The strict-minimizer version and the every-minimizer version under
+\(\PP(o\ncon A)>0\) are equivalent, but no complete proof of either is
+given here.
+\item The remaining proof obligation is the implication from the strict
+ordering of the \(\rho_x\)'s in \eqref{eq:open-core-assumptions} to
+\(L_a\le R\), equivalently the inequality in
+Lemma~\ref{lem:cancel}.
+\end{enumerate}
+
+\begin{thebibliography}{1}
+\bibitem{KN}
+G.~Kozma and S.~Nitzan,
+\emph{A reduction of the $\theta(p_c)=0$ problem to a conjectured
+inequality}, arXiv:2401.12397, 2024.  Question 8 appears on p.~36.
+\end{thebibliography}
+
+\end{document}
