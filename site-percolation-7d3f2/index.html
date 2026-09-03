@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 3:59 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:01 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -67,14 +67,17 @@
             There is therefore a critical probability \(p_c\) with \(\theta(p)=0\) for \(p&lt;p_c\) and
             \(\theta(p)&gt;0\) for \(p&gt;p_c\). The value at \(p_c\) itself does not follow from this. Does
             \(\theta(p_c)=0\)?</p>
-            <p>In two dimensions the answer is yes. For bond percolation, in which edges rather than sites are open, it is due to
-            <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> and <a href="https://doi.org/10.1007/BF01197577">Kesten</a>; for site percolation it is due to <a href="https://doi.org/10.1007/BF00535742">Russo</a>, whose 1981 argument follows Kesten's
-            determination of the bond threshold on the square lattice and gives continuity of \(\theta\) on all of
-            \([0,1]\). In three or more dimensions the answer is yes for bond percolation, by a recent
-            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked proof</a> that settled
-            the dimensions three to ten. For site percolation in three or more dimensions it is not known, and that is the
-            case treated here. The <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures
-            and questions of the paper the bond proof rests on.</p>
+            <p>In two dimensions the answer is yes. For bond percolation, in which edges rather than sites are open, it
+            takes two results together: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the percolation probability
+            vanishes at \(p = 1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a> proved that \(1/2\) is the critical
+            probability. For site percolation it is due to <a href="https://doi.org/10.1007/BF00535742">Russo</a>, whose 1981 argument follows
+            Kesten's determination of the bond threshold on the square lattice and gives continuity of \(\theta\) on all
+            of \([0,1]\). In three or more dimensions the answer is yes for bond percolation, by Anthropic's
+            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked proof</a> of Conjecture 3 of
+            <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a>, which settled the dimensions three to ten. For site
+            percolation in three or more dimensions it is not known, and that is the case treated here. The
+            <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures and questions of their
+            paper.</p>
         </section>
 
         <section>
