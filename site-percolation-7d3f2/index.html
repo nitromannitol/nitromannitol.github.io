@@ -22,10 +22,11 @@
         header .byline { margin: 0.2em 0 0; font-size: 1.02em; opacity: 0.9; }
 
         .panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1em; margin: 1.2em 0 0.6em; }
+        @media (min-width: 1100px) { main.sp figure { width: 118%; margin-left: -9%; } }
         @media (max-width: 620px) { .panels { grid-template-columns: minmax(0, 1fr); } }
         .panel { border: 1px solid var(--border); border-radius: 8px; padding: 0.7em 0.7em 0.55em; background: var(--surface); }
-        .panel canvas { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
-        .ctl { position: relative; max-width: 300px; margin: 0.55em auto 0.3em; }
+        .panel canvas { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
+        .ctl { position: relative; max-width: 420px; margin: 0.55em auto 0.3em; }
         .ctl input[type=range] { width: 100%; margin: 0; accent-color: var(--link); display: block; }
         .ctl .mark { position: absolute; top: -2px; width: 2px; height: 18px; background: var(--text);
                      opacity: 0.6; pointer-events: none; }
@@ -160,7 +161,7 @@
                 <tr><td><a href="document/site_conditional.pdf">site_conditional.pdf</a></td>
                     <td>The statements, the representation and the proofs above.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
-                    <td>The Lean modules, 23 files. The hypergraph layer is <code>HyperCore</code>,
+                    <td>The Lean modules, 30 files. The hypergraph layer is <code>HyperCore</code>,
                     <code>HyperImplA</code>, <code>HyperImplB</code>, <code>HyperImplC</code>, <code>HyperExchange</code>,
                     <code>HyperPartition</code>, <code>HyperTrace</code>, <code>HyperUpper</code> and
                     <code>HyperIntegral</code>; the two representations are <code>BondRepresentation</code> and
@@ -209,7 +210,7 @@
       pc: 0.311608, pcText: "\\(p_c \\approx 0.3116\\)", status: "Open, and the subject of this page.", tag: "here", tagText: "open" }
   ];
 
-  var N2 = 61, M3 = 21, PMAX = 0.75;
+  var N2 = 75, M3 = 21, PMAX = 0.75;
   var panels = document.getElementById("panels");
   var models = [];
 
