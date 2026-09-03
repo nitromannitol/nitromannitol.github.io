@@ -1,6 +1,6 @@
-# The conjectures and questions of Kozma and Nitzan: Lean files
+# Proofs of the Kozma–Nitzan conjectures: Lean files
 
-Thirty-three Lean modules on top of Anthropic's Lean proof of θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d (Lean 4.32.0,
+Thirty-seven Lean modules on top of Anthropic's Lean proof of θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d (Lean 4.32.0,
 that proof's Mathlib pin). Every theorem reports exactly `[propext, Classical.choice, Quot.sound]` (`VERIFICATION.log`); no
 `sorry`, no axioms. Vocabulary: `prodBernoulli`, `openConn`, `openCluster` of that proof; vertices `Fin n`, weights in
 [0,1] on all pairs (absent edge = weight 0); `x ↔ y` = joined by an open path; `C_x` the open cluster; `o ↔ A` = `⋃_{a∈A} {o ↔ a}`.
@@ -20,8 +20,9 @@ that proof's Mathlib pin). Every theorem reports exactly `[propext, Classical.ch
   probability of `e` set to 1, `P(a ↔ b, v ↔ A) ≤ P(v ↔ b, v ↔ A)` (`Guarded.conjecture6Strong_holds`) and
   `P(v ↔ A) · P(a ↔ b) ≤ P(v ↔ b)`, display (40) (`Guarded.conjecture6_holds`); the paper's hypothesis (39) follows from Conjecture 1
   (`conjecture6_hypotheses_vacuous`).
-* Question 9 (p. 36): the statement `Question9` (`Statements9`) follows from Conjecture 4 for the union of the clusters of an arbitrary
-  finite set of vertices, `SetSourceFixedMin` (`question9_of_setSourceFixedMin`); `SetSourceFixedMin` itself is proved in the summary (`../document/kn_summary.pdf`).
+* Question 9 (p. 36): if `a ∈ A` minimises `P_H(a ↔ b)`, `H` the graph with all edges at `o` removed, then `P(o ↔ A, a ↔ b) ≤ P(o ↔ b, o ↔ A)`
+  (`question9_holds`, from `setSourceFixedMin_holds`, Conjecture 4 for the union of the clusters of an arbitrary finite set of vertices, and
+  the reduction `question9_of_setSourceFixedMin`).
 * Question 8 (p. 36): the printed question with the minimiser of `P(a ↔ b, o ↮ A)`, in the reading for every minimiser, is false
   (`not_question8EveryMin`, the four-vertex path); the readings with a unique minimiser and with `P(o ↮ A) > 0` are stated
   (`Question8Strict`, `Question8Positive`) and are equivalent (`q8Strict_iff_q8Positive`); the settled cases (`q8_singleton`, `q8_bEqO`,
@@ -34,7 +35,7 @@ every graph and every `A`, for the cluster properties `f = 1{|C| ≥ k}` with `k
 
 ## Files
 
-`AvoidedDefs`, `AvoidedPeelTools`, `AvoidedPeel`, `AvoidedTransfer`, `AvoidedGen`, `Projection`, `AvoidedClosure`, `Statements`, `Conjectures`, `ClusterProperty`, `Statements6`, `PairSource`, `Conjecture6Reduction`, `Question5Dual`, `Question5`, `GuardedDefs`, `GuardedBasic`, `GuardedKernel`, `GuardedDecoy`, `GuardedTwoCluster`, `PairGuardedCSH`, `PairSurplus`, `PairSurplusClosure`, `PairFixedMin`, `Conjecture6Proof`, `Statements9`, `Question9Reduction`, `Question8Defs`, `Question8Cases`, `Question8Counterexample`, `Question8Equivalence`, `Question8Sufficient`, `Question8Interior` (`.lean`, compile in this order); `Projection.REPORT.md`, `AvoidedClosure.REPORT.md`; `VERIFICATION.log`.
+`AvoidedDefs`, `AvoidedPeelTools`, `AvoidedClosure`, `AvoidedGen`, `AvoidedPeel`, `AvoidedTransfer`, `Projection`, `Statements`, `Conjectures`, `ClusterProperty`, `Statements6`, `Conjecture6Reduction`, `PairSource`, `GuardedDefs`, `GuardedBasic`, `GuardedKernel`, `GuardedDecoy`, `GuardedTwoCluster`, `PairGuardedCSH`, `PairSurplus`, `PairSurplusClosure`, `PairFixedMin`, `Conjecture6Proof`, `Question5Dual`, `Question5`, `Question8Defs`, `Question8Cases`, `Question8Counterexample`, `Question8Equivalence`, `Question8Interior`, `Question8Sufficient`, `SourceGeneralCSH`, `SourceSurplus`, `SourceProjection`, `Statements9`, `Question9Reduction`, `Question9` (`.lean`, compile in this order); `Projection.REPORT.md`, `AvoidedClosure.REPORT.md`; `VERIFICATION.log`.
 
 ## How to check
 
@@ -42,7 +43,7 @@ From the root of Anthropic's Lean proof (optionally first `shasum -a 256 -c /pat
 `lake exe cache get && lake build`, copy the `.lean` files to `KN/` and run
 
     mkdir -p .lake/build/lib/lean/KN
-    for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5 GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Statements9 Question9Reduction Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Sufficient Question8Interior; do
+    for m in AvoidedDefs AvoidedPeelTools AvoidedClosure AvoidedGen AvoidedPeel AvoidedTransfer Projection Statements Conjectures ClusterProperty Statements6 Conjecture6Reduction PairSource GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Question5Dual Question5 Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Interior Question8Sufficient SourceGeneralCSH SourceSurplus SourceProjection Statements9 Question9Reduction Question9; do
       lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
     done
 
