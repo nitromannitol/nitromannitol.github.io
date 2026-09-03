@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:08 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:12 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -65,8 +65,7 @@
             the set of open sites, and \(\theta(p)\) is the probability that the origin lies in an infinite one.</p>
             <p>Raising \(p\) opens more sites and can only enlarge open clusters, so \(\theta\) is nondecreasing.
             There is therefore a critical probability \(p_c\) with \(\theta(p)=0\) for \(p&lt;p_c\) and
-            \(\theta(p)&gt;0\) for \(p&gt;p_c\). The value at \(p_c\) itself does not follow from this. Does
-            \(\theta(p_c)=0\)?</p>
+            \(\theta(p)&gt;0\) for \(p&gt;p_c\). Does \(\theta(p_c)=0\)?</p>
             <p>In two dimensions the answer is yes. For bond percolation, in which edges rather than sites are open, it
             takes two results together: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the percolation probability
             vanishes at \(p = 1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a> proved that \(1/2\) is the critical
@@ -78,9 +77,9 @@
             only ones still open: the lace expansion had already given the result in high dimensions, for \(d \ge 19\) by
             <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and then for \(d \ge 11\) by
             <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>. For site percolation in three or more dimensions
-            it is not known, and that is the case treated here. The
-            <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures and questions of their
-            paper.</p>
+            it is not known in general, and that is the case treated here. The
+            <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures and questions of the
+            Kozma and Nitzan paper.</p>
         </section>
 
         <section>
@@ -92,17 +91,21 @@
                     <span class="note">Each picture has its own slider. Press pause and drag one to
                     hold that lattice at a chosen \(p\).</span>
                 </div>
-                <figcaption>Each site, and each edge, carries a random number fixed once and for all, and is open
-                when that number is below \(p\); raising \(p\) therefore only opens more. Grey is the open structure and
-                purple is the open cluster of the centre, which is held open in every picture. The three-dimensional
-                pictures draw only that cluster, inside a rotating box. Every picture has its own slider, with a tick at
-                that lattice's critical parameter.</figcaption>
+                <figcaption>Grey is the open structure, purple the open cluster of the centre. The three-dimensional
+                pictures draw that cluster alone. Each site and each edge carries a fixed random number and is open when
+                it falls below \(p\), so the pictures grow as the sliders move and never rearrange.</figcaption>
             </figure>
         </section>
 
         <section>
             <h2>A structure containing both models</h2>
-            <p>Both models are instances of one structure. Take a finite set of sites together with a finite set of labels,
+            <p>The two models are not independent of one another. Bond percolation is a special case of site percolation,
+            by a construction of <a href="https://doi.org/10.1063/1.1703746">Fisher</a>: site percolation on the graph whose vertices are the
+            edges of the original one, adjacent when they share an endpoint, reproduces bond percolation exactly. The
+            converse fails. <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation cannot simulate
+            site percolation even approximately, already near a vertex of degree three. So the site inequality cannot be
+            deduced from the bond one, and a statement covering both must be proved in a setting containing both.</p>
+            <p>Here is such a setting. Take a finite set of sites together with a finite set of labels,
             attach to each label a collection of sites, and declare each label open independently of the others. Two sites
             are connected when a chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
             <p>Attaching every label to exactly two sites makes the labels edges, and the structure is bond percolation.
