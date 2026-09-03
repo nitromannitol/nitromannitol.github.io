@@ -31,11 +31,11 @@
             <p>Kozma and Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>) reduced the statement
             \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), to an inequality on finite graphs, their
             Conjecture 3, and posed four further conjectures and four questions about connection probabilities in finite graphs:
-            Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for
-            Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions d ≥ 2</em> (Claude, Anthropic, under the direction of
-            Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a relatively easy consequence of
-            an inequality it proves on the way, as explained below.</p>
-            <p>Here the remaining conjectures and questions of the paper are proved on top of that development: Conjectures 1, 2, 4
+            Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. Anthropic's Lean 4 / Mathlib proof of
+            \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\) in all dimensions \(d \ge 2\) (written by Claude under the
+            direction of Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a relatively easy
+            consequence of an inequality proved there on the way, as explained below.</p>
+            <p>Here the remaining conjectures and questions of the paper are proved on top of that Lean proof: Conjectures 1, 2, 4
             and 6 and Questions 5, 7 and 9, each in a stronger form than stated. Question 8 is false as printed. The proofs are in the <a href="document/kn_summary.pdf">summary</a> (PDF);
             the Lean files are in <a href="lean/">lean/</a>.</p>
         </section>
@@ -52,9 +52,9 @@
         </section>
 
         <section>
-            <h2>Conjecture 1 from the development</h2>
+            <h2>Conjecture 1 from the Lean proof of Conjecture 3</h2>
             <p>Fix \(A\), \(o\) and \(b\), and order the vertices of \(A\) so that \(\mathbb{P}(x \leftrightarrow b)\) is nondecreasing. The
-            development proves
+            Lean proof of Conjecture 3 contains the inequality
             \[
               \sum_{x \in A} \mathbb{P}\bigl(o \leftrightarrow x \text{ and } o \nleftrightarrow y \text{ for every } y \in A \text{ before } x\bigr)\,
               \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b).
@@ -114,7 +114,7 @@
 
         <section>
             <h2>The method</h2>
-            <p>The proofs run the development's argument with two changes. First, the clusters of the vertices of \(A\) are
+            <p>The proofs run the argument of the Lean proof of Conjecture 3 with two changes. First, the clusters of the vertices of \(A\) are
             conditioned on missing a given set \(Y\) of vertices: if the vertices of \(A\) are ordered so that
             \(\mathbb{E}[F(C_x) \mid x \nleftrightarrow Y]\) is nondecreasing, then
             \[
@@ -122,8 +122,8 @@
               \mathbb{E}[F(C_x) \mid x \nleftrightarrow Y] \;\le\; \mathbb{E}[F(C_o);\; o \nleftrightarrow Y,\; o \leftrightarrow A].
             \]
             Second, \(F(K)\) is replaced by \(F(K)\) minus the expectation of \(F\) at the cluster of \(a\) in the graph with every
-            edge at a vertex of \(K\) removed; this new function is increasing in \(K\). Taking \(Y = \{a\}\) for the vertex \(a\) of least mean makes every
-            conditional expectation on the left nonnegative, and the inequality becomes Conjecture 4 with the minimiser specified.
+            edge at a vertex of \(K\) removed; this new function is increasing in \(K\). Taking \(Y = \{a\}\) for the vertex \(a \in A\) minimising \(\mathbb{E}\,F(C_x)\) makes
+            every conditional expectation on the left nonnegative, and the inequality becomes Conjecture 4 with the minimiser specified.
             The other conjectures and questions follow from that statement. For Conjecture 6 and Question 9 the cluster of \(o\) is
             replaced by the union of the clusters of a set of vertices: the union of the clusters of \(v\) and \(w\) does not depend on
             whether the edge \(\{v, w\}\) is open, and the cluster of \(o\) is the union of the clusters of \(o\) and of its open
@@ -134,13 +134,13 @@
             <h2>Implications</h2>
             <ul>
                 <li>The paper's chain of implications, Conjecture 4 to (3) to Conjecture 2 to Conjecture 1 to Conjecture 3 to
-                    \(\theta(p_c) = 0\), holds with every link proved, the last one in the development.</li>
+                    \(\theta(p_c) = 0\), holds with every link proved, the last one in Anthropic's Lean proof.</li>
                 <li>The vertex of \(A\) minimising \(\mathbb{P}(x \leftrightarrow b)\) is itself a valid choice in the pre-FKG comparison
                     (Question 7), for every graph and every size of \(A\); so is the minimiser computed in the graph with the edges
                     at \(o\) removed (Question 9).</li>
                 <li>Conjecture 6 holds without its hypothesis (39), so the paper's Lemma 13 applies without it.</li>
-                <li>The conditioned inequality of the method holds for the union of the clusters of any finite set of vertices in
-                    place of \(C_o\), and it needs no sign condition on \(F\).</li>
+                <li>The displayed inequality of the previous section holds with the union of the clusters of any finite set of
+                    vertices in place of \(C_o\), and it needs no sign condition on \(F\).</li>
             </ul>
         </section>
 
@@ -159,16 +159,16 @@
 
         <section>
             <h2>How to check</h2>
-            <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
+            <pre>lake exe cache get &amp;&amp; lake build      # build Anthropic's Lean proof, as in its README
 mkdir -p .lake/build/lib/lean/KN         # copy the .lean files to KN/, then:
 for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5 GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Statements9 Question9Reduction Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Sufficient Question8Interior; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
             <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each
-            <code>[propext, Classical.choice, Quot.sound]</code>. The development's sources can be pinned first with
+            <code>[propext, Classical.choice, Quot.sound]</code>. The sources of Anthropic's Lean proof can be checked first with
             <code>shasum -a 256 -c conjecture-1/SOURCES.sha256</code> from its root.</p>
             <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, with minimal human intervention.
-            Released under the Apache License 2.0, matching the development.</p>
+            Released under the Apache License 2.0, the licence of Anthropic's Lean proof.</p>
         </section>
     </main>
 </body>

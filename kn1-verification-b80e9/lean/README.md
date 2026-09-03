@@ -1,8 +1,8 @@
 # The conjectures and questions of Kozma and Nitzan: Lean files
 
-Thirty-three Lean modules on top of the development *θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d* (Lean 4.32.0, the
-development's Mathlib pin). Every theorem reports exactly `[propext, Classical.choice, Quot.sound]` (`VERIFICATION.log`); no
-`sorry`, no axioms. Vocabulary: `prodBernoulli`, `openConn`, `openCluster` of the development; vertices `Fin n`, weights in
+Thirty-three Lean modules on top of Anthropic's Lean proof of θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d (Lean 4.32.0,
+that proof's Mathlib pin). Every theorem reports exactly `[propext, Classical.choice, Quot.sound]` (`VERIFICATION.log`); no
+`sorry`, no axioms. Vocabulary: `prodBernoulli`, `openConn`, `openCluster` of that proof; vertices `Fin n`, weights in
 [0,1] on all pairs (absent edge = weight 0); `x ↔ y` = joined by an open path; `C_x` the open cluster; `o ↔ A` = `⋃_{a∈A} {o ↔ a}`.
 
 ## Theorems
@@ -38,7 +38,7 @@ every graph and every `A`, for the cluster properties `f = 1{|C| ≥ k}` with `k
 
 ## How to check
 
-From the development's root (optionally first `shasum -a 256 -c /path/to/conjecture-1/SOURCES.sha256`), after
+From the root of Anthropic's Lean proof (optionally first `shasum -a 256 -c /path/to/conjecture-1/SOURCES.sha256`), after
 `lake exe cache get && lake build`, copy the `.lean` files to `KN/` and run
 
     mkdir -p .lake/build/lib/lean/KN
@@ -51,4 +51,4 @@ Expected: the `#print axioms` lines of `VERIFICATION.log`, all `[propext, Classi
 ## Attribution
 
 All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, with minimal human intervention. Released under the
-Apache License 2.0, matching the development.
+Apache License 2.0, the licence of Anthropic's Lean proof.
