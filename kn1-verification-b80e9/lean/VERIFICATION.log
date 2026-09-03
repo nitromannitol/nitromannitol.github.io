@@ -1,21 +1,19 @@
-# KN modules: clean sequential recompile (2026-09-03T01:14Z)
+# KN modules: clean sequential recompile (2026-09-03T02:37Z)
 # Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
-# Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the development's pin)
+# Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the pin of Anthropic's Lean proof)
 ## KN/AvoidedDefs.lean (      79 lines)
-
-
 EXIT=0
 ## KN/AvoidedPeelTools.lean (     237 lines)
+EXIT=0
+## KN/AvoidedClosure.lean (     243 lines)
+EXIT=0
+## KN/AvoidedGen.lean (     144 lines)
 EXIT=0
 ## KN/AvoidedPeel.lean (     197 lines)
 EXIT=0
 ## KN/AvoidedTransfer.lean (     135 lines)
 EXIT=0
-## KN/AvoidedGen.lean (     144 lines)
-EXIT=0
 ## KN/Projection.lean (     127 lines)
-EXIT=0
-## KN/AvoidedClosure.lean (     243 lines)
 EXIT=0
 ## KN/Statements.lean (      58 lines)
 EXIT=0
@@ -35,18 +33,12 @@ EXIT=0
 EXIT=0
 ## KN/Statements6.lean (      30 lines)
 EXIT=0
-## KN/PairSource.lean (     457 lines)
-EXIT=0
 ## KN/Conjecture6Reduction.lean (     104 lines)
 'KNAll.conjecture6Strong_of_forceOpen_min' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture6_of_conjecture6Strong' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.conjecture6_hypotheses_vacuous' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
-## KN/Question5Dual.lean (      82 lines)
-'KNAll.question5_dual' depends on axioms: [propext, Classical.choice, Quot.sound]
-EXIT=0
-## KN/Question5.lean (     150 lines)
-'KNAll.question5_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+## KN/PairSource.lean (     457 lines)
 EXIT=0
 ## KN/GuardedDefs.lean (     442 lines)
 EXIT=0
@@ -54,7 +46,7 @@ EXIT=0
 EXIT=0
 ## KN/GuardedKernel.lean (    2223 lines)
 EXIT=0
-## KN/GuardedDecoy.lean (    1480 lines)
+## KN/GuardedDecoy.lean (    1515 lines)
 EXIT=0
 ## KN/GuardedTwoCluster.lean (     851 lines)
 EXIT=0
@@ -68,8 +60,6 @@ EXIT=0
 'KNAll.Guarded.pair_guardCSH_nondegenerate' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
 ## KN/PairSurplus.lean (    1421 lines)
-
-
 EXIT=0
 ## KN/PairSurplusClosure.lean (     161 lines)
 EXIT=0
@@ -79,10 +69,11 @@ EXIT=0
 'KNAll.Guarded.conjecture6Strong_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.Guarded.conjecture6_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
-## KN/Statements9.lean (      56 lines)
+## KN/Question5Dual.lean (      82 lines)
+'KNAll.question5_dual' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
-## KN/Question9Reduction.lean (     446 lines)
-'KNAll.question9_of_setSourceFixedMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+## KN/Question5.lean (     150 lines)
+'KNAll.question5_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
 ## KN/Question8Defs.lean (     122 lines)
 'KNAll.q8_total_split' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -193,12 +184,34 @@ EXIT=0
 'KNAll.q8_pendant_strictMin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.q8Strict_iff_q8Positive' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
+## KN/Question8Interior.lean (      81 lines)
+'KNAll.q8Strict_of_interior' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
 ## KN/Question8Sufficient.lean (     336 lines)
 'KNAll.q8_target_split' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.q8_of_firstRelayCriterion' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
-## KN/Question8Interior.lean (      81 lines)
-'KNAll.q8Strict_of_interior' depends on axioms: [propext, Classical.choice, Quot.sound]
+## KN/SourceGeneralCSH.lean (     177 lines)
+'KNAll.Guarded.source_guardCSH_nondegenerate' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
-## KN/SiteStatements.lean (     116 lines)
+## KN/SourceSurplus.lean (     772 lines)
+'KNAll.Guarded.sourceSurplusMarginY_nondegenerate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.sourceSurplusTransfer_nondegenerate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.sourceTopRelay' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.sourceSurplusY_nondegenerate_nonsingleton' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.sourceSurplusY_all_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/SourceProjection.lean (     590 lines)
+'KNAll.Guarded.setIntegral_sub_eq_projFunA_source_conn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.source_overlap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.source_fixedMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Statements9.lean (      56 lines)
+EXIT=0
+## KN/Question9Reduction.lean (     446 lines)
+'KNAll.question9_of_setSourceFixedMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question9.lean (      38 lines)
+'KNAll.setSourceFixedMin_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.question9_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
