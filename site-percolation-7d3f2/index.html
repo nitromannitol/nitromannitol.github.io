@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:43 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:45 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -135,16 +135,25 @@
 
             <h2>The exposure record</h2>
             <p>We prove (1) by induction on the number of sites. At each step we fix a set \(Z\), expose the labels
-            incident to \(Z\), and condition on which of them are open. The randomness that remains lives outside
-            \(Z\), and we compare four quantities indexed by the set \(I\) of exposed labels we find open.</p>
-            <p>We make that comparison with the four functions theorem, which from bounds indexed by \(I\) and by
-            \(J\) yields bounds indexed by \(I \cup J\) and \(I \cap J\). Whatever record we keep of the exposed
+            incident to \(Z\), and condition on which of them are open. The labels not incident to \(Z\) are untouched by
+            the conditioning and retain their independent states. The four quantities we then compare are indexed by the
+            set \(I\) of exposed labels that are open.</p>
+            <p>We make that comparison with the four functions theorem of
+            <a href="https://doi.org/10.1007/BF00536201">Ahlswede and Daykin</a>. It says that if four nonnegative functions of a set satisfy
+            \[
+              f_1(I)\,f_2(J) \;\le\; f_3(I \cup J)\,f_4(I \cap J)
+            \]
+            for every pair \(I, J\), then the same inequality holds for the sums of the four functions over families of
+            sets. It converts pointwise bounds into bounds on aggregates, which is precisely the step the induction needs,
+            and it refers to its index only through \(\cup\) and \(\cap\). Whatever record we keep of the exposed
             labels must therefore carry unions to unions and intersections to intersections.</p>
-            <p>For graphs we may keep less than the labels themselves. Write \(T(I)\) for the set of sites outside
-            \(Z\) that the labels in \(I\) reach. A label incident to exactly two sites, one of them in \(Z\), is
-            determined by the single site it reaches outside, so we recover \(I\) from \(T(I)\) and lose nothing.</p>
-            <p>For labels incident to more than two sites we cannot recover \(I\). Two labels incident to the same sites
-            have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once we have
+            <p>The obvious record is \(I\) itself, but one is tempted to keep something smaller. Write \(T(I)\) for
+            the set of sites outside \(Z\) that the labels in \(I\) reach. This is a coarser record, since different
+            sets of labels may reach the same sites, and it is the one the argument for graphs uses.</p>
+            <p>For graphs it loses nothing. A label incident to exactly two sites, one of them in \(Z\), is determined by
+            the single site it reaches outside \(Z\). So \(T(I)\) determines \(I\), and the two records carry the
+            same information.</p>
+            <p>For labels incident to more than two sites \(T(I)\) no longer determines \(I\). Two labels incident to the same sites have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once we have
             exposed \(b\). All we retain is
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
