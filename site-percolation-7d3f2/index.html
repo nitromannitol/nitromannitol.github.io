@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:34 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:39 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -134,35 +134,51 @@
             form (1) implies both (2) and the site counterpart of (2), so a single finite theorem serves both models.</p>
 
             <h2>The exposure record</h2>
-            <p>The induction behind (1) exposes the labels incident to a set \(Z\) and records what those
-            labels reach outside \(Z\). Write \(T(I)\) for the set of sites outside \(Z\) reached by a set \(I\) of
-            labels.</p>
-            <p>For graphs, \(I\) can be recovered from \(T(I)\). A label incident to two sites, one of them in \(Z\),
-            is named by the other. For labels incident to more than two sites this fails. Two labels incident to
-            the same sites have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching
-            \(\{b,c\}\) once \(b\) has been exposed.</p>
-            <p>The consequence is an asymmetry,
+            <p>Inequality (1) is proved by induction on the number of sites. At each step one fixes a set \(Z\), exposes
+            the labels incident to \(Z\), and conditions on which of them are open. The randomness that remains lives
+            outside \(Z\), and the four quantities the induction compares are indexed by the set \(I\) of exposed
+            labels found open.</p>
+            <p>The comparison is made by the four functions theorem, and that theorem requires the indexing to respect
+            unions and intersections: from bounds indexed by \(I\) and by \(J\) it produces bounds indexed by
+            \(I \cup J\) and \(I \cap J\). Whatever record is kept of the exposed labels must therefore carry unions
+            to unions and intersections to intersections.</p>
+            <p>For graphs one may keep less than the labels themselves. Write \(T(I)\) for the set of sites outside
+            \(Z\) reached by the labels in \(I\). A label incident to exactly two sites, one of them in \(Z\), is
+            determined by the single site it reaches outside, so \(I\) can be recovered from \(T(I)\) and the record
+            loses nothing.</p>
+            <p>For labels incident to more than two sites it cannot be recovered. Two labels incident to the same sites
+            have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once \(b\)
+            has been exposed. What survives is only
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
             \]
-            with the second inclusion strict in both examples. The induction applies the four functions theorem to
-            \(T(I)\), \(T(J)\), \(T(I \cap J)\) and \(T(I \cup J)\), and so needs both relations to be equalities.
-            Recording \(I\) itself restores them, since unions and intersections of label sets are unions and
-            intersections.</p>
+            and the second inclusion is strict in both of those examples. Unions are preserved and intersections are not,
+            so the four functions theorem no longer applies.</p>
+            <p>Keeping the labels themselves removes the obstruction, since the record is then the identity and both
+            relations hold. This is why the argument is carried out over label sets rather than over the sites they
+            reach.</p>
 
             <h2>Renormalization</h2>
-            <p>The passage from (1) to the lattice is a renormalization. Partition \(\mathbb{Z}^d\) into blocks, call a block occupied
-            when a prescribed connection occurs inside it, and compare the occupied blocks with site percolation on a
-            coarser lattice. The step to be justified is that an occupied block is joined to its neighbour with
-            probability close to one, conditionally on everything already examined.</p>
-            <p><a href="https://www.statslab.cam.ac.uk/~grg1000/papers/procrsa430-439.pdf">Grimmett and Marstrand</a> justify it by sprinkling. They open further sites, at
-            parameter \(p + \gamma\), and obtain percolation in a slab of finite width for every \(\gamma &gt; 0\).
-            They also state that they cannot take \(\gamma = 0\), which is what stops the argument short of the critical
-            parameter.</p>
-            <p>Inequality (1) removes the sprinkling. Conditioning on a shell surrounding a block fixes the states there
-            and exposes a set \(A\) of open sites on the shell, each of which reaches the next block with probability
-            close to one. Applying (1) to \(A\) bounds the probability of reaching the next block from the
-            origin, at the parameter \(p\) and with no additional sites opened. Iterating gives percolation in a slab of finite width, at \(p\) or below it. Call this the reduction to a slab.</p>
+            <p>The passage from (1) to the lattice is a renormalization. Partition \(\mathbb{Z}^d\) into blocks of a
+            fixed size, declare a block occupied when a prescribed connection occurs inside it, and compare the occupied
+            blocks with site percolation on a coarser lattice whose sites are the blocks. If the occupied blocks percolate
+            on the coarse lattice, the open sites percolate on \(\mathbb{Z}^d\).</p>
+            <p>Everything turns on a single estimate: that a block already known to be occupied is joined to a neighbouring
+            block with conditional probability close to one, given everything examined so far.</p>
+            <p>Grimmett and Marstrand obtain that estimate by sprinkling. They allow themselves to open further sites,
+            working at parameter \(p + \gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces
+            percolation in a slab of finite width at \(p + \gamma\), for every \(\gamma &gt; 0\). They state that
+            they cannot take \(\gamma = 0\), and that is what keeps the conclusion away from \(p_c\): applied at
+            \(p = p_c\) it produces a slab percolating at \(p_c + \gamma\), which is above \(p_c\) and therefore
+            says nothing new.</p>
+            <p>Inequality (1) supplies the estimate with no sprinkling. Condition on the configuration in a shell
+            surrounding the block. That fixes the states on the shell, and it exposes a set \(A\) of open sites there,
+            each of which reaches the neighbouring block with conditional probability at least \(1-\delta\). Take
+            \(o\) to be the origin and \(b\) the target in the neighbouring block. The two factors on the right of (1)
+            are then the probability that \(o\) reaches \(A\), which the preceding step has made close to one, and the
+            minimum over \(A\), which is at least \(1-\delta\). Hence the left side of (1) is close to one, and no
+            site has been opened that the configuration did not already provide. Iterating over blocks gives percolation in
+            a slab of finite width, at \(p\) or below it. Call this the reduction to a slab.</p>
             <p>Either form of the reduction to a slab closes the argument. Suppose the reduction gives a slab percolating at some \(q &lt; p\),
             and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with \(q &lt; p_c\),
             contradicting the definition of \(p_c\). Suppose instead the reduction gives a slab percolating at \(p\)
