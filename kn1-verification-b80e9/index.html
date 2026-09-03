@@ -23,17 +23,17 @@
 
     <main class="kn1">
         <section>
-            <p>The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions
-            d ≥ 2</em> (written by Claude, Anthropic, under the direction of Justin Leder; Lean v4.32.0, Mathlib commit
-            <code>81a5d257</code>) proves Conjecture 3 of Kozma–Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>)
-            through a family of conditional correlation inequalities for the clusters of finitely many vertices. The paper has nine numbered
-            open items: Conjectures 1, 2, 3, 4 and 6 and Questions 5, 7, 8 and 9. The document
-            <a href="document/kozma_nitzan_all_conjectures_proof.pdf">kozma_nitzan_all_conjectures_proof</a>
-            (<a href="document/kozma_nitzan_all_conjectures_proof.tex">TeX</a>) proposes proofs of all nine on top of the development's
-            methods. The Lean files in <a href="lean/">lean/</a> machine-check the part concerning Conjectures 1, 2, 3 and 4 and Questions 5
-            and 7; Lean accepts every theorem with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
-            <code>Quot.sound</code>, and no <code>sorry</code> (<a href="lean/VERIFICATION.log">VERIFICATION.log</a>). Conjecture 6 and
-            Question 9 are proved in the document only; Question 8 is not settled. The status of each item is stated below.</p>
+            <p>Kozma and Nitzan (<a href="https://arxiv.org/abs/2401.12397">arXiv:2401.12397</a>) reduced θ(p<sub>c</sub>) = 0 for Bernoulli
+            bond percolation on ℤ<sup>d</sup>, d ≥ 2, to an inequality on finite graphs, their Conjecture 3, and left eight further numbered
+            items open: Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. The Lean 4 / Mathlib development <em>θ(p<sub>c</sub>) = 0 for
+            Bernoulli bond percolation on ℤ<sup>d</sup> in all dimensions d ≥ 2</em> (Claude, Anthropic, under the direction of Justin Leder;
+            Lean v4.32.0, Mathlib commit <code>81a5d257</code>) proves Conjecture 3. This page records the status of the other eight on top
+            of that development. Six of the nine items are machine-checked: Conjectures 1, 2, 3 and 4 and Questions 5 and 7, by the Lean files
+            in <a href="lean/">lean/</a>, each theorem accepted with exactly the standard axioms <code>propext</code>,
+            <code>Classical.choice</code> and <code>Quot.sound</code> and no <code>sorry</code>
+            (<a href="lean/VERIFICATION.log">VERIFICATION.log</a>). Conjecture 6 and Question 9 are proved in the accompanying document
+            (<a href="document/kozma_nitzan_all_conjectures_proof.pdf">PDF</a>, <a href="document/kozma_nitzan_all_conjectures_proof.tex">TeX</a>)
+            and not yet machine-checked. Question 8 is open.</p>
         </section>
 
         <section>
