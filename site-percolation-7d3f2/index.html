@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:31 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:34 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -120,8 +120,18 @@
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
                 \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b). \tag{1} \]
             Read from the right, it says that reaching \(A\) and then continuing to \(b\) from the least favourable
-            point of \(A\) is no better than reaching \(b\) directly. For labels attached to two sites, and after
-            dropping the second event on the left, (1) is exactly what they conjectured. In its general form (1) implies both that inequality and its site counterpart, so a single finite theorem serves both models.</p>
+            point of \(A\) is no better than reaching \(b\) directly. What Kozma and Nitzan
+            conjectured is the corresponding statement for bond percolation on a finite graph, which in the notation above
+            is the case of labels attached to two sites:
+            \[
+              \mathbb{P}(o \leftrightarrow b)
+                \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b).
+              \tag{2}
+            \]
+            Inequality (1) differs from (2) in two respects. A label may be attached to any number of sites, which is what
+            reaches site percolation, and the event \(\{o \leftrightarrow A\}\) is retained on the right. The second
+            difference makes (1) the stronger statement, and (2) follows from it by discarding that event. In its general
+            form (1) implies both (2) and the site counterpart of (2), so a single finite theorem serves both models.</p>
 
             <h2>The exposure record</h2>
             <p>The induction behind (1) exposes the labels incident to a set \(Z\) and records what those
