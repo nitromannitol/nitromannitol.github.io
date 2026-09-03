@@ -1,4 +1,4 @@
-# KN modules: clean sequential recompile (2026-09-03T00:08Z)
+# KN modules: clean sequential recompile (2026-09-03T01:14Z)
 # Toolchain: Lean (version 4.32.0, arm64-apple-darwin24.6.0, commit 8c9756b28d64dab099da31a4c09229a9e6a2ef35, Release)
 # Mathlib: 81a5d257c8e410db227a6665ed08f64fea08e997 (the development's pin)
 ## KN/AvoidedDefs.lean (      79 lines)
@@ -48,3 +48,138 @@ EXIT=0
 ## KN/Question5.lean (     150 lines)
 'KNAll.question5_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
+## KN/GuardedDefs.lean (     442 lines)
+EXIT=0
+## KN/GuardedBasic.lean (     152 lines)
+EXIT=0
+## KN/GuardedKernel.lean (    2223 lines)
+EXIT=0
+## KN/GuardedDecoy.lean (    1480 lines)
+EXIT=0
+## KN/GuardedTwoCluster.lean (     851 lines)
+EXIT=0
+## KN/PairGuardedCSH.lean (     155 lines)
+'KNAll.Guarded.guardLevelTest_antitone_second' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.guardCSHMargin_eq_twoClusterCov' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.twoClusterCov_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.twoClusterCov_nonneg_of_withinFirst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.pair_guardGlobal_of_within' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.pair_guardJoint_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.pair_guardCSH_nondegenerate' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/PairSurplus.lean (    1421 lines)
+
+
+EXIT=0
+## KN/PairSurplusClosure.lean (     161 lines)
+EXIT=0
+## KN/PairFixedMin.lean (     261 lines)
+EXIT=0
+## KN/Conjecture6Proof.lean (     378 lines)
+'KNAll.Guarded.conjecture6Strong_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.conjecture6_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Statements9.lean (      56 lines)
+EXIT=0
+## KN/Question9Reduction.lean (     446 lines)
+'KNAll.question9_of_setSourceFixedMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question8Defs.lean (     122 lines)
+'KNAll.q8_total_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+def KNAll.Question8EveryMin : Prop :=
+∀ (n : ℕ) (w : Sym2 (Fin n) → ↑unitInterval) (A : Finset (Fin n)) (o b a : Fin n),
+  KNAll.IsQ8Min w A o b a → KNAll.q8L w A o b a ≤ KNAll.q8R w A o b
+def KNAll.Question8Strict : Prop :=
+∀ (n : ℕ) (w : Sym2 (Fin n) → ↑unitInterval) (A : Finset (Fin n)) (o b a : Fin n),
+  KNAll.IsQ8StrictMin w A o b a → KNAll.q8L w A o b a ≤ KNAll.q8R w A o b
+def KNAll.Question8Positive : Prop :=
+∀ (n : ℕ) (w : Sym2 (Fin n) → ↑unitInterval) (A : Finset (Fin n)) (o b a : Fin n),
+  0 < (Percolation.Literature.LatticeModels.prodBernoulli w).real (KNAll.U A o)ᶜ →
+    KNAll.IsQ8Min w A o b a → KNAll.q8L w A o b a ≤ KNAll.q8R w A o b
+def KNAll.Question8ExistsGoodMin : Prop :=
+∀ (n : ℕ) (w : Sym2 (Fin n) → ↑unitInterval) (A : Finset (Fin n)),
+  A.Nonempty → ∀ (o b : Fin n), ∃ a, KNAll.IsQ8Min w A o b a ∧ KNAll.q8L w A o b a ≤ KNAll.q8R w A o b
+def KNAll.Question8Bridge : Prop :=
+∀ (n : ℕ) (w : Sym2 (Fin n) → ↑unitInterval) (A : Finset (Fin n)) (o b a : Fin n) (r : Fin n → ℕ),
+  (∀ (e : Sym2 (Fin n)), 0 < ↑(w e) ∧ ↑(w e) < 1) →
+    2 ≤ A.card →
+      0 < (Percolation.Literature.LatticeModels.prodBernoulli w).real (KNAll.U A o)ᶜ →
+        0 < KNAll.q8Score w A o b a →
+          KNAll.IsQ8StrictMin w A o b a →
+            Set.InjOn r ↑(A.erase a) →
+              (∀ x ∈ A.erase a,
+                  ∀ y ∈ A.erase a,
+                    r x < r y →
+                      (KNAll.q8Score w A o b x - KNAll.q8Score w A o b a) /
+                          (Percolation.Literature.LatticeModels.prodBernoulli w).real
+                            (Percolation.Literature.openConn x a)ᶜ ≤
+                        (KNAll.q8Score w A o b y - KNAll.q8Score w A o b a) /
+                          (Percolation.Literature.LatticeModels.prodBernoulli w).real
+                            (Percolation.Literature.openConn y a)ᶜ) →
+                ∑ x ∈ A.erase a,
+                    (Percolation.Literature.LatticeModels.prodBernoulli w).real
+                        ((Percolation.Literature.openConn o a)ᶜ ∩
+                          (Percolation.Literature.openConn o x ∩
+                            ⋂ y ∈ {y ∈ A.erase a | r y < r x}, (Percolation.Literature.openConn o y)ᶜ)) *
+                      ((KNAll.q8Score w A o b x - KNAll.q8Score w A o b a) /
+                        (Percolation.Literature.LatticeModels.prodBernoulli w).real
+                          (Percolation.Literature.openConn x a)ᶜ) ≤
+                  KNAll.q8R w A o b - KNAll.q8L w A o b a
+EXIT=0
+## KN/Question8Cases.lean (     279 lines)
+'KNAll.q8_singleton' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_bEqO' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_degenerate_allMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_support_atom_pos_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8Support_compl_null' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_zeroScore' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question8Counterexample.lean (     396 lines)
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_support_subset' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8_color_invariant' does not depend on any axioms
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_color_adj' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_e01_of_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_e12_of_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_e23_of_reach' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_adj_reach' depends on axioms: [propext, Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_U_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_conn03_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_conn13_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_conn23_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_real_eq_of_support' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_prob_X' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_prob_XYZ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_prob_XZ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_prob_notXYZ' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.KN.Question8Counterexample.0.KNAll.q8Path_prob_notXZ' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'KNAll.q8_path_U' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_path_R' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_path_L_a1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_path_L_a2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_path_score_a1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_path_score_a2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.not_question8EveryMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+FULLLOG-DONE
