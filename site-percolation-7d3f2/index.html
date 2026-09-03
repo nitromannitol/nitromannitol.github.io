@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:27 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:29 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -110,13 +110,16 @@
             Giving each site a label of its own, attached to that site and to one further point for each edge at it, makes
             a label open exactly when its site is open, and the structure is site percolation. In the site case the labels are the sites, so the site model and the label model have the same sample space and the same probabilities, and a chain of open labels read at every second step is a path
             of open sites.</p>
-            <p>The inequality to be proved is the following. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
+            <p><a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> reduced \(\theta(p_c)=0\) to a single
+            inequality about connection probabilities in finite graphs: if that inequality holds in every finite graph,
+            the lattice theorem follows. What has to be proved here is their inequality in the generality of the structure
+            just described, since only that generality reaches site percolation. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
             \[
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
                 \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b). \tag{1} \]
             Read from the right, it says that reaching \(A\) and then continuing to \(b\) from the least favourable
             point of \(A\) is no better than reaching \(b\) directly. For labels attached to two sites, and after
-            dropping the second event on the left, (1) is the inequality <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> conjectured. In its general form (1) implies both that inequality and its site counterpart, so a single finite theorem serves both models.</p>
+            dropping the second event on the left, (1) is exactly what they conjectured. In its general form (1) implies both that inequality and its site counterpart, so a single finite theorem serves both models.</p>
 
             <h2>The exposure record</h2>
             <p>The induction behind (1) exposes the labels incident to a set \(Z\) and records what those
