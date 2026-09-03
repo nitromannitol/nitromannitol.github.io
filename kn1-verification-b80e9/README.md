@@ -1,4 +1,4 @@
-# The conjectures and questions of Kozma and Nitzan
+# Proofs of the Kozma–Nitzan conjectures
 
 * `document/kn_summary.pdf` — the summary: statements and proofs.
 * `lean/` — the Lean modules, `README.md`, `VERIFICATION.log`.
