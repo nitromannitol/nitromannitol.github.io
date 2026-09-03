@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:45 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 5:22 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -158,11 +158,12 @@
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
             \]
-            and in both examples the second inclusion is strict. We keep unions and lose intersections, so the four
-            functions theorem no longer applies.</p>
-            <p>We therefore keep the labels themselves. The record is then the identity, both relations hold, and we run
-            the induction over label sets rather than over the sites they reach. This is the one place where the argument
-            for general labels departs from the argument for graphs.</p>
+            and in both examples the second inclusion is strict. Unions survive and intersections
+            do not.</p>
+            <p>We therefore index the induction by the labels themselves, where both relations are equalities by
+            construction. Where a coarser summary is used, it has to be used in a direction in which losing
+            intersections is harmless, and checking that is the one place where the argument for general labels departs
+            from the argument for graphs.</p>
 
             <h2>Renormalization</h2>
             <p>We pass from (1) to the lattice by renormalization. We partition \(\mathbb{Z}^d\) into blocks of a fixed
@@ -226,7 +227,7 @@
                 <tr><td><a href="document/site_conditional.pdf">site_conditional.pdf</a></td>
                     <td>The statements, the representation and the proofs above.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
-                    <td>The Lean modules, 31 files. The hypergraph layer is <code>HyperCore</code>,
+                    <td>The Lean modules, 36 files. The hypergraph layer is <code>HyperCore</code>,
                     <code>HyperImplA</code>, <code>HyperImplB</code>, <code>HyperImplC</code>, <code>HyperExchange</code>,
                     <code>HyperPartition</code>, <code>HyperTrace</code>, <code>HyperUpper</code> and
                     <code>HyperIntegral</code>; the two representations are <code>BondRepresentation</code> and
