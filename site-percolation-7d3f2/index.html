@@ -25,12 +25,12 @@
         @media (max-width: 620px) { .panels { grid-template-columns: minmax(0, 1fr); } }
         .panel { border: 1px solid var(--border); border-radius: 8px; padding: 0.7em 0.7em 0.55em; background: var(--surface); }
         .panel canvas { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
-        .meter { position: relative; height: 6px; max-width: 300px; margin: 0.6em auto 0.45em;
-                 background: rgba(127,127,127,0.22); border-radius: 3px; }
-        .meter .fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--link);
-                       border-radius: 3px; }
-        .meter .mark { position: absolute; top: -3px; width: 2px; height: 12px; background: var(--text);
-                       opacity: 0.75; }
+        .ctl { position: relative; max-width: 300px; margin: 0.55em auto 0.3em; }
+        .ctl input[type=range] { width: 100%; margin: 0; accent-color: var(--link); display: block; }
+        .ctl .mark { position: absolute; top: -2px; width: 2px; height: 18px; background: var(--text);
+                     opacity: 0.6; pointer-events: none; }
+        .pnow { float: right; font-variant-numeric: tabular-nums;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace; opacity: 0.8; }
         .panel h3 { margin: 0 0 0.15em; font-size: 1.02em; }
         .panel .pc { margin: 0.45em 0 0.1em; font-size: 0.88em; opacity: 0.85; font-variant-numeric: tabular-nums; }
         .panel .status { margin: 0.1em 0 0; font-size: 0.86em; }
@@ -60,10 +60,15 @@
             are joined by a path of open sites, and \(\theta_{\mathrm{site}}(p)\) is the probability that the origin lies in an
             infinite open cluster. It is nondecreasing in \(p\), and \(p_c\) is the parameter above which it is positive.
             Whether \(\theta_{\mathrm{site}}(p_c)=0\) is the question treated here.</p>
-            <p>For \(d = 2\) the answer is yes, by Russo. For \(d \ge 3\) it is not known. The
-            <a href="../kn1-verification-b80e9/">companion page</a> treats the same question for bond percolation, where each
-            edge rather than each site is open with probability \(p\); there \(\theta(p_c)=0\) holds in every dimension
-            \(d \ge 2\).</p>
+            <p>For \(d = 2\) the answer is yes. For bond percolation it is Harris and Kesten; for site percolation
+            it is Russo, whose 1981 paper builds on Kesten's determination of the bond threshold on the square lattice,
+            and proves that \(\theta\) is continuous on all of \([0,1]\). For \(d \ge 3\) it is not known in general.</p>
+            <p>For bond percolation the answer is now yes in every dimension. Anthropic's
+            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">Lean 4 formalization</a> proves \(\theta(p_c)=0\) on \(\mathbb{Z}^d\) for all
+            \(d \ge 2\), settling the cases \(3 \le d \le 10\) that were open, by proving a conjectured inequality of
+            Kozma and Nitzan about finite graphs. The <a href="../kn1-verification-b80e9/">companion page</a> proves the
+            rest of the conjectures and questions of their paper on top of it. This page is the site percolation
+            extension, and it builds on both.</p>
         </section>
 
         <section>
@@ -72,22 +77,36 @@
                 <div class="panels" id="panels"></div>
                 <div class="controls">
                     <button id="playBtn" type="button">Pause</button>
-                    <input id="pSlider" type="range" min="0" max="750" value="0" step="1" aria-label="parameter p">
-                    <span class="readout">p = <span id="pOut">0.000</span></span>
+                    <span class="note">Each picture has its own slider. Press pause and drag one to
+                    hold that lattice at a chosen \(p\).</span>
                 </div>
                 <figcaption>Every site, and every edge, carries a uniform random number fixed once and for all; it is open
                 when that number is below \(p\). As \(p\) increases the open structure only grows. Grey is the open structure,
                 purple is the open cluster of the centre site, which is open in every picture. In three dimensions only that cluster is drawn, inside a rotating
-                wireframe box. The bar under each picture runs from \(0\) to \(0.75\), the mark on it is that lattice's critical
-                parameter, and the filled part is the current \(p\). Bond percolation percolates at a smaller \(p\) than
-                site percolation on the same lattice, and both critical parameters fall as the dimension rises.</figcaption>
+                wireframe box. Each picture has its own slider, running from \(0\) to \(0.75\), with a tick at that lattice's
+                critical parameter. Pause and drag one to hold a single lattice at a chosen \(p\). Bond percolation
+                percolates at a smaller \(p\) than site percolation on the same lattice, and both critical parameters
+                fall as the dimension rises.</figcaption>
             </figure>
         </section>
 
         <section>
             <h2>What is proved in Lean</h2>
+            <p><strong>One finite inequality covers both models.</strong> Bond percolation is the case in which every
+            label of a hypergraph is incident to two vertices; site percolation is the case in which each site carries one
+            label. Formally, with <code>HyperedgeGluing</code> the inequality below for hypergraphs,
+            <code>Conjecture1</code> the Kozma&ndash;Nitzan bond inequality and <code>SiteGluingUnpinned</code> its site
+            analogue,
+            \[
+              \texttt{HyperedgeGluing} \;\Longrightarrow\; \texttt{Conjecture1} \;\wedge\;
+              \texttt{SiteGluingUnpinned},
+            \]
+            proved and machine-checked here. So the finite input is not two theorems, one per model, but a single one.
+            The vertex records that suffice for graphs provably do not suffice for hypergraphs, and there is a
+            machine-checked counterexample in the files showing why: two distinct labels can have the same outside trace,
+            so intersections are lost and the labels themselves must be carried.</p>
             <p>A route to \(\theta_{\mathrm{site}}(p_c)=0\) on \(\mathbb{Z}^d\) for \(d \ge 3\) has been proposed, passing
-            through one inequality about finite hypergraphs. The Lean files state that route and prove every step of it that is
+            through that inequality. The Lean files state that route and prove every step of it that is
             not a theorem of the literature. Two statements are open, and both are named hypotheses, so any theorem using them
             displays them:</p>
             <ul>
@@ -144,10 +163,15 @@
             <table>
                 <tr><td><a href="document/site_conditional.pdf">site_conditional.pdf</a></td>
                     <td>The statements, the representation and the proofs above.</td></tr>
-                <tr><td><a href="lean/SiteStatements.lean">SiteStatements.lean</a></td>
-                    <td>The site model, the sanity lemmas, the three assumptions and the conclusion.</td></tr>
-                <tr><td><a href="lean/SiteRepresentation.lean">SiteRepresentation.lean</a></td>
-                    <td>The representation, and the passage from the hyperedge inequality to site percolation.</td></tr>
+                <tr><td><a href="lean/">lean/</a></td>
+                    <td>The Lean modules, 23 files. The hypergraph layer is <code>HyperCore</code>,
+                    <code>HyperImplA</code>, <code>HyperImplB</code>, <code>HyperImplC</code>, <code>HyperExchange</code>,
+                    <code>HyperPartition</code>, <code>HyperTrace</code>, <code>HyperUpper</code> and
+                    <code>HyperIntegral</code>; the two representations are <code>BondRepresentation</code> and
+                    <code>SiteRepresentation</code>; the lattice statements and the endgames are
+                    <code>SiteStatements</code>, <code>SiteEndgame</code> and <code>Unify</code>. No <code>sorry</code>,
+                    and every theorem is accepted with exactly the axioms <code>propext</code>,
+                    <code>Classical.choice</code> and <code>Quot.sound</code>.</td></tr>
             </table>
             <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed
             Bou-Rabee, with minimal human intervention. Released under the Apache License 2.0, the licence of Anthropic's Lean
@@ -198,14 +222,16 @@
     d.className = "panel";
     d.innerHTML = '<h3>' + spec.title + '</h3>' +
       '<canvas id="c_' + spec.id + '"></canvas>' +
-      '<div class="meter"><span class="fill"></span><span class="mark" style="left:' +
+      '<div class="ctl"><input type="range" min="0" max="' + Math.round(PMAX * 1000) +
+        '" value="0" step="1" aria-label="parameter p"><span class="mark" style="left:' +
         (100 * spec.pc / PMAX).toFixed(2) + '%"></span></div>' +
-      '<p class="pc">' + spec.pcText + ' &nbsp;<span class="tag ' + spec.tag + '">' + spec.tagText + '</span></p>' +
+      '<p class="pc">' + spec.pcText + ' &nbsp;<span class="tag ' + spec.tag + '">' + spec.tagText +
+        '</span><span class="pnow">p = <b>0.000</b></span></p>' +
       '<p class="status">' + spec.status + '</p>';
     panels.appendChild(d);
 
     var cv = d.querySelector("canvas");
-    var m = { spec: spec, canvas: cv, ctx: cv.getContext("2d"), angle: 0.6 + 0.3 * idx };
+    var m = { spec: spec, panel: d, canvas: cv, ctx: cv.getContext("2d"), angle: 0.6 + 0.3 * idx };
 
     if (spec.dim === 2) {
       m.n = N2;
@@ -440,20 +466,35 @@
   }
 
   // ---- animation ---------------------------------------------------------
-  var slider = document.getElementById("pSlider"),
-      pOut = document.getElementById("pOut"),
-      playBtn = document.getElementById("playBtn"),
+  var playBtn = document.getElementById("playBtn"),
       reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-      playing = !reduce, tick = 0, hold = 0;
+      playing = !reduce, hold = 0;
 
-  var fills = Array.prototype.slice.call(document.querySelectorAll(".meter .fill"));
+  models.forEach(function (m) {
+    m.slider = m.panel.querySelector("input[type=range]");
+    m.out = m.panel.querySelector(".pnow b");
+    m.p = 0;
+    m.slider.addEventListener("input", function () {
+      playing = false; playBtn.textContent = "Play";
+      m.p = Number(m.slider.value);
+      drawOne(m);
+    });
+  });
 
-  function setP(p) {
-    pOut.textContent = p.toFixed(3);
-    slider.value = String(Math.round(p * 1000));
-    var w = Math.min(100, 100 * p / PMAX).toFixed(2) + "%";
-    fills.forEach(function (f) { f.style.width = w; });
-    drawAll(p);
+  function drawOne(m) {
+    var p = m.p / 1000;
+    m.out.textContent = p.toFixed(3);
+    if (m.spec.dim === 2) {
+      if (m.spec.kind === "site") draw2site(m, p); else draw2bond(m, p);
+    } else {
+      if (m.spec.kind === "site") draw3site(m, p); else draw3bond(m, p);
+    }
+  }
+
+  function drawAll() { models.forEach(drawOne); }
+
+  function syncSliders() {
+    models.forEach(function (m) { m.slider.value = String(Math.round(m.p)); });
   }
 
   playBtn.textContent = playing ? "Pause" : "Play";
@@ -461,37 +502,33 @@
     playing = !playing;
     playBtn.textContent = playing ? "Pause" : "Play";
   });
-  slider.addEventListener("input", function () {
-    playing = false; playBtn.textContent = "Play";
-    tick = Number(slider.value);
-    setP(tick / 1000);
-  });
 
   function frame() {
     if (playing) {
-      if (hold > 0) { hold--; if (hold === 0) tick = 0; }
+      if (hold > 0) { hold--; if (hold === 0) models.forEach(function (m) { m.p = 0; }); }
       else {
-        tick += 1.35;
-        if (tick >= 750) { tick = 750; hold = 110; }
+        models.forEach(function (m) { m.p = Math.min(m.p + 1.35, PMAX * 1000); });
+        if (models[0].p >= PMAX * 1000) hold = 110;
       }
       models.forEach(function (m) { if (m.spec.dim === 3) m.angle += 0.0045; });
-      setP(tick / 1000);
+      syncSliders();
+      drawAll();
     } else {
       var moved = false;
       models.forEach(function (m) { if (m.spec.dim === 3) { m.angle += 0.0045; moved = true; } });
-      if (moved) drawAll(Number(slider.value) / 1000);
+      if (moved) drawAll();
     }
     requestAnimationFrame(frame);
   }
 
-  window.addEventListener("resize", function () { resize(); setP(Number(slider.value) / 1000); });
+  window.addEventListener("resize", function () { resize(); drawAll(); });
   if (window.matchMedia) {
     var mq = window.matchMedia("(prefers-color-scheme: dark)");
-    if (mq.addEventListener) mq.addEventListener("change", function () { readColours(); setP(Number(slider.value) / 1000); });
+    if (mq.addEventListener) mq.addEventListener("change", function () { readColours(); drawAll(); });
   }
 
   resize();
-  setP(0);
+  drawAll();
   requestAnimationFrame(frame);
 })();
 </script>
