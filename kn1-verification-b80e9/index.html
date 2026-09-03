@@ -156,7 +156,7 @@
                 <tr><td><a href="lean/">lean/</a></td>
                     <td>The Lean modules, <a href="lean/VERIFICATION.log">VERIFICATION.log</a> and <a href="lean/README.md">README.md</a>.
                     Every theorem is accepted with exactly the standard axioms <code>propext</code>, <code>Classical.choice</code>,
-                    <code>Quot.sound</code> and no <code>sorry</code>. The modules for Conjecture 6 and Question 9 follow.</td></tr>
+                    <code>Quot.sound</code> and no <code>sorry</code>. The modules for Question 9 follow.</td></tr>
             </table>
         </section>
 
@@ -164,7 +164,7 @@
             <h2>How to check</h2>
             <pre>lake exe cache get &amp;&amp; lake build      # build the development, as in its README
 mkdir -p .lake/build/lib/lean/KN         # copy the .lean files to KN/, then:
-for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5; do
+for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5 GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Statements9 Question9Reduction Question8Defs Question8Cases Question8Counterexample; do
   lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
 done</pre>
             <p>Expected: the <code>#print axioms</code> lines of <code>VERIFICATION.log</code>, each

@@ -2,7 +2,7 @@ kn1-verification: Kozma–Nitzan's Conjectures 1–4 and Questions 5 and 7 (and 
 "theta(p_c) = 0 for Bernoulli bond percolation on Z^d, d >= 2"
 Done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1 with minimal human intervention, 2 September 2026; released under the Apache License, Version 2.0 (see LICENSE).
 
-The eighteen Lean files in this tree (conjecture-1/: KN1Statement.lean, KozmaNitzanConjecture1.lean, KN1Bridge.lean; lean/: the fifteen KN
+The thirty-three Lean files in this tree (conjecture-1/: KN1Statement.lean, KozmaNitzanConjecture1.lean, KN1Bridge.lean; lean/: the thirty KN
 modules) are corollaries of that development, and KN1Statement.lean reproduces three of its definitions. The development is licensed
 under the Apache License, Version 2.0; its NOTICE file is reproduced below as that licence requires.
 
