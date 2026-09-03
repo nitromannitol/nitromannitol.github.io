@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:19 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:21 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -66,12 +66,12 @@
             <p>Raising \(p\) opens more sites and can only enlarge open clusters, so \(\theta\) is nondecreasing.
             There is therefore a critical probability \(p_c\) with \(\theta(p)=0\) for \(p&lt;p_c\) and
             \(\theta(p)&gt;0\) for \(p&gt;p_c\). Does \(\theta(p_c)=0\)?</p>
-            <p>In two dimensions the answer is yes. For bond percolation, in which edges rather than sites are open, it
-            takes two results together: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the percolation probability
-            vanishes at \(p = 1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a> proved that \(1/2\) is the critical
-            probability. For site percolation it is due to <a href="https://doi.org/10.1007/BF00535742">Russo</a>, whose 1981 argument follows
-            Kesten's determination of the bond threshold on the square lattice and gives continuity of \(\theta\) on all
-            of \([0,1]\). In three or more dimensions the answer is yes for bond percolation, by Anthropic's
+            <p>In two dimensions the answer is yes. For bond percolation, in which edges rather than sites are open, it is the
+            combination of two theorems: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the
+            percolation probability vanishes at \(p = 1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a>
+            proved that \(1/2\) is the critical probability. The site case is
+            <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who used Kesten's identification of the bond threshold
+            to obtain continuity of \(\theta\) on all of \([0,1]\). In three or more dimensions the answer is yes for bond percolation, by Anthropic's
             <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked proof</a> of Conjecture 3 of
             <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a>. That settled the dimensions three to ten, the
             only ones still open: the lace expansion had already given the result in high dimensions, for \(d \ge 19\) by
@@ -110,9 +110,9 @@
             are connected when a chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
             <p>Attaching every label to exactly two sites makes the labels edges, and the structure is bond percolation.
             Giving each site a label of its own, attached to that site and to one further point for each edge at it, makes
-            a label open exactly when its site is open, and the structure is site percolation. The second description is
-            exact rather than analogous. The labels are the sites, so the two models have the same sample space and the
-            same probabilities, and a chain of open labels read at every second step is a path of open sites.</p>
+            a label open exactly when its site is open, and the structure is site percolation. In the second case the labels are the sites, so the two models have the
+            same sample space and the same probabilities, and a chain of open labels read at every second step is a path
+            of open sites.</p>
             <p>The inequality at issue is the following. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
             \[
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
@@ -128,9 +128,9 @@
             labels reach outside \(Z\). Write \(T(I)\) for the set of sites outside \(Z\) reached by a set \(I\) of
             labels.</p>
             <p>For graphs, \(I\) can be recovered from \(T(I)\). A label incident to two sites, one of them in \(Z\),
-            is named by the other. For labels incident to more than two sites it cannot: two labels incident to the same
-            sites have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once
-            \(b\) has been exposed.</p>
+            is named by the other. For labels incident to more than two sites this fails. Two labels incident to
+            the same sites have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching
+            \(\{b,c\}\) once \(b\) has been exposed.</p>
             <p>The consequence is an asymmetry,
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
@@ -152,8 +152,7 @@
             <p>The inequality removes the sprinkling. Conditioning on a shell surrounding a block fixes the states there
             and exposes a set \(A\) of open sites on the shell, each of which reaches the next block with probability
             close to one. Applying the inequality to \(A\) bounds the probability of reaching the next block from the
-            origin, at the parameter \(p\), and no site is opened beyond those the configuration already
-            provides. Iterating gives percolation in a slab of finite width, at \(p\) or below it.</p>
+            origin, at the parameter \(p\) and with no additional sites opened. Iterating gives percolation in a slab of finite width, at \(p\) or below it.</p>
             <p>Either form of the reduction closes the argument. Suppose the reduction gives a slab percolating at some \(q &lt; p\),
             and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with \(q &lt; p_c\),
             contradicting the definition of \(p_c\). Suppose instead the reduction gives a slab percolating at \(p\)
@@ -165,21 +164,21 @@
             <h2>The formalization</h2>
             <p>Everything above is formalized in Lean 4 with Mathlib, except the two statements named below. The model,
             the connection events, the percolation probability and the critical parameter are definitions in the files.
-            The critical parameter is proved to lie in \([0,1]\), so the conclusion is an equation between two real
-            numbers and cannot hold for want of content.</p>
-            <p>The supporting results are also there. Conditioning on the entire cluster of a set factorizes exactly, two
+            The critical parameter is proved to lie in \([0,1]\), so \(\theta(p_c)\) is defined and the conclusion
+            needs no side condition.</p>
+            <p>So are the supporting results. Conditioning on the entire cluster of a set factorizes exactly, two
             disjoint clusters factorize in either order, and a probability expands as a finite sum over the possible
             clusters. The percolation probability is monotone in the parameter and in the underlying graph, vanishes below
             \(p_c\), and \(0 &lt; p_c &lt; 1\). An event depending on \(n\) sites has probability Lipschitz in the
             parameter with constant \(n\). An exploration whose every step succeeds with probability at least \(a\),
             after any history, reaches an upward-closed target at least as often as an independent Bernoulli \(a\)
-            sequence. The strict inclusion of the previous section is machine-checked as a counterexample.</p>
+            sequence. The example showing that the second inclusion above can be strict is machine-checked.</p>
 
             <div class="standing">
             <h3>Status</h3>
             <p>Two statements remain unproved, of which only one is a conjecture.</p>
-            <p>The inequality of the second section is the conjecture. For labels incident to two sites it is a theorem,
-            proved in Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>.</p>
+            <p>The displayed inequality is the conjecture. For labels incident to two sites it is a theorem, proved in
+            Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>.</p>
             <p>The slab reduction is not a conjecture. Kozma and Nitzan derive it from the inequality, and for bond
             percolation that derivation is formalized here in some fifteen thousand lines; for site percolation it has to
             be carried out again. It also requires two estimates at a supercritical parameter, uniqueness of the large
