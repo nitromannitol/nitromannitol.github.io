@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 4:12 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 4:15 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -123,66 +123,71 @@
             dropping the second event on the left, it is the inequality <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> conjectured. The general form
             implies the bond inequality and its site counterpart together, so one finite theorem serves both models.</p>
 
-            <h2>Why labels, and not the sites they reach</h2>
-            <p>Arguments of this kind expose the labels touching a set and record what those labels reach outside it. For
-            graphs the record may be taken to be the set of outside sites reached, since a label attached to two sites is
-            determined by the one site it reaches outside.</p>
-            <p>For labels attached to more than two sites that record is too coarse, and it fails in one direction only.
-            The sites reached by a union of labels are the union of the sites each reaches, but the sites reached by an
-            intersection can be strictly fewer than the sites reached by both. Two distinct labels touching the same sites
-            already witness this. The inclusion points the right way for the induction, since avoiding a larger set is
-            harder, but the intersection is what a four functions argument needs and it has been lost.</p>
-            <p>The remedy is to record the labels themselves. Under that bookkeeping unions and intersections are both
-            preserved exactly, even when distinct labels reach identical sites, and the induction closes.</p>
+            <h2>Labels, not the sites they reach</h2>
+            <p>The induction behind the inequality exposes the labels incident to a set \(Z\) and records what those
+            labels reach outside \(Z\). Write \(T(I)\) for the set of sites outside \(Z\) reached by a set \(I\) of
+            labels.</p>
+            <p>For graphs, \(I\) can be recovered from \(T(I)\). A label incident to two sites, one of them in \(Z\),
+            is named by the other. For labels incident to more than two sites it cannot: two labels incident to the same
+            sites have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once
+            \(b\) has been exposed.</p>
+            <p>The consequence is an asymmetry,
+            \[
+              T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
+            \]
+            with the second inclusion strict in both examples. The induction applies the four functions theorem to
+            \(T(I)\), \(T(J)\), \(T(I \cap J)\) and \(T(I \cup J)\), and so needs both relations to be equalities.
+            Recording \(I\) itself restores them, since unions and intersections of label sets are unions and
+            intersections.</p>
 
             <h2>From the inequality to the lattice</h2>
-            <p>The passage from a finite inequality to the lattice is a renormalization. Space is divided into blocks, a
-            block is called occupied when a suitable connection appears inside it, and the occupied blocks are compared
-            with ordinary percolation on a coarser lattice. The difficulty is joining one block to the next.</p>
-            <p>The classical remedy is sprinkling: opening a few extra sites beyond those the construction has already
-            used. <a href="https://www.statslab.cam.ac.uk/~grg1000/papers/procrsa430-439.pdf">Grimmett and
-            Marstrand</a> do this and obtain percolation in a slab of finite width at any parameter slightly larger than the
-            one they started from. They also record that they cannot dispense with the excess, and that this is what
-            prevents their argument from reaching the critical parameter.</p>
-            <p>The inequality replaces those extra sites. Conditioning on a shell around a block exposes a set of relays
-            lying on it, and applying the inequality to those relays joins the block to the next at the original parameter.
-            What the construction yields is a reduction of the lattice to a slab of finite width, at the original parameter
-            or below it.</p>
-            <p>Given that reduction the conclusion follows, in either of two ways. If the reduction produces a strictly
-            smaller parameter, then percolation at the critical parameter would give percolation below it, contradicting
-            the definition of the critical parameter, and nothing further is needed. If instead the reduction holds at the
-            same parameter, the conclusion follows from two published theorems, which are needed together:
-            <a href="https://www.statslab.cam.ac.uk/~grg1000/papers/ptrf90-111.pdf">Barsky, Grimmett and Newman</a> show that the percolation probability of a half-space vanishes at the critical density of
-            the half-space, for bond and site percolation alike, and Grimmett and Marstrand identify that density with the
-            one of the lattice in three or more dimensions, working throughout with site percolation.</p>
+            <p>The lattice argument is a renormalization. Partition \(\mathbb{Z}^d\) into blocks, call a block occupied
+            when a prescribed connection occurs inside it, and compare the occupied blocks with site percolation on a
+            coarser lattice. The step to be justified is that an occupied block is joined to its neighbour with
+            probability close to one, conditionally on everything already examined.</p>
+            <p><a href="https://www.statslab.cam.ac.uk/~grg1000/papers/procrsa430-439.pdf">Grimmett and Marstrand</a> justify it by sprinkling. They open further sites, at
+            parameter \(p + \gamma\), and obtain percolation in a slab of finite width for every \(\gamma &gt; 0\).
+            They also state that they cannot take \(\gamma = 0\), which is what stops the argument short of the critical
+            parameter.</p>
+            <p>The inequality removes the sprinkling. Conditioning on a shell surrounding a block fixes the states there
+            and exposes a set \(A\) of open sites on the shell, each of which reaches the next block with probability
+            close to one. Applying the inequality to \(A\) bounds the probability of reaching the next block from the
+            origin, at the parameter \(p\) and with no site opened by hand. Iterating gives percolation in a slab of
+            finite width, at \(p\) or below it.</p>
+            <p>Either version closes the argument. Suppose the reduction gives a slab percolating at some \(q &lt; p\),
+            and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with \(q &lt; p_c\),
+            contradicting the definition of \(p_c\). Suppose instead the reduction gives a slab percolating at \(p\)
+            itself. A slab lies in a half-space, and two theorems then apply:
+            <a href="https://www.statslab.cam.ac.uk/~grg1000/papers/ptrf90-111.pdf">Barsky, Grimmett and Newman</a> prove that the percolation probability of a
+            half-space vanishes at the critical density of the half-space, for bond and site percolation alike, and
+            Grimmett and Marstrand identify that density with \(p_c\) for \(d \ge 3\).</p>
 
             <h2>What is formalized</h2>
-            <p>Everything above is formalized in Lean 4 with Mathlib, apart from the two statements named below. The model,
-            the connection events, the percolation probability and the critical parameter are definitions in the files, and
-            the critical parameter is proved to lie in the unit interval, so the conclusion is an equation between two real
-            numbers rather than a statement that could hold for want of content.</p>
-            <p>The formalization also contains the machinery those arguments use: conditioning on the whole cluster of a
-            set factorizes exactly, two disjoint clusters factorize in either order, and any probability expands as a
-            finite sum over the possible clusters; the percolation probability is monotone in the parameter and in the
-            underlying graph, and vanishes below the critical parameter, which is neither \(0\) nor \(1\); events
-            depending on finitely many sites have probabilities Lipschitz in the parameter; and an exploration that
-            succeeds with probability at least a fixed amount after every history reaches any upward-closed target at least
-            as often as an independent sequence would. The counterexample of the previous section is machine-checked as
-            well.</p>
+            <p>Everything above is formalized in Lean 4 with Mathlib, except the two statements named below. The model,
+            the connection events, the percolation probability and the critical parameter are definitions in the files.
+            The critical parameter is proved to lie in \([0,1]\), so the conclusion is an equation between two real
+            numbers and cannot hold for want of content.</p>
+            <p>The supporting results are also there. Conditioning on the entire cluster of a set factorizes exactly, two
+            disjoint clusters factorize in either order, and a probability expands as a finite sum over the possible
+            clusters. The percolation probability is monotone in the parameter and in the underlying graph, vanishes below
+            \(p_c\), and \(0 &lt; p_c &lt; 1\). An event depending on \(n\) sites has probability Lipschitz in the
+            parameter with constant \(n\). An exploration whose every step succeeds with probability at least \(a\),
+            after any history, reaches an upward-closed target at least as often as an independent Bernoulli \(a\)
+            sequence. The strict inclusion of the previous section is machine-checked as a counterexample.</p>
 
             <div class="standing">
             <h3>Status</h3>
-            <p>One conjecture remains, and one derivation from it. They are not on the same footing. The conjecture is the
-            inequality \(\mathrm{G}\) for labels attached to any number of sites; for labels attached to two it is proved,
-            in Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>. The
-            derivation is the slab reduction, and it is not a second conjecture: Kozma and Nitzan derive it from their
-            inequality, and for bond percolation that derivation is itself machine-checked, in some fifteen thousand lines
-            of this development. What is left for sites is to redo it, which is long but is not open mathematics. It also
-            consumes standard facts about a supercritical parameter in a finite box, local uniqueness and face hitting,
-            which are the finite-volume face of the Burton and Keane theorem and are not formalized here.</p>
-            <p>All of these appear in the files as named hypotheses, so every statement depending on them displays them,
-            and the reduction of the problem to them is itself machine-checked. Everything else stated on this page is
-            proved, with no unfinished step and with only the three axioms Lean itself provides.</p>
+            <p>Two statements are unproved, and only one of them is a conjecture.</p>
+            <p>The inequality of the second section is the conjecture. For labels incident to two sites it is a theorem,
+            proved in Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>.</p>
+            <p>The slab reduction is not. Kozma and Nitzan derive it from the inequality, and for bond percolation that
+            derivation is formalized here, in some fifteen thousand lines; for sites it has to be carried out again. It
+            also uses two estimates at a supercritical parameter, uniqueness of the large cluster in a finite box and the
+            hitting of each face of a box, which are finite-volume forms of the Burton and Keane theorem and are not
+            formalized here.</p>
+            <p>All of these are named hypotheses in the files, so every statement depending on them displays them, and the
+            reduction of the problem to them is itself machine-checked. Everything else on this page is proved, with no
+            unfinished step and with only the three axioms Lean provides.</p>
             </div>
 
             <h2>Files</h2>
