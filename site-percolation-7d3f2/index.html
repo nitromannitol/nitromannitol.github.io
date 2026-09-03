@@ -82,85 +82,79 @@
                     <span class="note">Each picture has its own slider. Press pause and drag one to
                     hold that lattice at a chosen \(p\).</span>
                 </div>
-                <figcaption>Every site, and every edge, carries a uniform random number fixed once and for all; it is open
-                when that number is below \(p\). As \(p\) increases the open structure only grows. Grey is the open structure,
-                purple is the open cluster of the centre site, which is open in every picture. In three dimensions only that cluster is drawn, inside a rotating
-                wireframe box. Each picture has its own slider, running from \(0\) to \(0.75\), with a tick at that lattice's
-                critical parameter. Pause and drag one to hold a single lattice at a chosen \(p\). Bond percolation
-                percolates at a smaller \(p\) than site percolation on the same lattice, and both critical parameters
-                fall as the dimension rises.</figcaption>
+                <figcaption>Each site, and each edge, carries a random number fixed once and for all, and is open
+                when that number is below \(p\); raising \(p\) therefore only opens more. Grey is the open structure and
+                purple is the open cluster of the centre, which is held open in every picture. The three-dimensional
+                pictures draw only that cluster, inside a rotating box. Every picture has its own slider, with a tick at
+                that lattice's critical parameter.</figcaption>
             </figure>
         </section>
 
         <section>
-            <h2>What is proved in Lean</h2>
+            <h2>What is proved</h2>
             <p><strong>One finite inequality covers both models.</strong> Bond percolation is the case in which every
             label of a hypergraph is incident to two vertices; site percolation is the case in which each site carries one
-            label. Formally, with <code>HyperedgeGluing</code> the inequality below for hypergraphs,
-            <code>Conjecture1</code> the Kozma&ndash;Nitzan bond inequality and <code>SiteGluingUnpinned</code> its site
-            analogue,
+            label. Formally, with <code>HyperedgeGluing</code> the inequality for hypergraphs, <code>Conjecture1</code>
+            the Kozma&ndash;Nitzan bond inequality and <code>SiteGluingUnpinned</code> its site analogue,
             \[
               \texttt{HyperedgeGluing} \;\Longrightarrow\; \texttt{Conjecture1} \;\wedge\;
               \texttt{SiteGluingUnpinned},
             \]
-            proved and machine-checked here. So the finite input is not two theorems, one per model, but a single one.
-            The vertex records that suffice for graphs provably do not suffice for hypergraphs, and there is a
-            machine-checked counterexample in the files showing why: two distinct labels can have the same outside trace,
-            so intersections are lost and the labels themselves must be carried.</p>
-            <p>A route to \(\theta_{\mathrm{site}}(p_c)=0\) on \(\mathbb{Z}^d\) for \(d \ge 3\) has been proposed, passing
-            through that inequality. The Lean files state that route and prove every step of it that is
-            not a theorem of the literature. Two statements are open, and both are named hypotheses, so any theorem using them
-            displays them:</p>
+            machine-checked. So the finite input is one theorem, not two. It has to be stated with labels rather than
+            with the vertex records that suffice for graphs, and the files contain a machine-checked counterexample
+            showing why: two distinct labels can have the same outside trace, so intersections are lost.</p>
+
+            <h3>Proved</h3>
             <ul>
-                <li><strong>The hyperedge inequality.</strong> In a finite hypergraph whose labels are open independently, for
-                    a nonempty set \(A\) of vertices and vertices \(o\) and \(b\),
+                <li><strong>The representation.</strong> Site percolation on any finite graph is the hypergraph model in
+                    which each site carries one label, incident to the site and to one further vertex per edge at it. The
+                    labels are the sites, so the product measure over labels is the site measure itself.</li>
+                <li><strong>The conditioning apparatus.</strong> Conditioning on the entire cluster of a source set
+                    factorizes exactly; two disjoint clusters can be factorized in either order; and any probability
+                    expands as a finite sum over the possible clusters.</li>
+                <li><strong>Monotonicity and nondegeneracy.</strong> The percolation probability is monotone in the
+                    parameter and in the underlying graph, it vanishes below \(p_c\), and \(0 < p_c < 1\), the upper
+                    bound coming from a half-edge comparison with bond percolation.</li>
+                <li><strong>The endgame.</strong> If percolation at a parameter forces percolation in a slab of finite
+                    width at some strictly smaller parameter, then \(\theta_{\mathrm{site}}(p_c)=0\). This step is
+                    self-contained: it assumes no theorem about percolation at a critical point, imports nothing, and
+                    carries no side conditions.</li>
+            </ul>
+
+            <h3>Not yet proved</h3>
+            <p>Two statements, and only these two, stand between the above and an unconditional theorem.</p>
+            <ul>
+                <li><strong>The hyperedge inequality.</strong> In a finite hypergraph whose labels are open
+                    independently, for a nonempty set \(A\) of vertices and vertices \(o\) and \(b\),
                     \[
                       \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b)
                         \;\le\; \mathbb{P}(o \leftrightarrow b,\; o \leftrightarrow A).
                     \]</li>
-                <li><strong>The same-parameter slab reduction.</strong> If \(\theta_{\mathrm{site}}(p) > 0\) then site
-                    percolation occurs at the same \(p\) in a slab of finite width. Grimmett and Marstrand prove this with
-                    \(p + \gamma\) in place of \(p\), for every \(\gamma > 0\), and name the passage to \(p\) itself as the
-                    point where their argument fails, because it adds a small density of extra open sites to build the paths it
-                    needs. Replacing that addition by the hyperedge inequality is what the proposed route is for.</li>
+                <li><strong>The slab reduction.</strong> If \(\theta_{\mathrm{site}}(p) > 0\) then site percolation
+                    occurs in a slab of finite width, at the same \(p\) or below it. Grimmett and Marstrand prove this
+                    with \(p + \gamma\) in place of \(p\) for every \(\gamma > 0\), and name the passage to \(p\)
+                    itself as the point where their argument fails, because it adds extra open sites to build the paths it
+                    needs. Replacing that addition by the hyperedge inequality is what the route is for.</li>
             </ul>
-            <p>The remaining input is a theorem, in two published pieces, each covering site percolation:</p>
-            <ul>
-                <li>Barsky, Grimmett and Newman prove that the percolation probability of a half-space vanishes at the critical
-                    density <em>of the half-space</em>, for independent nearest-neighbour bond or site percolation.</li>
-                <li>Grimmett and Marstrand prove that for \(d \ge 3\) the critical density of the half-space equals that of
-                    \(\mathbb{Z}^d\). That paper works throughout with site percolation on \(\mathbb{Z}^d\).</li>
-            </ul>
-            <p>The two are stated separately in Lean, since neither alone gives the statement the route uses.</p>
-            <p>What the files prove:</p>
-            <ul>
-                <li><strong>The representation.</strong> Site percolation on any finite graph is the hypergraph model in which
-                    each site carries one label, and that label is incident to the site itself and to one further vertex for each
-                    edge at the site. The labels are the sites, so the product measure over labels is the site measure itself, and
-                    connection in the hypergraph is connection in the site model. The hyperedge inequality therefore gives the
-                    same inequality for site percolation on every finite graph.</li>
-                <li><strong>Monotonicity in the underlying graph.</strong> Restricting a configuration along an injection of
-                    vertex sets carries the site measure to the site measure, open paths to open paths, and infinite clusters to
-                    infinite clusters, so the percolation probability on an induced subgraph is at most the one on the whole
-                    graph. This needs the event that the open cluster is infinite to be measurable, which is proved from the
-                    decomposition of a connection into open walks.</li>
-                <li><strong>The half-space theorem gives the slab statement.</strong> A slab is contained in a half-space, and
-                    both are induced from \(\mathbb{Z}^d\), so no slab percolates at the critical parameter.</li>
-                <li><strong>The conclusion.</strong> The half-space theorem and the slab reduction together give
-                    \(\theta_{\mathrm{site}}(p_c) = 0\) on \(\mathbb{Z}^d\).</li>
-                <li><strong>A second endgame, with no imported theorem at all.</strong> If the reduction is strengthened to
-                    produce slab percolation at some parameter strictly below \(p\), the conclusion follows from the definition
-                    of the critical parameter alone: a slab lies in \(\mathbb{Z}^d\), so the lattice would percolate below its
-                    own critical parameter. This route uses no theorem about percolation at a critical point, and it needs
-                    neither of the two published theorems above.</li>
-            </ul>
-            <p>The critical parameter is proved to lie in \([0,1]\), so the conclusion is an equation between two real numbers
-            and holds under no hypothesis. Six further lemmas fix the conventions of the model: a closed site is connected to
-            nothing, not even to itself; the cluster of a closed site is empty; every site of a cluster is open; and two adjacent
-            open sites are connected.</p>
-        </section>
+            <p>Both are named hypotheses in the files, so every theorem that uses them displays them. Nothing else is
+            assumed on this route.</p>
 
-        <section>
+            <h3>The second endgame, and what it costs</h3>
+            <p>There is a second endgame, which takes the slab reduction at the same \(p\) rather than below it and pays
+            for the difference with two theorems from the literature. Barsky, Grimmett and Newman prove that the
+            percolation probability of a half-space vanishes at the critical density <em>of the half-space</em>, for bond
+            or site percolation. Grimmett and Marstrand prove that for \(d \ge 3\) that density equals the one of
+            \(\mathbb{Z}^d\), working throughout with site percolation. Both are needed: the first alone places the
+            statement at the wrong critical parameter.</p>
+            <p>So the two routes differ exactly in what they assume. The first is conditional on the slab reduction below
+            the parameter, and on nothing else whatsoever. The second is conditional on the slab reduction at the same
+            parameter together with <em>both</em> published theorems. Neither route is conditional on just one of them.</p>
+            <p>The two published theorems are carried here as named hypotheses and are not formalized on this page. That
+            is a gap in the formalization, not in the mathematics: they are theorems, and the bond case of the half-space
+            theorem is already proved from scratch in
+            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">Anthropic's Lean development</a>, so a site version
+            is a port of an existing machine-checked argument rather than open mathematics.</p>
+
             <h2>Files</h2>
             <table>
                 <tr><td><a href="document/site_conditional.pdf">site_conditional.pdf</a></td>
@@ -210,7 +204,7 @@
     { id: "s2", title: "Site percolation on \\(\\mathbb{Z}^2\\)", dim: 2, kind: "site",
       pc: 0.592746, pcText: "\\(p_c \\approx 0.5927\\)", status: "Known: Russo.", tag: "done", tagText: "settled" },
     { id: "b3", title: "Bond percolation on \\(\\mathbb{Z}^3\\)", dim: 3, kind: "bond",
-      pc: 0.248812, pcText: "\\(p_c \\approx 0.2488\\)", status: "Known in every dimension: the companion page.", tag: "done", tagText: "settled" },
+      pc: 0.248812, pcText: "\\(p_c \\approx 0.2488\\)", status: 'Known in every dimension: <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">Anthropic\'s Lean proof</a>.', tag: "done", tagText: "settled" },
     { id: "s3", title: "Site percolation on \\(\\mathbb{Z}^3\\)", dim: 3, kind: "site",
       pc: 0.311608, pcText: "\\(p_c \\approx 0.3116\\)", status: "Open, and the subject of this page.", tag: "here", tagText: "open" }
   ];
