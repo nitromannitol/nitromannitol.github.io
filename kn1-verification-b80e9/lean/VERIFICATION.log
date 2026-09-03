@@ -182,4 +182,21 @@ EXIT=0
 'KNAll.q8_path_score_a2' depends on axioms: [propext, Classical.choice, Quot.sound]
 'KNAll.not_question8EveryMin' depends on axioms: [propext, Classical.choice, Quot.sound]
 EXIT=0
-FULLLOG-DONE
+## KN/Question8Equivalence.lean (     833 lines)
+'KNAll.q8PendantWeight_map_castSucc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8PendantWeight_pendant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8PendantWeight_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_pendant_rhoa' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_pendant_rhox' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_pendant_L' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_pendant_R' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_pendant_strictMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8Strict_iff_q8Positive' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question8Sufficient.lean (     336 lines)
+'KNAll.q8_target_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.q8_of_firstRelayCriterion' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
+## KN/Question8Interior.lean (      81 lines)
+'KNAll.q8Strict_of_interior' depends on axioms: [propext, Classical.choice, Quot.sound]
+EXIT=0
