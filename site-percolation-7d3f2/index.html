@@ -55,15 +55,14 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 3:52 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 3:57 PM EDT</p>
     </header>
 
     <main class="sp">
         <section>
             <p>In Bernoulli site percolation on \(\mathbb{Z}^d\) each site is open with probability \(p\) and closed
-            with probability \(1-p\), independently of every other site. Two open sites lie in the same open cluster when
-            they are joined by a path of open sites, and a closed site lies in no open cluster, not even its own. Write
-            \(\theta(p)\) for the probability that the origin lies in an infinite open cluster.</p>
+            with probability \(1-p\), independently of every other site. The open clusters are the connected components of
+            the set of open sites, and \(\theta(p)\) is the probability that the origin lies in an infinite one.</p>
             <p>Raising \(p\) opens more sites and can only enlarge open clusters, so \(\theta\) is nondecreasing and
             has a critical probability \(p_c\), below which it vanishes and above which it is positive. That settles \(\theta\) at every
             parameter but one. At \(p_c\) itself an infinite cluster is neither forced nor forbidden, and whether
