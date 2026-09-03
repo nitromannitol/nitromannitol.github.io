@@ -51,5 +51,6 @@ Expected: the `#print axioms` lines of `VERIFICATION.log`, all `[propext, Classi
 
 ## Attribution
 
-All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, with minimal human intervention. Released under the
+All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee. Released under
+the
 Apache License 2.0, the licence of Anthropic's Lean proof.
