@@ -55,7 +55,7 @@
     <header>
         <h1>Site percolation at criticality</h1>
         <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 5:22 PM EDT</p>
+        <p class="updated">Last updated 3 September 2026, 5:41 PM EDT</p>
     </header>
 
     <main class="sp">
@@ -160,10 +160,12 @@
             \]
             and in both examples the second inclusion is strict. Unions survive and intersections
             do not.</p>
-            <p>We therefore index the induction by the labels themselves, where both relations are equalities by
-            construction. Where a coarser summary is used, it has to be used in a direction in which losing
-            intersections is harmless, and checking that is the one place where the argument for general labels departs
-            from the argument for graphs.</p>
+            <p>We therefore index the induction by the labels themselves. The reason is not the four functions step,
+            which tolerates the coarser record whenever the loss points in the harmless direction, and for a decreasing
+            function of the record it does. The reason is the measure. The model with a cluster deleted carries a
+            product law because distinct labels remain distinct, and a record that kept only the sites a label reaches
+            would identify two labels that reach the same sites. On a graph that cannot happen, since an edge is
+            determined by its two endpoints. On a general incidence structure it can, and we exhibit it.</p>
 
             <h2>Renormalization</h2>
             <p>We pass from (1) to the lattice by renormalization. We partition \(\mathbb{Z}^d\) into blocks of a fixed
@@ -227,7 +229,7 @@
                 <tr><td><a href="document/site_conditional.pdf">site_conditional.pdf</a></td>
                     <td>The statements, the representation and the proofs above.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
-                    <td>The Lean modules, 36 files. The hypergraph layer is <code>HyperCore</code>,
+                    <td>The Lean modules, 42 files. The hypergraph layer is <code>HyperCore</code>,
                     <code>HyperImplA</code>, <code>HyperImplB</code>, <code>HyperImplC</code>, <code>HyperExchange</code>,
                     <code>HyperPartition</code>, <code>HyperTrace</code>, <code>HyperUpper</code> and
                     <code>HyperIntegral</code>; the two representations are <code>BondRepresentation</code> and
