@@ -1,6 +1,6 @@
 # The conjectures and questions of Kozma and Nitzan: Lean files
 
-Thirty Lean modules on top of the development *θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d* (Lean 4.32.0, the
+Thirty-three Lean modules on top of the development *θ(p_c) = 0 for Bernoulli bond percolation on ℤ^d* (Lean 4.32.0, the
 development's Mathlib pin). Every theorem reports exactly `[propext, Classical.choice, Quot.sound]` (`VERIFICATION.log`); no
 `sorry`, no axioms. Vocabulary: `prodBernoulli`, `openConn`, `openCluster` of the development; vertices `Fin n`, weights in
 [0,1] on all pairs (absent edge = weight 0); `x ↔ y` = joined by an open path; `C_x` the open cluster; `o ↔ A` = `⋃_{a∈A} {o ↔ a}`.
@@ -24,7 +24,9 @@ development's Mathlib pin). Every theorem reports exactly `[propext, Classical.c
   finite set of vertices, `SetSourceFixedMin` (`question9_of_setSourceFixedMin`); the modules proving `SetSourceFixedMin` follow.
 * Question 8 (p. 36): the printed question with the minimiser of `P(a ↔ b, o ↮ A)`, in the reading for every minimiser, is false
   (`not_question8EveryMin`, the four-vertex path); the readings with a unique minimiser and with `P(o ↮ A) > 0` are stated
-  (`Question8Strict`, `Question8Positive`); the settled cases (`q8_singleton`, `q8_bEqO`, `q8_degenerate_allMin`, `q8_zeroScore`).
+  (`Question8Strict`, `Question8Positive`) and are equivalent (`q8Strict_iff_q8Positive`); the settled cases (`q8_singleton`, `q8_bEqO`,
+  `q8_degenerate_allMin`, `q8_zeroScore`); it suffices to treat weights in (0,1) (`q8Strict_of_interior`); a sufficient criterion
+  (`q8_of_firstRelayCriterion`).
 
 In print, Conjectures 2 and 4 are proved when `A` has two vertices (Theorems 1 and 7), three vertices under extra hypotheses
 (Theorems 2, 3 and 11), when `o` is isolated in `G ∖ A` or joined only to `A` and one further vertex (Theorems 4 and 5), and, for
@@ -32,7 +34,7 @@ every graph and every `A`, for the cluster properties `f = 1{|C| ≥ k}` with `k
 
 ## Files
 
-`AvoidedDefs`, `AvoidedPeelTools`, `AvoidedPeel`, `AvoidedTransfer`, `AvoidedGen`, `Projection`, `AvoidedClosure`, `Statements`, `Conjectures`, `ClusterProperty`, `Statements6`, `PairSource`, `Conjecture6Reduction`, `Question5Dual`, `Question5`, `GuardedDefs`, `GuardedBasic`, `GuardedKernel`, `GuardedDecoy`, `GuardedTwoCluster`, `PairGuardedCSH`, `PairSurplus`, `PairSurplusClosure`, `PairFixedMin`, `Conjecture6Proof`, `Statements9`, `Question9Reduction`, `Question8Defs`, `Question8Cases`, `Question8Counterexample` (`.lean`, compile in this order); `Projection.REPORT.md`, `AvoidedClosure.REPORT.md`; `VERIFICATION.log`.
+`AvoidedDefs`, `AvoidedPeelTools`, `AvoidedPeel`, `AvoidedTransfer`, `AvoidedGen`, `Projection`, `AvoidedClosure`, `Statements`, `Conjectures`, `ClusterProperty`, `Statements6`, `PairSource`, `Conjecture6Reduction`, `Question5Dual`, `Question5`, `GuardedDefs`, `GuardedBasic`, `GuardedKernel`, `GuardedDecoy`, `GuardedTwoCluster`, `PairGuardedCSH`, `PairSurplus`, `PairSurplusClosure`, `PairFixedMin`, `Conjecture6Proof`, `Statements9`, `Question9Reduction`, `Question8Defs`, `Question8Cases`, `Question8Counterexample`, `Question8Equivalence`, `Question8Sufficient`, `Question8Interior` (`.lean`, compile in this order); `Projection.REPORT.md`, `AvoidedClosure.REPORT.md`; `VERIFICATION.log`.
 
 ## How to check
 
@@ -40,7 +42,7 @@ From the development's root (optionally first `shasum -a 256 -c /path/to/conject
 `lake exe cache get && lake build`, copy the `.lean` files to `KN/` and run
 
     mkdir -p .lake/build/lib/lean/KN
-    for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5 GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Statements9 Question9Reduction Question8Defs Question8Cases Question8Counterexample; do
+    for m in AvoidedDefs AvoidedPeelTools AvoidedPeel AvoidedTransfer AvoidedGen Projection AvoidedClosure Statements Conjectures ClusterProperty Statements6 PairSource Conjecture6Reduction Question5Dual Question5 GuardedDefs GuardedBasic GuardedKernel GuardedDecoy GuardedTwoCluster PairGuardedCSH PairSurplus PairSurplusClosure PairFixedMin Conjecture6Proof Statements9 Question9Reduction Question8Defs Question8Cases Question8Counterexample Question8Equivalence Question8Sufficient Question8Interior; do
       lake env lean -o .lake/build/lib/lean/KN/$m.olean -i .lake/build/lib/lean/KN/$m.ilean KN/$m.lean || break
     done
 
