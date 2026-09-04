@@ -191,8 +191,7 @@ changes nothing, and the two factors are determined by `{x}` and by its compleme
 independent; likewise for `A \ {x is open} = {x is closed} ∩ {ω | ω \ {x} ∈ A}`.  Adding the two
 gives `P(A)`.  The Burton–Keane counting argument does not use this identity: it opens vertices
 and never closes them, so the only probabilistic input it needs is the insertion bound
-`prod_mul_real_preimage_openSites_le` below.  The identity is the sharper statement, recorded
-here because it is denominator-free and so needs no conditioning event of positive mass.
+`prod_mul_real_preimage_openSites_le` below.
 [cite: GrimmettPercolation1999, §2.2] -/
 theorem siteBernoulli_real_eq_pinned (w : V → unitInterval) (x : V) {A : Set (SiteConfig V)}
     (hA : MeasurableSet A) :
