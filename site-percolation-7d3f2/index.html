@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Site percolation at criticality</title>
+    <title>Percolation at criticality</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../styles.css">
     <script>
@@ -24,6 +24,23 @@
         .standing { border-left: 3px solid var(--link); padding: 0.1em 0 0.1em 1em; margin: 1.4em 0; }
         .standing h3 { margin: 0 0 0.4em; font-size: 1.02em; }
 
+        :root {
+            --perc-lattice: #f3efe6;
+            --perc-closed: #e2e8f0;
+            --perc-open: #6f7782;
+            --perc-cluster: #2f004f;
+            --perc-seed: #47769f;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --perc-lattice: #29272b;
+                --perc-closed: #2b323c;
+                --perc-open: #737b86;
+                --perc-cluster: #f0d8ff;
+                --perc-seed: #47769f;
+            }
+        }
+
         .panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1em; margin: 1.2em 0 0.6em; }
         @media (min-width: 1100px) { main.sp figure { width: 118%; margin-left: -9%; } }
         @media (max-width: 620px) { .panels { grid-template-columns: minmax(0, 1fr); } }
@@ -36,6 +53,15 @@
         .pnow { float: right; font-variant-numeric: tabular-nums;
                 font-family: ui-monospace, SFMono-Regular, Menlo, monospace; opacity: 0.8; }
         .panel h3 { margin: 0 0 0.15em; font-size: 1.02em; }
+        .panel .legend { display: flex; flex-wrap: wrap; gap: 0.25em 0.75em; max-width: 420px;
+                         margin: 0.45em auto 0.1em; padding: 0; list-style: none; font-size: 0.78em; }
+        .panel .legend li { display: inline-flex; align-items: center; gap: 0.3em; margin: 0; }
+        .legend-swatch { width: 0.72em; height: 0.72em; border-radius: 2px; flex: 0 0 auto; }
+        .legend-swatch.lattice { background: var(--perc-lattice); border: 1px solid var(--border); }
+        .legend-swatch.closed { background: var(--perc-closed); }
+        .legend-swatch.open { background: var(--perc-open); }
+        .legend-swatch.cluster { background: var(--perc-cluster); }
+        .legend-swatch.seed { background: var(--perc-seed); }
         .panel .pc { margin: 0.45em 0 0.1em; font-size: 0.88em; opacity: 0.85; font-variant-numeric: tabular-nums; }
         .panel .status { margin: 0.1em 0 0; font-size: 0.86em; }
         .tag { display: inline-block; padding: 0.05em 0.5em; border-radius: 999px; font-size: 0.8em;
@@ -53,32 +79,43 @@
 </head>
 <body>
     <header>
-        <h1>Site percolation at criticality</h1>
-        <p class="byline">ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 3 September 2026, 9:24 PM EDT</p>
+        <h1>Percolation at criticality</h1>
+        <p class="byline">Mathematics by OpenAI Codex, exposition by Claude Opus 5, prompted by Ahmed Bou-Rabee</p>
+        <p class="updated">Last updated 4 September 2026, 3:38 PM EDT</p>
     </header>
 
     <main class="sp">
         <section>
-            <p>In Bernoulli site percolation on \(\mathbb{Z}^d\) each site is open with probability \(p\) and closed
-            with probability \(1-p\), independently of every other site. The open clusters are the connected components of
-            the set of open sites, and \(\theta(p)\) is the probability that the origin lies in an infinite one.</p>
-            <p>Raising \(p\) opens more sites and can only enlarge open clusters, so \(\theta\) is nondecreasing.
-            There is therefore a critical probability \(p_c\) with \(\theta(p)=0\) for \(p&lt;p_c\) and
-            \(\theta(p)&gt;0\) for \(p&gt;p_c\). Does \(\theta(p_c)=0\)?</p>
-            <p>In two dimensions the answer is yes. The bond case, in which edges rather than sites are open, is the combination of two theorems: <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the
-            percolation probability vanishes at \(p = 1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a>
-            proved that \(1/2\) is the critical probability. The site case is
-            <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who used Kesten's identification of the bond threshold
-            to obtain continuity of \(\theta\) on all of \([0,1]\). In three or more dimensions the answer is yes for bond percolation, by Anthropic's
-            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked proof</a> of Conjecture 3 of
-            <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a>. That settled the dimensions three to ten, the
-            only ones still open: the lace expansion had already given the result in high dimensions, for \(d \ge 19\) by
+            <p>In Bernoulli percolation on \(\mathbb{Z}^d\) each edge, or each site, is open with probability \(p\) and
+            closed with probability \(1-p\), independently of the others. The open clusters are the connected components
+            of the open structure, and \(\theta(p)\) is the probability that the origin lies in an infinite one. Opening
+            more edges, or more sites, can only enlarge clusters, so \(\theta\) is nondecreasing and there is a critical
+            probability \(p_c\) with \(\theta(p)=0\) below it and \(\theta(p)&gt;0\) above it. The question is what
+            happens at \(p_c\) itself.</p>
+            <p>In two dimensions the answer has been known for decades. For bond percolation it is two theorems:
+            <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the percolation probability
+            vanishes at \(p=1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a> proved that \(1/2\) is the
+            critical probability. For site percolation it is <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who
+            used Kesten's identification of the bond threshold to obtain continuity of \(\theta\) on all of \([0,1]\).
+            Both arguments run on planar duality and stop there.</p>
+            <p>In high dimensions the lace expansion answers it, for \(d \ge 19\) by
             <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and then for \(d \ge 11\) by
-            <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>. For site percolation in three or more dimensions
-            it is not known in general, and that is the case treated here. The
+            <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>. The method compares connection
+            probabilities with simple random walk and needs enough room for two independent walks to miss each other,
+            which is what forces the dimension to be large. The dimensions three to ten were reached by neither method.</p>
+            <p>For site percolation the gap was wider. Writing in August 2026,
+            <a href="https://arxiv.org/abs/2608.23661">Cerf</a> calls \(\theta(p_c)=0\) for site percolation in three
+            or more dimensions the main open question of the subject, proves that at \(p_c\) either the percolation
+            probability vanishes or the tail of the finite cluster size fails to be a stretched exponential, and names
+            the Kozma and Nitzan inequality as the route that would settle it.</p>
+            <p>They are reached by a third route, which looks at no lattice until its last step. Anthropic proved the
+            finite inequality behind it for bond percolation and
+            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">checked
+            it in Lean</a>, settling \(\theta(p_c)=0\) for bond percolation in every dimension. This page is about
+            carrying that inequality to a structure containing both models, which gives site percolation as well, and
+            about proving the whole chain from the beginning. The
             <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures and questions of the
-            Kozma and Nitzan paper.</p>
+            <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> paper.</p>
         </section>
 
         <section>
@@ -97,149 +134,207 @@
         </section>
 
         <section>
-            <h2>A common generalization of site and bond percolation</h2>
+            <h2>One inequality for both models</h2>
             <p>Of the two models, site percolation is classically the more general.
-            <a href="https://doi.org/10.1063/1.1703746">Fisher</a> observed that bond percolation on a graph is site percolation on the graph
-            whose vertices are its edges, two of them adjacent when they share an endpoint. The converse fails:
-            <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation cannot simulate site percolation
-            even approximately, already near a vertex of degree three. A statement about connection probabilities covering both models therefore cannot be obtained for site percolation by translating the bond case, and must instead be proved in a structure containing both.</p>
-            <p>One such structure is the following. Take a finite set of sites together with a finite set of labels,
-            attach to each label a collection of sites, and declare each label open independently of the others. Two sites
-            are connected when a chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
+            <a href="https://doi.org/10.1063/1.1703746">Fisher</a> observed that bond percolation on a graph is site
+            percolation on the graph whose vertices are its edges, two of them adjacent when they share an endpoint. The
+            converse fails: <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation
+            cannot simulate site percolation even approximately, already near a vertex of degree three. An inequality
+            about connection probabilities proved for graphs therefore says nothing about site percolation, and the site
+            statement has to be proved in a structure containing both.</p>
+            <p>One such structure is the following. Take a finite set of sites and a finite set of labels, attach to each
+            label a set of sites, and declare each label open independently of the others. Two sites are connected when a
+            chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
             <p>Attaching every label to exactly two sites makes the labels edges, and the structure is bond percolation.
-            Giving each site a label of its own, attached to that site and to one further point for each edge at it, makes
-            a label open exactly when its site is open, and the structure is site percolation. In the site case the labels are the sites, so the site model and the label model have the same sample space and the same probabilities, and a chain of open labels read at every second step is a path
-            of open sites.</p>
-            <p><a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> reduced \(\theta(p_c)=0\) to a single
-            inequality about connection probabilities in finite graphs: if that inequality holds in every finite graph,
-            the lattice theorem follows. The first step of the proof is to
-            carry their statement over from graphs to the structure just described. The widening is genuine and not a
-            reformulation: their setting is the case in which every label is attached to exactly two sites, and by the
-            theorem of Gladkov and Zimin the site case cannot be recovered from that one. For a nonempty set \(A\) of sites and sites \(o\) and \(b\),
+            Giving each site a label of its own, attached to that site and to one extra point on each edge at it, makes a
+            label open exactly when its site is open, and two distinct sites are connected in the structure exactly when
+            they are connected in site percolation. So both models sit inside one family.</p>
+            <p>The inequality proved here is that for a nonempty set \(A\) of sites and sites \(o\) and \(b\),
             \[
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
                 \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b). \tag{1} \]
-            Read from the right, it says that reaching \(A\) and then continuing to \(b\) from the least favorable
-            point of \(A\) is no better than reaching \(b\) directly. What Kozma and Nitzan
-            conjectured is the corresponding statement for bond percolation on a finite graph, which in the notation above
-            is the case of labels attached to two sites:
+            Read from the right, it says that reaching \(A\) and then continuing to \(b\) from the least favorable point
+            of \(A\) is no better than reaching \(b\) directly. What Kozma and Nitzan conjectured is the corresponding
+            statement for a finite graph, which is the case of labels attached to two sites:
             \[
               \mathbb{P}(o \leftrightarrow b)
-                \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b).
-              \tag{2}
-            \]
-            Inequality (1) differs from (2) in two respects. A label may be attached to any number of sites, which is what
-            reaches site percolation, and the event \(\{o \leftrightarrow A\}\) is retained on the right. The second
+                \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b). \tag{2} \]
+            Inequality (1) differs from (2) in two ways. A label may be attached to any number of sites, which is what
+            reaches site percolation, and the event \(\{o \leftrightarrow A\}\) is kept on the left. The second
             difference makes (1) the stronger statement, and (2) follows from it by discarding that event. In its general
-            form (1) implies both (2) and the site counterpart of (2), so a single finite theorem serves both models.</p>
+            form (1) implies both (2) and the site counterpart of (2), so one finite theorem serves both models.</p>
+            <p>The point of (1) is what it does not lose. A union bound over \(A\) gives an error proportional to
+            \(|A|\), and the sets \(A\) the lattice argument produces are the faces of large blocks, whose size grows
+            without bound. Inequality (1) pays once in total.</p>
+        </section>
 
-            <h2>The exposure record</h2>
-            <p>We prove (1) by induction on the number of sites. At each step we fix a set \(Z\), expose the labels
-            incident to \(Z\), and condition on which of them are open. The labels not incident to \(Z\) are untouched by
-            the conditioning and retain their independent states. The four quantities we then compare are indexed by the
-            set \(I\) of exposed labels that are open.</p>
-            <p>We make that comparison with the four functions theorem of
-            <a href="https://doi.org/10.1007/BF00536201">Ahlswede and Daykin</a>. It says that if four nonnegative functions of a set satisfy
+        <section>
+            <h2>The proof of (1), from the beginning</h2>
+            <p>Everything below is proved from nothing but measure theory, and the whole chain is written out in the
+            <a href="document/percolation-notes.pdf">notes</a>.</p>
+
+            <h3>Positive correlation, and where it fails</h3>
+            <p>The starting point is Harris's inequality: two events that are both made easier by opening labels occur
+            together at least as often as independence would give. It is proved by induction on the number of labels,
+            each step a rearrangement inequality on one coordinate. A more flexible form is the four functions theorem of
+            <a href="https://doi.org/10.1007/BF00536201">Ahlswede and Daykin</a>: if four nonnegative functions of a set
+            satisfy
             \[
               f_1(I)\,f_2(J) \;\le\; f_3(I \cup J)\,f_4(I \cap J)
             \]
-            for every pair \(I, J\), then the same inequality holds for the sums of the four functions over families of
-            sets. It converts pointwise bounds into bounds on aggregates, which is precisely the step the induction needs,
-            and it refers to its index only through \(\cup\) and \(\cap\). Whatever record we keep of the exposed
-            labels must therefore carry unions to unions and intersections to intersections.</p>
-            <p>The obvious record is \(I\) itself, but one is tempted to keep something smaller. Write \(T(I)\) for
-            the set of sites outside \(Z\) that the labels in \(I\) reach. This is a coarser record, since different
-            sets of labels may reach the same sites, and it is the one the argument for graphs uses.</p>
-            <p>For graphs it loses nothing. A label incident to exactly two sites, one of them in \(Z\), is determined by
-            the single site it reaches outside \(Z\). So \(T(I)\) determines \(I\), and the two records carry the
-            same information.</p>
-            <p>For labels incident to more than two sites \(T(I)\) no longer determines \(I\). Two labels incident to the same sites have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once we have
-            exposed \(b\). All we retain is
+            for every pair \(I,J\), then the same inequality holds for their sums over all sets. It turns pointwise
+            bounds into bounds on aggregates, which is the step every induction below needs.</p>
+            <p>Neither survives conditioning. The argument for (1) has to forbid a cluster from reaching a set, and that
+            forbidding is not optional: it is what keeps the estimate from degrading as \(A\) grows. Conditioning on such
+            an event destroys the independence of the labels, and it destroys the conclusion as well. On the path
+            \(x - z - y\) with both edges open with probability \(1/2\), conditioned on \(x\) not reaching \(y\), the two
+            edges are open with conditional probability \(1/3\) each and never together. Two increasing events have
+            become negatively correlated.</p>
+
+            <h3>What survives, and what it must be read at</h3>
+            <p>What does survive is positive correlation for increasing functions of the cluster of the conditioned site.
+            For graphs this is the theorem of
+            <a href="https://doi.org/10.1214/009117905000000260">van den Berg, H&auml;ggstr&ouml;m and Kahn</a>; here it is
+            proved for the general structure. The proof is an induction on the number of sites in which a set \(Z\) is
+            fixed, the labels meeting \(Z\) are exposed, and the four functions theorem is applied on the lattice of
+            subsets of the exposed labels.</p>
+            <p>Which record of the exposure the induction is indexed by is not a matter of taste. Write \(T(I)\) for the
+            set of sites outside \(Z\) that the open exposed labels \(I\) reach. For a graph, a label meets \(Z\) in one
+            endpoint and reaches one site outside it, so \(T(I)\) determines \(I\) and the two records carry the same
+            information. For labels attached to more than two sites they do not: two labels attached to the same sites
+            have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once \(b\) has been
+            exposed. All that survives is
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
             \]
-            and in both examples the second inclusion is strict. Unions survive and intersections
-            do not.</p>
-            <p>We therefore index the induction by the labels themselves. The reason is not the four functions step,
-            which tolerates the coarser record whenever the loss points in the harmless direction, and for a decreasing
-            function of the record it does. The reason is the measure. The model with a cluster deleted carries a
-            product law because distinct labels remain distinct, and a record that kept only the sites a label reaches
-            would identify two labels that reach the same sites. On a graph that cannot happen, since an edge is
-            determined by its two endpoints. On a general incidence structure it can, and we exhibit it.</p>
+            and the second inclusion is strict in both examples. Unions survive and intersections do not, so the
+            induction is indexed by the labels themselves. The reason is the measure rather than the four functions step:
+            the structure with a cluster deleted carries a product law because distinct labels stay distinct, and a
+            record keeping only the sites a label reaches would identify two labels that reach the same sites.</p>
 
-            <h2>Renormalization</h2>
-            <p>We pass from (1) to the lattice by renormalization. We partition \(\mathbb{Z}^d\) into blocks of a fixed
-            size, declare a block occupied when a prescribed connection occurs inside it, and compare the occupied blocks
-            with site percolation on a coarser lattice whose sites are the blocks. If the occupied blocks percolate on the
-            coarse lattice, the open sites percolate on \(\mathbb{Z}^d\).</p>
-            <p>Everything turns on one estimate: that a block we already know to be occupied is joined to a neighbouring
-            block with conditional probability close to one, given everything we have examined so far.</p>
+            <h3>A family of conditioned covariance inequalities</h3>
+            <p>Positive correlation under conditioning is still not enough. What the argument needs is a comparison
+            between the values of one conditioned covariance at two different sites, and no amount of positivity supplies
+            one. Fix a site \(x\), a set \(Y\) its cluster must avoid, and an increasing function \(f\) of the labels of
+            that cluster, and write
+            \[
+              \kappa(u) \;=\; \operatorname{Cov}\bigl(f,\ \mathbf{1}\{u \leftrightarrow x\}
+                \ \big|\ x \nleftrightarrow Y \bigr).
+            \]
+            The theorem is that for two further sites \(o\) and \(v\) and any finite list \(d_1,\dots,d_\ell\) of others,
+            a certain alternating sum, in which the contribution of each \(d_j\) is subtracted off in turn, satisfies
+            \[
+              \kappa^{[\ell]}(o) \;\ge\; \lambda\,\kappa^{[\ell]}(v),
+            \]
+            where \(\lambda\) is the probability that \(v\) reaches \(o\) given that \(v\) avoids everything named. With
+            \(Y\) empty, no \(d_j\), and \(f\) the indicator that \(x\) reaches \(v\), this is Harris's inequality. So the
+            family extends positive correlation in two directions at once: it survives conditioning, and it survives
+            subtracting off the contributions of other sites one at a time. The second direction is what makes the
+            induction below close, and it is why the sites \(d_j\) are carried at all.</p>
+            <p>Its proof is a strong induction on \(\ell\) in three steps. The cluster of \(Y\) is exposed first, which
+            turns the conditioned covariance into an average of unconditioned covariances over the structures that
+            survive, and a telescoping argument reduces the theorem to the nonnegativity of that average. The sites
+            \(d_j\) are then removed one at a time by an exact identity, and the error each removal makes is itself a
+            conditioned covariance with a shorter list, so the induction hypothesis applies to it. What is left is a
+            comparison of \(o\) with \(v\) inside a single surviving structure, and there the local price has to be
+            averaged back to \(\lambda\). The last two steps rest on inequalities about two clusters at once, including a
+            form of Harris's inequality valid at a stopping time of an exploration.</p>
+
+            <h3>Charging the loss to one site</h3>
+            <p>Inequality (1) comes out of the family by an induction on the size of \(A\). The idea is to charge the
+            comparison to a single site of \(A\) and to no other: order the sites of \(A\) by the conditional mean of
+            \(f\), and in each configuration charge the one of least rank that the source actually reaches. Every
+            configuration in which the source reaches \(A\) names exactly one such site, so the events partition rather
+            than accumulate, nothing is summed over \(A\), and the estimate does not degrade as \(A\) grows. That is
+            precisely where the union bound fails, and it is the whole gain of (1).</p>
+        </section>
+
+        <section>
+            <h2>From (1) to the lattice</h2>
+            <p>The passage to \(\mathbb{Z}^d\) is a renormalization. Partition the lattice into blocks of a fixed size,
+            declare a block occupied when a prescribed connection occurs inside it, and compare the occupied blocks with
+            site percolation on a coarse lattice whose sites are the blocks. If the occupied blocks percolate on the
+            coarse lattice, the open structure percolates on \(\mathbb{Z}^d\).</p>
+            <p>Everything turns on one estimate: a block already known to be occupied is joined to a neighboring block
+            with conditional probability close to one, given everything examined so far.</p>
             <p>Grimmett and Marstrand obtain that estimate by sprinkling. They open further sites, working at
-            \(p + \gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces percolation in a slab
-            of finite width at \(p + \gamma\), for every \(\gamma &gt; 0\). They state that they cannot take
-            \(\gamma = 0\), and that is what keeps the conclusion away from \(p_c\): at \(p = p_c\) it gives a slab
-            percolating at \(p_c + \gamma\), which lies above \(p_c\) and tells us nothing new.</p>
-            <p>We obtain the estimate from (1) instead, and open no extra sites. We condition on the configuration in a
-            shell surrounding the block. This fixes the states on the shell and exposes a set \(A\) of open sites there,
-            each of which reaches the neighbouring block with conditional probability at least \(1-\delta\). We take
-            \(o\) to be the origin and \(b\) the target in the neighbouring block. The two factors on the right of (1)
-            are then the probability that \(o\) reaches \(A\), which the preceding step has made close to one, and the
-            minimum over \(A\), which is at least \(1-\delta\). So the left side of (1) is close to one. Iterating
-            over blocks gives percolation in a slab of finite width, at \(p\) or below it. We call this the reduction to
-            a slab.</p>
-            <p>Either form of the reduction closes the argument. Suppose first that we obtain a slab percolating at some
-            \(q &lt; p\), and take \(p = p_c\). A slab lies in \(\mathbb{Z}^d\), so \(\theta(q) &gt; 0\) with
-            \(q &lt; p_c\), contradicting the definition of \(p_c\). Suppose instead that we obtain a slab percolating
-            at \(p\) itself. A slab lies in a half-space, and we may then appeal to two theorems:
-            <a href="https://www.statslab.cam.ac.uk/~grg1000/papers/ptrf90-111.pdf">Barsky, Grimmett and Newman</a> prove
-            that the percolation probability of a half-space vanishes at the critical density of the half-space, for bond
-            and site percolation alike, and Grimmett and Marstrand identify that density with \(p_c\) for
-            \(d \ge 3\).</p>
+            \(p+\gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces percolation in a slab of
+            finite width at \(p+\gamma\), for every \(\gamma&gt;0\). They state that they cannot take \(\gamma=0\), and
+            that is what keeps the conclusion away from \(p_c\): at \(p=p_c\) it gives a slab percolating at
+            \(p_c+\gamma\), which lies above \(p_c\) and says nothing new.</p>
+            <p>Inequality (1) gives the estimate with nothing opened. Condition on the configuration in a shell around
+            the block. That fixes the states on the shell and exposes a set \(A\) of open sites there, each of which
+            reaches the neighboring block with conditional probability at least \(1-\delta\). Take \(o\) to be the source
+            and \(b\) the target in the neighboring block: the two factors on the right of (1) are the probability that
+            \(o\) reaches \(A\), which the previous step made close to one, and the minimum over \(A\), which is at least
+            \(1-\delta\). Since these conditional bounds hold whatever the exploration has already revealed, the occupied
+            blocks dominate independent site percolation at density \(1-\rho\) on the coarse lattice, and \(\rho\) is
+            chosen small enough for that to percolate.</p>
+            <p>Every probability used in the construction concerns finitely many sites and is strictly above its
+            threshold at \(p\), so the same finite list of inequalities still holds at some \(q&lt;p\). Rerunning the
+            construction at \(q\) gives \(\theta(q)&gt;0\). Applied at \(p=p_c\) this contradicts the definition of
+            \(p_c\), and the conclusion is \(\theta(p_c)=0\).</p>
+            <p>This route needs \(d \ge 3\), and not for a technical reason. What it produces is percolation in a slab
+            \(\mathbb{Z}^2 \times \{0,\dots,k\}^{d-2}\), which for \(d = 2\) is the plane itself, so the step says
+            nothing. The plane is where duality works instead, and it was settled sixty years ago.</p>
+        </section>
 
+        <section>
             <h2>The formalization</h2>
-            <p>We have formalized everything above in Lean 4 with Mathlib, except the two statements named below. The model,
-            the connection events, the percolation probability and the critical parameter are definitions in the files.
-            The critical parameter is proved to lie in \([0,1]\), so \(\theta(p_c)\) is defined and the conclusion
-            needs no side condition.</p>
-            <p>We have also proved the supporting results. Conditioning on the entire cluster of a set factorizes exactly, two
-            disjoint clusters factorize in either order, and a probability expands as a finite sum over the possible
-            clusters. The percolation probability is monotone in the parameter and in the underlying graph, vanishes below
-            \(p_c\), and \(0 &lt; p_c &lt; 1\). An event depending on \(n\) sites has probability Lipschitz in the
-            parameter with constant \(n\). An exploration whose every step succeeds with probability at least \(a\),
-            after any history, reaches an upward-closed target at least as often as an independent Bernoulli \(a\)
-            sequence. The example showing that the second inclusion above can be strict is machine-checked.</p>
+            <p>The chain above is formalized in Lean 4 with Mathlib. The structure, the connection events, the
+            percolation probability and the critical parameter are definitions in the files; the critical parameter is
+            proved to lie in \([0,1]\), so \(\theta(p_c)\) is defined and the conclusion needs no side condition.</p>
+            <p>The supporting results are proved rather than assumed. Conditioning on the whole cluster of a set
+            factorizes exactly, two disjoint clusters factorize in either order, and a probability expands as a finite
+            sum over the possible clusters. The percolation probability is monotone in the parameter and in the
+            underlying structure, vanishes below \(p_c\), and \(0&lt;p_c&lt;1\). An event depending on \(n\) sites has
+            probability Lipschitz in the parameter with constant \(n\). An exploration whose every step succeeds with
+            probability at least \(a\), whatever the history, reaches an upward-closed target at least as often as an
+            independent Bernoulli \(a\) sequence. The example showing that the trace of an intersection can be strictly
+            smaller than the intersection of the traces is machine-checked.</p>
 
             <div class="standing">
             <h3>Status</h3>
-            <p>Two statements remain unproved, of which only one is a conjecture.</p>
-            <p>Inequality (1) is the conjecture. For labels incident to two sites it is a theorem, proved in
-            Anthropic's <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">formalization</a>.</p>
-            <p>The reduction to a slab is not a conjecture. Kozma and Nitzan derive it from (1), and for bond
-            percolation that derivation is formalized here in some fifteen thousand lines; for site percolation it has to
-            be carried out again. It also requires two estimates at a supercritical parameter, uniqueness of the large
-            cluster in a finite box and the hitting of each face of a box, which are finite-volume forms of the Burton and
-            Keane theorem and are not formalized here.</p>
-            <p>All of these are named hypotheses in the files, so every statement depending on them displays them, and the
-            reduction of the problem to them is itself machine-checked. Everything else on this page is proved, with no
-            unfinished step and with only the three axioms Lean provides.</p>
+            <p>The proof is unconditional. Nothing on this page is assumed, conjectured, or left to a later paper.
+            The finite inequality (1) is proved for arbitrary finite structures of independent labels and compiles
+            unconditionally. Bond percolation and site percolation are obtained from it by the two representations, and
+            \(\theta(p_c)=0\) for bond percolation on \(\mathbb{Z}^d\) is a theorem of the development whose only
+            hypothesis is \(d \ge 2\).</p>
+            <p>The site lattice theorem is closed. Its full transitive dependency closure was rebuilt from source,
+            and the acceptance check run against those artifacts reports the statement</p>
+            <pre>&#8704; {d : &#8469;} [NeZero d], 3 &#8804; d &#8594; thetaSite d (criticalProbSiteI d) = 0</pre>
+            <p>with no substantive hypothesis, no open proposition, and exactly the axioms <code>propext</code>,
+            <code>Classical.choice</code> and <code>Quot.sound</code>. Across the development there is no
+            <code>sorry</code>, no <code>admit</code>, no <code>native_decide</code> and no added axiom.</p>
+            <p>The plane is not proved by this route and does not need to be. For bond percolation the development
+            settles \(d = 2\) from Harris and Kesten, which it also formalizes, which is why its bond theorem carries
+            no hypothesis beyond \(d \ge 2\). For site percolation \(d = 2\) is Russo's theorem. So the conclusion
+            \(\theta(p_c) = 0\) holds in every dimension for both models, and everything from three upward is what is
+            proved here.</p>
             </div>
 
             <h2>Files</h2>
             <table>
-                <tr><td><a href="document/site_conditional.pdf">site_conditional.pdf</a></td>
-                    <td>The statements, the representation and the proofs above.</td></tr>
+                <tr><td><a href="document/percolation-notes.pdf">percolation-notes.pdf</a></td>
+                    <td>Lecture notes developing the whole argument from the beginning, for a reader with one graduate
+                    course in probability. The correlation inequalities, the conditioned covariance family, the
+                    derivation of (1), and the two lattice models.</td></tr>
+                <tr><td><a href="document/site-percolation-criticality.pdf">site-percolation-criticality.pdf</a></td>
+                    <td>The technical manuscript for the site case: the labelled sources, the block construction and
+                    the descent to a smaller parameter, written out in full. Its front-matter caution about not having
+                    been checked by a proof assistant predates the Lean verification reported above.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
-                    <td>The Lean modules, 70 files. The hypergraph layer is <code>HyperCore</code>,
-                    <code>HyperImplA</code>, <code>HyperImplB</code>, <code>HyperImplC</code>, <code>HyperExchange</code>,
-                    <code>HyperPartition</code>, <code>HyperTrace</code>, <code>HyperUpper</code> and
-                    <code>HyperIntegral</code>; the two representations are <code>BondRepresentation</code> and
-                    <code>SiteRepresentation</code>; the lattice statements and the endgames are
-                    <code>SiteStatements</code>, <code>SiteEndgame</code> and <code>Unify</code>. No <code>sorry</code>,
-                    and every theorem is accepted with exactly the axioms <code>propext</code>,
-                    <code>Classical.choice</code> and <code>Quot.sound</code>.</td></tr>
+                    <td>The Lean modules, 194 files. Every module the final theorem depends on, so the set is
+                    checkable. They build against Anthropic's <code>Percolation</code> library and Mathlib. The layer
+                    for general labels is <code>HyperCore</code> and the
+                    <code>Hyper</code> files that build on it; the two representations are
+                    <code>BondRepresentation</code> and <code>SiteRepresentation</code>; <code>Unify</code> states that
+                    one finite inequality implies both models. No <code>sorry</code>, and every theorem is accepted with
+                    exactly the axioms <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code>.</td></tr>
             </table>
-            <p class="note">All of this was done autonomously by ChatGPT 5.6 Sol and Claude Fable 5.1, prompted by Ahmed
-            Bou-Rabee, with minimal human intervention. Released under the Apache License 2.0, the license of Anthropic's Lean
+            <p class="note">The mathematics was produced and audited by OpenAI Codex models and the exposition written by
+            Claude Opus 5, prompted and directed by Ahmed Bou-Rabee. The proof of the finite inequality for bond
+            percolation is due to Anthropic. Released under the Apache License 2.0, the license of Anthropic's Lean
             proof.</p>
         </section>
     </main>
@@ -275,18 +370,33 @@
     { id: "b3", title: "Bond percolation on \\(\\mathbb{Z}^3\\)", dim: 3, kind: "bond",
       pc: 0.248812, pcText: "\\(p_c \\approx 0.2488\\)", status: 'Known in every dimension: <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">Anthropic\'s Lean proof</a>.', tag: "done", tagText: "settled" },
     { id: "s3", title: "Site percolation on \\(\\mathbb{Z}^3\\)", dim: 3, kind: "site",
-      pc: 0.311608, pcText: "\\(p_c \\approx 0.3116\\)", status: "Open, and the subject of this page.", tag: "here", tagText: "open" }
+      pc: 0.311608, pcText: "\\(p_c \\approx 0.3116\\)", status: "Proved here, and checked in Lean.", tag: "here", tagText: "new" }
   ];
 
   var N2 = 75, M3 = 21, PMAX = 0.75;
   var panels = document.getElementById("panels");
   var models = [];
 
+  function legendMarkup(spec) {
+    var items;
+    if (spec.dim === 3) {
+      items = [["lattice", "box frame"], ["cluster", "tracked cluster"], ["seed", "center seed"]];
+    } else {
+      var noun = spec.kind === "site" ? "site" : "bond";
+      items = [["lattice", "lattice"], ["closed", "closed " + noun], ["open", "open " + noun],
+               ["cluster", "tracked cluster"], ["seed", "center seed"]];
+    }
+    return '<ul class="legend" aria-label="Canvas legend">' + items.map(function (item) {
+      return '<li><span class="legend-swatch ' + item[0] + '" aria-hidden="true"></span>' + item[1] + '</li>';
+    }).join("") + '</ul>';
+  }
+
   SPECS.forEach(function (spec, idx) {
     var d = document.createElement("div");
     d.className = "panel";
     d.innerHTML = '<h3>' + spec.title + '</h3>' +
       '<canvas id="c_' + spec.id + '"></canvas>' +
+      legendMarkup(spec) +
       '<div class="ctl"><input type="range" min="0" max="' + Math.round(PMAX * 1000) +
         '" value="0" step="1" aria-label="parameter p"><span class="mark" style="left:' +
         (100 * spec.pc / PMAX).toFixed(2) + '%"></span></div>' +
@@ -414,34 +524,55 @@
   var COL = {};
   function readColours() {
     COL.bg = css("--surface", "#fff");
-    COL.faint = css("--border", "#b8b8b8");
-    COL.accent = css("--link", "#8900e1");
-    COL.text = css("--text", "#404040");
+    COL.lattice = css("--perc-lattice", "#f3efe6");
+    COL.closed = css("--perc-closed", "#e2e8f0");
+    COL.open = css("--perc-open", "#6f7782");
+    COL.cluster = css("--perc-cluster", "#2f004f");
+    COL.seed = css("--perc-seed", "#47769f");
   }
   readColours();
 
   function draw2site(m, p) {
     var ctx = m.ctx, W = m.cssw, n = m.n, pad = 8, cell = (W - 2 * pad) / n, i, x, y;
     ctx.fillStyle = COL.bg; ctx.fillRect(0, 0, W, W);
-    ctx.fillStyle = COL.faint;
+    ctx.fillStyle = COL.lattice; ctx.fillRect(pad, pad, n * cell, n * cell);
+    ctx.fillStyle = COL.closed;
+    for (i = 0; i < n * n; i++) {
+      x = i % n; y = (i - x) / n;
+      ctx.fillRect(pad + x * cell + 0.5, pad + y * cell + 0.5, cell - 1, cell - 1);
+    }
+    ctx.fillStyle = COL.open;
     for (i = 0; i < n * n; i++) {
       if (m.u[i] >= p) continue;
       x = i % n; y = (i - x) / n;
       ctx.fillRect(pad + x * cell + 0.5, pad + y * cell + 0.5, cell - 1, cell - 1);
     }
     var cl = cluster2site(m, p);
-    ctx.fillStyle = COL.accent;
+    ctx.fillStyle = COL.cluster;
     for (i = 0; i < cl.length; i++) {
       x = cl[i] % n; y = (cl[i] - x) / n;
       ctx.fillRect(pad + x * cell + 0.5, pad + y * cell + 0.5, cell - 1, cell - 1);
     }
+    var c = (n - 1) >> 1;
+    ctx.fillStyle = COL.seed;
+    ctx.fillRect(pad + c * cell + 0.5, pad + c * cell + 0.5, cell - 1, cell - 1);
     return cl.length;
   }
 
   function draw2bond(m, p) {
     var ctx = m.ctx, W = m.cssw, n = m.n, pad = 10, cell = (W - 2 * pad) / (n - 1), i, x, y;
     ctx.fillStyle = COL.bg; ctx.fillRect(0, 0, W, W);
-    ctx.lineWidth = 1; ctx.strokeStyle = COL.faint; ctx.beginPath();
+    ctx.lineWidth = 0.65; ctx.strokeStyle = COL.closed; ctx.beginPath();
+    for (y = 0; y < n; y++) for (x = 0; x < n; x++) {
+      if (x + 1 < n) { ctx.moveTo(pad + x * cell, pad + y * cell); ctx.lineTo(pad + (x + 1) * cell, pad + y * cell); }
+      if (y + 1 < n) { ctx.moveTo(pad + x * cell, pad + y * cell); ctx.lineTo(pad + x * cell, pad + (y + 1) * cell); }
+    }
+    ctx.stroke();
+    ctx.fillStyle = COL.lattice;
+    for (y = 0; y < n; y++) for (x = 0; x < n; x++) {
+      ctx.fillRect(pad + x * cell - 0.4, pad + y * cell - 0.4, 0.8, 0.8);
+    }
+    ctx.lineWidth = 1.15; ctx.strokeStyle = COL.open; ctx.beginPath();
     for (y = 0; y < n; y++) for (x = 0; x < n; x++) {
       i = y * n + x;
       if (x + 1 < n && m.uh[i] < p) { ctx.moveTo(pad + x * cell, pad + y * cell); ctx.lineTo(pad + (x + 1) * cell, pad + y * cell); }
@@ -449,12 +580,15 @@
     }
     ctx.stroke();
     var es = cluster2bond(m, p);
-    ctx.lineWidth = 2.1; ctx.strokeStyle = COL.accent; ctx.beginPath();
+    ctx.lineWidth = 2.3; ctx.strokeStyle = COL.cluster; ctx.beginPath();
     for (i = 0; i < es.length; i++) {
       ctx.moveTo(pad + es[i][0] * cell, pad + es[i][1] * cell);
       ctx.lineTo(pad + es[i][2] * cell, pad + es[i][3] * cell);
     }
     ctx.stroke();
+    var c = (n - 1) >> 1;
+    ctx.fillStyle = COL.seed; ctx.beginPath();
+    ctx.arc(pad + c * cell, pad + c * cell, 2.6, 0, 2 * Math.PI); ctx.fill();
     return es.length;
   }
 
@@ -470,13 +604,13 @@
   function drawBox(m, W) {
     var ctx = m.ctx, n = m.n, c = [[0,0,0],[n-1,0,0],[n-1,n-1,0],[0,n-1,0],[0,0,n-1],[n-1,0,n-1],[n-1,n-1,n-1],[0,n-1,n-1]];
     var e = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]], i, a, b;
-    ctx.strokeStyle = COL.faint; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.55; ctx.beginPath();
+    ctx.strokeStyle = COL.lattice; ctx.lineWidth = 0.8; ctx.beginPath();
     for (i = 0; i < e.length; i++) {
       a = proj(c[e[i][0]][0], c[e[i][0]][1], c[e[i][0]][2], m, W);
       b = proj(c[e[i][1]][0], c[e[i][1]][1], c[e[i][1]][2], m, W);
       ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
     }
-    ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.stroke();
   }
 
   function draw3site(m, p) {
@@ -490,12 +624,13 @@
     }
     pts.sort(function (a, b) { return a[2] - b[2]; });
     var sz = Math.max(2, (W - 24) / (n * 2.1));
-    ctx.fillStyle = COL.accent;
+    ctx.fillStyle = COL.cluster;
     for (i = 0; i < pts.length; i++) {
-      ctx.globalAlpha = 0.45 + 0.55 * (i / Math.max(1, pts.length - 1));
       ctx.fillRect(pts[i][0] - sz / 2, pts[i][1] - sz / 2, sz, sz);
     }
-    ctx.globalAlpha = 1;
+    var h = (n - 1) >> 1, center = proj(h, h, h, m, W);
+    ctx.fillStyle = COL.seed;
+    ctx.fillRect(center[0] - sz * 0.65, center[1] - sz * 0.65, sz * 1.3, sz * 1.3);
     return cl.length;
   }
 
@@ -510,13 +645,14 @@
       segs.push([a, b, (a[2] + b[2]) / 2]);
     }
     segs.sort(function (u, v) { return u[2] - v[2]; });
-    ctx.strokeStyle = COL.accent; ctx.lineWidth = 1.15;
+    ctx.strokeStyle = COL.cluster; ctx.lineWidth = 1.35;
     for (i = 0; i < segs.length; i++) {
-      ctx.globalAlpha = 0.4 + 0.6 * (i / Math.max(1, segs.length - 1));
       ctx.beginPath(); ctx.moveTo(segs[i][0][0], segs[i][0][1]);
       ctx.lineTo(segs[i][1][0], segs[i][1][1]); ctx.stroke();
     }
-    ctx.globalAlpha = 1;
+    var h = (m.n - 1) >> 1, center = proj(h, h, h, m, W);
+    ctx.fillStyle = COL.seed; ctx.beginPath();
+    ctx.arc(center[0], center[1], 3, 0, 2 * Math.PI); ctx.fill();
     return es.length;
   }
 
