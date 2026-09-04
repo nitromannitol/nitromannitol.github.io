@@ -9,8 +9,9 @@ Open propositions are discovered from the sources, never hand-listed: a hand
 list silently misses propositions introduced later, which is the failure this
 test exists to catch.
 """
-import re, subprocess, sys, pathlib
+import re, os, subprocess, sys, pathlib
 KN = pathlib.Path(__file__).parent / "KN"
+BUILD_KN = [pathlib.Path(a) / "build/percolation/KN" for a in sys.argv[1:2]]
 
 def open_props():
     """Prop-valued defs in KN/ that no theorem inhabits. Multi-line safe.
@@ -20,7 +21,14 @@ def open_props():
     an unproved hypothesis hides from `#print axioms`, so ignoring them would
     make this test report a conditional theorem as closed.
     """
-    src = [f.read_text() for f in KN.glob("*.lean")]
+    # Scan BOTH the repo copy and the live build tree: an agent's new module lives only in the
+    # build tree until it is synced, and its open propositions must still be discovered.
+    roots = [KN] + [r for r in BUILD_KN if r.exists()]
+    seen, src = set(), []
+    for root in roots:
+        for f in root.glob("*.lean"):
+            if f.name in seen: continue
+            seen.add(f.name); src.append(f.read_text())
     DEF = r"^def\s+([A-Za-z_'0-9.]+)((?:[^\n]|\n(?!\S))*?):="
     THM = r"^(?:theorem|lemma)\s+([A-Za-z_'0-9.]+)((?:[^\n]|\n(?!\S))*?):="
     # `structure P ... : Prop where` is just as much an assumption as `def P ... : Prop`,
@@ -63,33 +71,64 @@ def hypotheses(printed):
     # left in `seg` and never enters `out`.  Trimming here would drop the LAST hypothesis.
     return out
 
+def candidates(scratch, module, name):
+    """Fully-qualified names to try, derived from the module's own namespaces.
+
+    Guessing a fixed `open` list cannot reach declarations in other namespaces, and a
+    failed lookup reads as a build error rather than as an unchecked theorem -- which
+    silently left much of the tree unverified.
+    """
+    src = None
+    for root in (pathlib.Path(scratch) / "build/percolation/KN", KN):
+        f = root / (module + ".lean")
+        if f.exists(): src = f.read_text(); break
+    out, seen = [name], set()
+    if src:
+        acc = []
+        for m in re.finditer(r"^(namespace|end)\s+(\S+)", src, re.M):
+            if m.group(1) == "namespace": acc.append(m.group(2))
+            elif acc and acc[-1] == m.group(2): acc.pop()
+            if acc:
+                q = ".".join(acc)
+                if q not in seen: seen.add(q); out.append(q + "." + name)
+    # longest namespace first: the most specific match is the intended one
+    return [out[0]] + sorted(out[1:], key=len, reverse=True)
+
 def main():
     scratch, names = sys.argv[1], sys.argv[2:]
-    f = pathlib.Path(scratch) / "build/percolation/KN/Acceptance.lean"
-    f.write_text("".join(f"import KN.{n.split('.')[0]}\n" for n in names)
-                 + "open KNAll KNAll.Site\n"
-                 + "".join(f"#check @{n.split('.',1)[1]}\n#print axioms {n.split('.',1)[1]}\n" for n in names))
-    out = subprocess.run([f"{scratch}/knc.sh", "Acceptance"], capture_output=True, text=True).stdout
+    tag = "Acceptance_%d" % os.getpid()
+    f = pathlib.Path(scratch) / ("build/percolation/KN/%s.lean" % tag)
+    cands = [candidates(scratch, n.split(".")[0], n.split(".", 1)[1]) for n in names]
+    out = ""
+    for attempt in range(max(len(c) for c in cands)):
+        pick = [c[min(attempt, len(c) - 1)] for c in cands]
+        f.write_text("".join("import KN.%s\n" % n.split(".")[0] for n in names)
+                     + "open KNAll KNAll.Site\n"
+                     + "".join("#check @%s\n#print axioms %s\n" % (q, q) for q in pick))
+        out = subprocess.run([f"{scratch}/knc.sh", tag], capture_output=True, text=True).stdout
+        if "unknownIdentifier" not in out and "Unknown constant" not in out: break
     (f.exists() and f.unlink())
     if "EXIT=0" not in out: print("BUILD FAILED"); print(out[-2000:]); return 1
     print("\n".join(l for l in out.splitlines() if l and not l.startswith(("EXIT", "Build", "info:"))))
     op = open_props()
     segs = hypotheses(out)
+    # The lookbehind must NOT exclude '.', or a qualified reference such as
+    # `LeftImp.CertificateSound` is invisible and a conditional theorem reads as closed.
     hits = sorted({q for q in op for seg in segs
-                   if re.search(r"(?<![A-Za-z_'0-9.])" + re.escape(q) + r"(?![A-Za-z_'0-9])", seg)})
+                   if re.search(r"(?<![A-Za-z_'0-9])" + re.escape(q) + r"(?![A-Za-z_'0-9])", seg)})
     print("%d top-level hypotheses; open propositions among them: %s"
           % (len(segs), ", ".join(hits) if hits else "none"))
-    print()
     if hits:
-        print("CONDITIONAL. Open propositions taken as hypotheses:")
+        print(); print("CONDITIONAL. Open propositions taken as hypotheses:")
         for h in hits: print("  " + h)
         return 1
-    # Lean wraps long output, so an axiom list can span lines: normalise whitespace
-    # before matching, or a wrapped `[propext,` reads as an extra axiom.
     flat = re.sub(r"\s+", " ", out)
-    bad = [m.group(0) for m in re.finditer(r"'[^']+' depends on axioms: \[[^\]]*\]", flat)
-           if "[propext, Classical.choice, Quot.sound]" not in m.group(0)]
+    STD = {"propext", "Classical.choice", "Quot.sound"}
+    bad = []
+    for m in re.finditer(r"'([^']+)' depends on axioms: \[([^\]]*)\]", flat):
+        used = {a.strip() for a in m.group(2).split(",") if a.strip()}
+        if not used <= STD: bad.append(m.group(0))
     if bad: print("EXTRA AXIOMS:"); print("\n".join(bad)); return 1
-    print("UNCONDITIONAL: no open proposition taken as a hypothesis, no extra axiom.")
+    print(); print("UNCONDITIONAL: no open proposition taken as a hypothesis, no extra axiom.")
     return 0
 sys.exit(main())

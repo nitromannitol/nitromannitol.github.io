@@ -282,7 +282,7 @@ theorem le_pinnedProb_inter_of_forall_extend (p : ι → unitInterval) {c : ℝ}
       exact hstep val fun _ _ => Iff.rfl
     · have h1 : pinnedProb p R val B = 0 := by rw [pinnedProb, hu, measureReal_empty]
       rw [h1, mul_zero]
-      exact pinnedProb_nonneg _ _ _ _
+      exact pinnedProb_nonneg_coord _ _ _ _
   | insert i F hiF ih =>
     intro R hdisj val hB hstep
     have hiF' : (i : ι) ∈ (insert i F : Finset ι) := Finset.mem_insert_self i F
@@ -905,8 +905,12 @@ tautology.  The exploration below reads one fresh site at a time along an inject
 and calls the examination a success when that site is open; the examined site has never been read
 before, so its conditional probability of being open is exactly `p` whatever the transcript says. -/
 
-/-- The event that a given coordinate is present is determined by that coordinate. -/
-theorem determinedBy_setOf_mem {ι : Type*} (i : ι) :
+/-- The event that a given coordinate is present is determined by that coordinate.
+
+Named `_coord` because `KN/SiteSlabGeometry.lean` already has `determinedBy_setOf_mem_coord` in this
+namespace for site configurations; declaring both made `KN.ReachCoupling` and `KN.GateTwoChain`
+mutually un-importable. -/
+theorem determinedBy_setOf_mem_coord {ι : Type*} (i : ι) :
     DeterminedBy {ω : Set ι | i ∈ ω} ({i} : Set ι) := by
   rw [determinedBy_iff]
   intro ω ω' hω
@@ -953,7 +957,7 @@ def siteWalkOfInjection (d : ℕ) (site : ℕ → Site d) (hsite : Function.Inje
     exact Finset.disjoint_singleton_left.2 hfresh
   joined_determinedBy := by
     intro h _
-    refine (determinedBy_setOf_mem (site h.inspected.card)).mono ?_
+    refine (determinedBy_setOf_mem_coord (site h.inspected.card)).mono ?_
     simp only [Finset.coe_singleton]
     exact Set.subset_union_right
 
@@ -999,7 +1003,7 @@ theorem siteWalkOfInjection_nextBound (d : ℕ) (site : ℕ → Site d)
     exact absurd (hsite hkeq) (Nat.ne_of_lt hk)
   have hdet : DeterminedBy {ω : SiteConfig (Site d) | site n ∈ ω}
       ((↑h.inspected : Set (Site d))ᶜ) := by
-    refine (determinedBy_setOf_mem (site n)).mono ?_
+    refine (determinedBy_setOf_mem_coord (site n)).mono ?_
     rw [Set.singleton_subset_iff, Set.mem_compl_iff, Finset.mem_coe]
     exact hfresh
   have hgoal : h.prob (siteWalkOfInjection d site hsite p).density

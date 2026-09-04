@@ -303,8 +303,10 @@ theorem siteFiniteEnergy (w : V → unitInterval) (x : V) {δ : ℝ} (hδopen : 
 
 /-- **Finite energy at a parameter strictly inside the unit interval.**  For `0 < p < 1` there is a
 single positive `δ`, namely `min p (1 - p)`, such that at every vertex and for every measurable
-event both pinnings cost at most the factor `δ`.  This is the hypothesis under which the
-Burton–Keane argument is run. [cite: BurtonKeane1989] -/
+event both pinnings cost at most the factor `δ`.  This is the two-sided hypothesis a classical
+Burton–Keane argument is usually stated under; the proof of `SiteUniquenessInfiniteCluster_holds`
+in `KN/SiteUniqueness.lean` does not use it, needing only the one-sided insertion bound
+`prod_mul_real_preimage_openSites_le` below. [cite: BurtonKeane1989] -/
 theorem exists_pos_siteFiniteEnergy (p : unitInterval) (hp0 : 0 < (p : ℝ)) (hp1 : (p : ℝ) < 1) :
     ∃ δ > 0, ∀ (x : V) (A : Set (SiteConfig V)), MeasurableSet A →
       δ * pinnedProb (fun _ : V => p) ({x} : Set V) (fun _ => True) A ≤
@@ -444,9 +446,9 @@ theorem prod_mul_real_preimage_openSites_le (w : V → unitInterval) (F : Finset
 Finite energy is the first ingredient of the Burton–Keane argument; the argument itself is not
 attempted here.  The statement below records its conclusion in the shape of the bond statement
 `Percolation.Literature.Grimmett1999_numInfiniteClusters_le_one`, so that the port of
-`Percolation/Literature/UniquenessInfiniteCluster.lean` has a fixed target.  It is a `def ... : Prop`
-awaiting proof, not an axiom: nothing below depends on it, and no theorem of this development
-asserts it. -/
+`Percolation/Literature/UniquenessInfiniteCluster.lean` has a fixed target.  It is a `def ... : Prop`,
+proved unconditionally as `SiteUniquenessInfiniteCluster_holds` in `KN/SiteUniqueness.lean` and
+consumed by `KN/SiteLocalFromUniqueness.lean`. -/
 
 /-- The number of infinite open clusters of a site configuration, as an extended natural number.
 A closed vertex is isolated in `openSiteGraph G ω`, so its component is a singleton and only
@@ -455,7 +457,8 @@ genuine open clusters can be infinite.  The bond form is
 def numInfiniteSiteClusters (G : SimpleGraph V) (ω : SiteConfig V) : ℕ∞ :=
   {C : (openSiteGraph G ω).ConnectedComponent | C.supp.Infinite}.encard
 
-/-- **Uniqueness of the infinite open cluster for site percolation on `ℤ^d`, awaiting proof.**  For
+/-- **Uniqueness of the infinite open cluster for site percolation on `ℤ^d`.**  Proved as
+`SiteUniquenessInfiniteCluster_holds` in `KN/SiteUniqueness.lean`.  For
 every `d` and every `p`, almost surely at most one open cluster is infinite.  The bond statement,
 proved in `Percolation/Literature/UniquenessInfiniteCluster.lean`, is
 `Percolation.Literature.Grimmett1999_numInfiniteClusters_le_one`; this is the same assertion for
