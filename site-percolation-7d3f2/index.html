@@ -97,18 +97,16 @@
             vanishes at \(p=1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a> proved that \(1/2\) is the
             critical probability. For site percolation it is <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who
             used Kesten's identification of the bond threshold to obtain continuity of \(\theta\) on all of \([0,1]\).
-            Both arguments run on planar duality and stop there.</p>
+            Both are planar arguments.</p>
             <p>For bond percolation in high dimensions, the lace expansion answers it, for \(d \ge 19\) by
             <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and then for \(d \ge 11\) by
-            <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>. The method compares connection
-            probabilities with simple random walk and needs enough room for two independent walks to miss each other,
-            which is what forces the dimension to be large.</p>
+            <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>.</p>
             <p>Anthropic proved the additive finite connection inequality needed by the Kozma&ndash;Nitzan reduction for
             bond percolation and
             <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">checked
-            it in Lean</a>, settling \(\theta(p_c)=0\) for bond percolation in every dimension. The proof presented here
+            it in Lean</a>, settling \(\theta(p_c)=0\) for bond percolation for every \(d\geq2\). The proof presented here
             establishes a multiplicative inequality for finite independent hyperedge models and uses its site
-            specialization to prove \(\theta(p_c)=0\) for site percolation in every dimension \(d\geq3\). The
+            specialization to prove \(\theta(p_c)=0\) for site percolation for every \(d\geq3\). The
             <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures and questions of the
             <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> paper.</p>
         </section>
@@ -133,16 +131,15 @@
             <p><a href="https://doi.org/10.1063/1.1703746">Fisher</a> observed that bond percolation on a graph is site
             percolation on the graph whose vertices are its edges, two of them adjacent when they share an endpoint. The
             converse fails: <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation
-            cannot simulate site percolation even approximately, already near a vertex of degree three. An inequality
-            about connection probabilities proved for graphs therefore says nothing about site percolation, and the site
-            statement has to be proved in a structure containing both.</p>
-            <p>One such structure is the following. Take a finite set of sites and a finite set of labels, attach to each
+            cannot simulate site percolation even approximately, already near a vertex of degree three. The bond
+            inequality therefore does not automatically imply the site inequality.</p>
+            <p>Take a finite set of sites and a finite set of labels, attach to each
             label a set of sites, and declare each label open independently of the others. Two sites are connected when a
             chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
             <p>Attaching every label to exactly two sites makes the labels edges, and the structure is bond percolation.
             Giving each site a label of its own, attached to that site and to one extra point on each edge at it, makes a
             label open exactly when its site is open, and two distinct sites are connected in the structure exactly when
-            they are connected in site percolation. So both models sit inside one family.</p>
+            they are connected in site percolation. This realizes both models as special cases.</p>
             <p>The inequality proved here is that for a nonempty set \(A\) of sites and sites \(o\) and \(b\),
             \[
               \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A)
@@ -153,62 +150,52 @@
             \[
               \mathbb{P}(o \leftrightarrow b)
                 \;\ge\; \mathbb{P}(o \leftrightarrow A)\,\min_{a \in A}\mathbb{P}(a \leftrightarrow b). \tag{2} \]
-            Inequality (1) differs from (2) in two ways. A label may be attached to any number of sites, which is what
-            reaches site percolation, and the event \(\{o \leftrightarrow A\}\) is kept on the left. The second
-            difference makes (1) the stronger statement, and (2) follows from it by discarding that event. In its general
-            form (1) implies both (2) and the site counterpart of (2), so one finite theorem serves both models.</p>
+            Inequality (1) generalizes (2) in two ways: a label may be attached to any number of sites, and the event
+            \(\{o \leftrightarrow A\}\) is kept on the left. Discarding that event gives (2) in the bond case. The site
+            representation gives the corresponding site inequality.</p>
             <p>A union bound over \(A\) gives an error proportional to
             \(|A|\), and the sets \(A\) the lattice argument produces are the faces of large blocks, whose size grows
-            without bound. Inequality (1) pays once in total.</p>
+            without bound. Inequality (1) has no factor of \(|A|\).</p>
         </section>
 
         <section>
             <h2>Proof of the finite inequality</h2>
-            <p>The finite argument is summarized below.</p>
 
-            <h3>Positive correlation, and where it fails</h3>
-            <p>The starting point is Harris's inequality: two events that are both made easier by opening labels occur
-            together at least as often as independence would give. It is proved by induction on the number of labels,
-            each step a rearrangement inequality on one coordinate. A more flexible form is the four functions theorem of
+            <h3>Failure of positive association under conditioning</h3>
+            <p>Harris's inequality states that two increasing events under a product measure are positively associated.
+            A more flexible form is the four functions theorem of
             <a href="https://doi.org/10.1007/BF00536201">Ahlswede and Daykin</a>: if four nonnegative functions of a set
             satisfy
             \[
               f_1(I)\,f_2(J) \;\le\; f_3(I \cup J)\,f_4(I \cap J)
             \]
-            for every pair \(I,J\), then the same inequality holds for their sums over all sets. It turns pointwise
-            bounds into bounds on aggregates, which is the step every induction below needs.</p>
-            <p>Neither survives conditioning. The argument for (1) has to forbid a cluster from reaching a set, and that
-            forbidding is not optional: it is what keeps the estimate from degrading as \(A\) grows. Conditioning on such
-            an event destroys the independence of the labels, and it destroys the conclusion as well. On the path
+            for every pair \(I,J\), then the same inequality holds for their sums over all sets.</p>
+            <p>Positive association need not survive conditioning on a disconnection event. On the path
             \(x - z - y\) with both edges open with probability \(1/2\), conditioned on \(x\) not reaching \(y\), the two
             edges are open with conditional probability \(1/3\) each and never together. Two increasing events have
-            become negatively correlated.</p>
+            negative conditional covariance.</p>
 
             <h3>Conditional association of clusters</h3>
-            <p>What does survive is positive correlation for increasing functions of the cluster of the conditioned site.
-            For graphs this is the theorem of
-            <a href="https://doi.org/10.1002/rsa.20102">van den Berg, H&auml;ggstr&ouml;m and Kahn</a>; here it is
-            proved for the general structure. The proof is an induction on the number of sites in which a set \(Z\) is
-            fixed, the labels meeting \(Z\) are exposed, and the four functions theorem is applied on the lattice of
-            subsets of the exposed labels.</p>
-            <p>Which record of the exposure the induction is indexed by is not a matter of taste. Write \(T(I)\) for the
+            <p><a href="https://doi.org/10.1002/rsa.20102">van den Berg, H&auml;ggstr&ouml;m and Kahn</a> proved conditional
+            association for increasing functions of a cluster in ordinary bond percolation. The proof here extends this
+            statement to finite independent hyperedge models. It proceeds by induction on the number of sites, exposing
+            the labels meeting a fixed set \(Z\) and applying the four functions theorem to their subsets.</p>
+            <p>Write \(T(I)\) for the
             set of sites outside \(Z\) that the open exposed labels \(I\) reach. For a graph, a label meets \(Z\) in one
             endpoint and reaches one site outside it, so \(T(I)\) determines \(I\) and the two records carry the same
             information. For labels attached to more than two sites they do not: two labels attached to the same sites
             have the same trace, and so do a label reaching \(\{a,b\}\) and one reaching \(\{b,c\}\) once \(b\) has been
-            exposed. All that survives is
+            exposed. In general,
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
             \]
-            and the second inclusion is strict in both examples. Unions survive and intersections do not, so the
-            induction is indexed by the labels themselves. The reason is the measure rather than the four functions step:
-            the structure with a cluster deleted carries a product law because distinct labels stay distinct, and a
-            record keeping only the sites a label reaches would identify two labels that reach the same sites.</p>
+            and the second inclusion can be strict. Thus \(T\) preserves unions but not intersections. The induction is
+            therefore indexed by the labels themselves. After deleting a cluster, the remaining distinct labels retain
+            their product law; a record containing only reached sites would identify labels with the same trace.</p>
 
-            <h3>A family of conditioned covariance inequalities</h3>
-            <p>Positive correlation under conditioning is still not enough. What the argument needs is a comparison
-            between the values of one conditioned covariance at two different sites, and no amount of positivity supplies
-            one. Fix a site \(x\), a set \(Y\) its cluster must avoid, and an increasing function \(f\) of the labels of
+            <h3>Conditional covariance inequalities</h3>
+            <p>The induction requires a comparison between conditioned covariances at two sites. Fix a site \(x\), a set
+            \(Y\) its cluster must avoid, and an increasing function \(f\) of the labels of
             that cluster, and write
             \[
               \kappa(u) \;=\; \operatorname{Cov}\bigl(f,\ \mathbf{1}\{u \leftrightarrow x\}
@@ -220,17 +207,15 @@
               \kappa^{[\ell]}(o) \;\ge\; \lambda\,\kappa^{[\ell]}(v),
             \]
             where \(\lambda\) is the probability that \(v\) reaches \(o\) given that \(v\) avoids everything named. With
-            \(Y\) empty, no \(d_j\), and \(f\) the indicator that \(x\) reaches \(v\), this is Harris's inequality. So the
-            family extends positive correlation in two directions at once: it survives conditioning, and it survives
-            subtracting off the contributions of other sites one at a time. The second direction is what makes the
-            induction below close, and it is why the sites \(d_j\) are carried at all.</p>
+            \(Y\) empty, no \(d_j\), and \(f\) the indicator that \(x\) reaches \(v\), this reduces to Harris's
+            inequality. The successive subtraction terms permit induction on the intermediate sites.</p>
             <p>Its proof is a strong induction on \(\ell\) in three steps. The cluster of \(Y\) is exposed first, which
             turns the conditioned covariance into an average of unconditioned covariances over the structures that
             survive, and a telescoping argument reduces the theorem to the nonnegativity of that average. The sites
             \(d_j\) are then removed one at a time by an exact identity, and the error each removal makes is itself a
-            conditioned covariance with a shorter list, so the induction hypothesis applies to it. What is left is a
-            comparison of \(o\) with \(v\) inside a single surviving structure, and there the local price has to be
-            averaged back to \(\lambda\). The last two steps rest on inequalities about two clusters at once, including a
+            conditioned covariance with a shorter list, so the induction hypothesis applies to it. The remaining term is a
+            comparison of \(o\) with \(v\) inside a single surviving structure; averaging gives the factor \(\lambda\).
+            The last two steps use inequalities about two clusters, including a
             form of Harris's inequality valid at a stopping time of an exploration.</p>
 
             <h3>Induction on the intermediate set</h3>
@@ -246,15 +231,14 @@
             declare a block occupied when a prescribed connection occurs inside it, and compare the occupied blocks with
             site percolation on a coarse lattice whose sites are the blocks. If the occupied blocks percolate on the
             coarse lattice, the open structure percolates on \(\mathbb{Z}^d\).</p>
-            <p>Everything turns on one estimate: a block already known to be occupied is joined to a neighboring block
+            <p>The required estimate states that a block already known to be occupied is joined to a neighboring block
             with conditional probability close to one, given everything examined so far.</p>
             <p><a href="https://doi.org/10.1098/rspa.1990.0100">Grimmett and Marstrand</a> obtain that estimate by
             sprinkling. They open further sites, working at
             \(p+\gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces percolation in a slab of
             finite width at \(p+\gamma\), for every \(\gamma&gt;0\). They state that they cannot take \(\gamma=0\), and
-            that is what keeps the conclusion away from \(p_c\): at \(p=p_c\) it gives a slab percolating at
-            \(p_c+\gamma\), which lies above \(p_c\) and says nothing new.</p>
-            <p>Inequality (1) gives the estimate with nothing opened. Condition on the configuration in a shell around
+            at \(p=p_c\) this only gives a slab percolating at \(p_c+\gamma\).</p>
+            <p>Inequality (1) gives the estimate without sprinkling. Condition on the configuration in a shell around
             the block. That fixes the states on the shell and exposes a set \(A\) of open sites there, each of which
             reaches the neighboring block with conditional probability at least \(1-\delta\). Take \(o\) to be the source
             and \(b\) the target in the neighboring block: the two factors on the right of (1) are the probability that
@@ -266,9 +250,9 @@
             threshold at \(p\), so the same finite list of inequalities still holds at some \(q&lt;p\). Rerunning the
             construction at \(q\) gives \(\theta(q)&gt;0\). Applied at \(p=p_c\) this contradicts the definition of
             \(p_c\), and the conclusion is \(\theta(p_c)=0\).</p>
-            <p>This route needs \(d \ge 3\), and not for a technical reason. What it produces is percolation in a slab
-            \(\mathbb{Z}^2 \times \{0,\dots,k\}^{d-2}\), which for \(d = 2\) is the plane itself, so the step says
-            nothing. The plane is where duality works instead, and it was settled sixty years ago.</p>
+            <p>The Lean declaration assumes \(d\geq3\). For \(d=2\), the slab
+            \(\mathbb{Z}^2 \times \{0,\dots,k\}^{d-2}\) is the full plane, so this step gives no reduction. The planar
+            site result is Russo's theorem.</p>
         </section>
 
         <section>
@@ -276,14 +260,9 @@
             <p>The chain above is formalized in Lean 4 with Mathlib. The structure, the connection events, the
             percolation probability and the critical parameter are definitions in the files; the critical parameter is
             proved to lie in \([0,1]\), so \(\theta(p_c)\) is defined and the conclusion needs no side condition.</p>
-            <p>The supporting results are proved rather than assumed. Conditioning on the whole cluster of a set
-            factorizes exactly, two disjoint clusters factorize in either order, and a probability expands as a finite
-            sum over the possible clusters. The percolation probability is monotone in the parameter and in the
-            underlying structure, vanishes below \(p_c\), and \(0&lt;p_c&lt;1\). An event depending on \(n\) sites has
-            probability Lipschitz in the parameter with constant \(n\). An exploration whose every step succeeds with
-            probability at least \(a\), whatever the history, reaches an upward-closed target at least as often as an
-            independent Bernoulli \(a\) sequence. The example showing that the trace of an intersection can be strictly
-            smaller than the intersection of the traces is machine-checked.</p>
+            <p>The development formalizes the finite hyperedge inequality, its site representation, the block
+            construction, stability when the parameter is decreased, and the final argument at \(p_c\). It also proves
+            the monotonicity and finite-event continuity estimates used in these steps.</p>
 
             <div class="standing">
             <h3>Verified statements</h3>
@@ -294,8 +273,7 @@
             <p>Its only mathematical assumption is \(3\leq d\). Lean lists exactly the axioms <code>propext</code>,
             <code>Classical.choice</code>, and <code>Quot.sound</code>. The Lean files used in its proof contain no
             <code>sorry</code>, <code>admit</code>, <code>native_decide</code>, or added axiom.</p>
-            <p>The site result for \(d=2\) is classical, but is not part of this declaration. Anthropic's separate
-            bond-percolation theorem covers \(d\geq2\).</p>
+            <p>The site result for \(d=2\) is classical, but is not part of this declaration.</p>
             </div>
 
             <h2>Source files and manuscript</h2>
