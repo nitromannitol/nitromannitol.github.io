@@ -100,15 +100,15 @@
             critical probability. For site percolation it is <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who
             used Kesten's identification of the bond threshold to obtain continuity of \(\theta\) on all of \([0,1]\).
             Both are planar arguments.</p>
-            <p>For bond percolation in high dimensions, the result was proved using the lace expansion, for \(d \ge 19\) by
-            <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and then for \(d \ge 11\) by
+            <p>In three or more dimensions the answer is yes for bond percolation, by Anthropic's
+            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked
+            proof</a> of Conjecture 3 of <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a>. That settled
+            dimensions three to ten, the only cases then open: the result was already known by the lace expansion for
+            \(d\geq19\) by <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and for \(d\geq11\) by
             <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>.</p>
-            <p>Anthropic proved the additive finite connection inequality needed by the Kozma&ndash;Nitzan reduction for
-            bond percolation and
-            <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">checked
-            it in Lean</a>, settling \(\theta(p_c)=0\) for bond percolation for every \(d\geq2\). The proof presented here
-            establishes a multiplicative inequality for finite independent hyperedge models and uses its site
-            specialization to prove \(\theta(p_c)=0\) for site percolation for every \(d\geq3\). The
+            <p>The proof presented here establishes \(\theta(p_c)=0\) for site percolation for every \(d\geq3\). Its
+            finite part extends the connection inequality to independent hyperedge models and then specializes it to
+            site percolation. The
             <a href="../kn1-verification-b80e9/">companion page</a> treats the remaining conjectures and questions of the
             <a href="https://arxiv.org/abs/2401.12397">Kozma and Nitzan</a> paper.</p>
         </section>
