@@ -81,7 +81,7 @@
     <header>
         <h1>Percolation at criticality</h1>
         <p class="byline">Mathematics by OpenAI Codex, exposition by Claude Opus 5, prompted by Ahmed Bou-Rabee</p>
-        <p class="updated">Last updated 4 September 2026, 3:38 PM EDT</p>
+        <p class="updated">Last updated 4 September 2026</p>
     </header>
 
     <main class="sp">
@@ -306,6 +306,20 @@
             <p>with no substantive hypothesis, no open proposition, and exactly the axioms <code>propext</code>,
             <code>Classical.choice</code> and <code>Quot.sound</code>. Across the development there is no
             <code>sorry</code>, no <code>admit</code>, no <code>native_decide</code> and no added axiom.</p>
+            <p>A theorem is only as good as its statement, so <code>FinalCriticality</code> spells the conclusion
+            out until nothing of ours is left in it but the critical parameter:</p>
+            <pre>&#8704; (d : &#8469;), 3 &#8804; d &#8594;
+  (prodBernoulli fun _ =&gt; criticalProbSiteI d).real
+    {&#969; | {y | 0 &#8712; &#969; &#8743;
+             (SimpleGraph.fromRel fun x y =&gt;
+                (SimpleGraph.hasse (Fin d &#8594; &#8484;)).Adj x y &#8743; x &#8712; &#969; &#8743; y &#8712; &#969;).Reachable 0 y}.Infinite}
+  = 0</pre>
+            <p>Everything here except the critical parameter is Mathlib: the lattice is Mathlib's Hasse diagram of
+            the product order on \(\mathbb{Z}^d\), an edge survives when both endpoints are open, the cluster of the
+            origin is empty when the origin is closed, and the measure is the product Bernoulli measure. The
+            companion <code>site_phase_transition</code>, proved with the same two hypotheses, rules out a vacuous
+            reading: \(0 &lt; p_c &lt; 1\), the percolation probability vanishes at and below \(p_c\), and it is
+            positive at some parameter under one.</p>
             <p>The plane is not proved by this route and does not need to be. For bond percolation the development
             settles \(d = 2\) from Harris and Kesten, which it also formalizes, which is why its bond theorem carries
             no hypothesis beyond \(d \ge 2\). For site percolation \(d = 2\) is Russo's theorem. So the conclusion
@@ -324,7 +338,7 @@
                     the descent to a smaller parameter, written out in full. Its front-matter caution about not having
                     been checked by a proof assistant predates the Lean verification reported above.</td></tr>
                 <tr><td><a href="lean/">lean/</a></td>
-                    <td>The Lean modules, 194 files. Every module the final theorem depends on, so the set is
+                    <td>The Lean modules, 195 files. Every module the final theorem depends on, so the set is
                     checkable. They build against Anthropic's <code>Percolation</code> library and Mathlib. The layer
                     for general labels is <code>HyperCore</code> and the
                     <code>Hyper</code> files that build on it; the two representations are
