@@ -79,12 +79,15 @@ theorem pinnedProb_congr_val (p : ι → unitInterval) (R : Set ι) {val val' : 
   have h : substitute R val = substitute R val' := funext (substitute_congr hv)
   simp only [pinnedProb, h]
 
-theorem pinnedProb_nonneg (p : ι → unitInterval) (R : Set ι) (val : ι → Prop) (A : Set (Set ι)) :
+-- Named `_coord`: `KN/SiteFiniteEnergy.lean` declares `pinnedProb_nonneg` and
+-- `pinnedProb_le_one` in this namespace for site configurations, and having both made these
+-- modules mutually un-importable.  These are the versions generic in the coordinate type.
+theorem pinnedProb_nonneg_coord (p : ι → unitInterval) (R : Set ι) (val : ι → Prop) (A : Set (Set ι)) :
     0 ≤ pinnedProb p R val A := by
   simp only [pinnedProb]
   exact measureReal_nonneg
 
-theorem pinnedProb_le_one (p : ι → unitInterval) (R : Set ι) (val : ι → Prop) (A : Set (Set ι)) :
+theorem pinnedProb_le_one_coord (p : ι → unitInterval) (R : Set ι) (val : ι → Prop) (A : Set (Set ι)) :
     pinnedProb p R val A ≤ 1 := by
   simp only [pinnedProb]
   exact measureReal_le_one
@@ -157,11 +160,11 @@ theorem prob_eq (h : MacroHistory d M) (p : Site d → unitInterval)
 
 theorem prob_nonneg (h : MacroHistory d M) (p : Site d → unitInterval)
     (A : Set (SiteConfig (Site d))) : 0 ≤ h.prob p A :=
-  pinnedProb_nonneg _ _ _ _
+  pinnedProb_nonneg_coord _ _ _ _
 
 theorem prob_le_one (h : MacroHistory d M) (p : Site d → unitInterval)
     (A : Set (SiteConfig (Site d))) : h.prob p A ≤ 1 :=
-  pinnedProb_le_one _ _ _ _
+  pinnedProb_le_one_coord _ _ _ _
 
 /-- **Pinning what the event cannot see.**  An event determined by the sites outside the inspected
 set has the same probability after the history as before it.  This is
