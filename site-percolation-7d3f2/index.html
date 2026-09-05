@@ -97,8 +97,8 @@
             <p>In two dimensions, \(\theta(p_c)=0\) has been known for decades. For bond percolation the conclusion follows from two theorems:
             <a href="https://doi.org/10.1017/S0305004100034241">Harris</a> proved that the percolation probability
             vanishes at \(p=1/2\), and <a href="https://doi.org/10.1007/BF01197577">Kesten</a> proved that \(1/2\) is the
-            critical probability. For site percolation it is <a href="https://doi.org/10.1007/BF00535742">Russo</a>, who
-            used Kesten's identification of the bond threshold to obtain continuity of \(\theta\) on all of \([0,1]\).
+            critical probability. For site percolation, <a href="https://doi.org/10.1007/BF00535742">Russo</a>
+            proved continuity of \(\theta\) on all of \([0,1]\).
             Both proofs use methods specific to two dimensions.</p>
             <p>In three or more dimensions, \(\theta(p_c)=0\) for bond percolation follows from Anthropic's
             <a href="https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation">machine-checked
@@ -106,9 +106,12 @@
             dimensions three to ten, the only cases then open: \(\theta(p_c)=0\) for bond percolation was already known by the lace expansion for
             \(d\geq19\) by <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and for \(d\geq11\) by
             <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>.</p>
-            <p>For site percolation, critical nonpercolation was also already known in sufficiently high dimensions:
-            <a href="https://doi.org/10.1007/s10955-020-02607-y">Heydenreich and Matzke</a> prove the triangle condition and
-            state this consequence in Section 1.3. The proof presented here establishes \(\theta(p_c)=0\) for site
+            <p>For site percolation, the sufficiently high-dimensional result also goes back to
+            <a href="https://doi.org/10.1007/BF02108785">Hara and Slade (1990)</a>: on p. 335 they explicitly state
+            that their method applies to site percolation and yields the same results, including continuity at criticality.
+            <a href="https://doi.org/10.1007/s10955-020-02607-y">Heydenreich and Matzke (2020)</a> later gave a detailed
+            site-percolation lace-expansion proof; their Theorem 1.1 establishes the triangle condition and Section 1.3
+            states the consequence \(\theta(p_c)=0\). The proof presented here establishes \(\theta(p_c)=0\) for site
             percolation for every \(d\geq3\), including the previously unresolved low-dimensional cases. It extends
             the conditioned-covariance and first-contact strategy of Anthropic's bond proof to independent hyperedges, and
             first proves inequality (1) below for every finite independent hyperedge model. Applying that inequality to
