@@ -1,7 +1,5 @@
-# Proofs of the Kozma–Nitzan conjectures
+# Kozma–Nitzan inequalities: proofs and counterexamples
 
-* `document/kn_summary.pdf` — the summary: statements and proofs.
-* `lean/` — the Lean modules, `README.md`, `VERIFICATION.log`.
-* `conjecture-1/` — the earlier certificate for Conjecture 1 alone, with `SOURCES.sha256` pinning the sources of Anthropic's Lean proof
-  (tree hash `b80e9252…`); not needed to build `lean/`.
-* `index.html` (this page), `LICENSE`, `NOTICE`.
+The public explanation is `index.html`, with the mathematical summary in `document/kn_summary.pdf`.
+
+All Lean code, pinned dependencies, build instructions, and verification results now live in [https://github.com/nitromannitol/percolation-after-anthropic](https://github.com/nitromannitol/percolation-after-anthropic), under `KNConjectures/`.

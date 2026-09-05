@@ -1,6 +1,0 @@
-site_no_percolation_at_critical : ∀ (d : ℕ), 3 ≤ d → thetaSite d (criticalProbSiteI d) = 0
-'KNAll.Site.site_no_percolation_at_critical' depends on axioms: [propext, Classical.choice, Quot.sound]
-1 top-level hypotheses; open propositions among them: none
-  h1: site_no_percolation_at_critical : ∀ (d : ℕ), 3 ≤ d
-
-UNCONDITIONAL: no substantive hypothesis, no open proposition, no extra axiom.
