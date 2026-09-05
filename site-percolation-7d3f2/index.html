@@ -106,7 +106,11 @@
             dimensions three to ten, the only cases then open: \(\theta(p_c)=0\) for bond percolation was already known by the lace expansion for
             \(d\geq19\) by <a href="https://doi.org/10.1007/BF02108785">Hara and Slade</a> and for \(d\geq11\) by
             <a href="https://doi.org/10.1214/17-EJP56">Fitzner and van der Hofstad</a>.</p>
-            <p>The proof presented here establishes \(\theta(p_c)=0\) for site percolation for every \(d\geq3\). It
+            <p>For site percolation, critical nonpercolation was also already known in sufficiently high dimensions:
+            <a href="https://doi.org/10.1007/s10955-020-02607-y">Heydenreich and Matzke</a> prove the triangle condition and
+            state this consequence in Section 1.3. The proof presented here establishes \(\theta(p_c)=0\) for site
+            percolation for every \(d\geq3\), including the previously unresolved low-dimensional cases. It extends
+            the conditioned-covariance and first-contact strategy of Anthropic's bond proof to independent hyperedges, and
             first proves inequality (1) below for every finite independent hyperedge model. Applying that inequality to
             the incidence representation of site percolation supplies the connection estimate used in the
             block-renormalization argument. The
@@ -134,8 +138,9 @@
             <p><a href="https://doi.org/10.1063/1.1703746">Fisher</a> observed that bond percolation on a graph is site
             percolation on the graph whose vertices are its edges, two of them adjacent when they share an endpoint. The
             converse fails: <a href="https://arxiv.org/abs/2404.08873">Gladkov and Zimin</a> proved that bond percolation
-            cannot simulate site percolation even approximately, already near a vertex of degree three. The bond
-            inequality therefore does not automatically imply the site inequality.</p>
+            cannot simulate site percolation even approximately, already near a vertex of degree three. This rules out
+            a general reduction by independent-bond gadgets. It does not establish how difficult it is to extend a
+            particular proof; here the covariance and first-contact arguments are extended to independent hyperedges.</p>
             <p>Take a finite set of sites and a finite set of labels, attach to each
             label a set of sites, and declare each label open independently of the others. Two sites are connected when a
             chain of open labels joins them, consecutive labels in the chain sharing a site.</p>
@@ -156,6 +161,12 @@
             Inequality (1) generalizes (2) in two ways: a label may be attached to any number of sites, and the event
             \(\{o \leftrightarrow A\}\) is kept on the left. Discarding that event gives (2) in the bond case. The site
             representation gives the corresponding site inequality.</p>
+            <p>This comparison is with the original conjecture. The full inequality (1), including the intersection
+            on the left, already follows in the bond model from (GEN) in the
+            <a href="https://github.com/anthropics/formal-math/blob/795efb86f191735c5481675763537cfb4ff37e55/percolation/summary.tex">preceding proof</a>:
+            take the increasing cluster function \(F(K)=\mathbf1_{\{b\in K\}}\), then bound its first-contact weighted
+            sum by the minimum over \(A\). The contributions here are the extension of that machinery to hyperedges
+            and the site-specific lattice construction.</p>
             <p>A union bound over \(A\) gives an error proportional to
             \(|A|\), and the sets \(A\) the lattice argument produces are the faces of large blocks, whose size grows
             without bound. Inequality (1) has no factor of \(|A|\).</p>
@@ -190,24 +201,35 @@
             \[
               T(I \cup J) = T(I) \cup T(J), \qquad T(I \cap J) \subseteq T(I) \cap T(J),
             \]
-            and the second inclusion can be strict. The induction therefore applies the four functions theorem
+            and the second inclusion can be strict. For a fixed \(Z\) in ordinary bond percolation, however,
+            different outside vertices are reached directly from \(Z\) through disjoint groups of independent boundary
+            edges. Their reached/not-reached indicators have a product distribution, which is the property used in
+            the original cluster-association proof. A hyperedge can reach several outside vertices at once, so this
+            product structure can fail. The hyperedge induction applies the four functions theorem
             to the label sets themselves, with their unions, intersections, and product weights. Hyperedge labels
             remain distinct even when their incident vertex sets coincide, including after vertices are deleted.</p>
 
             <h3>Conditional covariance inequalities</h3>
-            <p>The induction first takes label probabilities strictly between zero and one, so the stated disconnection conditioning has positive probability. It requires a comparison between conditioned covariances at two sites. Fix a site \(x\), a set
-            \(Y\) its cluster must avoid, and an increasing function \(f\) of the labels of
-            that cluster, and write
+            <p>The induction first takes label probabilities strictly between zero and one. Fix a site \(x\), a set
+            \(Y\) with \(x\notin Y\), and an increasing function \(f\) of the cluster's vertex set. The disconnection
+            event then has positive probability. Write
             \[
-              \kappa(u) \;=\; \operatorname{Cov}\bigl(f,\ \mathbf{1}\{u \leftrightarrow x\}
+              \kappa(u) \;=\; \operatorname{Cov}\bigl(f(C_x),\ \mathbf{1}\{u \leftrightarrow x\}
                 \ \big|\ x \nleftrightarrow Y \bigr).
             \]
-            The theorem is that for two further sites \(o\) and \(v\) and any finite list \(d_1,\dots,d_\ell\) of others,
-            a certain alternating sum, in which the contribution of each \(d_j\) is subtracted off in turn, satisfies
+            Take distinct sites \(o,v\) outside \(Y\cup\{x\}\) and distinct auxiliary sites
+            \(d_1,\dots,d_\ell\) outside \(Y\cup\{x,o,v\}\). For any function \(h\) of a site, define
+            \[
+              c_j(u)=\mathbb P\bigl(d_j\leftrightarrow u\mid
+                d_j\nleftrightarrow Y\cup\{x,d_1,\dots,d_{j-1}\}\bigr),\qquad
+              h^{[0]}=h,\quad h^{[j]}(u)=h^{[j-1]}(u)-c_j(u)h^{[j-1]}(d_j).
+            \]
+            The theorem states
             \[
               \kappa^{[\ell]}(o) \;\ge\; \lambda\,\kappa^{[\ell]}(v),
             \]
-            where \(\lambda\) is the probability that \(v\) reaches \(o\) given that \(v\) avoids everything named. With
+            where \(\lambda=\mathbb P(v\leftrightarrow o\mid
+            v\nleftrightarrow Y\cup\{x,d_1,\dots,d_\ell\})\). With
             no auxiliary sites, the theorem compares the two nonnegative conditioned covariances. The successive
             subtraction terms permit induction on the intermediate sites.</p>
             <p>The conditioned covariance inequality is proved by strong induction on \(\ell\).
@@ -230,7 +252,8 @@
 
         <section>
             <h2>From (1) to the lattice</h2>
-            <p>The passage to \(\mathbb{Z}^d\) is a renormalization. Partition the lattice into blocks of a fixed size,
+            <p>Start from \(0&lt;p&lt;1\) and assume \(\theta(p)&gt;0\). Uniqueness and large-box estimates supply the
+            finite connection events used below. The passage to \(\mathbb{Z}^d\) is a renormalization. Arrange blocks of a fixed size,
             declare a block occupied when a prescribed connection occurs inside it, and compare the occupied blocks with
             site percolation on a coarse lattice whose sites are the blocks. If the occupied blocks percolate on the
             coarse lattice, the open structure percolates on \(\mathbb{Z}^d\).</p>
@@ -241,12 +264,13 @@
             \(p+\gamma\) rather than at \(p\), and conclude that percolation at \(p\) forces percolation in a slab of
             finite width at \(p+\gamma\), for every \(\gamma&gt;0\). They state that they cannot take \(\gamma=0\), and
             at \(p=p_c\) this only gives a slab percolating at \(p_c+\gamma\).</p>
-            <p>Inequality (1) gives the neighboring-block estimate without sprinkling. Condition on the configuration in a shell around
-            the block. That fixes the states on the shell and exposes a set \(A\) of open sites there, each of which
-            reaches the neighboring block with conditional probability at least \(1-\delta\). Take \(o\) to be the source
-            and \(b\) the target in the neighboring block: the two factors on the right of (1) are the probability that
-            \(o\) reaches \(A\), which the previous step made close to one, and the minimum over \(A\), which is at least
-            \(1-\delta\).</p>
+            <p>Inequality (1) supplies the gluing step without sprinkling. The shell estimates give a high probability
+            of reaching an open contact whose conditional probability of continuing to a finite target set is close to one.
+            After fixing a shell pattern, retain the contacts \(A\) with that reliability. Earlier observations fix sites
+            open or closed, and the remaining coordinates have a product law. To apply the single-target inequality,
+            adjoin an auxiliary vertex \(b\), fixed open and adjacent to the target set. Connection to \(b\) now means
+            connection to some open site of that set. The source is also fixed open. Apply (1) under this conditional
+            product law, then average over shell patterns.</p>
             <p>The exploration maintains these bounds after every permitted history. Each pending destination has
             one designated predecessor, and stopping rules protect the unread sites needed for its next move.
             Successful moves record actual open paths. A failed examination can also disable nearby moves, so
@@ -256,7 +280,7 @@
             <p>Fix the geometry and the finite list of prototype events used in these estimates. Their strict
             probability bounds persist at one common \(q&lt;p\) by finite-event continuity. Translation invariance
             supplies the same estimates at every location, and the exploration invariants apply them after every
-            permitted history. The construction at \(q\) gives \(\theta(q)&gt;0\). Applied at \(p=p_c\), this
+            permitted history. The construction at \(q\) gives \(\theta(q)&gt;0\). Assuming \(\theta(p_c)&gt;0\) and applying this at \(p=p_c\)
             contradicts the definition of \(p_c\), proving \(\theta(p_c)=0\).</p>
             <p>The Lean declaration assumes \(d\geq3\). For \(d=2\), the slab
             \(\mathbb{Z}^2 \times \{0,\dots,k\}^{d-2}\) is the full plane, so the slab construction gives no reduction. The planar

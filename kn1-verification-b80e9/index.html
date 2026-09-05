@@ -38,7 +38,8 @@
             Conjectures 1, 2, 4 and 6 and Questions 5, 7, 8 and 9. Anthropic's Lean 4 / Mathlib proof of
             \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\) in all dimensions \(d \ge 2\) (written by Claude under the
             direction of Justin Leder) proves Conjecture 3. It does not claim Conjecture 1, but Conjecture 1 is a relatively easy
-            consequence of an inequality proved there on the way, as explained below.</p>
+            consequence of its intermediate first-contact inequality (GEN). That same result gives the stronger
+            version retaining \(o\leftrightarrow A\) on the left, as explained below.</p>
             <p>Here the remaining conjectures and questions of the paper are proved on top of that Lean proof: Conjectures 1, 2, 4
             and 6 and Questions 5, 7 and 9, each in a stronger form than stated. Question 8 fails under the every-minimizer reading; the distinction matters when minimizers tie. The proofs are in the <a href="document/kn_summary.pdf">summary</a> (PDF);
             the Lean files are in <a href="https://github.com/nitromannitol/percolation-after-anthropic/tree/main/KNConjectures">KNConjectures/</a> in the separate public repository.</p>
@@ -56,23 +57,25 @@
             means that \(o \leftrightarrow x\) for some \(x \in A\), and \(o \nleftrightarrow A\) is its negation. A comma inside a
             probability means intersection, \(\mathbb{P}(E, F) = \mathbb{P}(E \cap F)\), and \(\mathbb{E}[X;\, E]\) is the expectation of \(X\)
             on the event \(E\). Increasing functions \(F\) of vertex sets are those with \(F(K) \le F(L)\) whenever \(K \subseteq L\).
-            Page numbers refer to the paper.</p>
+            All minima and convex combinations below use a nonempty set \(A\). Page numbers refer to the paper.</p>
         </section>
 
         <section>
             <h2>Conjecture 1 from the Lean proof of Conjecture 3</h2>
-            <p>Fix \(A\), \(o\) and \(b\), and order the vertices of \(A\) so that \(\mathbb{P}(x \leftrightarrow b)\) is nondecreasing. The
-            Lean proof of Conjecture 3 contains the inequality
+            <p>Fix \(A\), \(o\) and \(b\), and order the vertices of \(A\) so that \(\mathbb{P}(x \leftrightarrow b)\) is nondecreasing. Inequality
+            <a href="https://github.com/anthropics/formal-math/blob/795efb86f191735c5481675763537cfb4ff37e55/percolation/summary.tex">(GEN) in the preceding proof</a>,
+            applied to \(F(K)=\mathbf1_{\{b\in K\}}\), gives
             \[
               \sum_{x \in A} \mathbb{P}\bigl(o \leftrightarrow x \text{ and } o \nleftrightarrow y \text{ for every } y \in A \text{ before } x\bigr)\,
-              \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b).
+              \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A).
             \]
             The events on the left partition \(\{o \leftrightarrow A\}\), and every factor \(\mathbb{P}(x \leftrightarrow b)\) is at least the
             minimum over \(A\), so
             \[
-              \mathbb{P}(o \leftrightarrow A)\, \min_{x \in A} \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b),
+              \mathbb{P}(o \leftrightarrow A)\, \min_{x \in A} \mathbb{P}(x \leftrightarrow b) \;\le\; \mathbb{P}(o \leftrightarrow b,\ o \leftrightarrow A).
             \]
-            which is Conjecture 1 (p. 3) for every finite graph and every choice of edge probabilities.</p>
+            Dropping \(o\leftrightarrow A\) on the right gives Conjecture 1 (p. 3). Thus the stronger joint-event
+            inequality already follows from the preceding bond proof, for every finite graph and every choice of edge probabilities.</p>
         </section>
 
         <section>
@@ -110,7 +113,8 @@
                     \(a \in A\) minimise \(\mathbb{P}_H(x \leftrightarrow b)\) over \(x \in A\). Then
                     \(\mathbb{P}(o \leftrightarrow A,\, a \leftrightarrow b) \le \mathbb{P}(o \leftrightarrow b,\, o \leftrightarrow A)\) in \(G\).</li>
                 <li><strong>Question 8</strong> (p. 36), which takes a vertex \(a \in A\) minimising \(\mathbb{P}(x \leftrightarrow b,\, o \nleftrightarrow A)\),
-                    is false as printed.</li>
+                    fails if every minimizer must satisfy the proposed inequality. The counterexample has tied
+                    minimizers; it does not refute the existence of a suitable choice among them.</li>
             </ul>
             <p>In the paper, Conjectures 2 and 4 are proved when \(A\) has two vertices (Theorems 1 and 7), when \(A\) has three
             vertices under extra hypotheses (Theorems 2, 3 and 11), when \(o\) is isolated in \(G \setminus A\) or joined only to
