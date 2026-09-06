@@ -48,7 +48,8 @@ const publications = [
       { name: "Yuval Peres", url: "https://yuvalperes.com/" }
     ],
     links: [
-      { type: "arXiv", url: "https://arxiv.org/abs/2608.23545" }
+      { type: "arXiv", url: "https://arxiv.org/abs/2608.23545" },
+      { type: "Lean", url: "https://github.com/nitromannitol/rotor-23" }
     ],
     abstract: 'In the Eulerian walker model (also known as rotor walk), each site of the square lattice begins with an arrow pointing to one of its four neighbors. A walker that starts at the origin repeatedly turns the arrow at its current site clockwise by 90&deg; and steps in the new direction. A circuit consists of four successive returns to the origin, the degree of the origin on the square lattice. <a href="https://arxiv.org/abs/cond-mat/9611019">Priezzhev, Dhar, Dhar, and Krishnamurthy (1996)</a> introduced the model and conjectured that, for independent uniform initial directions, the region explored in the first t steps has radius of order t<sup>1/3</sup>. We prove recurrence and show that the circuit ranges have a deterministic convex limit shape; equivalently, the range at time t, rescaled by t<sup>1/3</sup>, converges to a deterministic convex body and has cardinality of order t<sup>2/3</sup>.',
     year: 2026
