@@ -1,6 +1,42 @@
 
 const publications = [
   {
+    id: "manhattan-lattice-transient",
+    title: "The randomly oriented Manhattan lattice in 2D is transient",
+    bibtexTitle: "The randomly oriented {M}anhattan lattice in {2D} is transient",
+    thumbnail: "images/manhattan_lattice.svg",
+    thumbnailAnimation: "manhattan-lattice",
+    altText: "A walker follows randomly oriented horizontal and vertical lines and drifts away from its starting point.",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Yuval Peres", url: "https://yuvalperes.com/" }
+    ],
+    links: [
+      { type: "arXiv", url: "" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Manhattan-Transience" }
+    ],
+    abstract: 'Independently orient each horizontal and vertical line of Z<sup>2</sup> by a fair coin. A walker chooses one of the two lines through its current position with equal probability and takes one step in the direction of that line. <a href="https://doi.org/10.1016/0167-2789(89)90207-8">Redner (1989)</a> introduced this walk as a model of transport in an isotropic random velocity field and predicted that its root-mean-square displacement grows like n<sup>2/3</sup>. We prove that the walk is transient almost surely. The proof is a short variational argument.',
+    year: 2026
+  },
+  {
+    id: "orrw-range-exponent",
+    title: "Once-reinforced random walk on Z<sup>d</sup> has range exponent at least d/(d+1)",
+    bibtexTitle: "Once-reinforced random walk on {$\\mathbb{Z}^d$} has range exponent at least $d/(d+1)$",
+    thumbnail: "images/orrw_range.svg",
+    thumbnailAnimation: "orrw-range",
+    altText: "A once-reinforced walk retraces the trail it has already made, and its range grows slowly.",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Yuval Peres", url: "https://yuvalperes.com/" }
+    ],
+    links: [
+      { type: "arXiv", url: "" },
+      { type: "Lean", url: "https://github.com/nitromannitol/ORRW-Lower-Bound" }
+    ],
+    abstract: 'In once-reinforced random walk, every edge starts with weight one and is assigned weight &beta; &ge; 1 after its first crossing. At each step the walker chooses an incident edge with probability proportional to its weight; Davis (1990) introduced the model on Z. It is expected that for sufficiently large reinforcement &beta;, the range in the first n steps has order n<sup>d/(d+1)</sup> on Z<sup>d</sup>. For every d &ge; 2, we prove that the expected range after n steps is at least c(d)(n/&beta;)<sup>d/(d+1)</sup>, with c(d) &gt; 0, uniformly in &beta; &ge; 1 and integers n &ge; 0. We also prove a stretched-exponential lower-tail bound and the resulting almost sure asymptotic lower bound for each fixed &beta;.',
+    year: 2026
+  },
+  {
     id: "sharpness-critical-scaling-parking",
     title: "Sharpness and critical scaling of parking",
     thumbnail: "images/parking.svg",

@@ -578,6 +578,119 @@
         draw.ready=false;draw.failed=false;image.onload=()=>{draw.ready=true;};image.onerror=()=>{draw.failed=true;};image.src='gallery/plates/p6-random-hero-void.png';return draw;
     }
 
+    function makeManhattan(ctx,W){
+        /* Independently orient every horizontal and vertical line of Z^2 by a
+           fair coin.  The walker picks one of the two lines through its
+           position with equal probability and steps along that line's
+           direction.  The path escapes: the walk is transient. */
+        const hDir=y=>hash2(0,y,0x4d61)<.5?-1:1, vDir=x=>hash2(x,0,0x6e68)<.5?-1:1;
+        const rand=randomFactory(0x9e3779b9), path=[[0,0]];
+        let x=0,y=0,maxR=1;
+        for(let s=0;s<2600;s++){
+            if(rand()<.5) x+=hDir(y); else y+=vDir(x);
+            path.push([x,y]);
+            maxR=Math.max(maxR,Math.abs(x),Math.abs(y));
+        }
+        return function(t){
+            ground(ctx,W);
+            const q=(t%18)/18, grow=q<.88?smooth(q/.88):1, n=Math.max(2,Math.floor(grow*(path.length-1)));
+            let lo=1e9,hi=-1e9,lo2=1e9,hi2=-1e9;
+            for(let i=0;i<=n;i++){const p=path[i];if(p[0]<lo)lo=p[0];if(p[0]>hi)hi=p[0];if(p[1]<lo2)lo2=p[1];if(p[1]>hi2)hi2=p[1];}
+            const span=Math.max(6,Math.max(hi-lo,hi2-lo2)*1.25), cell=(W-40)/span;
+            const mx=(lo+hi)/2, my=(lo2+hi2)/2;
+            const sx=a=>W/2+(a-mx)*cell, sy=b=>W/2-(b-my)*cell;
+            const half=Math.ceil(span/2)+1;
+            // the oriented lines, drawn as chevrons pointing the way each line runs
+            ctx.lineWidth=1;
+            const showGrid=cell>=5;
+            for(let j=Math.floor(my)-half;j<=Math.floor(my)+half;j++){
+                const py=sy(j); if(py<-8||py>W+8) continue;
+                if(showGrid){ctx.strokeStyle=C.grid; ctx.globalAlpha=.20;
+                ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(W,py); ctx.stroke();}
+                if(cell<9) continue;
+                const d=hDir(j); ctx.globalAlpha=.42; ctx.strokeStyle=C.slate;
+                for(let a=Math.floor(mx)-half;a<=Math.floor(mx)+half;a+=2){
+                    const px=sx(a+.5); if(px<0||px>W) continue;
+                    ctx.beginPath(); ctx.moveTo(px-d*3,py-3); ctx.lineTo(px+d*3,py); ctx.lineTo(px-d*3,py+3); ctx.stroke();
+                }
+            }
+            for(let i=Math.floor(mx)-half;i<=Math.floor(mx)+half;i++){
+                const px=sx(i); if(px<-8||px>W+8) continue;
+                if(showGrid){ctx.strokeStyle=C.grid; ctx.globalAlpha=.20;
+                ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,W); ctx.stroke();}
+                if(cell<9) continue;
+                const d=vDir(i); ctx.globalAlpha=.42; ctx.strokeStyle=C.slate;
+                for(let b=Math.floor(my)-half;b<=Math.floor(my)+half;b+=2){
+                    const py=sy(b+.5); if(py<0||py>W) continue;
+                    ctx.beginPath(); ctx.moveTo(px-3,py+d*3); ctx.lineTo(px,py-d*3); ctx.lineTo(px+3,py+d*3); ctx.stroke();
+                }
+            }
+            // the trajectory, oldest steps faded
+            ctx.globalAlpha=1; ctx.lineJoin='round'; ctx.lineCap='round';
+            for(let i=1;i<=n;i++){
+                const a=path[i-1],b=path[i],age=i/n;
+                ctx.strokeStyle=age>.82?C.rose:(age>.5?C.blue:C.cyan);
+                ctx.globalAlpha=mix(.22,.95,age); ctx.lineWidth=Math.max(1.1,cell*.10);
+                ctx.beginPath(); ctx.moveTo(sx(a[0]),sy(a[1])); ctx.lineTo(sx(b[0]),sy(b[1])); ctx.stroke();
+            }
+            ctx.globalAlpha=1;
+            const o=path[0], p=path[n];
+            ctx.fillStyle=C.ink; ctx.beginPath(); ctx.arc(sx(o[0]),sy(o[1]),Math.max(2.5,cell*.16),0,TAU); ctx.fill();
+            ctx.fillStyle=C.rose; ctx.beginPath(); ctx.arc(sx(p[0]),sy(p[1]),Math.max(3,cell*.20),0,TAU); ctx.fill();
+            return true;
+        };
+    }
+
+    function makeORRW(ctx,W){
+        /* Once-reinforced random walk: every edge has weight one until it is
+           first crossed, then weight beta.  The walker steps along an incident
+           edge with probability proportional to its weight, so it tends to run
+           back along the trail it has already made.  The picture is the range:
+           the set of edges crossed at least once. */
+        const BETA=6, rand=randomFactory(0x2545f491), seen=new Set(), edges=[];
+        const ek=(a,b,c,d)=>(a<c||(a===c&&b<=d))?a+','+b+'|'+c+','+d:c+','+d+'|'+a+','+b;
+        let x=0,y=0; const path=[[0,0]];
+        for(let s=0;s<2400;s++){
+            const nb=[[x+1,y],[x-1,y],[x,y+1],[x,y-1]], w=nb.map(p=>seen.has(ek(x,y,p[0],p[1]))?BETA:1);
+            const tot=w[0]+w[1]+w[2]+w[3]; let r=rand()*tot,i=0;
+            while(i<3&&r>=w[i]){r-=w[i];i++;}
+            const p=nb[i], k=ek(x,y,p[0],p[1]);
+            if(!seen.has(k)){seen.add(k);edges.push([x,y,p[0],p[1],s]);}
+            path.push(p); x=p[0]; y=p[1];
+        }
+        return function(t){
+            ground(ctx,W);
+            const q=(t%16)/16, grow=q<.9?smooth(q/.9):1, n=Math.max(1,Math.floor(grow*edges.length));
+            let lo=0,hi=0,lo2=0,hi2=0;
+            for(let i=0;i<n;i++){const e=edges[i];
+                lo=Math.min(lo,e[0],e[2]);hi=Math.max(hi,e[0],e[2]);
+                lo2=Math.min(lo2,e[1],e[3]);hi2=Math.max(hi2,e[1],e[3]);}
+            const span=Math.max(8,Math.max(hi-lo,hi2-lo2)*1.2), cell=(W-36)/span;
+            const mx=(lo+hi)/2,my=(lo2+hi2)/2;
+            const sx=a=>W/2+(a-mx)*cell, sy=b=>W/2-(b-my)*cell;
+            ctx.strokeStyle=C.grid; ctx.globalAlpha=.13; ctx.lineWidth=1;
+            if(cell>7){
+                ctx.beginPath();
+                for(let i=Math.floor(lo)-1;i<=Math.ceil(hi)+1;i++){const px=sx(i);ctx.moveTo(px,0);ctx.lineTo(px,W);}
+                for(let j=Math.floor(lo2)-1;j<=Math.ceil(hi2)+1;j++){const py=sy(j);ctx.moveTo(0,py);ctx.lineTo(W,py);}
+                ctx.stroke();
+            }
+            ctx.lineCap='round'; ctx.globalAlpha=1;
+            for(let i=0;i<n;i++){
+                const e=edges[i], age=i/Math.max(1,n);
+                ctx.strokeStyle=age>.86?C.rose:(age>.45?C.violet:C.blue);
+                ctx.globalAlpha=mix(.32,.92,age);
+                ctx.lineWidth=Math.max(1.4,cell*.30);
+                ctx.beginPath(); ctx.moveTo(sx(e[0]),sy(e[1])); ctx.lineTo(sx(e[2]),sy(e[3])); ctx.stroke();
+            }
+            ctx.globalAlpha=1;
+            const last=edges[Math.max(0,n-1)];
+            ctx.fillStyle=C.ink; ctx.beginPath(); ctx.arc(sx(0),sy(0),Math.max(2.5,cell*.22),0,TAU); ctx.fill();
+            ctx.fillStyle=C.rose; ctx.beginPath(); ctx.arc(sx(last[2]),sy(last[3]),Math.max(3,cell*.26),0,TAU); ctx.fill();
+            return true;
+        };
+    }
+
     const FACTORIES = {
         'parking': makeParking,
         'divisible-percolation': makeDivisiblePercolation,
@@ -597,7 +710,9 @@
         'pareto-peeling': makePareto,
         'exploding-sandpile': makeExploding,
         'dimensional-reduction': makeDimensionalReduction,
-        'random-sandpile': makeRandomSandpile
+        'random-sandpile': makeRandomSandpile,
+        'manhattan-lattice': makeManhattan,
+        'orrw-range': makeORRW
     };
 
     function attach(canvas,kind,baseImage){
