@@ -29,6 +29,7 @@ const publications = [
       { name: "Ahmed Bou-Rabee" },
       { name: "Yuval Peres", url: "https://yuvalperes.com/" }
     ],
+    status: "submitted",
     links: [
       { type: "arXiv", url: "" },
       { type: "Lean", url: "https://github.com/nitromannitol/ORRW-Lower-Bound" }

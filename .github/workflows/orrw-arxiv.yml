@@ -1,0 +1,38 @@
+name: Publish ORRW arXiv links
+on:
+  schedule:
+    - cron: '47 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Validate without changing the website'
+        type: boolean
+        default: true
+permissions:
+  contents: write
+  pages: write
+  actions: write
+concurrency:
+  group: orrw-arxiv-links
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - name: Test matching and publication edits
+        run: python3 -m unittest discover -s .github/scripts -p 'test_orrw_arxiv.py' -v
+      - name: Check announcement and publish verified links
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            python3 .github/scripts/update_orrw_arxiv.py --dry-run
+          else
+            python3 .github/scripts/update_orrw_arxiv.py
+          fi
