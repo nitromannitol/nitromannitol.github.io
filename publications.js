@@ -402,6 +402,8 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
 ];
 
 const galleryAnchorByAnimation = {
+  "manhattan-lattice": "manhattan-lattice",
+  "orrw-range": "orrw-range",
   "parking": "parking",
   "divisible-percolation": "divisible-percolation",
   "rotor-walk": "rotor-walk",

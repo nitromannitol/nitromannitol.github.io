@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=815e1d25">
+<link rel="stylesheet" href="gallery.css?v=a412ff37">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -38,27 +38,42 @@
 
 <div id="ledger">
 <div class="tabs" role="tablist" aria-label="The models">
-    <button type="button" class="tab" role="tab" id="tab-own" aria-controls="sheet-own" aria-selected="true" data-tab="own">Research<span class="tab-n">16</span></button>
+    <button type="button" class="tab" role="tab" id="tab-own" aria-controls="sheet-own" aria-selected="true" data-tab="own">Research<span class="tab-n">18</span></button>
     <button type="button" class="tab" role="tab" id="tab-other" aria-controls="sheet-other" aria-selected="false" data-tab="other">Other models<span class="tab-n">5</span></button>
 </div>
 <div class="sheet" id="sheet-own" role="tabpanel" aria-labelledby="tab-own" data-panel="own">
+<a class="card" href="#manhattan-lattice" data-plate="manhattan-lattice">
+    <span class="card-img">
+        <img src="plates/p-manhattan-wall-paper.svg?v=13785715" alt="" loading="eager" decoding="async">
+        <img class="card-img-alt" src="plates/p-manhattan-wall-void.svg?v=d153faa1" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-name">The randomly oriented Manhattan lattice</span></span>
+</a>
+<a class="card" href="#orrw-range" data-plate="orrw-range">
+    <span class="card-img">
+        <img src="plates/p-orrw-wall-paper.svg?v=e804193d" alt="" loading="eager" decoding="async">
+        <img class="card-img-alt" src="plates/p-orrw-wall-void.svg?v=24b41d4a" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">02</span><span class="card-name">Once-reinforced random walk</span></span>
+</a>
+
 <a class="card" href="#random-sandpile" data-plate="random-sandpile">
     <span class="card-img">
         <img src="plates/random-convergence-wall-paper.png" alt="" loading="eager" decoding="async">
         <img class="card-img-alt" src="plates/random-convergence-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">01</span>
+        <span class="card-no" aria-hidden="true">03</span>
         <span class="card-name">Convergence of the random Abelian sandpile</span>
     </span>
 </a>
 <a class="card" href="#dimensional-reduction" data-plate="dimensional-reduction">
     <span class="card-img">
-        <img src="plates/p-dimred-wall-paper.png" alt="" loading="eager" decoding="async">
-        <img class="card-img-alt" src="plates/p-dimred-wall-void.png" alt="" loading="lazy" decoding="async">
+        <img src="plates/p-dimred-wall-paper.png?v=a4f6292b" alt="" loading="eager" decoding="async">
+        <img class="card-img-alt" src="plates/p-dimred-wall-void.png?v=0db56dee" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">02</span>
+        <span class="card-no" aria-hidden="true">04</span>
         <span class="card-name">Dynamic dimensional reduction</span>
     </span>
 </a>
@@ -68,7 +83,7 @@
         <img class="card-img-alt" src="plates/p-peeling-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">03</span>
+        <span class="card-no" aria-hidden="true">05</span>
         <span class="card-name">Pareto peeling</span>
     </span>
 </a>
@@ -78,7 +93,7 @@
         <img class="card-img-alt" src="plates/p5-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">04</span>
+        <span class="card-no" aria-hidden="true">06</span>
         <span class="card-name">Integer superharmonic matrices on the F-lattice</span>
     </span>
 </a>
@@ -88,37 +103,37 @@
         <img class="card-img-alt" src="plates/p-mcrt-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">05</span>
+        <span class="card-no" aria-hidden="true">07</span>
         <span class="card-name">Internal DLA on mated-CRT maps</span>
     </span>
 </a>
-<a class="card card--wide" href="#sandpile-rwrs" data-plate="sandpile-rwrs">
+<a class="card" href="#sandpile-rwrs" data-plate="sandpile-rwrs">
     <span class="card-img">
         <img src="plates/p-rwrs-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-rwrs-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">06</span>
+        <span class="card-no" aria-hidden="true">08</span>
         <span class="card-name">Divisible sandpiles via random walks in random scenery</span>
     </span>
 </a>
-<a class="card card--wide" href="#parking" data-plate="parking">
+<a class="card" href="#parking" data-plate="parking">
     <span class="card-img">
         <img src="plates/p-parking-wall-paper.svg" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-parking-wall-void.svg" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">07</span>
+        <span class="card-no" aria-hidden="true">09</span>
         <span class="card-name">Sharpness and critical scaling of parking</span>
     </span>
 </a>
-<a class="card card--wide" href="#divisible-percolation" data-plate="divisible-percolation">
+<a class="card" href="#divisible-percolation" data-plate="divisible-percolation">
     <span class="card-img">
         <img src="plates/p-divperc-wall-paper.svg" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-divperc-wall-void.svg" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">08</span>
+        <span class="card-no" aria-hidden="true">10</span>
         <span class="card-name">Quantitative explosion and percolation of the divisible sandpile</span>
     </span>
 </a>
@@ -128,7 +143,7 @@
         <img class="card-img-alt" src="plates/p-harmonic-deformed-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">09</span>
+        <span class="card-no" aria-hidden="true">11</span>
         <span class="card-name">Rigidity of harmonic functions on the supercritical percolation cluster</span>
     </span>
 </a>
@@ -138,7 +153,7 @@
         <img class="card-img-alt" src="plates/p-unique-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">10</span>
+        <span class="card-no" aria-hidden="true">12</span>
         <span class="card-name">Unique continuation on planar graphs</span>
     </span>
 </a>
@@ -148,57 +163,57 @@
         <img class="card-img-alt" src="plates/p7-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">11</span>
+        <span class="card-no" aria-hidden="true">13</span>
         <span class="card-name">Eulerian walkers on Z&sup2;</span>
     </span>
 </a>
-<a class="card card--wide" href="#einstein-relation" data-plate="einstein-relation">
+<a class="card" href="#einstein-relation" data-plate="einstein-relation">
     <span class="card-img">
         <img src="plates/p-einstein-ensemble-paper.svg?v=94921282" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-einstein-ensemble-void.svg?v=c9ca1472" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">12</span>
+        <span class="card-no" aria-hidden="true">14</span>
         <span class="card-name">Quantitative Einstein relation</span>
     </span>
 </a>
-<a class="card card--wide" href="#superdiffusion" data-plate="superdiffusion">
+<a class="card" href="#superdiffusion" data-plate="superdiffusion">
     <span class="card-img">
         <img src="plates/p-sd-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-sd-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">13</span>
+        <span class="card-no" aria-hidden="true">15</span>
         <span class="card-name">Brownian motion in an incompressible random drift</span>
     </span>
 </a>
-<a class="card card--wide" href="#sphere-packing" data-plate="sphere-packing">
+<a class="card" href="#sphere-packing" data-plate="sphere-packing">
     <span class="card-img">
         <img src="plates/p-gmc-index-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-gmc-index-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">14</span>
+        <span class="card-no" aria-hidden="true">16</span>
         <span class="card-name">Random walk on orthogonal tilings</span>
     </span>
 </a>
-<a class="card card--wide" href="#idla-cylinder" data-plate="idla-cylinder">
+<a class="card" href="#idla-cylinder" data-plate="idla-cylinder">
     <span class="card-img">
         <img src="plates/p-idla-cylinder-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-idla-cylinder-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">15</span>
+        <span class="card-no" aria-hidden="true">17</span>
         <span class="card-name">Internal DLA on cylinders</span>
     </span>
 </a>
-<a class="card card--wide" href="#long-range-walk" data-plate="long-range-walk">
+<a class="card" href="#long-range-walk" data-plate="long-range-walk">
     <span class="card-img">
         <img src="plates/p-long-range-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-long-range-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
-        <span class="card-no" aria-hidden="true">16</span>
+        <span class="card-no" aria-hidden="true">18</span>
         <span class="card-name">Critical long-range random conductance walk</span>
     </span>
 </a>
@@ -262,6 +277,112 @@
 </footer>
 
 </main>
+
+
+<section class="study" id="study-manhattan-lattice" data-plate="manhattan-lattice" aria-labelledby="t-manhattan-lattice" role="dialog" aria-modal="true" hidden>
+    <div class="study-bar">
+        <button type="button" class="study-back" data-close>&larr;&ensp;Models</button>
+        <span class="study-title">Randomly oriented Manhattan lattice</span>
+    </div>
+    <section class="band band--paper band--head">
+        <div class="col">
+            <p class="family">Random walks</p>
+            <h2 id="t-manhattan-lattice">A random walk through one-way streets</h2>
+            <p class="def"><b>Definition.</b> Give every horizontal and vertical line of \(\mathbb Z^2\) an independent fair direction. At each intersection, a walker chooses the horizontal or vertical street with probability \(1/2\), then takes one step in its direction. A street keeps its direction forever.</p>
+            <p>The local rule is simple; the memory stretches across the entire plane. Return to a row or column, even far from the last visit, and it still points the same way.</p>
+        </div>
+    </section>
+    <section class="band band--void band--model-live">
+        <div class="instrument instrument--model instrument--recent-walk" data-model-theme="manhattan-lattice">
+            <div class="stage model-stage model-stage--recent-walk" style="--stage-max:900px">
+                <canvas id="manhattan-canvas" width="1800" height="1320" role="img" aria-label="An actual random walk on independently oriented horizontal and vertical lattice lines. Arrows give street directions, the path runs from blue to rose, and the gold point marks the walker. In Follow, the inset retains the full path."></canvas>
+            </div>
+            <div class="model-control-shelf" aria-label="Manhattan lattice controls">
+                <div class="model-control-groups">
+                    <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-manhattan-view="follow" aria-pressed="true">Follow</button><button type="button" class="btn" data-manhattan-view="whole" aria-pressed="false">Whole path</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Pace</span><div class="model-segmented"><button type="button" class="btn is-on" data-manhattan-pace="watch" aria-pressed="true">Watch</button><button type="button" class="btn" data-manhattan-pace="explore" aria-pressed="false">Explore</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run recent-walk-run"><button type="button" class="btn is-on" data-manhattan-run="pause">Pause</button><button type="button" class="btn" data-manhattan-run="step">Step</button><button type="button" class="btn" data-manhattan-run="replay">Replay</button><button type="button" class="btn" data-manhattan-run="new">New field</button></div></div>
+                </div>
+                <div class="film-timeline"><label for="manhattan-time">Steps</label><input id="manhattan-time" type="range" min="0" max="20000" step="1" value="0" aria-label="Number of steps to reveal"></div>
+            </div>
+            <dl class="readout model-readout"><div><dt>Steps</dt><dd id="manhattan-steps">0</dd></div><div><dt>Distinct sites</dt><dd id="manhattan-visited">1</dd></div><div><dt>Distance from start</dt><dd id="manhattan-distance">0.0</dd></div></dl>
+            <p class="model-phase-chip" id="manhattan-note">One direction per street · two choices at every junction</p>
+            <p class="caption">One sampled environment and 20,000 coin-flip steps, with no boundary or wraparound. Gold arrows mark the two possible moves, each with probability 1/2. Follow keeps the streets legible; Whole path fits all the steps revealed so far. Scrub to inspect any point, or use Step to read the next move.</p>
+        </div>
+    </section>
+    <section class="band band--paper">
+        <div class="col">
+            <p class="statement"><b>Theorem.</b> For almost every choice of street directions, the walk is transient. More precisely, if \(p_n^\omega(x,x)\) is its return probability after \(n\) steps in the fixed environment \(\omega\), then \[\sum_{n\geq0}p_n^\omega(x,x)&lt;\infty\qquad\text{for every }x\in\mathbb Z^2.\] Thus every site is visited only finitely often, almost surely. <span class="src">(Bou-Rabee&ndash;Peres, Theorem 1.1)</span></p>
+            <details class="deeper"><summary>Why random directions matter</summary><p>The direction of a whole street is shared by infinitely many edges. Those long correlations distinguish this environment from independent edge directions. Alternating the directions deterministically instead gives a recurrent walk. The theorem establishes transience for independent fair street directions; one finite trajectory illustrates the model, while the theorem controls the infinite walk.</p></details>
+            <p class="cite">A. Bou-Rabee and Y. Peres, &ldquo;The randomly oriented Manhattan lattice in 2D is transient&rdquo; (2026). <a href="https://github.com/nitromannitol/Manhattan-Transience/blob/main/paper/manuscript.tex">Manuscript</a> · <a href="https://github.com/nitromannitol/Manhattan-Transience">Lean formalization</a>.</p>
+        </div>
+    </section>
+    <nav class="band band--void band--tight study-nav">
+        <div class="nav-row">
+            <span></span>
+            <a class="nav-next" href="#orrw-range" data-plate-link="orrw-range"><span class="nav-dir">Next</span><span class="nav-name">Once-reinforced random walk</span></a>
+        </div>
+    </nav>
+</section>
+
+
+<section class="study" id="study-orrw-range" data-plate="orrw-range" aria-labelledby="t-orrw-range" role="dialog" aria-modal="true" hidden>
+    <div class="study-bar">
+        <button type="button" class="study-back" data-close>&larr;&ensp;Models</button>
+        <span class="study-title">Once-reinforced random walk</span>
+    </div>
+    <section class="band band--paper band--head">
+        <div class="col">
+            <p class="family">Self-interacting random walks</p>
+            <h2 id="t-orrw-range">Once-reinforced random walk</h2>
+            <p class="def">The walk builds a trail it prefers to revisit. Even so, its range keeps growing.</p>
+            <p><b>Definition.</b> Each edge of \(\mathbb Z^d\) initially has weight 1. After its first crossing, its weight becomes \(\beta\ge1\) and stays there. At each step, choose a neighbouring vertex with probability proportional to the connecting edge&rsquo;s weight. The range \(R_n=\{X_0,\ldots,X_n\}\) is the set of sites visited by time \(n\).</p>
+        </div>
+    </section>
+    <section class="band band--void band--model-live">
+        <div class="instrument instrument--model instrument--recent-walk">
+            <div class="recent-walk-legend" aria-label="Colour key"><span><i style="--swatch:#69BBC2"></i>Crossed edges</span><span><i style="--swatch:#F1C877"></i>Recent path &amp; walker</span></div>
+            <div class="stage model-stage model-stage--recent-walk" style="--stage-max:900px">
+                <canvas id="orrw-canvas" width="1800" height="1240" role="img" aria-label="A once-reinforced random walk on the square lattice. Blue-green edges show the growing trail, and a gold dot follows every step, including crossings of old edges."></canvas>
+            </div>
+            <div class="film-timeline">
+                <label for="orrw-time">Step</label>
+                <input id="orrw-time" type="range" min="0" max="24000" value="0" step="1" aria-label="Step along the once-reinforced walk">
+            </div>
+            <div class="model-control-shelf" aria-label="Once-reinforced walk controls">
+                <div class="model-control-groups">
+                    <div class="model-control-group"><span class="model-control-label">Reinforcement</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-orrw-beta="1" aria-pressed="false">\(\beta=1\)</button><button type="button" class="btn is-on" data-orrw-beta="4" aria-pressed="true">\(\beta=4\)</button><button type="button" class="btn" data-orrw-beta="16" aria-pressed="false">\(\beta=16\)</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run recent-walk-run"><button type="button" class="btn is-on" data-orrw-run="pause">Pause</button><button type="button" class="btn" data-orrw-run="step">One step</button><button type="button" class="btn" data-orrw-run="replay">Replay</button><button type="button" class="btn" data-orrw-run="new">New sample</button></div></div>
+                </div>
+            </div>
+            <dl class="readout model-readout">
+                <div><dt>Steps</dt><dd id="orrw-step">0</dd></div>
+                <div><dt>Sites visited &middot; \(|R_n|\)</dt><dd id="orrw-range">1</dd></div>
+                <div><dt>Edges crossed</dt><dd id="orrw-edges">0</dd></div>
+            </dl>
+            <p class="caption">One 24,000-step sample on \(\mathbb Z^2\), with no boundary. Pale edges were discovered more recently; the gold trace follows the last 32 steps. The camera expands with the visited set. At \(\beta=1\), this is simple random walk. Pause or advance one step to inspect the walker&rsquo;s incident edges; when space permits, their weights are labelled.</p>
+            <p id="orrw-note" class="film-status" role="status" aria-live="polite">A first crossing changes an edge&rsquo;s weight from 1 to 4.</p>
+        </div>
+    </section>
+    <section class="band band--paper">
+        <div class="col">
+            <p class="statement"><b>Theorem (Range lower bound).</b> For every \(d\ge2\), there is \(c(d)&gt;0\) such that, for all \(\beta\ge1\) and \(n\ge0\),
+            \[\mathbb E_\beta |R_n|\ge c(d)\left(\frac n\beta\right)^{d/(d+1)}.\]
+            In two dimensions the exponent is \(2/3\). This is a lower bound for the expected range; the finite sample above illustrates the walk and does not estimate its limiting exponent. <span class="src">(Bou-Rabee&ndash;Peres, <a href="https://github.com/nitromannitol/ORRW-Lower-Bound/blob/main/paper/orrw.tex">Theorem 1.1</a>)</span></p>
+            <details class="deeper"><summary>Why the walk must keep discovering sites</summary>
+                <p>The proof bounds the expected time to cross \(k\) distinct edges by \(C(d)\beta k^{1+1/d}\). It combines estimates for exit times over increasing sets with a supermartingale for the reinforced walk. This controls how long the walk can remain in its existing trail, without assuming that its range is round or well mixed.</p>
+                <p>A stronger result gives a stretched-exponential lower-tail bound for \(|R_n|\), and hence an almost-sure lower bound of the same order for each fixed \(\beta\).</p>
+            </details>
+            <p class="cite">A. Bou-Rabee and Y. Peres, &ldquo;Once-reinforced random walk on \(\mathbb Z^d\) has range exponent at least \(d/(d+1)\)&rdquo; (2026). <a href="https://github.com/nitromannitol/ORRW-Lower-Bound/tree/main/paper">Paper source</a> &middot; <a href="https://github.com/nitromannitol/ORRW-Lower-Bound">Lean formalization</a>.</p>
+        </div>
+    </section>
+    <nav class="band band--void band--tight study-nav">
+        <div class="nav-row">
+            <a href="#manhattan-lattice" data-plate-link="manhattan-lattice"><span class="nav-dir">Previous</span><span class="nav-name">The randomly oriented Manhattan lattice</span></a>
+            <a class="nav-next" href="#random-sandpile" data-plate-link="random-sandpile"><span class="nav-dir">Next</span><span class="nav-name">Convergence of the random Abelian sandpile</span></a>
+        </div>
+    </nav>
+</section>
 
 
 <section class="study" id="study-random-sandpile" data-plate="random-sandpile" aria-labelledby="t-random-sandpile" role="dialog" aria-modal="true" hidden>
@@ -362,7 +483,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <span></span>
+            <a href="#orrw-range" data-plate-link="orrw-range"><span class="nav-dir">Previous</span><span class="nav-name">Once-reinforced random walk</span></a>
             <a class="nav-next" href="#dimensional-reduction" data-plate-link="dimensional-reduction"><span class="nav-dir">Next</span><span class="nav-name">Dynamic dimensional reduction</span></a>
         </div>
     </nav>
@@ -451,7 +572,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#random-sandpile" data-plate-link="random-sandpile"><span class="nav-dir">Previous</span><span class="nav-name">Sandpile on a random background</span></a>
+            <a href="#random-sandpile" data-plate-link="random-sandpile"><span class="nav-dir">Previous</span><span class="nav-name">Convergence of the random Abelian sandpile</span></a>
             <a class="nav-next" href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Next</span><span class="nav-name">Pareto peeling</span></a>
         </div>
     </nav>
@@ -1123,7 +1244,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#percolation" data-plate-link="percolation"><span class="nav-dir">Previous</span><span class="nav-name">Rigidity of harmonic functions on the supercritical percolation cluster</span></a>
-            <a class="nav-next" href="#superdiffusion" data-plate-link="superdiffusion"><span class="nav-dir">Next</span><span class="nav-name">Brownian motion in an incompressible random drift</span></a>
+            <a class="nav-next" href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Next</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
         </div>
     </nav>
 </section>
@@ -1238,8 +1359,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#unique-continuation" data-plate-link="unique-continuation"><span class="nav-dir">Previous</span><span class="nav-name">Unique continuation on planar graphs</span></a>
-            <a class="nav-next" href="#einstein-relation" data-plate-link="einstein-relation"><span class="nav-dir">Next</span><span class="nav-name">Quantitative Einstein relation</span></a>
+            <a href="#einstein-relation" data-plate-link="einstein-relation"><span class="nav-dir">Previous</span><span class="nav-name">Quantitative Einstein relation</span></a>
+            <a class="nav-next" href="#sphere-packing" data-plate-link="sphere-packing"><span class="nav-dir">Next</span><span class="nav-name">Random walk on orthogonal tilings</span></a>
         </div>
     </nav>
 </section>
@@ -1298,8 +1419,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#superdiffusion" data-plate-link="superdiffusion"><span class="nav-dir">Previous</span><span class="nav-name">Brownian motion in an incompressible random drift</span></a>
-            <a class="nav-next" href="#sphere-packing" data-plate-link="sphere-packing"><span class="nav-dir">Next</span><span class="nav-name">Random walk on orthogonal tilings</span></a>
+            <a href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Previous</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
+            <a class="nav-next" href="#superdiffusion" data-plate-link="superdiffusion"><span class="nav-dir">Next</span><span class="nav-name">Brownian motion in an incompressible random drift</span></a>
         </div>
     </nav>
 </section>
@@ -1362,7 +1483,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#einstein-relation" data-plate-link="einstein-relation"><span class="nav-dir">Previous</span><span class="nav-name">Quantitative Einstein relation</span></a>
+            <a href="#superdiffusion" data-plate-link="superdiffusion"><span class="nav-dir">Previous</span><span class="nav-name">Brownian motion in an incompressible random drift</span></a>
             <a class="nav-next" href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA on cylinders</span></a>
         </div>
     </nav>
@@ -1559,7 +1680,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on cylinders</span></a>
-            <a class="nav-next" href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Next</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
+            <a class="nav-next" href="#dla" data-plate-link="dla"><span class="nav-dir">Next</span><span class="nav-name">Diffusion-limited aggregation</span></a>
         </div>
     </nav>
 </section>
@@ -1678,8 +1799,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#long-range-walk" data-plate-link="long-range-walk"><span class="nav-dir">Previous</span><span class="nav-name">Critical long-range random conductance walk</span></a>
-            <a class="nav-next" href="#dla" data-plate-link="dla"><span class="nav-dir">Next</span><span class="nav-name">Diffusion-limited aggregation</span></a>
+            <a href="#unique-continuation" data-plate-link="unique-continuation"><span class="nav-dir">Previous</span><span class="nav-name">Unique continuation on planar graphs</span></a>
+            <a class="nav-next" href="#einstein-relation" data-plate-link="einstein-relation"><span class="nav-dir">Next</span><span class="nav-name">Quantitative Einstein relation</span></a>
         </div>
     </nav>
 </section>
@@ -1741,7 +1862,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Previous</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
+            <a href="#long-range-walk" data-plate-link="long-range-walk"><span class="nav-dir">Previous</span><span class="nav-name">Critical long-range random conductance walk</span></a>
             <a class="nav-next" href="#idla" data-plate-link="idla"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA</span></a>
         </div>
     </nav>
@@ -2045,6 +2166,8 @@ window.typeset = function (root) {
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
 <script defer src="../einstein-motion.js?v=d1e6112c"></script>
-<script defer src="gallery.js?v=736dab5b"></script>
+<script defer src="manhattan.js?v=276171ee"></script>
+<script defer src="orrw.js?v=c8a602e1"></script>
+<script defer src="gallery.js?v=27d0abe9"></script>
 </body>
 </html>

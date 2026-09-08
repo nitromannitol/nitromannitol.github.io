@@ -2020,3 +2020,42 @@ a:hover { text-decoration-thickness: 1.5px; }
 .nocase { text-transform: none; }
 /* a flex button collapses the space before an inline formula */
 .model-segmented .btn .katex, .model-run .btn .katex { margin-left: .28em; }
+
+/* Research entries share a width: wide plates fit inside the same frame,
+   so a change of image proportions cannot leave an empty grid slot. */
+#sheet-own { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#sheet-own .card { grid-column: auto; }
+#sheet-own .card-img { aspect-ratio: 3 / 2; background: var(--paper); transition: background .28s var(--ease); }
+#sheet-own .card-img img { object-fit: contain; }
+#sheet-own .card:hover .card-img,
+#sheet-own .card:focus-visible .card-img { background: var(--ink); }
+@media (min-width: 1100px) {
+    #sheet-own { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    #sheet-own { grid-template-columns: minmax(0, 1fr); }
+}
+
+.instrument--recent-walk { max-width: 900px; }
+.instrument--recent-walk > * { min-width: 0; }
+.instrument--recent-walk > .model-control-shelf,
+.instrument--recent-walk > .model-readout,
+.instrument--recent-walk > .caption,
+.instrument--recent-walk > .model-key { width: 100%; max-width: none; }
+.instrument--recent-walk .model-stage--recent-walk { width: 100%; }
+.instrument--recent-walk .model-control-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
+.instrument--recent-walk .recent-walk-run { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.instrument--recent-walk .btn { min-height: 44px; }
+.instrument--recent-walk .film-timeline { flex-wrap: nowrap; }
+.instrument--recent-walk .film-timeline label { white-space: nowrap; }
+.instrument--recent-walk .film-timeline output { min-width: 7ch; }
+@media (max-width: 720px) {
+    .instrument.instrument--recent-walk > .model-stage { order: 0; }
+    .instrument--recent-walk .model-control-groups { grid-template-columns: minmax(0, 1fr); }
+    .instrument--recent-walk .model-readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .instrument--recent-walk .model-readout div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+.instrument--recent-walk[data-model-theme="manhattan-lattice"] .model-control-group:last-child { grid-column: 1 / -1; }
+.recent-walk-legend { display: flex; flex-wrap: wrap; gap: 10px 26px; color: #D5CFD5; font: 400 .82rem/1.5 var(--serif); }
+.recent-walk-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.recent-walk-legend i { width: 25px; height: 3px; background: var(--swatch); }

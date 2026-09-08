@@ -23,21 +23,20 @@ const PALETTE = {
 /* height 0,1,2,3 as emitted light — the same table the baked plates use */
 const HEIGHTS_VOID = ['#15131A', '#4A4A5E', '#8E4257', '#A8D8E8'];
 
-/* Keep keyboard navigation in exactly the catalogue order assembled by
-   build_gallery.py.  This list used to contain a removed `sandpile` study and
-   an older ordering, so ArrowLeft from the first live page could target a
-   nonexistent section. */
-const SECTIONS = ['random-sandpile', 'dimensional-reduction', 'pareto-peeling',
-                  'f-lattice', 'divisible', 'sandpile-rwrs', 'parking',
-                  'divisible-percolation', 'percolation',
-                  'unique-continuation', 'superdiffusion', 'einstein-relation',
-                  'sphere-packing', 'idla-cylinder', 'long-range-walk',
-                  'rotor-walk', 'dla', 'idla', 'ust', 'rotor-aggregation',
-                  'apollonian'];
+/* Keyboard navigation follows the cards in the research and other-models tabs. */
+const SECTIONS = [
+    'manhattan-lattice', 'orrw-range', 'random-sandpile', 'dimensional-reduction',
+    'pareto-peeling', 'f-lattice', 'divisible', 'sandpile-rwrs', 'parking',
+    'divisible-percolation', 'percolation', 'unique-continuation', 'rotor-walk',
+    'einstein-relation', 'superdiffusion', 'sphere-packing', 'idla-cylinder',
+    'long-range-walk', 'dla', 'idla', 'ust', 'rotor-aggregation', 'apollonian'
+];
 
 /* A model page may host several instruments. Each dedicated research page
    mounts its animated definition first and its single-stage live model next. */
 const PAGE_MAKERS = {
+    'manhattan-lattice': ['manhattan'],
+    'orrw-range': ['orrw'],
     'dimensional-reduction': ['dimredintro', 'dimredlive', 'dimredscale'],
     'apollonian':        ['apollointro', 'apollo'],
     'f-lattice':         ['flatticeintro', 'flattice', 'fareytree'],
@@ -67,6 +66,7 @@ const PAGE_MAKERS = {
    a wide construction film before their live model, so positional matching
    can pause one maker while a different canvas is visible. */
 const MAKER_TARGETS = {
+    manhattan: '#manhattan-canvas', orrw: '#orrw-canvas',
     dimredintro: '#rule-dimensional-reduction', dimredlive: '#dimred-canvas',
     dimredscale: '#dimred-scale-canvas',
     apollointro: '#rule-apollonian', apollo: '#apollo-canvas',
@@ -99,6 +99,8 @@ const MAKER_TARGETS = {
 };
 
 const TITLES = {
+    'manhattan-lattice': 'The randomly oriented Manhattan lattice',
+    'orrw-range': 'Once-reinforced random walk',
     'dimensional-reduction': 'Dynamic dimensional reduction',
     'apollonian': 'Integer superharmonic matrices on Z\u00b2',
     'f-lattice': 'Integer superharmonic matrices on the F-lattice',
@@ -331,6 +333,8 @@ const Instruments = (function () {
     const observers = {};
 
     const makers = {};
+    makers.manhattan = function () { return globalThis.ManhattanGallery.create(); };
+    makers.orrw = function () { return globalThis.OrrwGallery.create(); };
 
     function setActive(k, on) {
         on = !!on;
