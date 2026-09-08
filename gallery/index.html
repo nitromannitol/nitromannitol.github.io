@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=679d5c30">
+<link rel="stylesheet" href="gallery.css?v=481f8c9d">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -154,8 +154,8 @@
 </a>
 <a class="card card--wide" href="#einstein-relation" data-plate="einstein-relation">
     <span class="card-img">
-        <img src="plates/p-einstein-wall-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-einstein-wall-void.png" alt="" loading="lazy" decoding="async">
+        <img src="plates/p-einstein-ensemble-paper.svg" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-einstein-ensemble-void.svg" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
         <span class="card-no" aria-hidden="true">12</span>
@@ -726,7 +726,7 @@
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:660px">
-                <canvas id="mcrt-idla-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on the full finite 10,000-vertex mated-CRT disk. Settled cells are revealed in the exact order of a precomputed run stopped when an explorer first reaches the boundary."></canvas>
+                <canvas id="mcrt-idla-canvas" width="1440" height="1440" role="img" aria-label="Internal DLA on a finite 10,000-vertex mated-CRT disk. A magnified view expands with the exact recorded cluster, while a full-disk inset locates the visible region."></canvas>
                 <span class="model-phase-chip" id="mcrt-idla-note">Loading exact finite graph</span>
             </div>
             <dl class="readout model-readout">
@@ -735,7 +735,7 @@
                 <div><dt>Maximum graph distance from the source over occupied vertices</dt><dd id="mcrt-idla-radius">0</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>Settlement order</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption">Internal DLA on the full 10,000-vertex finite \(\gamma=\sqrt2\) disk map. Each explorer starts at the source, follows an incident edge chosen uniformly at each step (parallel edges counted separately), and settles at its first unoccupied vertex. The run has 3,087 settled explorers before the next walk reaches the boundary. Cells appear in settlement order; the step count includes the boundary-hitting walk.</p>
+            <p class="caption">Internal DLA on the full 10,000-vertex finite \(\gamma=\sqrt2\) disk map. Each explorer starts at the source, follows an incident edge chosen uniformly at each step (parallel edges counted separately), and settles at its first unoccupied vertex. The run has 3,087 settled explorers before the next walk reaches the boundary. Cells appear in settlement order; the step count includes the boundary-hitting walk. The main view starts near the source and expands to keep the growing cluster in view; cells retain their original geometry. The inset shows the full disk, with the visible region outlined in yellow. Yellow outlines in the main view mark recent settlements; cells without recorded polygons appear as point markers.</p>
         </div>
     </section>
 
@@ -910,7 +910,7 @@
             The toppled set is \(\mathcal T^{(\rho)}=\{x:u_\infty^{(\rho)}(x)&gt;0\}\), where \(\rho=\mathbf E\sigma^{(\rho)}(0)\).</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-divisible-percolation" width="1080" height="1080" data-rule-anim="divisible-percolation" role="img" aria-label="Parallel toppling spreads excess mass and joins neighboring toppled sites into connected components."></canvas>
+                    <canvas id="rule-divisible-percolation" width="1080" height="1080" data-rule-anim="divisible-percolation" role="img" aria-label="Exact parallel toppling on an 11-by-11 torus from three mass-5.8 sources in a background of mass 0.8. Excess moves to neighbours as the three toppled regions join."></canvas>
                 </div>
             </figure>
         </div>
@@ -925,7 +925,7 @@
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="divperc-canvas" width="1440" height="1440" role="img" aria-label="Finite-time level sets of the divisible-sandpile odometer on a square torus, with the largest connected component highlighted."></canvas>
+                <canvas id="divperc-canvas" width="1440" height="1440" role="img" aria-label="Finite-time level sets of the divisible-sandpile odometer on a square torus, with the largest connected component highlighted, newly reached sites briefly lit yellow, and a history of set densities below."></canvas>
                 <span class="model-phase-chip" id="divperc-note">Initial Poisson masses</span>
             </div>
             <dl class="readout model-readout">
@@ -934,7 +934,7 @@
                 <div><dt>Largest component</dt><dd id="divperc-largest">0</dd></div>
             </dl>
             <div class="model-key divperc-key"><span>Toppled set</span><span class="divperc-key-items"><i class="divperc-other"></i>other components <i class="divperc-largest"></i>largest component</span></div>
-            <p class="caption">Parallel divisible sandpile on an 88-by-88 discrete torus. Initial masses use a monotone coupling of Poisson variables; at \(\rho=1\), a constant is subtracted so that the empirical mean is exactly one. For \(\rho&lt;1\), the cells show \(\{u_t&gt;0\}\); for \(\rho=1\), they show \(\{u_t&gt;0.075\sqrt t\}\). Cyan is the largest nearest-neighbor component. Each run displays times \(0\) through \(900\) and then repeats.</p>
+            <p class="caption">Parallel divisible sandpile on an 88-by-88 discrete torus. Initial masses use a monotone coupling of Poisson variables; at \(\rho=1\), a constant is subtracted so that the empirical mean is exactly one. For \(\rho&lt;1\), the cells show \(\{u_t&gt;0\}\); for \(\rho=1\), they show \(\{u_t&gt;0.075\sqrt t\}\). Cyan is the largest nearest-neighbor component. Each run displays times \(0\) through \(900\) and then repeats. Brightness records odometer magnitude; pale yellow briefly marks sites entering the displayed set. The traces below record the displayed-set density (purple) and largest-component density (cyan) against parallel time on a \(\log(1+t)\) axis; later sweeps play faster.</p>
         </div>
     </section>
 
@@ -1262,30 +1262,37 @@
             <p class="def"><b>Definition.</b> On a probability space \((\Omega,\mathcal F,\mathbb Q)\), let \(d\ge2\), \(\Lambda,r_0\ge1\), let \(\mathbf a\) be a symmetric positive-definite matrix field, and let \(V\) be a scalar field. Assume \((\mathbf a,V)\) is stationary with range of dependence \(r_0\), \(\Lambda^{-1}|\xi|^2\le\xi\cdot\mathbf a(x)\xi\le\Lambda|\xi|^2\), \(|V(x)|\le\Lambda\), and both fields are \(\Lambda\)-Lipschitz. The unforced generator is \(\mathcal Lf=\tfrac12e^{2V}\nabla\!\cdot(e^{-2V}\mathbf a\nabla f)\). For \(\mathbb Q\)-almost every environment, \(\varepsilon X_{t/\varepsilon^2}\Rightarrow W_t\), where \(\mathbf E[W_t\otimes W_t]=t\Sigma_X\). Adding force \(\lambda e_1\) gives \(\mathcal L^\lambda f=\mathcal Lf+\lambda\mathbf a e_1\!\cdot\nabla f\); define the deterministic velocity \(\ell_X(\lambda)\) by \(X_t^\lambda/t\to\ell_X(\lambda)\) almost surely.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-einstein-relation" width="1080" height="1080" data-rule-anim="einstein-relation" role="img" aria-label="compare an unforced reversible diffusion with its small constant-force tilt"></canvas>
+                    <canvas id="rule-einstein-relation" width="1080" height="1080" data-rule-anim="einstein-relation" role="img" aria-label="Two ensembles in the same smooth potential, driven by the same Brownian increments. A small force shifts the second ensemble. The fluctuation and force scales meet at t equals lambda to the power minus two."></canvas>
                 </div>
             </figure>
         </div>
     </section>
 
     <section class="band band--void band--model-live">
-        <div class="instrument instrument--model" data-model-theme="superdiffusion">
+        <div class="instrument instrument--model instrument--einstein" data-model-theme="superdiffusion">
+            <div class="einstein-heading"><p class="family">Fluctuation &amp; response</p><h3>One environment. Two ensembles.</h3><p>A small force shifts the cloud. Compare that response with the cloud&rsquo;s natural spread.</p></div>
             <div class="model-control-shelf" aria-label="Einstein-relation controls">
                 <div class="model-control-groups">
                     <div class="model-control-group"><span class="model-control-label">Force \(\lambda\)</span><div class="model-segmented model-segmented--four"><button type="button" class="btn" data-einstein-force=".25" aria-pressed="false">\(2^{-2}\)</button><button type="button" class="btn is-on" data-einstein-force=".125" aria-pressed="true">\(2^{-3}\)</button><button type="button" class="btn" data-einstein-force=".0625" aria-pressed="false">\(2^{-4}\)</button><button type="button" class="btn" data-einstein-force=".03125" aria-pressed="false">\(2^{-5}\)</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-einstein-run="pause">Pause</button><button type="button" class="btn" data-einstein-run="replay">Replay</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-einstein-run="pause">Pause</button><button type="button" class="btn" data-einstein-run="replay">Replay</button><button type="button" class="btn" data-einstein-run="sample">New sample</button></div></div>
                 </div>
             </div>
-            <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="einstein-canvas" width="1440" height="1440" role="img" aria-label="The canvas traces the first of forty paired unforced and weakly forced Euler-Maruyama trajectories in one fixed smooth four-mode potential with identity diffusivity; the readout uses all forty pairs. Each pair shares its Gaussian increments. The rulers show square root t and lambda t."></canvas>
+            <div class="stage model-stage model-stage--einstein" style="--stage-max:840px">
+                <canvas id="einstein-canvas" width="2160" height="2220" role="img" aria-label="128 pairs of unforced and forced diffusions in a fixed smooth potential. The two panels share spatial axes and Brownian increments. Dots are current positions; bright paths track one pair; crosses mark ensemble means; dashed ellipses show one covariance scale. Below, histograms compare horizontal positions and rulers compare square root t with lambda t."></canvas>
                 <span class="model-phase-chip" id="einstein-note">Reversible diffusion</span>
             </div>
             <dl class="readout model-readout">
+                <div><dt>Time \(t\)</dt><dd id="einstein-time">0.0</dd></div>
                 <div><dt>Scale balance \(\lambda\sqrt t\)</dt><dd id="einstein-balance">0.00</dd></div>
-                <div><dt>\(|\widehat\mu_t-\widehat\Sigma_{11,t}|\)</dt><dd id="einstein-error">0.00</dd></div>
+                <div><dt>Spread \(\widehat\Sigma_{11,t}\)</dt><dd id="einstein-diffusion">0.000</dd></div>
+                <div><dt>Response \(\widehat\mu_t\)</dt><dd id="einstein-mobility">0.000</dd></div>
             </dl>
-            <div class="model-key einstein-key"><span>Path</span><span class="einstein-key-items" aria-hidden="true"><i class="einstein-unforced"></i>unforced <i class="einstein-tilted"></i>tilted <i class="einstein-error"></i>difference</span></div>
-            <p class="caption">V(x, y) = 0.46 sin(x + 0.23) + 0.31 cos(y − 0.41) + 0.22 sin(x + 0.73y) + 0.15 cos(1.7x − 0.8y). Forty pairs of diffusions, dX = −∇V(X) dt + dB and dY = (−∇V(Y) + λe₁) dt + dB, with the same Brownian increments within a pair; time step 0.01; initial points equally spaced on the circle of radius 0.035. Blue: X. Yellow: Y. Pink: Y − X for one pair. Readout: |μ̂<sub>t</sub> − Σ̂<sub>t</sub>|, where μ̂<sub>t</sub> is the mean horizontal displacement of Y divided by λt and Σ̂<sub>t</sub> is the horizontal variance of X divided by t. Rulers: √t and λt; they are equal at t = λ⁻².</p>
+            <div class="model-key einstein-key"><span>128 paired particles</span><span class="einstein-key-items"><i class="einstein-unforced" aria-hidden="true"></i>no force <i class="einstein-tilted" aria-hidden="true"></i>with force</span></div>
+            <p class="caption">Each pair receives the same Brownian increments in the same potential. The force acts to the right. Crosses show the cloud centers; dashed ellipses show one covariance scale, not confidence regions. Both spatial panels and the histograms use the same horizontal scale. The blue and gold rulers compare \(\sqrt t\) with \(\lambda t\); they meet at \(t_* = \lambda^{-2}\). Every force setting runs past that time; Replay reuses the noise, and New sample draws another realization.</p>
+            <details class="deeper einstein-details"><summary>What is being measured?</summary>
+                <p>Spread is the unbiased sample variance of the unforced horizontal positions, divided by \(t\). Response is the difference between the forced and unforced horizontal sample means, divided by \(\lambda t\). Pairing the noise reduces the sampling error in this comparison. These finite-time, finite-ensemble estimates need not agree or converge monotonically.</p>
+                <p>The simulation uses 128 pairs starting at the origin, \(dX=-\nabla V(X)\,dt+dB\) and \(dY=(-\nabla V(Y)+\lambda e_1)\,dt+dB\), with Euler&ndash;Maruyama time step 0.025 and \(V(x,y)=0.46\sin(x+0.23)+0.31\cos(y-0.41)+0.22\sin(x+0.73y)+0.15\cos(1.7x-0.8y)\). The fixed smooth potential illustrates the mechanism; it does not realize the finite-range random environment of the theorem. Playback speed depends on the force so each run reaches \(1.5\lambda^{-2}\).</p>
+            </details>
         </div>
     </section>
 
@@ -1339,7 +1346,7 @@
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="gw-canvas" width="1440" height="1440" role="img" aria-label="A conductance-weighted random walk on the adjacency graph of a fixed 3,000-cell Voronoi tessellation. Cell colour records first-visit order in repeating 18-cell bands; the white path and yellow point mark the current walk."></canvas>
+                <canvas id="gw-canvas" width="1440" height="1440" role="img" aria-label="A conductance-weighted random walk on the adjacency graph of a fixed 3,000-cell Voronoi tessellation. Cell colour records first-visit order on a logarithmic scale; the white path and yellow point mark the current walk. In Follow, cyan spokes show next-step probabilities and a gold outline marks the current cell."></canvas>
                 <span class="model-phase-chip" id="gw-note">Loading map</span>
             </div>
             <dl class="readout model-readout">
@@ -1349,7 +1356,7 @@
                 <div><dt>Unvisited cells</dt><dd id="gw-unseen">3,000</dd></div>
             </dl>
             <div class="model-key model-key--age"><span>First-visit order: first</span><span class="model-age-ramp gw-ramp" aria-hidden="true"></span><span>last</span></div>
-            <p class="caption">3,000 points sampled from a slab of a three-dimensional Gaussian multiplicative chaos with γ = 1.4, at most one per cell of a 96-by-96 grid, mirrored across the four sides; the tiling is their Voronoi tessellation. From cell v the walk moves to an adjacent cell w with probability proportional to a(v, w) = length(P<sub>v</sub> ∩ P<sub>w</sub>)/|v − w|. Colour: order of first visit.</p>
+            <p class="caption">3,000 points sampled from a slab of a three-dimensional Gaussian multiplicative chaos with γ = 1.4, at most one per cell of a 96-by-96 grid, mirrored across the four sides; the tiling is their Voronoi tessellation. From cell v the walk moves to an adjacent cell w with probability proportional to a(v, w) = length(P<sub>v</sub> ∩ P<sub>w</sub>)/|v − w|. Colour: first-visit order on a logarithmic scale. In Follow, cyan spokes show the next-step probabilities; the current cell is outlined in gold.</p>
         </div>
     </section>
 
@@ -1719,7 +1726,7 @@
                 </div>
             </div>
             <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="dla-canvas" width="1440" height="1440" role="img" aria-label="The recorded attachment order of a 60,000-particle square-lattice diffusion-limited aggregate. Before each attachment, yellow marks the new site and white marks an adjacent occupied site."></canvas>
+                <canvas id="dla-canvas" width="1440" height="1440" role="img" aria-label="The recorded attachment order of a 60,000-particle square-lattice diffusion-limited aggregate. Colour records attachment order on a logarithmic scale and bright tips mark recent attachments. The ring marks the seed. Before each attachment, yellow marks the new site and white marks an adjacent occupied site."></canvas>
                 <span class="model-phase-chip" id="dla-note">Loading run</span>
             </div>
             <dl class="readout model-readout">
@@ -1728,8 +1735,8 @@
                 <div><dt>OLS slope of \(\log|A_k\cap B_r|\) versus \(\log r\)</dt><dd id="dla-slope">&mdash;</dd></div>
                 <div><dt>View width</dt><dd id="dla-view-width">0</dd></div>
             </dl>
-            <div class="model-key model-key--age"><span>Attachment time</span><span class="model-age-ramp" aria-hidden="true"></span></div>
-            <p class="caption">Diffusion-limited aggregation on a board of side N = 2,201, replayed from a stored run of 60,000 particles. Before particle k, let R be the maximum Euclidean radius of the cluster: choose θ uniformly, start at the lattice point nearest (R + 4)(cos θ, sin θ), and run simple random walk until it reaches an unoccupied site adjacent to the cluster; if its distance from the origin exceeds min{2.2(R + 4) + 20, N/2 − 3}, restart it with a new θ. Colour: order of attachment.</p>
+            <div class="model-key model-key--age"><span>Attachment order · logarithmic</span><span class="model-age-ramp dla-ramp" aria-hidden="true"></span></div>
+            <p class="caption">Diffusion-limited aggregation on a board of side N = 2,201, replayed from a stored run of 60,000 particles. Before particle k, let R be the maximum Euclidean radius of the cluster: choose θ uniformly, start at the lattice point nearest (R + 4)(cos θ, sin θ), and run simple random walk until it reaches an unoccupied site adjacent to the cluster; if its distance from the origin exceeds min{2.2(R + 4) + 20, N/2 − 3}, restart it with a new θ. Colour: attachment order on a logarithmic scale; bright tips mark recent attachments. The ring marks the seed.</p>
         </div>
     </section>
 
@@ -2050,6 +2057,6 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=8b3f21c6"></script>
+<script defer src="gallery.js?v=fe6709c1"></script>
 </body>
 </html>

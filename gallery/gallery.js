@@ -5531,10 +5531,9 @@ const Instruments = (function () {
 
        This is not a second simulation and it does not invent a walk that was
        never recorded.  p-dla-growth.bin is the attachment order from the
-       exact /tmp/dla.ord run used to bake p-dla-void.png.  Each commit copies
-       that site's colour from the published plate, so the completed reveal is
-       the plate itself.  In Watch mode the only event we can honestly show is
-       the recorded one: an empty site touches an occupied neighbour, then
+       exact /tmp/dla.ord run used to bake p-dla-void.png. Each commit colours
+       that site by its recorded attachment rank. In Watch mode we show
+       the recorded event: an empty site touches an occupied neighbour, then
        sticks. */
     makers.dla = function () {
         const canvas = $('#dla-canvas');
@@ -5544,17 +5543,23 @@ const Instruments = (function () {
         const outRadius = $('#dla-radius'), outSlope = $('#dla-slope');
         const outView = $('#dla-view-width');
 
-        let meta = null, coords = null, source = null, sourcePixels = null;
+        let meta = null, coords = null;
         let layer = null, layerCtx = null, occupied = null;
         let ready = false, count = 0, radius = 0, contact = -1;
         let minX = 0, maxX = 0, minY = 0, maxY = 0;
         let pace = 'grow', view = 'whole', viewTouched = false;
         let phase = 'contact', phaseUntil = 0;
         let running = false, userPaused = false, pageAwake = true;
-        let raf = 0, lastFrame = 0;
+        let raf = 0, lastFrame = 0, growthCredit = 0;
         let square = 0, padX = 0, padY = 0;
         const cam = { x: 0, y: 0, h: 28 };
-        const styleCache = Object.create(null);
+        /* Colour comes from the actual attachment rank. A logarithmic scale
+           resolves the first branches as well as the last 60,000-site view. */
+        const arrivalRamp = rampOf([[100,113,220], [154,112,210], [217,127,165],
+                                    [131,202,225], [255,240,199]]);
+        const arrivalStyles = Array.from({ length: 256 }, function (_, i) {
+            return 'rgb(' + arrivalRamp[i * 3] + ',' + arrivalRamp[i * 3 + 1] + ',' + arrivalRamp[i * 3 + 2] + ')';
+        });
 
         function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
         function backingPerCss() {
@@ -5584,27 +5589,16 @@ const Instruments = (function () {
             }
             return best;
         }
-        function sourceStyle(x, y) {
-            const p = 4 * indexOf(x, y);
-            let r = sourcePixels[p], g = sourcePixels[p + 1], b = sourcePixels[p + 2];
-            /* the plate's darkest violet vanished on the dark stage: the trunk
-               is lifted toward the ramp's first stop so it stays legible under
-               the bright tips */
-            const L = .3 * r + .59 * g + .11 * b;
-            if (L < 96) {
-                const k = .42 * (1 - L / 96);
-                r = Math.round(r + (124 - r) * k); g = Math.round(g + (111 - g) * k); b = Math.round(b + (191 - b) * k);
-            }
-            const key = (r << 16) | (g << 8) | b;
-            if (!styleCache[key]) styleCache[key] = 'rgb(' + r + ',' + g + ',' + b + ')';
-            return styleCache[key];
+        function arrivalStyle(rank) {
+            const u = Math.log1p((rank - 1) / 40) / Math.log1p((meta.count - 1) / 40);
+            return arrivalStyles[clamp(Math.round(u * 255), 0, 255)];
         }
         function commitOne() {
             if (!ready || count >= meta.count) return false;
             const q = point(count), lp = layerPoint(count);
             count++;
             occupied[indexOf(q.x, q.y)] = count;
-            layerCtx.fillStyle = sourceStyle(q.x, q.y);
+            layerCtx.fillStyle = arrivalStyle(count);
             layerCtx.fillRect(lp.x, lp.y, 1, 1);
             minX = Math.min(minX, lp.x); maxX = Math.max(maxX, lp.x);
             minY = Math.min(minY, lp.y); maxY = Math.max(maxY, lp.y);
@@ -5683,6 +5677,43 @@ const Instruments = (function () {
             ctx.lineWidth = Math.max(1, backingPerCss() * .5); ctx.stroke();
             void scale;
         }
+        function drawGrowthFront() {
+            if (pace !== 'grow' || count >= meta.count) return;
+            /* These are the most recent recorded attachments, not walkers
+               or a guessed harmonic-measure boundary. */
+            const span = Math.min(180, Math.max(16, Math.ceil(count * .025)));
+            const start = Math.max(0, count - span), sc = W / (2 * cam.h);
+            ctx.save(); ctx.fillStyle = '#FFF4CB';
+            for (let k = start; k < count; k++) {
+                const p = layerPoint(k), s = screenPoint(p.x, p.y);
+                ctx.globalAlpha = .9 * Math.pow((k - start + 1) / (count - start), 1.6);
+                ctx.fillRect(s[0], s[1], Math.max(1.5, sc), Math.max(1.5, sc));
+            }
+            ctx.restore();
+        }
+        function drawScale() {
+            const unit = backingPerCss(), scale = W / (2 * cam.h);
+            const desired = cam.h * .4, power = Math.pow(10, Math.floor(Math.log10(desired)));
+            const length = Math.max(1, (desired / power >= 5 ? 5 : desired / power >= 2 ? 2 : 1) * power);
+            const x = 24 * unit, y = W - 25 * unit;
+            ctx.save(); ctx.lineWidth = unit;
+            ctx.font = 11 * unit + 'px monospace';
+            const label = length + (length === 1 ? ' lattice unit' : ' lattice units');
+            ctx.fillStyle = 'rgba(8,9,14,.86)';
+            ctx.fillRect(x - 10 * unit, y - 31 * unit,
+                         Math.max(length * scale, ctx.measureText(label).width) + 20 * unit, 43 * unit);
+            ctx.strokeStyle = '#AAA9BC';
+            ctx.beginPath(); ctx.moveTo(x, y - 4 * unit); ctx.lineTo(x, y);
+            ctx.lineTo(x + length * scale, y); ctx.lineTo(x + length * scale, y - 4 * unit); ctx.stroke();
+            ctx.fillStyle = '#C6C3D0';
+            ctx.fillText(label, x, y - 11 * unit);
+            if (view === 'whole') {
+                const seed = layerPoint(0), p = screenPoint(seed.x + .5, seed.y + .5);
+                ctx.beginPath(); ctx.arc(p[0], p[1], 4 * unit, 0, Math.PI * 2);
+                ctx.strokeStyle = '#FFF4CB'; ctx.stroke();
+            }
+            ctx.restore();
+        }
         function updateReadout() {
             if (outN) outN.textContent = nf.format(count);
             if (outRadius) outRadius.textContent = radius.toFixed(1);
@@ -5697,7 +5728,7 @@ const Instruments = (function () {
                 if (!ready) note.textContent = 'Loading run';
                 else if (count >= meta.count) note.textContent = 'Complete';
                 else if (!running && userPaused) note.textContent = 'Paused';
-                else if (pace === 'grow') note.textContent = '';
+                else if (pace === 'grow') note.textContent = 'Bright tips: recent attachments';
                 else note.textContent = phase === 'contact' ? 'Contact with cluster' : 'Attach at first contact';
             }
         }
@@ -5709,9 +5740,11 @@ const Instruments = (function () {
             ctx.drawImage(layer, cam.x - cam.h, cam.y - cam.h, 2 * cam.h, 2 * cam.h,
                           0, 0, W, W);
             drawTipGrid();
+            drawGrowthFront();
             if (pace === 'watch') {
                 if (phase === 'contact') drawHighlight(now || performance.now());
             }
+            drawScale();
             updateReadout();
         }
         function syncControls() {
@@ -5738,20 +5771,21 @@ const Instruments = (function () {
             if (markUser) userPaused = true;
             syncControls();
         }
-        function growBatch() {
+        function growBatch(elapsed) {
             const began = performance.now();
-            /* A logarithmic reveal, but slow enough that the 60,000-point
-               branching geometry develops on screen instead of appearing as
-               a completed plate after only a few frames. */
-            const target = Math.min(520, Math.max(12, Math.floor((count + 100) / 420)));
+            /* Match the former 60 Hz pace using elapsed time, so a 120 Hz
+               display does not rush through the branching geometry. */
+            growthCredit += elapsed * Math.max(720, (count + 100) / 7) / 1000;
+            const target = Math.min(520, Math.floor(growthCredit));
             let made = 0;
             while (count < meta.count && made < target && performance.now() - began < 7) {
                 commitOne(); made++;
             }
+            growthCredit -= made;
         }
         function frame(now) {
             if (!running || !ready) return;
-            if (pace === 'grow') growBatch();
+            if (pace === 'grow') growBatch(lastFrame ? Math.min(80, now - lastFrame) : 16.67);
             else {
                 if (!phaseUntil) phaseUntil = now + 460;
                 if (now >= phaseUntil) {
@@ -5779,7 +5813,7 @@ const Instruments = (function () {
         function reset(play) {
             if (!ready) return;
             stop(false); clearLayer(); occupied.fill(0);
-            count = 0; radius = 0; contact = -1; phase = 'contact'; phaseUntil = 0;
+            count = 0; radius = 0; contact = -1; phase = 'contact'; phaseUntil = 0; growthCredit = 0;
             const seed = layerPoint(0);
             minX = maxX = seed.x; minY = maxY = seed.y;
             commitOne(); contact = nextContact();
@@ -5841,18 +5875,14 @@ const Instruments = (function () {
             fetch('plates/p-dla-growth.bin').then(function (r) {
                 if (!r.ok) throw new Error('DLA order ' + r.status);
                 return r.arrayBuffer();
-            }),
-            loadImage('plates/p-dla-void.png')
+            })
         ]).then(function (parts) {
-            meta = parts[0]; coords = new Uint16Array(parts[1]); source = parts[2];
+            meta = parts[0]; coords = new Uint16Array(parts[1]);
             if (coords.length !== meta.count * 2) throw new Error('DLA order length mismatch');
             square = Math.max(meta.width, meta.height);
             padX = (square - meta.width) >> 1; padY = (square - meta.height) >> 1;
             layer = document.createElement('canvas'); layer.width = layer.height = square;
             layerCtx = layer.getContext('2d'); occupied = new Uint32Array(meta.width * meta.height);
-            const src = document.createElement('canvas'); src.width = meta.width; src.height = meta.height;
-            const sx = src.getContext('2d'); sx.drawImage(source, 0, 0);
-            sourcePixels = sx.getImageData(0, 0, meta.width, meta.height).data;
             ready = true; reset(!REDUCED);
             if (REDUCED) finishReduced();
         }).catch(function (err) {
@@ -10576,16 +10606,16 @@ const Instruments = (function () {
         if (!canvas) return null;
         const ctx = canvas.getContext('2d');
         const W = canvas.width;
-        /* 280 ms a step made the walker teleport between cells; at 120 it
-           reads as motion. */
-        const TRAIL = 120, WATCH = 0x3fffffff, EVERY = 120, SCAP = 30000, BAND = 18;
+        /* Watch holds each vertex long enough to read its weighted choices.
+           The camera redraws continuously between the discrete graph steps. */
+        const TRAIL = 120, WATCH = 0x3fffffff, EVERY = 420, SCAP = 30000;
         const HARDCAP = 2000000;   /* tab safety; 12x the slowest baked cover */
         const elSteps = $('#gw-steps'), elVis = $('#gw-visited'),
               elArea = $('#gw-area'), elUnseen = $('#gw-unseen'), note = $('#gw-note');
         /* first-visit order as one sequential ramp: the earliest cells are
            darkest, the newest brightest, so the eye lands where the walk is */
-        const BANDS = 12;
-        const GW_RAMP = rampOf([[40,60,120], [90,120,210], [178,107,157], [240,162,74], [255,241,184]]);
+        const BANDS = 64;
+        const GW_RAMP = rampOf([[71,96,186], [88,171,215], [171,124,196], [227,155,133], [255,232,176]]);
         const CYCLE = Array.from({ length: BANDS }, function (_, b) {
             const j = Math.round(255 * b / (BANDS - 1)) * 3;
             return 'rgb(' + GW_RAMP[j] + ',' + GW_RAMP[j + 1] + ',' + GW_RAMP[j + 2] + ')';
@@ -10623,11 +10653,10 @@ const Instruments = (function () {
         /* write-once: painted on first entry, never touched again; the ink
            hairline keeps the cell edges -- the geometry the bands are read
            against -- from fusing inside a band */
-        /* the band index follows the square root of the visit count: the
-           early bands then separate while the walk is still young, and the
-           ramp stays monotone over the whole cover */
+        /* A fixed logarithmic rank scale resolves the first dozen discoveries
+           as well as the full cover. An arrived cell never changes its colour. */
         function paintArrival(i) {
-            const u = Math.sqrt(Math.max(0, seen - 1) / Math.max(1, D.n));
+            const u = Math.log(Math.max(1, seen)) / Math.log(Math.max(2, D.n));
             appendCell(arrivalPaths[Math.min(BANDS - 1, Math.floor(BANDS * u))], i);
         }
 
@@ -10697,7 +10726,41 @@ const Instruments = (function () {
                transform.  Divide by zoom so the trajectory stays a crisp
                hairline instead of becoming a heavy ribbon when Follow zooms
                into small cells. */
-            const darkWidth = 2.6 / zoom, lightWidth = 1 / zoom;
+            const unit = W / Math.max(1, canvas.getBoundingClientRect().width || 720);
+            const darkWidth = 3.4 * unit / zoom, lightWidth = 1.45 * unit / zoom;
+            if (pace === 'watch' && view === 'follow' && !done) {
+                const cell = new Path2D(); appendCell(cell, at);
+                c.fillStyle = 'rgba(255,234,170,.12)'; c.fill(cell);
+                c.strokeStyle = '#F7DE92'; c.lineWidth = 1.8 * unit / zoom; c.stroke(cell);
+                const choices = [];
+                for (let k = off[at]; k < off[at + 1]; k++) {
+                    /* step() samples integers 0,...,65535 with <= thresholds.
+                       Derive displayed probabilities from that same CDF. */
+                    const lower = k === off[at] ? -1 : cum[k - 1];
+                    const upper = k === off[at + 1] - 1 ? 65535 : cum[k];
+                    const probability = (upper - lower) / 65536, v = nbr[k];
+                    choices.push({ v: v, p: probability });
+                    c.beginPath(); c.moveTo(px[at], py[at]); c.lineTo(px[v], py[v]);
+                    c.strokeStyle = 'rgba(168,226,240,' + (.30 + .65 * Math.sqrt(probability)) + ')';
+                    c.lineWidth = (.6 + 5 * probability) * unit / zoom; c.stroke();
+                    c.beginPath(); c.arc(px[v], py[v], 2.5 * unit / zoom, 0, Math.PI * 2);
+                    c.fillStyle = '#A8E2F0'; c.fill();
+                }
+                choices.sort(function (a, b) { return b.p - a.p; });
+                c.save(); c.font = 11 * unit / zoom + 'px monospace';
+                c.textAlign = 'center'; c.textBaseline = 'middle';
+                const labels = [];
+                choices.slice(0, 3).forEach(function (q) {
+                    if (q.p < .12 || Math.hypot(px[q.v] - px[at], py[q.v] - py[at]) * zoom < 30 * unit) return;
+                    const x = px[q.v], y = py[q.v] - 12 * unit / zoom;
+                    if (labels.some(function (p) { return Math.abs(p.x - x) * zoom < 38 * unit && Math.abs(p.y - y) * zoom < 18 * unit; })) return;
+                    labels.push({ x: x, y: y });
+                    c.fillStyle = 'rgba(8,10,16,.90)';
+                    c.fillRect(x - 17 * unit / zoom, y - 8 * unit / zoom, 34 * unit / zoom, 16 * unit / zoom);
+                    c.fillStyle = '#BDECF5'; c.fillText(Math.round(100 * q.p) + '%', x, y);
+                });
+                c.restore();
+            }
             for (let k = first + 1; k < tn; k++) {
                 const a = trail[(k - 1) % TRAIL], b = trail[k % TRAIL];
                 const f = (k - first) / m;
@@ -10705,15 +10768,15 @@ const Instruments = (function () {
                 c.strokeStyle = 'rgba(8,7,11,' + (.2 + .5 * f).toFixed(3) + ')';
                 c.lineWidth = darkWidth; c.stroke();
                 c.beginPath(); c.moveTo(px[a], py[a]); c.lineTo(px[b], py[b]);
-                c.strokeStyle = 'rgba(255,248,232,' + (.06 + .5 * f).toFixed(3) + ')';
+                c.strokeStyle = 'rgba(255,248,232,' + (.20 + .65 * f).toFixed(3) + ')';
                 c.lineWidth = lightWidth; c.stroke();
             }
             if (!done) {
-                const outer = 14 / zoom, inner = 10 / zoom;
+                const outer = 6.5 * unit / zoom, inner = 4.4 * unit / zoom;
                 c.beginPath(); c.arc(px[at], py[at], outer, 0, Math.PI * 2);
                 c.fillStyle = 'rgba(8,7,11,.85)'; c.fill();
                 c.beginPath(); c.arc(px[at], py[at], inner, 0, Math.PI * 2);
-                c.fillStyle = '#FFF8E8'; c.fill();
+                c.fillStyle = '#FFE9A8'; c.fill();
             }
         }
         function draw() {
@@ -10761,7 +10824,7 @@ const Instruments = (function () {
             lastFresh = step();
             draw(); syncControls();
             if (seen >= D.n) { halt(); return false; }
-            if (note) note.textContent = 'Random walk';
+            if (note) note.textContent = 'Cyan spokes: next-step probabilities';
             return true;
         }
 
@@ -10780,8 +10843,40 @@ const Instruments = (function () {
             halt();
         }
 
-        const clock = paced({ watch: WATCH, every: EVERY, tick: tick,
-                              frame: frame, finish: finishNow });
+        const clock = (function () {
+            let live = false, slow = true, raf = 0, last = 0, elapsed = 0;
+            function stop() {
+                live = false; cancelAnimationFrame(raf); raf = 0; last = 0;
+            }
+            function animate(now) {
+                if (!live) return;
+                const dt = last ? Math.min(80, now - last) : 0; last = now;
+                if (slow) {
+                    elapsed += dt;
+                    if (elapsed >= EVERY) {
+                        elapsed -= EVERY;
+                        if (!tick()) { stop(); return; }
+                    } else draw();
+                } else {
+                    elapsed += dt;
+                    if (elapsed >= 1000 / 60) {
+                        elapsed %= 1000 / 60;
+                        if (!frame()) { stop(); return; }
+                    } else draw();
+                }
+                raf = requestAnimationFrame(animate);
+            }
+            return {
+                start: function () {
+                    if (REDUCED) { finishNow(); return; }
+                    if (live) return;
+                    live = true; last = 0; raf = requestAnimationFrame(animate);
+                },
+                stop: stop,
+                slow: function (n) { slow = n > 0; elapsed = 0; },
+                running: function () { return live; }
+            };
+        })();
 
         function replay(autoplay) {
             if (!D) return;
@@ -10913,324 +11008,318 @@ const Instruments = (function () {
 
     /* ---------------- New research-page instruments ---------------- */
 
-    /* Equilibrium fluctuations and linear response use the same Brownian
-       increments.  The potential is a fixed finite Fourier sum, so both the
-       field shown on screen and its gradient in Euler--Maruyama are smooth
-       deterministic functions; only the driving increments are random. */
+    /* Both views integrate this same reversible diffusion: a = I gives
+       L = (1/2)Delta - grad(V).grad, hence unit Brownian noise. The finite
+       Fourier potential illustrates the mechanism, not the random medium
+       or the asymptotic error bound in the theorem. */
+    function einsteinPotential(x, y) {
+        return .46 * Math.sin(x + .23) + .31 * Math.cos(y - .41)
+            + .22 * Math.sin(x + .73 * y) + .15 * Math.cos(1.7 * x - .8 * y);
+    }
+    function einsteinGradient(x, y, g) {
+        const c = Math.cos(x + .73 * y), s = Math.sin(1.7 * x - .8 * y);
+        g[0] = .46 * Math.cos(x + .23) + .22 * c - .255 * s;
+        g[1] = -.31 * Math.sin(y - .41) + .1606 * c + .12 * s;
+    }
+    function einsteinNoise(initial) {
+        let seed = initial >>> 0, spare = null;
+        function uniform() {
+            seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
+            return (seed >>> 0) / 4294967296;
+        }
+        return function () {
+            if (spare !== null) { const z = spare; spare = null; return z; }
+            const r = Math.sqrt(-2 * Math.log(Math.max(1e-12, uniform())));
+            const a = 2 * Math.PI * uniform();
+            spare = r * Math.sin(a); return r * Math.cos(a);
+        };
+    }
+
     makers.einsteinintro = function () {
-        const path = [[118,390],[164,342],[207,369],[258,305],[306,332],
-                      [351,276],[405,306],[459,246],[512,273],[574,218]];
-        return loopingRule('einstein-relation', 7200, function (ctx, W, p) {
-            const left = 92, right = W - 82, mid = W * .52;
-            function trace(points, pos, color) {
-                ctx.beginPath(); ctx.moveTo(points[0][0], points[0][1]);
-                for (let i = 1; i <= pos.index; i++) ctx.lineTo(points[i][0], points[i][1]);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.strokeStyle = 'rgba(21,19,26,.4)'; ctx.lineWidth = 3; ctx.stroke();
-                ctx.strokeStyle = color; ctx.lineWidth = 1.6; ctx.stroke();
+        const noise = einsteinNoise(0xe1757e1), pairs = [], g = [0, 0];
+        const N = 640, dt = .025, sq = Math.sqrt(dt), force = .25;
+        let extent = 1;
+        for (let j = 0; j < 24; j++) {
+            const a = [[0, 0]], b = [[0, 0]];
+            for (let k = 1; k <= N; k++) {
+                const zx = sq * noise(), zy = sq * noise();
+                const u = a[k - 1], v = b[k - 1];
+                einsteinGradient(u[0], u[1], g);
+                a.push([u[0] - g[0] * dt + zx, u[1] - g[1] * dt + zy]);
+                einsteinGradient(v[0], v[1], g);
+                b.push([v[0] + (force - g[0]) * dt + zx, v[1] - g[1] * dt + zy]);
+                extent = Math.max(extent, ...a[k].map(Math.abs), ...b[k].map(Math.abs));
             }
-            ctx.beginPath();
-            for (let x = left; x <= right; x += 4) {
-                const y = mid + 42 * Math.sin((x - left) / 62)
-                    + 18 * Math.sin((x - left) / 23 + .7);
-                if (x === left) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.strokeStyle = RULE_VIS.grid; ctx.lineWidth = 2.2; ctx.stroke();
-
-            const q = p < .42 ? ruleEase(p / .42) : 1;
-            const pos0 = rulePathPoint(path, q);
-            trace(path, pos0, RULE_VIS.cyanBright);
-            ruleParticle(ctx, pos0.x, pos0.y, 10, RULE_VIS.cyan);
-
-            if (p >= .42) {
-                const a = ruleEase((p - .42) / .18);
-                ctx.beginPath(); ctx.moveTo(W * .25, 145); ctx.lineTo(W * (.25 + .34 * a), 145);
-                ctx.strokeStyle = RULE_VIS.yellow; ctx.lineWidth = 2.5; ctx.stroke();
-                ruleArrow(ctx, W * (.25 + .34 * a), 145, 0, 18,
-                          RULE_VIS.yellow, 2.4, 0);
-            }
-
-            if (p >= .56) {
-                const r = ruleEase((p - .56) / .30);
-                /* the tilted walker in the instrument's yellow, lifted a
-                   little so both paths stay visible where they coincide */
-                const shifted = path.map(function (z, i) {
-                    return [z[0] + r * (18 + 3.8 * i), z[1] - 7 * r];
+            pairs.push([a, b]);
+        }
+        return loopingRule('einstein-relation', 11000, function (ctx, W, p) {
+            const q = Math.min(1, p / .88), z = q * N, k = Math.min(N - 1, Math.floor(z));
+            const f = z - k, scale = 132 / extent;
+            const colors = [RULE_VIS.cyanBright, RULE_VIS.orange];
+            [0, 1].forEach(function (side) {
+                const cx = side ? 530 : 190, cy = 314;
+                ctx.fillStyle = '#E8E1D3'; ctx.fillRect(cx - 148, 140, 296, 350);
+                ctx.strokeStyle = RULE_VIS.grid; ctx.lineWidth = 1.6;
+                ctx.beginPath(); ctx.moveTo(cx - 136, cy); ctx.lineTo(cx + 136, cy);
+                ctx.moveTo(cx, 155); ctx.lineTo(cx, 475); ctx.stroke();
+                ctx.fillStyle = colors[side]; ctx.font = '500 25px ui-monospace, monospace';
+                ctx.textAlign = 'center'; ctx.fillText(side ? 'Small force →' : 'No force', cx, 111);
+                pairs.forEach(function (pair, j) {
+                    const points = pair[side], current = points[k], next = points[k + 1];
+                    if (j === 0) {
+                        ctx.beginPath(); ctx.moveTo(cx, cy);
+                        for (let n = 1; n <= k; n++) ctx.lineTo(cx + scale * points[n][0], cy - scale * points[n][1]);
+                        ctx.strokeStyle = colors[side]; ctx.lineWidth = 2.6; ctx.globalAlpha = .65; ctx.stroke();
+                    }
+                    ctx.globalAlpha = j ? .65 : 1;
+                    ctx.beginPath(); ctx.arc(cx + scale * ruleMix(current[0], next[0], f),
+                        cy - scale * ruleMix(current[1], next[1], f), j ? 4.5 : 7.5, 0, Math.PI * 2);
+                    ctx.fillStyle = colors[side]; ctx.fill();
                 });
-                const pos1 = rulePathPoint(shifted, q);
-                trace(shifted, pos1, RULE_VIS.yellow);
-                ruleParticle(ctx, pos1.x, pos1.y, 10, RULE_VIS.white);
-            }
-
-            /* Two rulers encode the competing scales without a prose label:
-               equilibrium fluctuations are sqrt(t), response is lambda t. */
-            const root = 94, drift = p < .42 ? 0 : 94 * ruleEase((p - .42) / .38);
-            ctx.beginPath(); ctx.moveTo(112, 610); ctx.lineTo(112 + root, 610);
-            ctx.strokeStyle = RULE_VIS.cyanBright; ctx.lineWidth = 2; ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(112, 642); ctx.lineTo(112 + drift, 642);
-            ctx.strokeStyle = RULE_VIS.yellow; ctx.lineWidth = 2; ctx.stroke();
-            ctx.fillStyle = RULE_VIS.key; ctx.font = '600 22px ui-monospace, monospace';
-            ctx.fillText('\u221at', 220, 617); ctx.fillText('\u03bbt', 220, 649);
-        }, .86);
+                ctx.globalAlpha = 1;
+            });
+            const t = Math.max(.001, q * N * dt);
+            ctx.textAlign = 'left'; ctx.font = '500 24px ui-monospace, monospace';
+            [[Math.sqrt(t), RULE_VIS.cyanBright, '√t', 552], [force * t, RULE_VIS.orange, 'λt', 599]].forEach(function (r) {
+                ctx.fillStyle = r[1]; ctx.fillText(r[2], 50, r[3] + 8);
+                ctx.fillRect(118, r[3] - 5, 112 * r[0], 9);
+            });
+            ctx.fillStyle = RULE_VIS.ink; ctx.textAlign = 'center';
+            ctx.font = '400 23px ui-monospace, monospace';
+            ctx.fillText(q > .9 ? 'Equal scales at t = λ⁻²' : 'Same noise · different response', 360, 663);
+            ctx.textAlign = 'left';
+        }, .88);
     };
 
     makers.einstein = function () {
         const canvas = $('#einstein-canvas');
         if (!canvas) return null;
-        const ctx = canvas.getContext('2d'), W0 = canvas.width, H0 = canvas.height;
-        const outBalance = $('#einstein-balance'), outError = $('#einstein-error'),
-              note = $('#einstein-note');
-        /* With a=I, the displayed generator is
-           (1/2)e^(2V) div(e^(-2V) grad) = (1/2)Delta - grad V . grad,
-           hence unit Brownian noise and drift -grad V. */
-        const LOGICAL = 720, M = 40, DT = .01, SQ = Math.sqrt(DT),
-              STEPS = 9, KEEP = 1500;
-        const fieldCan = document.createElement('canvas'), FIELD = 96;
-        fieldCan.width = fieldCan.height = FIELD;
-        const fieldCtx = fieldCan.getContext('2d');
-        const fieldImage = fieldCtx.createImageData(FIELD, FIELD);
-        let lambda = .125, time = 0, seed = 0x4e554c4c, spare = null;
-        let x0, y0, x1, y1, trail0, trail1, camera, scale;
-        let raf = 0, running = false, pageAwake = true, userPaused = false, lastNow = 0;
+        const ctx = canvas.getContext('2d'), W = 720, M = 128, DT = .025, SQ = Math.sqrt(DT);
+        const BLUE = '#69C8F2', GOLD = '#F2BF62', WHITE = '#F2EDE2', MUTED = '#B5ADBF';
+        const outTime = $('#einstein-time'), outBalance = $('#einstein-balance');
+        const outDiffusion = $('#einstein-diffusion'), outMobility = $('#einstein-mobility');
+        const note = $('#einstein-note'), g = [0, 0], field = document.createElement('canvas');
+        field.width = field.height = 240;
+        const fc = field.getContext('2d');
+        let lambda = .125, sampleSeed = 0x4e554c4c, noise, time, step, totalSteps, sampleEvery;
+        let x0, y0, x1, y1, trails, extent, targetExtent, fieldExtent = -1;
+        let running = false, pageAwake = true, userPaused = REDUCED, raf = 0, lastNow = 0, debt = 0;
+        let narrow = false, H = 740, backing = 3, panels = [], stats = null;
 
-        function rand() {
-            seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
-            return (seed >>> 0) / 4294967296;
+        function layout() {
+            const cssWidth = canvas.getBoundingClientRect().width || W;
+            const wasNarrow = narrow; narrow = cssWidth < 520; H = narrow ? 1220 : 740;
+            if (wasNarrow !== narrow) fieldExtent = -1;
+            const dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1;
+            backing = Math.min(3, Math.max(1, Math.ceil(cssWidth * Math.max(2, dpr) / W)));
+            if (canvas.width !== W * backing) canvas.width = W * backing;
+            if (canvas.height !== H * backing) canvas.height = H * backing;
+            panels = narrow ? [{x:32,y:76,w:656,h:382},{x:32,y:548,w:656,h:382}]
+                : [{x:24,y:84,w:324,h:332},{x:372,y:84,w:324,h:332}];
         }
-        function normal() {
-            if (spare !== null) { const z = spare; spare = null; return z; }
-            const r = Math.sqrt(-2 * Math.log(Math.max(1e-12, rand()))),
-                  a = 2 * Math.PI * rand();
-            spare = r * Math.sin(a); return r * Math.cos(a);
-        }
-        function potential(x, y) {
-            return .46 * Math.sin(x + .23) + .31 * Math.cos(y - .41)
-                 + .22 * Math.sin(x + y * .73) + .15 * Math.cos(1.7 * x - .8 * y);
-        }
-        function gradient(x, y) {
-            return [
-                .46 * Math.cos(x + .23) + .22 * Math.cos(x + y * .73)
-                    - .255 * Math.sin(1.7 * x - .8 * y),
-                -.31 * Math.sin(y - .41) + .1606 * Math.cos(x + y * .73)
-                    + .12 * Math.sin(1.7 * x - .8 * y)
-            ];
-        }
-        function reset() {
-            seed = 0x4e554c4c; spare = null; time = 0;
+        function reset(preview) {
+            noise = einsteinNoise(sampleSeed); time = 0; step = 0; debt = 0; lastNow = 0;
+            totalSteps = Math.ceil(1.5 / (lambda * lambda * DT));
+            sampleEvery = Math.max(1, Math.floor(totalSteps / 1000));
             x0 = new Float64Array(M); y0 = new Float64Array(M);
             x1 = new Float64Array(M); y1 = new Float64Array(M);
-            for (let i = 0; i < M; i++) {
-                const a = 2 * Math.PI * i / M;
-                x0[i] = x1[i] = .035 * Math.cos(a);
-                y0[i] = y1[i] = .035 * Math.sin(a);
-            }
-            trail0 = [[x0[0], y0[0]]]; trail1 = [[x1[0], y1[0]]];
-            camera = { x: 0, y: 0 }; scale = 50;
-            if (REDUCED) advance(2200);
-            paint(); sync();
+            trails = [[], []];
+            for (let i = 0; i < 6; i++) { trails[0].push([[0, 0]]); trails[1].push([[0, 0]]); }
+            extent = targetExtent = 4; fieldExtent = -1;
+            /* A useful initial state, with the same simulation and seed as playback. */
+            advance(preview ? Math.floor(totalSteps * .72) : Math.min(48, totalSteps));
+            layout(); paint(); sync();
         }
         function advance(n) {
+            n = Math.min(n, totalSteps - step);
             for (let s = 0; s < n; s++) {
                 for (let i = 0; i < M; i++) {
-                    const zx = normal(), zy = normal();
-                    let g = gradient(x0[i], y0[i]);
-                    x0[i] += -g[0] * DT + SQ * zx;
-                    y0[i] += -g[1] * DT + SQ * zy;
-                    g = gradient(x1[i], y1[i]);
-                    x1[i] += (-g[0] + lambda) * DT + SQ * zx;
-                    y1[i] += -g[1] * DT + SQ * zy;
+                    const zx = SQ * noise(), zy = SQ * noise();
+                    einsteinGradient(x0[i], y0[i], g);
+                    x0[i] += -g[0] * DT + zx; y0[i] += -g[1] * DT + zy;
+                    einsteinGradient(x1[i], y1[i], g);
+                    x1[i] += (lambda - g[0]) * DT + zx; y1[i] += -g[1] * DT + zy;
+                    targetExtent = Math.max(targetExtent, Math.abs(x0[i]) * 1.12,
+                        Math.abs(y0[i]) * 1.12, Math.abs(x1[i]) * 1.12, Math.abs(y1[i]) * 1.12);
                 }
-                time += DT;
-                if ((s & 3) === 0) {
-                    trail0.push([x0[0], y0[0]]); trail1.push([x1[0], y1[0]]);
-                }
-            }
-            if (trail0.length > KEEP) {
-                trail0.splice(0, trail0.length - KEEP);
-                trail1.splice(0, trail1.length - KEEP);
-            }
-        }
-        function worldToScreen(x, y) {
-            return [LOGICAL * .5 + (x - camera.x) * scale,
-                    LOGICAL * .5 + (y - camera.y) * scale];
-        }
-        function drawPotentialField() {
-            const d = fieldImage.data;
-            for (let j = 0; j < FIELD; j++) for (let i = 0; i < FIELD; i++) {
-                const x = camera.x + ((i + .5) / FIELD * LOGICAL - LOGICAL * .5) / scale;
-                const y = camera.y + ((j + .5) / FIELD * LOGICAL - LOGICAL * .5) / scale;
-                const v = Math.max(-1, Math.min(1, potential(x, y) / 1.08));
-                /* a greyscale relief: the three data colours are the only chroma */
-                const a = .16 + .18 * Math.abs(v);
-                const target = v < 0 ? [62,70,88] : [86,72,80];
-                const k = (j * FIELD + i) * 4;
-                d[k] = Math.round(15 + (target[0] - 15) * a);
-                d[k + 1] = Math.round(14 + (target[1] - 14) * a);
-                d[k + 2] = Math.round(19 + (target[2] - 19) * a);
-                d[k + 3] = 255;
-            }
-            fieldCtx.putImageData(fieldImage, 0, 0);
-            ctx.save(); ctx.imageSmoothingEnabled = true;
-            ctx.drawImage(fieldCan, 0, 0, LOGICAL, LOGICAL);
-            ctx.restore();
-        }
-        function contour(level, color) {
-            const step = .48, half = LOGICAL / scale * .58;
-            const xa = Math.floor((camera.x - half) / step) * step,
-                  xb = camera.x + half, ya = Math.floor((camera.y - half) / step) * step,
-                  yb = camera.y + half;
-            ctx.beginPath();
-            for (let y = ya; y < yb; y += step) for (let x = xa; x < xb; x += step) {
-                const v = [potential(x,y)-level, potential(x+step,y)-level,
-                           potential(x+step,y+step)-level, potential(x,y+step)-level];
-                const p = [[x,y],[x+step,y],[x+step,y+step],[x,y+step]], cuts = [];
-                for (let e = 0; e < 4; e++) {
-                    const f = (e + 1) & 3;
-                    if ((v[e] <= 0 && v[f] > 0) || (v[e] > 0 && v[f] <= 0)) {
-                        const q = v[e] / (v[e] - v[f]);
-                        cuts.push([ruleMix(p[e][0], p[f][0], q),
-                                   ruleMix(p[e][1], p[f][1], q)]);
+                step++;
+                if (step % sampleEvery === 0 || step === totalSteps) {
+                    for (let j = 0; j < 6; j++) {
+                        trails[0][j].push([x0[j], y0[j]]); trails[1][j].push([x1[j], y1[j]]);
                     }
                 }
-                for (let e = 0; e + 1 < cuts.length; e += 2) {
-                    const a = worldToScreen(cuts[e][0], cuts[e][1]),
-                          b = worldToScreen(cuts[e + 1][0], cuts[e + 1][1]);
-                    ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
-                }
             }
-            ctx.strokeStyle = color; ctx.lineWidth = .62; ctx.stroke();
+            time = step * DT;
+            /* Monotone common camera: it never chases a walker or loses the origin. */
+            extent = targetExtent;
         }
-        function drawTrail(a, color) {
-            if (a.length < 2) return;
-            const first = Math.max(0, a.length - 1120), span = Math.max(1, a.length - first - 1);
-            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            for (let lo = first; lo < a.length - 1; lo += 28) {
-                const hi = Math.min(a.length - 1, lo + 28), age = (hi - first) / span;
-                let q = worldToScreen(a[lo][0], a[lo][1]);
-                ctx.beginPath(); ctx.moveTo(q[0], q[1]);
-                for (let i = lo + 1; i <= hi; i++) {
-                    q = worldToScreen(a[i][0], a[i][1]); ctx.lineTo(q[0], q[1]);
+        function measure() {
+            const means = [0, 0], vy = [0, 0], vx = [0, 0], cross = [0, 0], my = [0, 0];
+            [x0, x1].forEach(function (xs, side) {
+                const ys = side ? y1 : y0;
+                for (let i = 0; i < M; i++) { means[side] += xs[i] / M; my[side] += ys[i] / M; }
+                for (let i = 0; i < M; i++) {
+                    const dx = xs[i] - means[side], dy = ys[i] - my[side];
+                    vx[side] += dx * dx / (M - 1); vy[side] += dy * dy / (M - 1);
+                    cross[side] += dx * dy / (M - 1);
                 }
-                ctx.strokeStyle = color;
-                ctx.lineWidth = .5 + .3 * age;
-                ctx.globalAlpha = .05 + .34 * age * age;
-                ctx.stroke();
+            });
+            return {means:means, my:my, vx:vx, vy:vy, cross:cross,
+                diffusion:vx[0] / time, mobility:(means[1] - means[0]) / (lambda * time)};
+        }
+        function background() {
+            if (Math.abs(fieldExtent / extent - 1) < .035) return;
+            fieldExtent = extent;
+            const p = panels[0], min = Math.min(p.w, p.h), rx = p.w / min, ry = p.h / min;
+            field.width = Math.round(240 * rx); field.height = Math.round(240 * ry);
+            const N = 64, vals = new Float32Array((N + 1) * (N + 1));
+            fc.fillStyle = '#191922'; fc.fillRect(0, 0, field.width, field.height);
+            for (let y = 0; y <= N; y++) for (let x = 0; x <= N; x++) {
+                vals[y * (N + 1) + x] = einsteinPotential((x / N * 2 - 1) * extent * rx, (1 - y / N * 2) * extent * ry);
+            }
+            /* Screen-space contour sampling stays bounded as the world expands. */
+            [-.65, -.3, .05, .4, .75].forEach(function (level) {
+                fc.beginPath();
+                for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+                    const k = y * (N + 1) + x;
+                    const v = [vals[k], vals[k + 1], vals[k + N + 2], vals[k + N + 1]];
+                    const corners = [[x,y],[x+1,y],[x+1,y+1],[x,y+1]], cuts = [];
+                    for (let e = 0; e < 4; e++) {
+                        const f = (e + 1) % 4;
+                        if ((v[e] < level) === (v[f] < level)) continue;
+                        const q = (level - v[e]) / (v[f] - v[e]);
+                        cuts.push([ruleMix(corners[e][0], corners[f][0], q) * field.width / N,
+                            ruleMix(corners[e][1], corners[f][1], q) * field.height / N]);
+                    }
+                    for (let e = 0; e + 1 < cuts.length; e += 2) {
+                        fc.moveTo(cuts[e][0], cuts[e][1]); fc.lineTo(cuts[e+1][0], cuts[e+1][1]);
+                    }
+                }
+                fc.strokeStyle = level < 0 ? '#303743' : '#38313D'; fc.lineWidth = .65; fc.stroke();
+            });
+        }
+        function text(label, x, y, color, size, align) {
+            ctx.fillStyle = color || MUTED; ctx.font = '400 ' + (size || 13) + 'px ui-monospace, monospace';
+            ctx.textAlign = align || 'left'; ctx.fillText(label, x, y); ctx.textAlign = 'left';
+        }
+        function drawPanel(side) {
+            const p = panels[side], xs = side ? x1 : x0, ys = side ? y1 : y0;
+            const color = side ? GOLD : BLUE, mag = narrow ? 1.8 : 1;
+            const scale = Math.min(p.w, p.h) / (2 * extent);
+            const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+            const tx = x => cx + x * scale, ty = y => cy - y * scale;
+            text(side ? '02  WITH FORCE →' : '01  NO FORCE', p.x, p.y - 41, color, 15 * mag);
+            text(side ? 'Same noise + a small push' : '128 independent particles', p.x, p.y - 17, MUTED, 11.5 * mag);
+            ctx.save(); ctx.beginPath(); ctx.rect(p.x, p.y, p.w, p.h); ctx.clip();
+            ctx.fillStyle = '#191922'; ctx.fillRect(p.x, p.y, p.w, p.h);
+            const dx = p.w * fieldExtent / extent, dy = p.h * fieldExtent / extent;
+            ctx.drawImage(field, cx - dx / 2, cy - dy / 2, dx, dy);
+            ctx.strokeStyle = '#555060'; ctx.lineWidth = .7;
+            ctx.beginPath(); ctx.moveTo(p.x, cy); ctx.lineTo(p.x + p.w, cy);
+            ctx.moveTo(cx, p.y); ctx.lineTo(cx, p.y + p.h); ctx.stroke();
+            trails[side].forEach(function (trail, j) {
+                ctx.beginPath(); ctx.moveTo(cx, cy);
+                trail.forEach(q => ctx.lineTo(tx(q[0]), ty(q[1])));
+                ctx.lineTo(tx(xs[j]), ty(ys[j]));
+                ctx.strokeStyle = color; ctx.globalAlpha = j ? .12 : .8;
+                ctx.lineWidth = (j ? .8 : 1.65) * mag; ctx.lineJoin = 'round'; ctx.stroke();
+            });
+            ctx.globalAlpha = .68; ctx.fillStyle = color;
+            for (let i = 1; i < M; i++) {
+                ctx.beginPath(); ctx.arc(tx(xs[i]), ty(ys[i]), 2.3 * mag, 0, Math.PI * 2); ctx.fill();
             }
             ctx.globalAlpha = 1;
+            const mx = tx(stats.means[side]), my = ty(stats.my[side]);
+            const a = stats.vx[side], b = stats.vy[side], c = stats.cross[side];
+            const delta = Math.sqrt((a-b)*(a-b) + 4*c*c);
+            ctx.save(); ctx.translate(mx, my); ctx.rotate(-.5 * Math.atan2(2*c, a-b));
+            ctx.beginPath(); ctx.ellipse(0, 0, scale * Math.sqrt(Math.max(0, (a+b+delta)/2)),
+                scale * Math.sqrt(Math.max(0, (a+b-delta)/2)), 0, 0, Math.PI*2);
+            ctx.setLineDash([4*mag,4*mag]); ctx.strokeStyle = color; ctx.lineWidth = 1.1*mag; ctx.stroke(); ctx.restore();
+            ctx.strokeStyle = WHITE; ctx.lineWidth = 1.8*mag;
+            ctx.beginPath(); ctx.moveTo(mx-6*mag,my); ctx.lineTo(mx+6*mag,my);
+            ctx.moveTo(mx,my-6*mag); ctx.lineTo(mx,my+6*mag); ctx.stroke();
+            ctx.beginPath(); ctx.arc(tx(xs[0]), ty(ys[0]), 4.7*mag, 0, Math.PI*2);
+            ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = '#15131A'; ctx.lineWidth = 1.5*mag; ctx.stroke();
+            ctx.restore();
+            ctx.strokeStyle = '#3D3747'; ctx.lineWidth = 1; ctx.strokeRect(p.x,p.y,p.w,p.h);
+            text('0', cx + 6, p.y + p.h - 8, MUTED, 11*mag);
+            text('x = ' + (extent * p.w / Math.min(p.w, p.h)).toFixed(extent < 10 ? 1 : 0), p.x+p.w-9, p.y+p.h-8, MUTED, 11*mag, 'right');
         }
-        function drawResponse() {
-            const n = Math.min(trail0.length, trail1.length);
-            if (n < 2) return;
-            const first = Math.max(0, n - 1000), span = Math.max(1, n - first);
-            ctx.lineCap = 'round';
-            for (let i = first + 34; i < n; i += 72) {
-                const a = worldToScreen(trail0[i][0], trail0[i][1]);
-                const b = worldToScreen(trail1[i][0], trail1[i][1]);
-                const age = (i - first) / span;
-                ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
-                ctx.strokeStyle = 'rgba(213,94,119,' + (.035 + .20 * age * age).toFixed(3) + ')';
-                ctx.lineWidth = .52; ctx.stroke();
-            }
-        }
-        function drawTracer(q, fill) {
-            ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(q[0], q[1], 4.5, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = 'rgba(15,14,19,.85)'; ctx.lineWidth = 1; ctx.stroke();
-        }
-        function labelMag() {
-            const cssW = canvas.getBoundingClientRect().width || 720;
-            return Math.max(1, Math.min(2, 560 / cssW));
-        }
-        function drawRuler(y, length, color, label) {
-            const mag = labelMag(), x = 42, end = x + length * mag;
-            ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(end, y);
-            ctx.moveTo(x, y - 3); ctx.lineTo(x, y + 3);
-            ctx.moveTo(end, y - 3); ctx.lineTo(end, y + 3); ctx.stroke();
-            ctx.fillStyle = color; ctx.font = '500 ' + Math.round(13 * mag) + 'px ui-monospace, monospace';
-            ctx.fillText(label, 42 + 188 * mag, y + 4 * mag);
-        }
-        function report() {
-            const t = Math.max(time, DT), ratio = lambda * Math.sqrt(t);
-            let m0x = 0, m1x = 0;
-            for (let i = 0; i < M; i++) { m0x += x0[i]; m1x += x1[i]; }
-            m0x /= M; m1x /= M;
-            let variance = 0;
-            for (let i = 0; i < M; i++) variance += (x0[i] - m0x) * (x0[i] - m0x);
-            const diff = variance / (M * t), mobility = (m1x - m0x) / (lambda * t);
-            if (outBalance) outBalance.textContent = ratio.toFixed(2);
-            if (outError) outError.textContent = Math.abs(mobility - diff).toFixed(3);
-            setNote(note, ratio > .78 && ratio < 1.28
-                ? 'Critical time t \u2248 \u03bb\u207b\u00b2' : 'Shared Gaussian increments \u0394W');
+        function distribution() {
+            const top = narrow ? 998 : 478, left = 32, right = 688, bottom = top + 126;
+            const mag = narrow ? 1.7 : 1;
+            const p = panels[0], xExtent = extent * p.w / Math.min(p.w, p.h);
+            text('HORIZONTAL DISTRIBUTION', left, top - 25, WHITE, 13*mag);
+            if (!narrow) text('Dashed: means · +: centroids above', right, top - 25, MUTED, 10.5, 'right');
+            const bins = 36, counts = [new Uint16Array(bins), new Uint16Array(bins)];
+            [x0,x1].forEach((xs,s) => xs.forEach(x => counts[s][Math.max(0,Math.min(bins-1,Math.floor((x/xExtent+1)*bins/2)))]++));
+            let maxCount = 8;
+            counts.forEach(a => a.forEach(n => { maxCount = Math.max(maxCount,n); }));
+            const bw = (right-left)/bins, base = bottom-22, height = 102;
+            [0,1].forEach(function (s) {
+                const color = s ? GOLD : BLUE;
+                ctx.fillStyle = color; ctx.globalAlpha = .25;
+                for(let k=0;k<bins;k++) ctx.fillRect(left+k*bw,base-counts[s][k]/maxCount*height,bw-1,counts[s][k]/maxCount*height);
+                ctx.globalAlpha = 1; ctx.strokeStyle = color; ctx.lineWidth = 1.7;
+                ctx.beginPath(); ctx.moveTo(left,base);
+                for(let k=0;k<bins;k++){ const y=base-counts[s][k]/maxCount*height; ctx.lineTo(left+k*bw,y);ctx.lineTo(left+(k+1)*bw,y); }
+                ctx.lineTo(right,base);ctx.stroke();
+                const x=left+(stats.means[s]/xExtent+1)*(right-left)/2;
+                ctx.save();ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(x,top-4);ctx.lineTo(x,base);
+                ctx.strokeStyle=color;ctx.lineWidth=1.8;ctx.stroke();ctx.restore();
+            });
+            ctx.strokeStyle='#5B5464';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,base);ctx.lineTo(right,base);ctx.stroke();
+            text('−'+xExtent.toFixed(0),left,bottom,MUTED,12*mag);
+            text('0',360,bottom,MUTED,12*mag,'center');
+            text('+'+xExtent.toFixed(0),right,bottom,MUTED,12*mag,'right');
+            const y = bottom + (narrow ? 45 : 42), t = Math.max(time,DT);
+            const ratio = lambda*Math.sqrt(t), max = Math.max(Math.sqrt(t),lambda*t);
+            const barWidth = narrow ? 260 : 190, start = narrow ? 90 : 70;
+            [[Math.sqrt(t),BLUE,'√t',y],[lambda*t,GOLD,'λt',y+28]].forEach(function(r){
+                text(r[2],32,r[3]+5,r[1],14*mag);
+                ctx.fillStyle=r[1];ctx.fillRect(start,r[3]-4,barWidth*r[0]/max,6);
+            });
+            text('t* = λ⁻² = '+Math.round(1/(lambda*lambda)),688,y+4,WHITE,13*mag,'right');
+            text(ratio<.95?'Fluctuation scale leads':ratio>1.05?'Force scale leads':'The scales meet',688,y+32,MUTED,12*mag,'right');
         }
         function paint() {
-            const qx = (x0[0] + x1[0]) * .5, qy = (y0[0] + y1[0]) * .5,
-                  sep = Math.hypot(x1[0] - x0[0], y1[0] - y0[0]);
-            camera.x += .045 * (qx - camera.x); camera.y += .045 * (qy - camera.y);
-            const targetScale = Math.max(10, Math.min(52, 285 / (sep + 5.2)));
-            scale += .04 * (targetScale - scale);
-            ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W0,H0);
-            ctx.save(); ctx.scale(W0 / LOGICAL, H0 / LOGICAL);
-            drawPotentialField();
-            contour(-.6, 'rgba(230,220,200,.15)');
-            contour(0, 'rgba(230,220,200,.2)');
-            contour(.6, 'rgba(230,220,200,.15)');
-            drawTrail(trail0, '#56B4E9'); drawTrail(trail1, '#E69F00');
-            let a = worldToScreen(x0[0], y0[0]), b = worldToScreen(x1[0], y1[0]);
-            ctx.save(); ctx.setLineDash([4, 3]);
-            ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
-            ctx.strokeStyle = 'rgba(213,94,119,.8)'; ctx.lineWidth = 1; ctx.stroke();
-            ctx.restore();
-            drawTracer(a, '#56B4E9'); drawTracer(b, '#F0E442');
-
-            const t = Math.max(time, DT), fluct = Math.sqrt(t), drift = lambda * t,
-                  ruler = 180 / Math.max(1, fluct, drift), l1 = ruler * fluct,
-                  l2 = ruler * drift;
-            const lm = labelMag();
-            drawRuler(54 * lm, l1, '#56B4E9', '\u221at');
-            drawRuler(78 * lm, l2, '#F0E442', '\u03bbt');
-            ctx.fillStyle='#F2EDE2'; ctx.font='500 ' + Math.round(13 * lm) + 'px ui-monospace, monospace';
-            if (lambda * Math.sqrt(t) > .78 && lambda * Math.sqrt(t) < 1.28) {
-                ctx.fillStyle='#F6F1E6'; ctx.fillText('t \u2248 \u03bb\u207b\u00b2', 42 + 270 * lm, 70 * lm);
-            }
-            ctx.restore(); report();
+            stats = measure(); background();
+            ctx.setTransform(backing,0,0,backing,0,0); ctx.globalAlpha=1;ctx.fillStyle='#15131A';ctx.fillRect(0,0,W,H);
+            drawPanel(0);drawPanel(1);distribution();
+            if(outTime)outTime.textContent=time.toFixed(1);
+            if(outBalance)outBalance.textContent=(lambda*Math.sqrt(time)).toFixed(2);
+            if(outDiffusion)outDiffusion.textContent=stats.diffusion.toFixed(3);
+            if(outMobility)outMobility.textContent=stats.mobility.toFixed(3);
+            setNote(note,step===totalSteps?'Run complete · replay or choose another force':'128 paired paths · same potential · same spatial scale');
+            canvas.dataset.time=String(time);canvas.dataset.pairs=String(M);
+            canvas.dataset.diffusion=String(stats.diffusion);canvas.dataset.mobility=String(stats.mobility);
         }
         function sync() {
-            $$('[data-einstein-force]').forEach(function (b) {
-                const on = Math.abs(parseFloat(b.dataset.einsteinForce) - lambda) < 1e-12;
-                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
-            });
-            const b = $('[data-einstein-run="pause"]');
-            if (b) { b.textContent = REDUCED ? 'Paused' : (running ? 'Pause' : 'Play');
-                b.classList.toggle('is-on', running); b.setAttribute('aria-pressed', String(running)); }
+            $$('[data-einstein-force]').forEach(function(b){const on=+b.dataset.einsteinForce===lambda;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
+            const b=$('[data-einstein-run="pause"]');
+            if(b){b.textContent=running?'Pause':step===totalSteps?'Play again':'Play';b.classList.toggle('is-on',running);b.setAttribute('aria-pressed',String(running));}
         }
         function frame(now) {
-            if (!running) return;
-            if (!lastNow) lastNow = now;
-            const pace = Math.max(.35, Math.min(1.6, (now-lastNow)/16.67)); lastNow=now;
-            advance(Math.max(1, Math.round(STEPS*pace))); paint();
+            if(!running)return;
+            if(lastNow){debt+=Math.min(50,now-lastNow)*totalSteps/22000;const n=Math.floor(debt);debt-=n;advance(n);paint();}
+            lastNow=now;
+            if(step===totalSteps){userPaused=true;stop();return;}
             raf=requestAnimationFrame(frame);
         }
-        function stop() { running=false; cancelAnimationFrame(raf); raf=0; lastNow=0; sync(); }
-        function start() {
-            if (REDUCED || running || !pageAwake || userPaused) return;
-            running=true; lastNow=0; sync(); raf=requestAnimationFrame(frame);
-        }
-        $$('[data-einstein-force]').forEach(function (b) {
-            b.addEventListener('click', function () {
-                const v=parseFloat(b.dataset.einsteinForce); if (!(v>0) || v===lambda) return;
-                lambda=v; reset(); if (!userPaused) start();
-            });
-        });
-        $$('[data-einstein-run]').forEach(function (b) {
-            b.addEventListener('click', function () {
-                const a=b.dataset.einsteinRun;
-                if(a==='pause'){if(running){userPaused=true;stop();}else{userPaused=false;start();}}
-                if(a==='replay'){stop();userPaused=REDUCED;reset();if(!userPaused)start();}
-            });
-        });
-        reset(); if (!REDUCED) start();
-        return { pause:function(){pageAwake=false;stop();},
-                 resume:function(){pageAwake=true;paint();if(!userPaused)start();} };
+        function stop(){running=false;cancelAnimationFrame(raf);raf=0;lastNow=0;sync();}
+        function start(){if(running||!pageAwake||userPaused)return;running=true;lastNow=0;sync();raf=requestAnimationFrame(frame);}
+        $$('[data-einstein-force]').forEach(function(b){b.addEventListener('click',function(){const v=+b.dataset.einsteinForce;if(!(v>0)||v===lambda)return;
+            if(step===totalSteps&&!REDUCED)userPaused=false;
+            lambda=v;reset(REDUCED&&userPaused);start();});});
+        $$('[data-einstein-run]').forEach(function(b){b.addEventListener('click',function(){
+            const action=b.dataset.einsteinRun;
+            if(action==='pause'){if(running){userPaused=true;stop();}else{if(step===totalSteps)reset();userPaused=false;start();}}
+            else {stop();if(action==='sample')sampleSeed=(sampleSeed+0x9e3779b9)>>>0;reset();userPaused=false;start();}
+        });});
+        const resize=new ResizeObserver(function(){layout();paint();});resize.observe(canvas);
+        reset(REDUCED);start();
+        return {pause:function(){pageAwake=false;stop();},resume:function(){pageAwake=true;layout();paint();start();}};
     };
 
     /* Parking: each active car uses one stack instruction per parallel round.
@@ -11290,7 +11379,7 @@ const Instruments = (function () {
               CELL = (LOGICAL - 2 * PAD) / N, STEP_MS = 105;
         const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
         let density = .42, runSeed = 0x5041524b, replaySeed = runSeed;
-        let spot, occupied, odometer, cars, roundNo, activeCount;
+        let spot, occupied, parkedRound, odometer, cars, roundNo, activeCount;
         let phase = 0, lastNow = 0, raf = 0, running = false,
             pageAwake = true, userPaused = false, completedAt = 0;
 
@@ -11311,13 +11400,14 @@ const Instruments = (function () {
             }
             const carCount = Math.floor(density * COUNT);
             spot = new Uint8Array(COUNT); occupied = new Uint8Array(COUNT);
+            parkedRound = new Uint32Array(COUNT);
             odometer = new Uint32Array(COUNT); cars = [];
             const isCar = new Uint8Array(COUNT);
             for (let i = 0; i < carCount; i++) isCar[order[i]] = 1;
             for (let i = 0; i < COUNT; i++) {
                 if (isCar[i]) {
                     const x = i % N, y = (i / N) | 0;
-                    cars.push({ id: cars.length, x: x, y: y, px: x, py: y, nx: x, ny: y, active: true });
+                    cars.push({ id: cars.length, x: x, y: y, px: x, py: y, nx: x, ny: y, active: true, parkedRound: 0 });
                 } else spot[i] = 1;
             }
             roundNo = 0; activeCount = cars.length; phase = 0; completedAt = 0;
@@ -11342,7 +11432,8 @@ const Instruments = (function () {
             arrivals.forEach(function (group, at) {
                 if (!group || occupied[at]) return;
                 const winner = group[hash(replaySeed ^ 0xa511e9b3, at, roundNo) % group.length];
-                winner.active = false; occupied[at] = 1; activeCount--;
+                winner.active = false; winner.parkedRound = roundNo + 1;
+                parkedRound[at] = roundNo + 1; occupied[at] = 1; activeCount--;
             });
             roundNo++;
             if (!activeCount) completedAt = performance.now();
@@ -11379,19 +11470,25 @@ const Instruments = (function () {
                 const i = y * N + x;
                 if (!spot[i]) continue;
                 const cx = PAD + (x + .5) * CELL, cy = PAD + (y + .5) * CELL;
-                ctx.beginPath(); ctx.arc(cx, cy, occupied[i] ? 2.8 : 3.7, 0, Math.PI * 2);
-                if (occupied[i]) { ctx.fillStyle = '#68c7ea'; ctx.globalAlpha = .62; ctx.fill(); ctx.globalAlpha = 1; }
+                const arrived = occupied[i] && (parkedRound[i] !== roundNo || phase >= 1);
+                ctx.beginPath(); ctx.arc(cx, cy, arrived ? 2.8 : 3.7, 0, Math.PI * 2);
+                if (arrived) { ctx.fillStyle = '#68c7ea'; ctx.globalAlpha = .62; ctx.fill(); ctx.globalAlpha = 1; }
                 else { ctx.strokeStyle = '#68c7ea'; ctx.globalAlpha = .76; ctx.lineWidth = 1.25; ctx.stroke(); ctx.globalAlpha = 1; }
             }
+            ctx.save(); ctx.beginPath();
+            ctx.rect(PAD, PAD, LOGICAL - 2 * PAD, LOGICAL - 2 * PAD); ctx.clip();
             cars.forEach(function (car) {
-                if (!car.active) return;
+                /* A car that won a spot still travels its final edge. Model
+                   counts already refer to the completed discrete round;
+                   the interpolation catches up before its yellow disc rests. */
+                if (!car.active && (car.parkedRound !== roundNo || phase >= 1)) return;
                 carPositions(car, phase).forEach(function (p) {
                     ctx.beginPath(); ctx.arc(PAD + (p[0] + .5) * CELL, PAD + (p[1] + .5) * CELL, 3.6, 0, Math.PI * 2);
                     ctx.fillStyle = '#f0d96b'; ctx.fill();
                     ctx.strokeStyle = '#0f0e13'; ctx.lineWidth = 1; ctx.stroke();
                 });
             });
-            ctx.restore();
+            ctx.restore(); ctx.restore();
         }
         function report() {
             if (outRound) outRound.textContent = nf.format(roundNo);
@@ -11412,9 +11509,12 @@ const Instruments = (function () {
             if (!running) return;
             if (!lastNow) lastNow = now;
             const dt = Math.min(40, now - lastNow); lastNow = now;
-            if (activeCount) {
+            if (activeCount || (roundNo > 0 && phase < 1)) {
                 phase += dt / STEP_MS;
-                if (phase >= 1) { phase -= 1; advanceRound(); report(); }
+                if (phase >= 1) {
+                    if (activeCount) { phase -= 1; advanceRound(); report(); }
+                    else phase = 1;
+                }
             } else if (completedAt && now - completedAt > 2300) {
                 reset(replaySeed);
             }
@@ -11442,25 +11542,81 @@ const Instruments = (function () {
     /* The percolation page starts with one local toppling and then changes
        scale: the same excess creates a connected finite-time toppled set. */
     makers.divpercintro = function () {
-        return loopingRule('divisible-percolation', 7000, function (ctx, W, p) {
-            const grid = ruleGrid(ctx, W, 11, 52, 616), cell = grid.cell;
-            const spread = ruleEase(ruleClamp((p - .08) / .72));
-            for (let y = 0; y < 11; y++) for (let x = 0; x < 11; x++) {
-                const dx = x - 5, dy = y - 5, r = Math.hypot(dx, dy),
-                      noise = .9 * Math.sin(1.71 * x + 2.13 * y) + .55 * Math.sin(.63 * x - 1.37 * y),
-                      hit = r < .8 + 6.1 * spread + noise;
-                if (!hit) continue;
-                ctx.fillStyle = r < 2.2 + 3.4 * spread ? 'rgba(86,180,233,.84)' : 'rgba(204,121,167,.52)';
-                ctx.fillRect(grid.left + x * cell + 2, grid.top + y * cell + 2, cell - 4, cell - 4);
-            }
-            const cx = grid.left + 5.5 * cell, cy = grid.top + 5.5 * cell;
-            if (p < .42) {
-                const a = ruleEase(p / .42);
-                [[1,0],[-1,0],[0,1],[0,-1]].forEach(function (d) {
-                    ruleParticle(ctx, cx + d[0] * cell * a, cy + d[1] * cell * a, 7, RULE_VIS.yellow);
+        const N = 11, COUNT = N * N, STEPS = 9, states = [];
+        const source = [5 * N + 3, 3 * N + 6, 7 * N + 7];
+        const initial = new Float64Array(COUNT); initial.fill(.8);
+        source.forEach(function (i) { initial[i] = 5.8; });
+        function neighbours(i) {
+            const x = i % N, y = (i / N) | 0;
+            return [y * N + (x + N - 1) % N, y * N + (x + 1) % N,
+                    ((y + N - 1) % N) * N + x, ((y + 1) % N) * N + x];
+        }
+        let u = new Float64Array(COUNT);
+        for (let n = 0; n <= STEPS; n++) {
+            const mass = new Float64Array(COUNT), next = new Float64Array(COUNT);
+            const labels = new Int16Array(COUNT); labels.fill(-1);
+            let biggest = -1, bigSize = 0, components = 0;
+            for (let i = 0; i < COUNT; i++) {
+                let incoming = 0;
+                neighbours(i).forEach(function (j) { incoming += u[j]; });
+                mass[i] = initial[i] + incoming - 4 * u[i];
+                next[i] = Math.max(0, (initial[i] - 1 + incoming) / 4);
+                if (u[i] <= 1e-10 || labels[i] >= 0) continue;
+                const todo = [i]; labels[i] = components;
+                for (let k = 0; k < todo.length; k++) neighbours(todo[k]).forEach(function (j) {
+                    if (u[j] > 1e-10 && labels[j] < 0) { labels[j] = components; todo.push(j); }
                 });
+                if (todo.length > bigSize) { biggest = components; bigSize = todo.length; }
+                components++;
             }
-        }, .74);
+            states.push({ u: u, mass: mass, next: next, labels: labels, biggest: biggest });
+            u = next;
+        }
+        return loopingRule('divisible-percolation', 10200, function (ctx, W, p) {
+            const grid = ruleGrid(ctx, W, N, 62, 572), cell = grid.cell;
+            const progress = ruleClamp((p - .12) / .76) * STEPS,
+                  n = Math.min(STEPS, Math.floor(progress)), state = states[n],
+                  transit = ruleEase((progress - n - .14) / .72);
+            function pos(i) { return [grid.left + (i % N + .5) * cell,
+                                      grid.top + (((i / N) | 0) + .5) * cell]; }
+            for (let i = 0; i < COUNT; i++) {
+                const x = grid.left + (i % N) * cell, y = grid.top + ((i / N) | 0) * cell;
+                const component = state.labels[i], big = component === state.biggest && component >= 0;
+                if (component >= 0) {
+                    ctx.fillStyle = big ? 'rgba(0,114,178,.25)' : 'rgba(142,66,87,.18)';
+                    ctx.fillRect(x + .8, y + .8, cell - 1.6, cell - 1.6);
+                    ctx.strokeStyle = big ? RULE_VIS.cyanBright : RULE_VIS.rose;
+                    ctx.lineWidth = 2.8; ctx.beginPath();
+                    const near = neighbours(i);
+                    if (state.labels[near[0]] !== component) { ctx.moveTo(x,y); ctx.lineTo(x,y+cell); }
+                    if (state.labels[near[1]] !== component) { ctx.moveTo(x+cell,y); ctx.lineTo(x+cell,y+cell); }
+                    if (state.labels[near[2]] !== component) { ctx.moveTo(x,y); ctx.lineTo(x+cell,y); }
+                    if (state.labels[near[3]] !== component) { ctx.moveTo(x,y+cell); ctx.lineTo(x+cell,y+cell); }
+                    ctx.stroke();
+                }
+                const point = pos(i), excess = Math.max(0, state.mass[i] - 1),
+                      remaining = state.mass[i] - excess * transit;
+                ctx.beginPath(); ctx.arc(point[0],point[1],Math.min(16,4.6*Math.sqrt(remaining)),0,Math.PI*2);
+                ctx.fillStyle = excess > .015 ? RULE_VIS.yellow : RULE_VIS.quiet; ctx.fill();
+                if (n === 0 && source.indexOf(i) >= 0 && transit < .06) {
+                    ctx.fillStyle = RULE_VIS.key; ctx.font = '600 17px ui-monospace, monospace';
+                    ctx.textAlign = 'center'; ctx.fillText('5.8',point[0],point[1]-21);
+                }
+            }
+            if (n < STEPS && transit > 0 && transit < 1) {
+                for (let i = 0; i < COUNT; i++) {
+                    const flow = state.next[i] - state.u[i]; if (flow < .015) continue;
+                    const a = pos(i);
+                    neighbours(i).forEach(function (j) {
+                        const b = pos(j); if (Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]) > cell * 1.1) return;
+                        const x = ruleMix(a[0],b[0],transit), y = ruleMix(a[1],b[1],transit);
+                        ctx.beginPath(); ctx.arc(x,y,Math.min(5.8,2.4+3*Math.sqrt(flow)),0,Math.PI*2);
+                        ctx.fillStyle = RULE_VIS.yellow; ctx.fill();
+                        ctx.strokeStyle = RULE_VIS.paper; ctx.lineWidth = 1.4; ctx.stroke();
+                    });
+                }
+            }
+        }, .79);
     };
 
     makers.divperc = function () {
@@ -11468,12 +11624,21 @@ const Instruments = (function () {
         const ctx = canvas.getContext('2d'), W0 = canvas.width, H0 = canvas.height;
         const outRound = $('#divperc-round'), outToppled = $('#divperc-toppled'),
               outLargest = $('#divperc-largest'), note = $('#divperc-note');
-        const N = 88, COUNT = N * N, LOGICAL = 720, PAD = 18,
-              CELL = (LOGICAL - 2 * PAD) / N, MAX_T = 900, STEP_MS = 42;
+        const N = 88, COUNT = N * N, LOGICAL = 720, LEFT = 72, TOP = 18,
+              SIDE = 576, CELL = SIDE / N, MAX_T = 900;
+        const near = new Int32Array(COUNT * 4), queue = new Int32Array(COUNT),
+              seen = new Uint8Array(COUNT), previous = new Uint8Array(COUNT),
+              entered = new Float64Array(COUNT), historySet = new Float64Array(MAX_T + 1),
+              historyLargest = new Float64Array(MAX_T + 1);
+        for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+            const i = y * N + x;
+            near[4*i] = y*N+(x+N-1)%N; near[4*i+1] = y*N+(x+1)%N;
+            near[4*i+2] = ((y+N-1)%N)*N+x; near[4*i+3] = ((y+1)%N)*N+x;
+        }
         let rho = .78, runSeed = 0x53414e44, replaySeed = runSeed;
         let zeta, u, next, mask, largest, t, setSize, largestSize;
-        let phase = 0, lastNow = 0, raf = 0, running = false,
-            pageAwake = true, userPaused = false, heldAt = 0;
+        let accumulator = 0, lastNow = 0, raf = 0, running = false,
+            pageAwake = true, userPaused = false, hold = 0, elapsed = 0;
 
         function hash(seed, i) {
             let z = (seed ^ Math.imul(i + 0x9e37, 0x45d9f3b)) >>> 0;
@@ -11488,100 +11653,189 @@ const Instruments = (function () {
         function reset(seed) {
             replaySeed = seed >>> 0; zeta = new Float64Array(COUNT);
             let total = 0;
-            for (let i = 0; i < COUNT; i++) { const s = poissonQuantile(hash(replaySeed, i), rho); zeta[i] = s; total += s; }
-            const shift = rho === 1 ? (COUNT - total) / COUNT : 0;
-            for (let i = 0; i < COUNT; i++) zeta[i] = (zeta[i] + shift - 1) / 4;
+            for (let i = 0; i < COUNT; i++) {
+                const s = poissonQuantile(hash(replaySeed,i),rho); zeta[i] = s; total += s;
+            }
+            const shift = rho === 1 ? (COUNT-total)/COUNT : 0;
+            for (let i = 0; i < COUNT; i++) zeta[i] = (zeta[i]+shift-1)/4;
             u = new Float64Array(COUNT); next = new Float64Array(COUNT);
             mask = new Uint8Array(COUNT); largest = new Uint8Array(COUNT);
-            t = 0; phase = 0; heldAt = 0; classify(); paint(); report();
+            previous.fill(0); entered.fill(-10000); historySet.fill(0); historyLargest.fill(0);
+            t = 0; accumulator = 0; hold = 0; elapsed = 0;
+            classify(); paint(); report();
         }
         function advance() {
-            for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-                const i = y * N + x, l = y * N + (x + N - 1) % N,
-                      r = y * N + (x + 1) % N, a = ((y + N - 1) % N) * N + x,
-                      b = ((y + 1) % N) * N + x;
-                next[i] = Math.max(0, zeta[i] + .25 * (u[l] + u[r] + u[a] + u[b]));
-            }
-            const q = u; u = next; next = q; t++;
-            classify();
-            if (t >= MAX_T) heldAt = performance.now();
+            for (let i = 0; i < COUNT; i++) next[i] = Math.max(0,zeta[i]+.25*(
+                u[near[4*i]]+u[near[4*i+1]]+u[near[4*i+2]]+u[near[4*i+3]]));
+            const q = u; u = next; next = q; t++; classify();
         }
         function classify() {
-            const level = rho === 1 ? .075 * Math.sqrt(Math.max(1, t)) : 1e-10;
-            setSize = 0; mask.fill(0); largest.fill(0);
-            for (let i = 0; i < COUNT; i++) if (u[i] > level) { mask[i] = 1; setSize++; }
-            const seen = new Uint8Array(COUNT); let best = [];
-            for (let i = 0; i < COUNT; i++) if (mask[i] && !seen[i]) {
-                const stack = [i], comp = []; seen[i] = 1;
-                while (stack.length) {
-                    const v = stack.pop(), x = v % N, y = (v / N) | 0; comp.push(v);
-                    const nbr = [y * N + (x + N - 1) % N, y * N + (x + 1) % N,
-                                 ((y + N - 1) % N) * N + x, ((y + 1) % N) * N + x];
-                    for (let k = 0; k < 4; k++) if (mask[nbr[k]] && !seen[nbr[k]]) { seen[nbr[k]] = 1; stack.push(nbr[k]); }
-                }
-                if (comp.length > best.length) best = comp;
+            const level = rho === 1 ? .075*Math.sqrt(Math.max(1,t)) : 1e-10;
+            previous.set(mask); setSize = 0; mask.fill(0); largest.fill(0); seen.fill(0);
+            for (let i = 0; i < COUNT; i++) if (u[i] > level) {
+                mask[i] = 1; setSize++;
+                if (!previous[i]) entered[i] = elapsed;
             }
-            best.forEach(function (i) { largest[i] = 1; }); largestSize = best.length;
+            let bestStart = -1; largestSize = 0;
+            for (let i = 0; i < COUNT; i++) if (mask[i] && !seen[i]) {
+                let head = 0, tail = 1; queue[0] = i; seen[i] = 1;
+                while (head < tail) {
+                    const v = queue[head++];
+                    for (let k = 0; k < 4; k++) {
+                        const j = near[4*v+k];
+                        if (mask[j] && !seen[j]) { seen[j] = 1; queue[tail++] = j; }
+                    }
+                }
+                if (tail > largestSize) { largestSize = tail; bestStart = i; }
+            }
+            if (bestStart >= 0) {
+                let head = 0, tail = 1; queue[0] = bestStart; largest[bestStart] = 1;
+                while (head < tail) {
+                    const v = queue[head++];
+                    for (let k = 0; k < 4; k++) {
+                        const j = near[4*v+k];
+                        if (mask[j] && !largest[j]) { largest[j] = 1; queue[tail++] = j; }
+                    }
+                }
+            }
+            historySet[t] = setSize/COUNT; historyLargest[t] = largestSize/COUNT;
+        }
+        function drawHistory() {
+            const x0 = LEFT, x1 = LEFT+SIDE, y0 = 631, y1 = 686,
+                  scale = Math.log1p(MAX_T), toX = function (n) { return x0+SIDE*Math.log1p(n)/scale; };
+            const cssW = canvas.getBoundingClientRect().width || 720,
+                  font = Math.round(12*Math.min(1.6,720/cssW));
+            ctx.font = '500 '+font+'px ui-monospace, monospace';
+            ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#C9BFA8'; ctx.fillText('Share of sites',x0,615);
+            ctx.textAlign = 'right'; ctx.fillStyle = '#A8D8E8';
+            ctx.fillText(Math.round(100*largestSize/COUNT)+'% in largest component',x1,615);
+            ctx.strokeStyle = 'rgba(201,191,168,.16)'; ctx.lineWidth = .8;
+            [0,.5,1].forEach(function (q) {
+                const y = y1-q*(y1-y0); ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+            });
+            ctx.fillStyle = '#8E8998'; ctx.textAlign = 'right';
+            ctx.fillText('100%',x0-8,y0); ctx.fillText('0',x0-8,y1);
+            [0,10,100,900].forEach(function (n) {
+                const x = toX(n); ctx.textAlign = n === 900 ? 'right' : 'center';
+                ctx.fillText(String(n),x,703);
+            });
+            function path(values) {
+                ctx.beginPath(); ctx.moveTo(x0,y1);
+                for (let n = 0; n <= t; n++) ctx.lineTo(toX(n),y1-values[n]*(y1-y0));
+            }
+            path(historySet); ctx.strokeStyle = '#9275A6'; ctx.lineWidth = 1.8; ctx.stroke();
+            path(historyLargest); ctx.lineTo(toX(t),y1); ctx.closePath();
+            ctx.fillStyle = 'rgba(86,180,233,.16)'; ctx.fill();
+            path(historyLargest); ctx.strokeStyle = '#A8D8E8'; ctx.lineWidth = 2.3; ctx.stroke();
+            const xx = toX(t), yy = y1-historyLargest[t]*(y1-y0);
+            ctx.beginPath(); ctx.moveTo(xx,y0); ctx.lineTo(xx,y1);
+            ctx.strokeStyle = 'rgba(246,241,230,.4)'; ctx.lineWidth = 1; ctx.stroke();
+            ctx.beginPath(); ctx.arc(xx,yy,3.3,0,Math.PI*2); ctx.fillStyle = '#F0D96B'; ctx.fill();
         }
         function paint() {
-            ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0f0e13'; ctx.fillRect(0,0,W0,H0);
-            ctx.save(); ctx.scale(W0 / LOGICAL, H0 / LOGICAL);
-            const denom = rho === 1 ? Math.max(.4, .55 * Math.sqrt(Math.max(1,t))) : 2.4;
+            ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W0,H0);
+            ctx.save(); ctx.scale(W0/LOGICAL,H0/LOGICAL);
+            ctx.fillStyle = '#181720'; ctx.fillRect(LEFT,TOP,SIDE,SIDE);
+            const denom = rho === 1 ? Math.max(.4,.55*Math.sqrt(Math.max(1,t))) : 2.4;
             for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-                const i = y * N + x, q = Math.min(1, u[i] / denom),
-                      xx = PAD + x * CELL, yy = PAD + y * CELL;
-                if (largest[i]) ctx.fillStyle = '#56b4e9';
-                else if (mask[i]) ctx.fillStyle = '#9275a6';
-                else if (q > 0) ctx.fillStyle = 'rgba(98,83,125,' + (.08 + .3 * q).toFixed(3) + ')';
-                else ctx.fillStyle = 'rgba(121,134,165,.055)';
-                ctx.fillRect(xx + .35, yy + .35, CELL - .7, CELL - .7);
+                const i = y*N+x, magnitude = Math.min(1,u[i]/denom),
+                      xx = LEFT+x*CELL, yy = TOP+y*CELL;
+                if (!t) {
+                    const mass = 1+4*zeta[i];
+                    if (mass > 1) { ctx.fillStyle = 'rgba(240,217,107,.5)';
+                        ctx.fillRect(xx+.8,yy+.8,CELL-1.6,CELL-1.6); }
+                    continue;
+                }
+                if (largest[i]) ctx.fillStyle = 'rgb('+Math.round(53+75*magnitude)+','+
+                    Math.round(132+66*magnitude)+','+Math.round(165+59*magnitude)+')';
+                else if (mask[i]) ctx.fillStyle = 'rgb('+Math.round(91+46*magnitude)+','+
+                    Math.round(66+33*magnitude)+','+Math.round(114+47*magnitude)+')';
+                else continue;
+                /* Touching cells remain touching: a component reads as a
+                   connected region instead of a carpet of isolated pixels. */
+                ctx.fillRect(xx,yy,CELL+.05,CELL+.05);
             }
-            ctx.restore();
+            if (t) {
+                ctx.beginPath();
+                for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+                    const i = y*N+x; if (!largest[i]) continue;
+                    const xx = LEFT+x*CELL, yy = TOP+y*CELL;
+                    if (!largest[near[4*i]]) { ctx.moveTo(xx,yy); ctx.lineTo(xx,yy+CELL); }
+                    if (!largest[near[4*i+1]]) { ctx.moveTo(xx+CELL,yy); ctx.lineTo(xx+CELL,yy+CELL); }
+                    if (!largest[near[4*i+2]]) { ctx.moveTo(xx,yy); ctx.lineTo(xx+CELL,yy); }
+                    if (!largest[near[4*i+3]]) { ctx.moveTo(xx,yy+CELL); ctx.lineTo(xx+CELL,yy+CELL); }
+                }
+                ctx.strokeStyle = 'rgba(168,216,232,.78)'; ctx.lineWidth = .7; ctx.stroke();
+                for (let i = 0; i < COUNT; i++) {
+                    const age = elapsed-entered[i]; if (!mask[i] || age >= 420) continue;
+                    ctx.fillStyle = 'rgba(246,231,150,'+(.65*(1-age/420)).toFixed(3)+')';
+                    ctx.fillRect(LEFT+(i%N)*CELL+.55,TOP+((i/N)|0)*CELL+.55,CELL-1.1,CELL-1.1);
+                }
+            }
+            ctx.strokeStyle = 'rgba(201,191,168,.36)'; ctx.lineWidth = 1;
+            ctx.strokeRect(LEFT,TOP,SIDE,SIDE); drawHistory(); ctx.restore();
         }
         function report() {
             if (outRound) outRound.textContent = nf.format(t);
             if (outToppled) outToppled.textContent = nf.format(setSize);
             if (outLargest) outLargest.textContent = nf.format(largestSize);
-            if (note) note.textContent = rho === 1 ? 'Level set {uₜ > 0.075√t}' : 'Finite-time toppled set {uₜ > 0}';
+            if (note) note.textContent = !t ? 'Initial sites with mass above 1'
+                : rho === 1 ? 'Level set {uₜ > 0.075√t}' : 'Finite-time toppled set {uₜ > 0}';
         }
         function sync() {
             $$('[data-divperc-rho]').forEach(function (b) {
-                const on = Math.abs(parseFloat(b.dataset.divpercRho) - rho) < 1e-12;
-                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+                const on = Math.abs(parseFloat(b.dataset.divpercRho)-rho)<1e-12;
+                b.classList.toggle('is-on',on); b.setAttribute('aria-pressed',String(on));
             });
             const b = $('[data-divperc-run="pause"]');
-            if (b) { b.textContent = REDUCED ? 'Paused' : (running ? 'Pause' : 'Play');
-                b.classList.toggle('is-on', running); b.setAttribute('aria-pressed', String(running)); }
+            if (b) { b.textContent = REDUCED ? 'Paused' : running ? 'Pause' : 'Play';
+                b.classList.toggle('is-on',running); b.setAttribute('aria-pressed',String(running)); }
             if (outToppled) {
-                const dt = outToppled.closest('div') && $('dt', outToppled.closest('div'));
+                const dt = outToppled.closest('div') && $('dt',outToppled.closest('div'));
                 if (dt) dt.textContent = rho === 1 ? 'Sites in displayed level set' : 'Toppled sites';
             }
         }
+        /* Hold the first few transfers long enough to see components join;
+           later sweeps accelerate while the history retains every step. */
+        function stepDuration() { return t<8 ? 270 : t<32 ? 100 : t<120 ? 28 : 5; }
         function frame(now) {
             if (!running) return;
             if (!lastNow) lastNow = now;
-            const dt = Math.min(40, now - lastNow); lastNow = now;
+            const dt = Math.min(50,now-lastNow); lastNow = now; elapsed += dt;
+            if (!t && elapsed < 850) { paint(); raf = requestAnimationFrame(frame); return; }
             if (t < MAX_T) {
-                phase += dt / STEP_MS;
-                let steps = Math.min(5, Math.floor(phase)); phase -= steps;
-                while (steps-- > 0 && t < MAX_T) advance();
-            } else if (heldAt && now - heldAt > 2600) reset(replaySeed);
+                accumulator += dt;
+                let budget = 20;
+                while (budget-- && t < MAX_T && accumulator >= stepDuration()) {
+                    accumulator -= stepDuration(); advance();
+                }
+            } else { hold += dt; if (hold > 2600) reset(replaySeed); }
             paint(); report(); raf = requestAnimationFrame(frame);
         }
         function stop() { running = false; cancelAnimationFrame(raf); raf = 0; lastNow = 0; sync(); }
-        function start() { if (REDUCED || running || userPaused || !pageAwake) return; running = true; sync(); raf = requestAnimationFrame(frame); }
-        $$('[data-divperc-rho]').forEach(function (b) { b.addEventListener('click', function () {
+        function start() { if (REDUCED || running || userPaused || !pageAwake) return;
+            running = true; sync(); raf = requestAnimationFrame(frame); }
+        $$('[data-divperc-rho]').forEach(function (b) { b.addEventListener('click',function () {
             const q = parseFloat(b.dataset.divpercRho); if (!isFinite(q) || q === rho) return;
-            stop(); rho = q; userPaused = REDUCED; reset(replaySeed); sync(); if (!userPaused) start();
+            stop(); rho = q; userPaused = REDUCED; reset(replaySeed);
+            if (REDUCED) { while (t < 180) advance(); elapsed = 1000; paint(); report(); }
+            sync(); if (!userPaused) start();
         }); });
-        $$('[data-divperc-run]').forEach(function (b) { b.addEventListener('click', function () {
+        $$('[data-divperc-run]').forEach(function (b) { b.addEventListener('click',function () {
             const action = b.dataset.divpercRun;
-            if (action === 'pause') { if (running) { userPaused = true; stop(); } else { userPaused = false; start(); } }
-            if (action === 'replay') { stop(); userPaused = REDUCED; reset(replaySeed); if (!userPaused) start(); }
-            if (action === 'new') { stop(); runSeed = (runSeed + 0x9e3779b9) >>> 0; userPaused = REDUCED; reset(runSeed); if (!userPaused) start(); }
+            if (action === 'pause') {
+                if (running) { userPaused = true; stop(); } else { userPaused = false; start(); }
+            } else {
+                stop(); userPaused = REDUCED;
+                if (action === 'new') { runSeed = (runSeed+0x9e3779b9)>>>0; reset(runSeed); }
+                else if (action === 'replay') reset(replaySeed);
+                if (REDUCED) { while (t < 180) advance(); elapsed = 1000; paint(); report(); }
+                if (!userPaused) start();
+            }
         }); });
         reset(runSeed);
-        if (REDUCED) { for (let i = 0; i < 180; i++) advance(); paint(); report(); }
+        if (REDUCED) { while (t < 180) advance(); elapsed = 1000; paint(); report(); }
         else start();
         return { pause: function () { pageAwake = false; stop(); },
                  resume: function () { pageAwake = true; paint(); report(); if (!userPaused) start(); } };
@@ -12419,7 +12673,11 @@ const Instruments = (function () {
         const clusterCtx = cluster.getContext('2d');
 
         let DATA = null, G = null, mesh = null, ready = false;
-        let occupied, order, centres, target = 0, particles = 0, steps = 0;
+        let occupied, order, centres, cellPaths, cellBounds, wirePath, framingExtents,
+            target = 0, particles = 0, steps = 0;
+        let extent = 0, cameraZoom = 128, cameraX = W / 2, cameraY = H / 2;
+        const VIEW = { x: .025 * W, y: .22 * H, w: .95 * W, h: .75 * H },
+              VIEW_X = W / 2, VIEW_Y = .595 * H, BASE_SCALE = .75 * Math.min(W,H) / W;
         let radius = 0, revealCarry = 0, doneAt = 0, ghostAlpha = 0;
         let raf = 0, running = false, pageAwake = true, userPaused = false, lastNow = 0;
         function cellPath(c, i) {
@@ -12437,21 +12695,40 @@ const Instruments = (function () {
         }
         function buildGeometry() {
             const n = G.n;
-            centres = new Array(n);
+            centres = new Array(n); cellPaths = new Array(n); cellBounds = new Array(n);
+            wirePath = new Path2D();
             for (let i = 0; i < n; i++) {
                 const raw = G.cells[i];
                 const pieces = typeof raw[0] === 'number' ? [raw] : raw;
-                let x = 0, y = 0, m = 0;
+                let x = 0, y = 0, m = 0, minX = Infinity, minY = Infinity,
+                    maxX = -Infinity, maxY = -Infinity;
+                const path = new Path2D();
                 for (let q = 0; q < pieces.length; q++) {
                     const p = pieces[q];
                     for (let k = 0; k + 1 < p.length; k += 2) {
                         x += p[k]; y += p[k + 1]; m++;
+                        const xx = p[k] * W / 960, yy = p[k + 1] * H / 960;
+                        minX = Math.min(minX,xx); minY = Math.min(minY,yy);
+                        maxX = Math.max(maxX,xx); maxY = Math.max(maxY,yy);
+                        if (!k) path.moveTo(xx,yy); else path.lineTo(xx,yy);
                     }
+                    path.closePath();
                 }
+                cellPaths[i] = path; cellBounds[i] = [minX,minY,maxX,maxY]; wirePath.addPath(path);
                 centres[i] = m
                     ? [x / m * W / 960, y / m * H / 960]
                     : [G.xy[i][0] * W / 960, G.xy[i][1] * H / 960];
             }
+            framingExtents = new Float64Array(G.order.length);
+            const source = centres[G.source]; let radius = 0;
+            G.order.forEach(function (v,k) {
+                const b = cellBounds[v], p = centres[v];
+                radius = Math.max(radius,Math.abs(p[0]-source[0]),Math.abs(p[1]-source[1]));
+                if (isFinite(b[0])) radius = Math.max(radius,
+                    Math.abs(b[0]-source[0]),Math.abs(b[2]-source[0]),
+                    Math.abs(b[1]-source[1]),Math.abs(b[3]-source[1]));
+                framingExtents[k] = radius;
+            });
         }
         function colour(i) {
             const j = Math.max(0, Math.min(255, Math.round(255 * order[i] / Math.max(1, target - 1)))) * 3;
@@ -12473,8 +12750,10 @@ const Instruments = (function () {
             occupied = new Uint8Array(G.n); order = new Int16Array(G.n); order.fill(-1);
             particles = 0; steps = 0; radius = 0; revealCarry = 0; doneAt = 0;
             target = G.order.length;
+            extent = 0; cameraZoom = 128;
+            cameraX = centres[G.source][0]; cameraY = centres[G.source][1];
             clusterCtx.clearRect(0, 0, W, H);
-            settle(G.order[0]);
+            settle(G.order[0]); updateCamera(1, true);
         }
         function settle(v) {
             if (occupied[v]) return;
@@ -12482,6 +12761,7 @@ const Instruments = (function () {
             occupied[v] = 1; order[v] = k; particles++;
             steps = G.steps[k]; radius = G.radius[k];
             paintCell(v);
+            extent = framingExtents[particles-1];
             if (particles >= target) {
                 steps = G.boundary_hit_steps;
                 doneAt = performance.now();
@@ -12499,23 +12779,74 @@ const Instruments = (function () {
             while (particles < target) settle(G.order[particles]);
             doneAt = performance.now();
         }
+        function updateCamera(dt, snap) {
+            /* A half-second look ahead in the recorded order lets the camera
+               ease out before an unusually large cell settles. No future cell
+               is drawn, and every currently occupied polygon remains in view. */
+            const upcoming = framingExtents[Math.min(target-1,particles+29)],
+                  targetZoom = Math.max(1,Math.min(128,.43*VIEW.h/(BASE_SCALE*Math.max(.01,upcoming))));
+            /* Zooming out is quick enough to keep the entire occupied set
+               within the margin; its target uses polygon bounds, not centres. */
+            const blend = snap ? 1 : 1-Math.exp(-dt*8);
+            cameraZoom += (targetZoom-cameraZoom)*blend;
+            const safeZoom = .49*VIEW.h/(BASE_SCALE*Math.max(1,extent));
+            cameraZoom = Math.max(1,Math.min(cameraZoom,safeZoom));
+            const source = centres[G.source], local = Math.min(1,(cameraZoom-1)/3);
+            cameraX = W/2+(source[0]-W/2)*local;
+            cameraY = H/2+(source[1]-H/2)*local;
+        }
         function paint() {
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W,H);
             if (!ready || !G) {
                 if (note) note.textContent = 'Loading exact finite graph';
                 return;
             }
-            if (mesh) {
-                ctx.globalAlpha = .34;
-                ctx.drawImage(mesh, 0, 0, W, H);
-                ctx.globalAlpha = 1;
+            const scale = BASE_SCALE*cameraZoom;
+            ctx.save(); ctx.beginPath(); ctx.rect(VIEW.x,VIEW.y,VIEW.w,VIEW.h); ctx.clip();
+            ctx.translate(VIEW_X,VIEW_Y); ctx.scale(scale,scale); ctx.translate(-cameraX,-cameraY);
+            /* The main view is vector geometry at every magnification. The
+               cached full-domain bitmap below is used only in the overview. */
+            ctx.strokeStyle = 'rgba(99,98,121,.22)'; ctx.lineWidth = .8/scale; ctx.stroke(wirePath);
+            for (let k = 0; k < particles; k++) {
+                const v = G.order[k];
+                ctx.fillStyle = colour(v);
+                if (isFinite(cellBounds[v][0])) {
+                    ctx.fill(cellPaths[v]);
+                    ctx.strokeStyle = 'rgba(8,7,11,.75)'; ctx.lineWidth = 1.15/scale; ctx.stroke(cellPaths[v]);
+                } else {
+                    /* Some tiny cells have no polygon in the recorded file;
+                       keep their original embedded vertex as a point marker. */
+                    const p = centres[v]; ctx.beginPath(); ctx.arc(p[0],p[1],1.9/scale,0,2*Math.PI); ctx.fill();
+                }
             }
-            ctx.drawImage(cluster, 0, 0);
-            const s = centres[G.source];
-            ctx.beginPath(); ctx.arc(s[0], s[1], 8 * W / 960, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#F0E442'; ctx.lineWidth = 2 * W / 960; ctx.stroke();
+            if (particles < target) for (let k = Math.max(0,particles-12); k < particles; k++) {
+                ctx.strokeStyle = 'rgba(240,217,107,'+(.8*(1-(particles-1-k)/12)).toFixed(3)+')';
+                ctx.lineWidth = 2/scale; ctx.stroke(cellPaths[G.order[k]]);
+            }
+            const source = centres[G.source];
+            ctx.beginPath(); ctx.arc(source[0],source[1],5*W/720/scale,0,2*Math.PI);
+            ctx.strokeStyle = '#F0D96B'; ctx.lineWidth = 1.4*W/720/scale; ctx.stroke();
+            ctx.restore();
+
+            const inset = .17*W, ix = .79*W, iy = .025*H, ratio = inset/W;
+            ctx.fillStyle = '#15141C'; ctx.fillRect(ix-8,iy-8,inset+16,inset+16);
+            if (mesh) { ctx.globalAlpha = .65; ctx.drawImage(mesh,ix,iy,inset,inset); ctx.globalAlpha = 1; }
+            ctx.drawImage(cluster,ix,iy,inset,inset);
+            const x0 = cameraX+(VIEW.x-VIEW_X)/scale, y0 = cameraY+(VIEW.y-VIEW_Y)/scale;
+            ctx.save(); ctx.beginPath(); ctx.rect(ix,iy,inset,inset); ctx.clip();
+            ctx.strokeStyle = '#F0D96B'; ctx.lineWidth = Math.max(1.7,W/720);
+            ctx.strokeRect(ix+x0*ratio,iy+y0*ratio,VIEW.w/scale*ratio,VIEW.h/scale*ratio);
+            ctx.restore();
+            ctx.strokeStyle = 'rgba(201,191,168,.45)'; ctx.lineWidth = 1; ctx.strokeRect(ix-8,iy-8,inset+16,inset+16);
+            const cssW = canvas.getBoundingClientRect().width || 720,
+                  fs = Math.round(12*W/720*Math.min(1.5,720/cssW));
+            ctx.font = '500 '+fs+'px ui-monospace, monospace'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#C9BFA8'; ctx.fillText(cameraZoom>1.05 ? cameraZoom.toFixed(1)+'× magnification' : 'Full disk',.055*W,.067*H);
+            ctx.font = '400 '+Math.round(fs*.86)+'px ui-monospace, monospace';
+            ctx.fillStyle = '#898596'; ctx.fillText('View expands with the cluster',.055*W,.099*H);
+            ctx.textAlign = 'center'; ctx.fillStyle = '#C9BFA8'; ctx.fillText('FULL DISK',ix+inset/2,iy+inset+fs*1.4);
             if (ghostAlpha > 0) {
-                ctx.globalAlpha = ghostAlpha; ctx.drawImage(ghost, 0, 0); ctx.globalAlpha = 1;
+                ctx.globalAlpha = ghostAlpha; ctx.drawImage(ghost,0,0); ctx.globalAlpha = 1;
             }
             report();
         }
@@ -12536,7 +12867,7 @@ const Instruments = (function () {
             if (!ready) return;
             if (useGhost) captureGhost(); else ghostAlpha = 0;
             resetState();
-            if (REDUCED) { finishStatic(); ghostAlpha = 0; }
+            if (REDUCED) { finishStatic(); updateCamera(1, true); ghostAlpha = 0; }
             paint(); sync();
         }
         function sync() {
@@ -12554,7 +12885,8 @@ const Instruments = (function () {
             const dt = Math.min(.018, Math.max(0, (now - lastNow) / 1000)); lastNow = now;
             if (ghostAlpha > 0) ghostAlpha = Math.max(0, ghostAlpha - dt / 1.15);
             if (particles < target) advance(dt);
-            else if (now - doneAt > LOOP_HOLD * 1000) {
+            updateCamera(dt, false);
+            if (particles >= target && now - doneAt > LOOP_HOLD * 1000) {
                 restart(true);
             }
             paint(); raf = requestAnimationFrame(frame);

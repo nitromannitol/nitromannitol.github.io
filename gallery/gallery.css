@@ -988,9 +988,23 @@ a:hover { text-decoration-thickness: 1.5px; }
     width: 30px;
     height: 6px;
 }
-.einstein-unforced { background: #56B4E9; }
-.einstein-tilted { background: #F0E442; }
+.einstein-unforced { background: #69C8F2; }
+.einstein-tilted { background: #F2BF62; }
 .einstein-error { background: #D55E77; }
+.einstein-heading { width: min(100%, 840px); justify-self: center; }
+.einstein-heading .family { margin-bottom: 12px; color: #69C8F2; }
+.einstein-heading h3 { font: 400 clamp(1.7rem, 3.5vw, 2.5rem)/1.15 var(--serif); color: var(--model-text); }
+.einstein-heading > p:last-child { max-width: 38em; margin-top: 12px; color: var(--model-muted); }
+.instrument--einstein > .model-control-shelf,
+.instrument--einstein > .model-readout,
+.instrument--einstein > .model-key,
+.instrument--einstein > .einstein-details { width: min(100%, 840px); justify-self: center; }
+.model-stage--einstein { width: min(100%, 840px); }
+.einstein-details { color: var(--model-muted); }
+.einstein-details p { margin-top: 1em; }
+@media (max-width: 720px) {
+    .instrument.instrument--einstein > .model-stage { order: 0; }
+}
 .rwrs-negative { background: #D55E77; }
 .rwrs-positive { background: #56B4E9; }
 .rwrs-stop { background: #F0E442; }
@@ -1059,7 +1073,8 @@ a:hover { text-decoration-thickness: 1.5px; }
     background: linear-gradient(90deg, #6F5EE0 0%, #CC79A7 40%, #96CDF0 72%, #FFF8E8 100%);
 }
 /* first-visit order on the chaos-cloud walk: earliest darkest, newest brightest */
-.gw-ramp { background: linear-gradient(90deg, #283C78 0%, #5A78D2 25%, #B26B9D 50%, #F0A24A 75%, #FFF1B8 100%); }
+.gw-ramp { background: linear-gradient(90deg, #4760BA 0%, #58ABD7 25%, #AB7CC4 50%, #E39B85 75%, #FFE8B0 100%); }
+.dla-ramp { background: linear-gradient(90deg, #6471DC 0%, #9A70D2 25%, #D97FA5 50%, #83CAE1 75%, #FFF0C7 100%); }
 .model-swatches { display: grid; height: 22px; }
 .model-swatches i { display: grid; place-items: center; color: #0F0E13; font-style: normal; }
 .model-key--heights .model-swatches,
