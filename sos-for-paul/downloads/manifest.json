@@ -1,0 +1,69 @@
+{
+  "configurations": 456000,
+  "sizes": [
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "generatedAt": "2026-09-08T09:50:56.305Z",
+  "files": {
+    "earlier-continuation.json.gz": {
+      "bytes": 7889053,
+      "sha256": "b2b7c3ddf17afcce7359fcfde84c3d8889bb30faf9d1ea61c5a1fd7c8c77a8b1"
+    },
+    "gaussian-control.json.gz": {
+      "bytes": 2646042,
+      "sha256": "fe6757ce163b2350f5d1fd7035f3a50cd66c38a540b85074c39798ea45ea3066"
+    },
+    "gaussian-reference-n1024.json": {
+      "bytes": 3880,
+      "sha256": "c0499e7d4050ebe1aecfe27330cf4fce532b172f606a2db59609b8c0e7960b37"
+    },
+    "limit-comparison.json": {
+      "bytes": 477257,
+      "sha256": "0751dd32a99b351758c0c324a08586dd813ee516c82b4d51c38c794728cde66a"
+    },
+    "native-audit.json": {
+      "bytes": 8671,
+      "sha256": "165db727ac2dcc9f0b5d6261bffc8eb02efcef8e48e2996cbad97e8b9cce3efb"
+    },
+    "native-n1024.zip": {
+      "bytes": 14780791,
+      "sha256": "1d7831eaee0de62eb6070d0c1dfa620acc6adedf7044af79800b8e3d22fe4d66"
+    },
+    "native-n128.zip": {
+      "bytes": 12951621,
+      "sha256": "72541a3046381325596dc7a8e7f87c8be392707679e7db9eaaf43846c19cddde"
+    },
+    "native-n2048.zip": {
+      "bytes": 6232950,
+      "sha256": "29b9cbf7e5fcfc8d10125056b2ebf4580f16bf4a9d79287af93f217c7a3da709"
+    },
+    "native-n256.zip": {
+      "bytes": 13558681,
+      "sha256": "28de6d912a9b997a74f10000d4fe6343b374369090585071a674e395842907b5"
+    },
+    "native-n512.zip": {
+      "bytes": 14155139,
+      "sha256": "5b6af9df43125cdd57efdfc4e33b6f9f4b06a40a8ecee6a23a179975655d0499"
+    },
+    "observations.csv.gz": {
+      "bytes": 23093198,
+      "sha256": "6e73b225516394dd86d87558896bf8dd27415e94fc42f7f8aeef276f320b4732"
+    },
+    "observations.json.gz": {
+      "bytes": 12714920,
+      "sha256": "5e99155a294a57a4af9901784a2f36266dd53f41ab047df466c8c2a41a62dda8"
+    },
+    "source.zip": {
+      "bytes": 45145,
+      "sha256": "d8b9aa4ef78cf32b93ddf2dc43fc851e4ed46293870541b6367ed39ae1e12632"
+    }
+  }
+}

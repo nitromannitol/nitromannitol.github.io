@@ -1,0 +1,2324 @@
+                                                                       Quantitative delocalisation
+                                                              for the Gaussian and q-SOS long-range chains
+                                                                         Loren Coquille∗, Paul Dario†, Arnaud Le Ny‡
+                                                                                             July 14, 2026
+
+
+                                                                                                 Abstract
+                                                     The goal of this article is to study quantitatively the localisation/delocalisation properties of the
+                                                 integer-valued Gaussian chain with long-range interactions. Specifically, we consider the integer-
+                                                 valued Gaussian chain of length N , with Dirichlet boundary condition, range exponent α ∈ (1, ∞)
+                                                 and inverse temperature β ∈ (0, ∞), and show that:
+                                                                                                                                              1
+                                                     • For α ∈ (2, 3) and β ∈ (0, ∞), the fluctuations of the chain are at least of order N 2 (α−2) ;
+arXiv:2412.15782v2 [math.PR] 11 Jul 2026
+
+
+
+
+                                                     • For α = 3 and β ∈ (0, ∞), the fluctuations of the chain are of order N/ ln N (sharp upper
+                                                                                                                                p
+
+                                                       and lower bounds up to multiplicative constants are derived).
+                                                 Combined with the results of Kjaer-Hilhorst [23], Fröhlich-Zegarlinski [17] and Garban [18], these
+                                                 estimates provide an (almost) complete picture for the localisation/delocalisation of the integer-
+                                                 valued Gaussian chain. The proofs are based on graph surgery techniques which have been recently
+                                                 developed by van Engelenburg-Lis [34, 35] and Aizenman-Harel-Peled-Shapiro [1] to study the phase
+                                                 transitions of two dimensional integer-valued height functions (and of their dual spin systems).
+                                                     Additionally, by combining the previous strategy with a technique introduced by Sellke [32], we
+                                                 are able extend the method to study the q-SOS long-range chain with exponent q ∈ (0, 2) and show
+                                                 that, for any inverse temperature β ∈ (0, ∞) and any range exponent α ∈ (1, ∞):
+                                                                                                               1 (α−2)∧ 1
+                                                     • The fluctuations of the chain are at least of order N q          2   ;
+                                                                                                                      
+                                                                                                                   1 α−1 1
+                                                                                                                        ∧2
+                                                     • The fluctuations of the chain are at most of order N        q            .
+
+
+                                              AMS 2000 subject classification: 60K35, 82B20, 82B26
+
+                                              Key words: Gibbs measures, integer-valued Gaussian free field, long-range interactions.
+
+
+
+
+                                             ∗ Université Grenoble Alpes, CNRS, Institut Fourier, F-38000 Grenoble, France; loren.coquille@univ-grenoble-alpes.fr
+                                              † Laboratoire AGM, CNRS UMR 8088, Cergy Paris Université, Cergy-Pontoise, France; paul.dario@cyu.fr
+                                              ‡ Laboratoire d’Analyse et de Mathématiques Appliquées, UMR CNRS 8050, UPEC, 61 Avenue du Général de Gaulle,
+
+                                           94010 Créteil cedex, France; arnaud.le-ny@u-pec.fr
+
+
+                                                                                                     1
+                                               Contents
+
+1 Introduction                                                                                                                           3
+  1.1 Setting and main results . . . . . . . . . . . . . . . . . . . . . . .    . . . . . . . . .                   .   .   .   .   .    3
+       1.1.1 integer-valued Gaussian long-range chain . . . . . . . . .         . . . . . . . . .                   .   .   .   .   .    3
+       1.1.2 Summary of known and new results for the integer-valued            Gaussian chain                      .   .   .   .   .    4
+       1.1.3 Discrete q-SOS long-range chain . . . . . . . . . . . . . .        . . . . . . . . .                   .   .   .   .   .    5
+  1.2 Related results . . . . . . . . . . . . . . . . . . . . . . . . . . . .   . . . . . . . . .                   .   .   .   .   .    6
+  1.3 Strategy of the proof . . . . . . . . . . . . . . . . . . . . . . . . .   . . . . . . . . .                   .   .   .   .   .    7
+
+2 Definitions and preliminaries                                                                                                          9
+  2.1 General notation . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .    9
+  2.2 Integer-valued Gaussian free field on a finite graph . . . . . . . . . .          .   .   .   .   .   .   .   .   .   .   .   .    9
+      2.2.1 integer-valued Gaussian random variable . . . . . . . . . . . .             .   .   .   .   .   .   .   .   .   .   .   .    9
+      2.2.2 Integer-valued Gaussian free field on a finite graph . . . . . .            .   .   .   .   .   .   .   .   .   .   .   .   10
+  2.3 Monotonicity of the variance of the height in the conductances . . .              .   .   .   .   .   .   .   .   .   .   .   .   11
+      2.3.1 Monotonicity in the conductances . . . . . . . . . . . . . . .              .   .   .   .   .   .   .   .   .   .   .   .   11
+      2.3.2 Monotonicity under deletion of edges . . . . . . . . . . . . . .            .   .   .   .   .   .   .   .   .   .   .   .   11
+      2.3.3 Monotonicity under identification of vertices . . . . . . . . . .           .   .   .   .   .   .   .   .   .   .   .   .   12
+  2.4 Monotonicity of the variance of the height under addition of vertices             .   .   .   .   .   .   .   .   .   .   .   .   13
+  2.5 Power-law interactions . . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   14
+      2.5.1 Gaussian decomposition of power-law interactions . . . . . .                .   .   .   .   .   .   .   .   .   .   .   .   14
+      2.5.2 The FKG inequality . . . . . . . . . . . . . . . . . . . . . . .            .   .   .   .   .   .   .   .   .   .   .   .   14
+  2.6 Convention for constants . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   15
+
+3 Delocalisation for the integer-valued Gaussian long-range chain                                                                       15
+  3.1 The lower bounds . . . . . . . . . . . . . . . . . . . . . . . . . . . .      .   .   .   .   .   .   .   .   .   .   .   .   .   15
+      3.1.1 The case α > 3 . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   .   15
+      3.1.2 The case α ∈ (2, 3) . . . . . . . . . . . . . . . . . . . . . . .       .   .   .   .   .   .   .   .   .   .   .   .   .   17
+      3.1.3 The case α = 3 . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   .   22
+      3.1.4 The case α = 2 at high temperature . . . . . . . . . . . . .            .   .   .   .   .   .   .   .   .   .   .   .   .   23
+      3.1.5 The case α ∈ (1, 2) . . . . . . . . . . . . . . . . . . . . . . .       .   .   .   .   .   .   .   .   .   .   .   .   .   25
+  3.2 The upper bounds . . . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   .   25
+      3.2.1 The case α > 3 . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   .   27
+      3.2.2 The case α = 3 . . . . . . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   .   27
+      3.2.3 The case α ∈ (1, 3) via Bäumler’s technique . . . . . . . . .          .   .   .   .   .   .   .   .   .   .   .   .   .   35
+
+4 Delocalisation for the integer-valued q-SOS long-range chain                                                                          36
+  4.1 The lower bound . . . . . . . . . . . . . . . . . . . . . . . . . . .     .   .   .   .   .   .   .   .   .   .   .   .   .   .   36
+      4.1.1 Domination by a Gaussian long-range chain . . . . . . . .           .   .   .   .   .   .   .   .   .   .   .   .   .   .   36
+      4.1.2 The cases α > 2 + q/2 . . . . . . . . . . . . . . . . . . . .       .   .   .   .   .   .   .   .   .   .   .   .   .   .   37
+      4.1.3 The cases α ∈ (2, 2 + q/2) . . . . . . . . . . . . . . . . . .      .   .   .   .   .   .   .   .   .   .   .   .   .   .   38
+      4.1.4 The case α = 2 + q/2 . . . . . . . . . . . . . . . . . . . .        .   .   .   .   .   .   .   .   .   .   .   .   .   .   40
+      4.1.5 The cases α ∈ (1, 2] . . . . . . . . . . . . . . . . . . . . . .    .   .   .   .   .   .   .   .   .   .   .   .   .   .   40
+  4.2 The upper bound . . . . . . . . . . . . . . . . . . . . . . . . . . .     .   .   .   .   .   .   .   .   .   .   .   .   .   .   40
+      4.2.1 Domination by a Gaussian long-range chain . . . . . . . .           .   .   .   .   .   .   .   .   .   .   .   .   .   .   40
+      4.2.2 Bäumler’s technique again . . . . . . . . . . . . . . . . . .      .   .   .   .   .   .   .   .   .   .   .   .   .   .   42
+
+References                                                                                                                              44
+
+
+
+
+                                                     2
+                                             1. Introduction
+1.1     Setting and main results
+1.1.1. integer-valued Gaussian long-range chain. The integer-valued Gaussian long-range chain
+is a model of discrete interfaces in one dimension with long-range interactions. Formally, it is a model of
+random interfaces (or height functions) where the interfaces are modelled by functions φ : Z → Z which
+are sampled according to the (formal) Gibbs measure
+                                                                         
+                                                                        2
+                                           1          X    |φ(i) − φ(j)| 
+                               µ({φ}) := exp −β                            ,
+                                           Z                  |i − j|α
+                                                          i,j∈Z
+
+where β ∈ (0, ∞) is the inverse temperature and α ∈ (1, ∞) is the range exponent. Following this
+formalism, we will frequently refer to the value φ(v) as the height of the interface φ : Z → Z at the
+vertex v ∈ Z.
+   To be more rigorous, we introduce the finite-volume version of the model with Dirichlet boundary
+condition studied in this manuscript.
+Definition 1.1 (Finite-volume integer-valued Gaussian long-range chain). For N ∈ N, β ∈ (0, ∞) and
+α ∈ (1, ∞), we define the integer-valued Gaussian long-range chain of length N at inverse temperature
+β and with range exponent α to be the probability distribution on the set of functions
+                             ΩN := {φ : Z → Z : ∀ k ∈
+                                                    / {−N, . . . , N }, φ(k) = 0}
+given be the formula, for any φ ∈ ΩN ,
+                                                                              
+                                               1              X |φ(i) − φ(j)|2
+                            µN,β,α ({φ}) =            exp −β                  ,                        (1.1)
+                                             ZN,β,α                |i − j|α
+                                                                  i,j∈Z
+
+where ZN,β,α is the normalizing constant chosen so that µN,β,α is a probability distribution. We denote
+by VarN,β,α the variance with respect to µN,β,α .
+    In this article, we study the localisation/delocalisation properties of the integer-valued Gaussian
+chain, that is, we investigate the variance of the height of the interface at the vertex 0 (i.e., the variance
+of φ(0)) as a function of the parameters N , β and α. For fixed α and β, we say that the random interface
+is localised when this variance remains bounded as N tends to infinity, and we say that the interface is
+delocalised when it diverges as N tends to infinity (N.B. it can be shown that this variance is increasing
+in N so only one of these two behaviours can occur, see Remark 2.8).
+    The main result identifies the rate of growth (or absence of growth) of this variance as a function of
+the length of the chain and is stated below.
+Theorem 1.2 (Localisation/Delocalisation for the Gaussian long-range chain). For any inverse tem-
+perature β ∈ (0, ∞) and any range exponent α ∈ (1, ∞), there exist two constants cβ := c(β, α) > 0 and
+Cβ := C(β, α) < ∞ such that, for any N ∈ N,
+                            cβ ≤ VarN,β,α [φ(0)] ≤ Cβ                     for α ∈ (1, 2)
+                       cβ ln N ≤ VarN,β,α [φ(0)] ≤ Cβ ln N                for α = 2 and β ≪ 1
+                      cβ N α−2 ≤ VarN,β,α [φ(0)] ≤ Cβ N α−2               for α ∈ (2, 3)
+                    cβ N/ ln N ≤ VarN,β,α [φ(0)] ≤ Cβ N/ ln N             for α = 3
+                          cβ N ≤ VarN,β,α [φ(0)] ≤ Cβ N                   for α > 3.
+Remark 1.3. Let us make a few remarks about the previous result:
+      • The above value of the fluctuation exponent in the regime α ∈ (1, ∞) \ {2} matches the one
+        conjectured by Fröhlich and Zegarlinski in the early nineties [17].
+      • Some of the results of Theorem 1.2 have been established the articles [23, 17, 18, 12] and we refer
+        to Section 1.1.2 for a table summarising the various contributions on the localisation/delocalisation
+        of the integer-valued Gaussian chain. As all these results can be proved using the same set of tools,
+        i.e., the graph surgery techniques introduced in Section 2, we include in this article a proof of all
+        of them, previously known or not.
+
+
+                                                         3
+    • In the case of the range exponent α = 2 at low temperature (β ≫ 1), Fröhlich and Zegarlinski [17]
+      used a Peierls-type argument to prove that the integer-valued Gaussian chain is localised (i.e., the
+      variance of the height is bounded as a function of N ). This case is not covered by Theorem 1.2
+      and we mention that it would be interesting to find an alternative proof of the localisation of the
+      integer-valued Gaussian chain at low temperature based on graph surgery techniques.
+    • An explicit dependence of the constants in the inverse temperature β can be deduced from our
+      proofs. Specifically, it can be shown that there exist two constants c := c(α) > 0 and C := C(α) <
+      ∞ (depending only on α) such that the following lower bounds hold for the constant cβ
+
+                                     Lower bound on cβ      β≤1      β≥1
+                                     α ∈ (1, 2)             c/β      ce−Cβ
+                                     α=2                    c/β      N.A.
+                                     α ∈ (2, ∞)             c/β      ce−Cβ
+
+      Regarding the constant Cβ , the following upper bounds can be deduced from the proof
+
+                                     Upper bound on Cβ      β≤1      β≥1
+                                     α ∈ (1, 2)             C/β      Ce−cβ
+                                     α=2                    C/β      N.A.
+                                     α ∈ (2, 3]             C/β      C/β
+                                     α ∈ (3, ∞)             C/β      Ce−cβ
+
+      These upper and lower bounds display the correct dependence in the inverse temperature β except
+      for the lower bound in the case α ∈ (2, 3] and β ≫ 1, where it is conjectured that it should behave
+      like the inverse of β (see [18, Open question 3]). We mention that the question of the identification
+      of the correct dependence in the inverse temperature β is related to (and in fact strictly simpler
+      than) the question of the invisibility of the integers for the integer-valued Gaussian chain in the
+      case α ∈ (2, 3] and β ≫ 1 discussed in the paper of Garban [18, Open question 3] (and we refer to
+      this article for much more information and results in this direction).
+    • All the results stated in Theorem 1.2 (as well as their proofs) apply to the real-valued Gaussian
+      long-range chain (obtained by assuming that the interfaces are real-valued and sampled according
+      to the distribution whose density with respect to the Lebesgue measure is given by (1.1)). In
+      this case, the results can be obtained using alternative methods (since the random interface is a
+      multivariate normal distribution, it can be directly studied through its covariance matrix).
+
+ 1.1.2. Summary of known and new results for the integer-valued Gaussian chain. Below is a
+ table describing the behaviour of the integer-valued Gaussian chain depending on the inverse temperature
+ β and the range exponent α. The new results are displayed in bold and the alternative proofs of known
+ results are displayed in blue.
+
+               Lower bounds        Quantitatively                                           Qualitatively
+α = 2, β ≪ 1   cβ log N            Kjaer-Hilhorst [23], Garban [18] + Proposition 3.2       Deloc β ≪ 1
+α ∈ (2, 3)     cβ N α−2            Garban [18] for β small + Theorem 1.2 for all β          Deloc for all β [12]
+α=3            cβ N/ log N         Garban [18] for β small + Theorem 1.2 for all β          Deloc for all β [12]
+α>3            cβ N                Garban [18] for all β+ Section 3.1.1                     Deloc for all β [12]
+
+
+               Upper bounds       Quantitatively                             Qualitatively
+α ∈ (1, 2)     Cβ                 Garban [18] for all β + Section 3.2.3      Localised for all β
+α = 2, β ≫ 1   Cβ                 Fröhlich-Zegarlinski [17]                 Localised β ≫ 1
+α = 2, β ≪ 1   Cβ log N           Garban [18] + Section 3.2.3                Delocalised β ≪ 1
+α ∈ (2, 3)     Cβ N α−2           Garban [18] for all β + Section 3.2.3      Delocalised for all β
+α=3            Cβ N/ log N        Section 3.2.2                              Delocalised for all β
+α>3            Cβ N               Garban [18] for all β + Section 3.2.1      Delocalised for all β
+
+
+
+
+                                                    4
+1.1.3. Discrete q-SOS long-range chain. In order to go beyond the integer-valued Gaussian chain,
+it is interesting to study other potentials than the square function in Definition 1.1. In Section 4, we
+consider the q-SOS long-range chain with q ∈ (0, 2) (which is obtained by replacing the square function
+in (1.1) by the function x 7→ |x|q ) and show that the fluctuations of this model are different from that of
+the Gaussian chain. The precise definition of the model and the results obtained in Section 4 are stated
+below, and summarised on Figure 1.1.
+Definition 1.4 (Finite-volume discrete q-SOS long-range chain). For N ∈ N, q ∈ (0, 2), β ∈ (0, ∞) and
+α ∈ (1, ∞), we define the discrete q-SOS long-range chain of length N at inverse temperature β and with
+range exponent α to be the probability distribution on the set ΩN given be the identity, for any φ ∈ ΩN ,
+                                                                              
+                                                                             q
+                                            1              X    |φ(i) − φ(j)| 
+                        µq−SOS
+                          N,β,α ({φ}) =    q−SOS
+                                                 exp −β                         ,
+                                        ZN,β,α                     |i − j|α
+                                                                     i,j∈Z
+
+       q−SOS
+where ZN,β,α is the normalizing constant. We denote by Varq−SOS                               q−SOS
+                                                          N,β,α the variance with respect to µN,β,α .
+
+Theorem 1.5 (Delocalisation for the q-SOS long-range chain). For any β ∈ (0, ∞), any range exponent
+α ∈ (1, ∞), and any q ∈ (0, 2) there exists a constant cβ := c(β, α, q) > 0 such that, for any N ∈ N,
+
+                                    cβ ≤ Varq−SOS
+                                            N,β,α [φ(0)]             for      α ∈ (1, 2] ,
+                                2
+                                                                                          q
+                         cβ N   q (α−2)   ≤ Varq−SOS
+                                               N,β,α [φ(0)]          for      α ∈ 2, 2 +      ,
+                                                                                           2
+                                 N                                                     q
+                        cβ              ≤ Varq−SOS
+                                             N,β,α [φ(0)]            for      α=2+ ,
+                             (ln N )2/q                                                2
+                                                                                       q
+                                  cβ N ≤ Varq−SOS
+                                            N,β,α [φ(0)]             for      α>2+ .
+                                                                                       2
+Regarding the upper bound, there exists a constant Cβ := C(β, α, q) < ∞ such that
+                                                         
+                                                                    Cβ for α < q,
+                                                         
+                                  Varq−SOS
+                                     N,β,α    [φ(0)] ≤        Cβ ln N for α = q,
+                                                                    2α
+                                                         
+                                                                     q −2
+                                                         
+                                                             Cβ N            for α > q.
+
+Remark 1.6. Let us make a few remarks about the previous result:
+   • Delocalisation in the qualitative sense (absence of shift-invariant Gibbs measure) under a q-th
+     moment condition can be derived for any α > 2 and any q > 2 in the same fashion as in the
+     paper [12]. We thus add this weak delocalisation zone on Figure 1.1.
+
+   • Unfortunately, the method does not seem to yield matching upper and lower bounds for the fluctu-
+     ations of the chain (the reason is technical and discussed in Remark 4.5 below). We believe that it
+     is an interesting open question to identify the correct fluctuation exponent. Considering our proofs
+     in more details, there seems to be more space for improvement in the upper bound case, and it is
+     thus tempting to conjecture that the lower bound should be the correct one.
+
+   • As it was the case for the Gaussian chain, an explicit dependence of the constants in the inverse
+     temperature β could be extracted from the argument (but this dependence is more intricate to
+     follow than in the Gaussian case, we thus decided not to keep track of it in Section 4).
+   • All the results stated in Theorem 1.5 and their proofs apply to the real-valued q-SOS long-range
+     chain (N.B. for this model, the distribution of the real-valued random interface cannot be identified
+     as easily as in the Gaussian case).
+   • When q → ∞, the interface φ will take values either in {0, 1} or in {0, −1} with probability 1/2,
+     so the limit q → ∞ corresponds to a symmetric convex combination of Ising models.
+
+
+
+
+                                                         5
+                      Figure 1.1: Partial phase diagram of the q-SOS long-range chain.
+
+
+
+1.2     Related results
+A few (already mentioned) results have been established on the integer-valued Gaussian chain, and we
+now present a few more details about the statements and techniques of proof.
+
+      • In [23], Kjaer and Hilhorst study the integer-valued Gaussian chain (with periodic boundary con-
+        ditions) and use a duality transformation to derive an exact identity for the variance of the height
+        of the chain when β = 1 and when the long-range interaction is exactly |i−j|21−1/4 . Their iden-
+        tity shows in particular that this variance diverges logarithmically fast in the length of the chain.
+        We mention that this approach was recently extended to the two-dimensional setting by Cornu,
+        Hilhorst and Bauer [13].
+      • In [15], Fröhlich and Zegarlinski study the behaviour of the chain in the regime α = 2 and β ≫ 1 and
+        show that the integer-valued Gaussian chain is localised. The proof relies on the implementation
+        of a Peierls-type argument (inspired by the one developed in the work of Fröhlich and Spencer [16]
+        for the 1D long-range Ising model). Combined with [23] (and a correlation inequality), their result
+        implies the existence of a phase transition for the Gaussian chain for α = 2 between a localised
+        regime at low temperature and a delocalised regime at high temperature.
+      • In [18], Garban studies the integer-valued Gaussian chain in the high temperature regime (i.e.,
+        β ≪ 1) for the range exponent α ∈ [2, 3) and obtains (among other results) very precise information
+        on the behaviour of the chain by identifying its scaling limit. His result exhibits an interesting
+        phenomenon called the invisibility of the integers: the scaling limit of the integer-valued Gaussian
+        chain is shown to be exactly the same as the one of the real-valued Gaussian chain (N.B. this
+        property is known to be false for related models such as the integer-valued Gaussian chain with
+        α > 3 and β ≫ 1 [18, Remark 14], or for the two-dimensional integer-valued Gaussian free field [19]).
+        Let us emphasize that the results of [18] include the case α = 2 (for small β) even though the
+        Gaussian chain is known to exhibit a phase transition in this regime. On a currently less rigorous
+        level, it is conjectured that the invisibility of integers holds in the case α = 2 for any β (strictly)
+        smaller than the critical threshold for the localisation/delocalisation phase transition (see [33]
+        and [18, Open Problem 4]) and that it holds for any value of β ∈ (0, ∞) in the case α ∈ (2, 3)
+        (see [18, Open Problem 3]).
+        Other results obtained in [18, Theorem 1.1 and Proposition 1.4] include upper bounds for the
+        fluctuations of the interface at every inverse temperature and for any α > 1 and lower bounds in
+        the high temperature regime for any α ≥ 2 (the high temperature constraint can be removed for
+        α > 3).
+      • In [12], two of the authors of the present paper showed with van Enter and Ruszel the absence of
+        shift-invariant Gibbs states (i.e. a qualitative statement of delocalisation) of the q-SOS chain at
+        every inverse temperature for any q ∈ [1, 2] and range exponent α > 2 by adapting an argument
+
+
+                                                        6
+        for the 1D long-range Ising model (see [11] and references therein). The absence of shift-invariant
+        Gibbs state µq−SOS
+                      β,α   under a q-th moment condition (µq−SOS
+                                                               β,α   (|φ(0)|q ) < ∞) can be derived for any
+        α > 2 and any q > 2 in the same fashion as in the paper [12].
+
+    The localisation/delocalisation phase transition of the integer-valued Gaussian chain for α = 2 is
+closely related to the localisation/delocalisation phase transition of the 2D integer-valued Gaussian free
+field (see Definition 3.1 below). The existence of this phase transition was first established in the seminal
+article of Fröhlich and Spencer [15], and a new proof has been recently obtained by Lammers [24]. Since
+then, there has been an important number of recent remarkable developments on the topic [22, 36, 20,
+19, 3, 4, 29, 26, 25, 1, 34, 35, 27, 6].
+
+1.3     Strategy of the proof
+As mentioned above the strategy of the proof of Theorem 1.2 relies on graph surgery. To explain the
+argument in more details, we first introduce a definition.
+Definition 1.7. To each finite connected rooted graph G := (V, E, x) (with vertex set V , edge set E,
+root x ∈ V ) equipped with conductances λ := (λij )ij∈E ∈ (0, ∞)E , we associate a random interface by
+equipping the set of interfaces (or height functions) ΩV := {φ : V → Z : φ(x) = 0} with the probability
+distribution                                                                   
+                                             1           X                    2
+                        PIV−GFF
+                          G,λ     ({φ}) :=       exp −      λij (φ(i) − φ(j))  .
+                                            ZG,λ
+                                                          ij∈E
+
+We denote by VarIV−GFF
+                G,λ    the variance with respect to the measure PIV−GFF
+                                                                 G,λ    .
+     In this formalism, the integer-valued Gaussian long-range chain introduced in Definition 1.1 can be
+represented as the line {−N, . . . , N } ⊆ Z with long-range edges connecting any two pair of vertices
+i, j ∈ {−N, . . . , N } and the conductance of the edge ij is equal to β/|i − j|α (N.B. this is not fully
+correct as stated and we refer to Remark 2.3 for the exact interpretation). This graph will be denoted
+by GN in the rest of this section (see Figure 1.2).
+     Let us then fix a finite rooted graph G := (V, E, x) equipped with conductances as well as a vertex
+v ∈ V (N.B. this graph can be any graph and is not necessarily the graph GN ). The core of the proof of
+Theorem 1.2 relies on the fact that the following operations on the graph G have a monotonic effect on
+the variance of the height φ(v):
+  (i) Erasing an edge from the graph G as in Figure 2.1 increases the variance of the height φ(v) (see
+      Proposition 2.6);
+ (ii) Identifying two vertices of the graph G as in Figure 2.2 reduces the variance of φ(v) (see Proposi-
+      tion 2.7);
+(iii) Adding a new vertex in the middle of an edge while suitably adjusting the conductances as in
+      Figure 2.3 reduces the variance of φ(v) (see Proposition 2.9).
+These operations can then be combined so as to simplify the graph GN associated with the integer-valued
+Gaussian chain (1.1). More specifically, we will proceed differently for the lower and upper bounds (see
+Figure 1.2):
+      • The lower bounds: in this case, we will use the operations (i), (ii) and (iii) above to reduce the
+        graph GN to a nearest neighbour line while reducing the variance of the height φ(0).
+      • The upper bounds: in this case, we adapt an argument of Baümler [5, Proof of Theorem 1.1] and
+        use the operations (i) and (ii) above to reduce the graph GN to the graph whose vertex set is the
+        line {−N, . . . , N } but which contains only one edge connecting the vertex 0 to the vertex N (N.B.
+        we have the constraint φ(N ) = 0) while increasing the variance of the height φ(0).
+In both cases, the variance of φ(0) on the resulting graph can be easily computed, yielding the estimates
+of Theorem 1.2.
+    The proof of Theorem 1.5 for the q-SOS long-range chain is based on a similar strategy with one
+                                                                                                           q
+additional idea due to Sellke [32]. We first rely on the property that the power-law interaction x 7→ e−|x|
+
+
+
+                                                      7
+Figure 1.2: Strategy of the proof of Theorem 1.2. The graph GN associated with the integer-valued
+Gaussian chain (1.1) is drawn on the top line. This graph is then simplified using the operations (i),
+(ii) and (iii) so as to either obtain a nearest neighbour line for the lower bounds or to obtain a graph
+containing only one edge for the upper bound. On the resulting graphs, the variance of φ(0) can be
+easily computed.
+
+
+
+
+                                                   8
+(with q ∈ (0, 2]) can be decomposed into a mixture of centred Gaussian densities, i.e., there exists a
+probability measure µq on [0, ∞) such that, for any x ∈ R,
+                                               ˆ ∞
+                                          q              2
+                                     e−|x| =       e−λ|x| µq (dλ).                               (1.2)
+                                                 0
+
+The identity (1.2) can be used to show that the variance of the height φ(0) for the q-SOS long-range
+chain is equal to the variance of the height φ(0) of an integer-valued Gaussian chain equipped with
+random conductances (N.B. this observation has already been used to study random interfaces and a
+brief account of the literature can be found in Section 2.5.1). This latter model can be analysed using
+the same techniques as the ones used in the proof of Theorem 1.2 together with the FKG correlation
+inequality (N.B. the use of the FKG inequality is one of the novelties of [32]).
+
+
+
+                              2. Definitions and preliminaries
+In this section, we introduce some notation and preliminary results. Specifically, we introduce a general
+version of the integer-valued Gaussian free field and state some monotonicity results (monotonicity in
+the conductances, under addition and identification of vertices and under deletion of edges) which are
+then used to perform the graph surgery in the proofs of Theorems 1.2 and 1.5. We remark that these
+monotonicity properties have been recently used by Aizenman, Harel, Peled and Shapiro [1] and by van
+Engelenburg and Lis [34, 35] (to establish either the existence of a phase transition for two-dimensional
+integer-valued height functions or the existence of a Berezinskii-Kosterlitz-Thouless – BKT – phase
+transition for O(1) spin systems) and by Garban [18] to study the Gaussian chain.
+
+2.1   General notation
+In all this section, we consider a (finite) rooted graph G = (V, E, x) where V is the set of vertices, E is
+the set of edges of G and x ∈ V is the root.
+    The graph G can then be equipped with conductances by considering a collection of non-negative real
+numbers (λij )ij∈E ∈ [0, ∞)E indexed by the edges of G (or equivalently a function from E to (0, ∞)).
+    We equip the collection of conductances of the graph G with a partial order as follows: given two
+collections of conductances λ = (λij )ij∈E ∈ (0, ∞)E and λ′ = λ′ij ij∈E ∈ [0, ∞)E , we write
+
+                                   λ ⪰ λ′   ⇐⇒       ∀ij ∈ E, λij ≥ λ′ij .
+
+A function f : [0, ∞)E → R is called increasing (resp. decreasing) if
+                  ∀λ, λ′ ∈ [0, ∞)E , λ ⪰ λ′ =⇒ f (λ) ≥ f (λ′ )       (resp. f (λ) ≤ f (λ′ )).         (2.1)
+We denote by ΩV := {φ : V 7→ Z : φ(x) = 0} ≃ ZV \{x} the set of integer-valued height functions on the
+rooted graph G = (V, E, x).
+
+2.2   Integer-valued Gaussian free field on a finite graph
+In this subsection, we introduce the integer-valued Gaussian distribution and the integer-valued Gaussian
+free field on the graph G.
+
+2.2.1. integer-valued Gaussian random variable.
+Definition 2.1. For λ > 0, we define the integer-valued Gaussian distribution of conductance λ to be
+the probability distribution on Z given by the identity: for any k ∈ Z,
+                                                                2
+                                                           e−λk
+                                      PIV−G
+                                       λ    ({k})    := P       −λk2
+                                                                     .
+                                                          k∈Z e
+
+We denote by VarIV−G
+                λ    the variance with respect to PIV−G
+                                                   λ    .
+   A random variable whose law is an integer-valued Gaussian distribution is called an integer-valued
+Gaussian random variable (of conductance λ).
+   In the following lemma, we let X be an integer-valued Gaussian random variable of conductance λ
+and estimate its variance as a function of λ.
+
+
+                                                     9
+Lemma 2.2. There exist two constants c > 0 and C < ∞ such that:
+   • Gaussian domination bound [14] (cf. [22]): for any λ ∈ (0, ∞),
+                                                                      1
+                                                VarIV−G
+                                                   λ    [X] ≤           .
+                                                                     2λ
+   • Behaviour as λ → 0: for any λ ∈ (0, 1),
+                                              c                  1
+                                                ≤ VarIV−G
+                                                     λ    [X] ≤    .
+                                              λ                 2λ
+   • Behaviour as λ → ∞: for any λ ∈ (1, ∞),
+                                          ce−λ ≤ VarIV−G
+                                                    λ    [X] ≤ Ce−λ .
+
+2.2.2. Integer-valued Gaussian free field on a finite graph. We recall the Definition 1.7 of the
+integer-valued GFF and precise that ZG,λ is the normalizing constant (or partition function) defined by
+the identity                                                           
+                                    X             X                   2
+                           ZG,λ :=       exp −      λij (φ(i) − φ(j))  .                         (2.2)
+                                       φ∈ΩV             ij∈E
+
+Remark 2.3. Let us make a few remarks:
+   • Definition 1.7 only makes sense if the graph G is connected and we may have to consider the
+     variance of the height of a vertex v ∈ V , i.e., VarIV−GFF
+                                                         G,λ    [φ(v)], for disconnected graphs. In order
+     to do so, we extend the definition of this quantity to disconnected graphs by using Definition 1.7
+     on the connected component of the root and by setting VarIV−GFFG,λ      [φ(v)] = ∞ for any vertex v
+     which is not in this connected component.
+   • The model (1.1) is obtained by considering the complete graph with 2N vertices, identifying the set
+     of vertices with the set {−N +1, . . . , N } (in an arbitrary way) and then considering the conductances
+                                             β
+                                 λij =            for i, j ∈ {−N + 1, . . . , N − 1}
+                                         |i − j|α
+     and
+                                         X                 β
+                       λiN :=                                   for i ∈ {−N + 1, . . . , N − 1}.
+                                                       |i − j|α
+                                j∈Z\{−N +1,...,N −1}
+
+     We denote by VarN,β,α the variance under the corresponding probability measure.
+   • A simple graph of interest for us is the nearest neighbour chain defined as follows. Given an integer
+     L ∈ N, we consider the graph whose vertices are {0, . . . , L}, equipped with nearest neighbour edges
+     and rooted in L. We then consider a collection of conductances λ := (λi(i+1) )i∈{0,...,L−1} and let
+     φ : {0, . . . , L} → Z be sampled according to the integer-valued Gaussian free field on this graph.
+     The variance of the height φ(0), denoted by VarL,λ [φ(0)], can then be explicitly computed by
+     writing
+                                                  L−1
+                                                  X
+                                          φ(0) =      (φ(i) − φ(i + 1))
+                                                    i=0
+     and by observing that the random variables λ := (φ(i) − φ(i + 1))i∈{0,...,L−1} are independent and
+     that they follow the integer-valued Gaussian distribution with conductance (λi(i+1) )i∈{0,...,L−1} . In
+     particular, we have
+                                                         L−1
+                                                         X
+                                         VarL,λ [φ(0)] =     cλi(i+1) ,
+                                                               i=0
+     where cλi(i+1) denotes the variance of an integer-valued Gaussian random variable of conductance
+     λi(i+1) . In the case where all the conductances are equal to the same value λ ∈ (0, ∞), we have
+                                               VarL,λ [φ(0)] = cλ L.                                    (2.3)
+
+   • The function λ 7→ ZG,λ is decreasing in λ (as increasing the values of the conductances reduces
+     each term of the sum in the right-hand side of (2.2)).
+
+
+                                                        10
+Figure 2.1: Removing an edge from a graph. This operation increases the variance of the linear functionals
+of the field
+
+
+
+2.3   Monotonicity of the variance of the height in the conductances
+In this section, we state a monotonicity property in the conductances for the height of the integer-
+valued Gaussian free field and collect two corollaries (the monotonicity under deletion of vertices and
+identification of vertices). These results are all an almost immediate consequence of the Regev-Stephens-
+Davidowitz monotonicity theory [31] and they will be used extensively in the proofs below.
+
+2.3.1. Monotonicity in the conductances. The following statement asserts that the variance of the
+height and the differences of the heights of an integer-valued Gaussian free field are decreasing functions
+of the conductances.
+Proposition 2.4 (Monotonicity of the height and differences of heights in the conductances [31]). The
+following statement holds:
+
+        ∀(i, j) ∈ V × V, the function λ 7→ VarIV−GFF
+                                              G,λ    [φ(i) − φ(j)] is decreasing in λ ∈ (0, ∞)E .
+
+In particular, by setting j = x,
+
+                ∀i ∈ V, the function λ 7→ VarIV−GFF
+                                             G,λ    [φ(i)] is decreasing in λ ∈ (0, ∞)E .
+
+Remark 2.5. More generally, these properties are valid for linear functionals of the height function φ
+with the moment generating function replacing the variance, see [31].
+   We collect in the following subsections two corollaries of Proposition 2.4: the monotonicity of the
+variance of the height under deletion of edges and under identification of vertices. They are obtained by
+sending the value of a specific conductance λij to the extremal values 0 and infinity in Proposition 2.4.
+
+2.3.2. Monotonicity under deletion of edges.
+
+Proposition 2.6 (Monotonicity under deletion of edges). Let yz ∈ E be an edge of G and λ ∈ (0, ∞)E
+be a collection of conductances. Denote by G∗ the graph G from which the edge yz has been removed and
+by λ∗ the restriction of λ to the edges of G∗ (see Figure 2.1). Then
+
+                  ∀ (i, j) ∈ V × V, VarIV−GFF
+                                       G,λ    [φ(i) − φ(j)] ≤ VarIV−GFF
+                                                                 G∗ ,λ∗ [φ(i) − φ(j)] .
+
+In particular, by setting j = x,
+
+                             ∀ i ∈ V, VarIV−GFF
+                                         G,λ    [φ(i)] ≤ VarIV−GFF
+                                                            G∗ ,λ∗ [φ(i)] .
+
+
+Proof. This result is obtained by considering the graph G with conductances λ ∈ (0, ∞)E and reducing
+the value of the conductance λyz to 0. This operation removes the edge yz from the graph and increases
+the variances of φ(i) and φ(i) − φ(j) by Proposition 2.4.
+
+
+
+
+                                                    11
+Figure 2.2: Identifying the vertices in a graph. This operation reduces the variance of linear functionals
+of the field
+
+
+
+2.3.3. Monotonicity under identification of vertices. We now state the monotonicity under the
+identification of vertices. For the definition of λ̄ below, we will use the convention λxy = 0 if xy ∈
+                                                                                                     / E.
+Proposition 2.7 (Monotonicity under identification of vertices). Let y1 , y2 ∈ V be two vertices of G
+and λ ∈ (0, ∞)E be a collection of conductances. Denote by Ḡ = (V̄ , Ē, x) the graph G in which the
+vertices y1 and y2 have been identified, denote by y this new vertex, and let λ̄ : Ē → (0, ∞) the collection
+of conductances defined by (see Figure 2.2)
+            λ̄yz := λy1 z + λy1 z for yz ∈ Ē and λ̄zz = λzz′ for zz ′ ∈ Ē with z ̸= y and z ′ ̸= y.
+Then
+                  ∀ (i, j) ∈ V × V, VarIV−GFF
+                                       Ḡ,λ̄
+                                              [φ(i) − φ(j)] ≤ VarIV−GFF
+                                                                 G,λ    [φ(i) − φ(j)] .
+In particular, by setting j = x,
+                              ∀ i ∈ V, VarIV−GFF
+                                          Ḡ,λ̄
+                                                 [φ(i)] ≤ VarIV−GFF
+                                                             G,λ    [φ(i)] .
+
+Proof. We distinguish two cases: whether yz is an edge of E or not (i.e., yz ∈ E or yz ∈/ E).
+    In the first case, we increase the value of the conductance λyz to infinity. This operation identifies
+the vertices y and z and reduces the variances of φ(i) and φ(i) − φ(j) by Proposition 2.4.
+    In the second case, we let G′ be the graph G to which the edge yz has been added and extend the
+collection of conductances λ to the edge set of G′ by setting λyz = 0. We then increase the value of the
+conductance λyz from 0 to infinity.
+Remark 2.8. We conclude this section by mentioning three monotonicity properties which are direct
+consequences of Proposition 2.4 and Proposition 2.7. The variance VarN,β,α [φ(0)] is:
+   • Increasing in the length of the chain N (this is obtained by using the second item of Remark 2.3
+     and by applying Proposition 2.7 to identify the vertices N − 1 and −N + 1 with the vertex N );
+   • Decreasing in the inverse temperature β (this is a consequence of Proposition 2.4);
+   • Increasing in the range exponent α (this is a consequence of Proposition 2.4).
+
+
+                                                       12
+Figure 2.3: Adding a vertex in the middle of an edge. This operation reduces the variance of linear
+functionals of the field.
+
+
+2.4     Monotonicity of the variance of the height under addition of vertices
+In this section, we state a second monotonicity property which allows to add vertices to a graph while
+reducing the variances of the heights and differences of heights upon suitable modification of the con-
+ductances (see Figure 2.3). We note that this result was used by Aizenman, Harel, Peled and Shapiro [1]
+to study the phase transition of the two-dimensional integer-valued Gaussian free field.
+Proposition 2.9 (Monotonicity under addition of vertices). Given an edge yz ∈ E, we denote by G        e
+the graph obtained by adding a new vertex t on the edge yz (see Figure 2.3). We let λe be a collection of
+conductances on the graph G satisfying:
+                             e
+      • On all the edges of G
+                            e which are not incident to t, λ
+                                                           e = λ,
+
+      • For the edges yt and tz,     1
+                                          +    1
+                                                    =    1
+                                                        λyz .
+                                    λ
+                                    eyt       λ
+                                              etz
+
+Then
+                     ∀ (i, j) ∈ V × V, VarIV−GFF
+                                          G,
+                                           eλe   [φ(i) − φ(j)] ≤ VarIV−GFF
+                                                                    G,λ    [φ(i) − φ(j)] .
+In particular, by setting j = x,
+                                 ∀ i ∈ V, VarIV−GFF
+                                             G,
+                                              eλe   [φ(i)] ≤ VarIV−GFF
+                                                                G,λ    [φ(i)] .
+
+   We briefly sketch the proof of this inequality and refer to [1, Section 2, Proof of Theorem 1.2] for the
+formal argument:
+      • The first step is to use the divisibility of the Gaussian distribution to show that one can add the
+        vertex t on the edge yz (while modifying the conductances as in the statement of the proposition)
+        without modifying the distribution of the height function as long as the height φ(t) is assumed to
+        be real-valued.
+      • The second step of the argument is to use a correlation inequality to show that conditioning the
+        height φ(t) to take integer values reduces the variances of the height φ(i) and of the difference
+        φ(i) − φ(j). This second step can be proved using two different techniques: either the sublattice
+        monotonicity of [31] (as in [1, proof of Theorem 1.2]), or an adaptation of the Ginibre correlation
+        inequality [21] as detailed in [14, 22] or [18, Proposition 2.3].
+   Proposition 2.9 can be iterated so as to obtain the following corollary which is one of the main
+ingredients of the proofs below (see Figure 2.4).
+Proposition 2.10. Consider an integer N ∈ N and an edge yz ∈ E, we denote by G             e N the graph obtained
+by adding N new vertices t1 , . . . , tN on the edge yz (see Figure 2.4). We denote by λ       e the collection of
+conductances on the graph GN defined as follows:
+                            e
+   • On the edges of G e N which are not incident to the vertices t1 , . . . , tN , we set λ
+                                                                                           e = λ,
+
+      • On the edges of G
+                        e N which are incident to at least one of the vertices t1 , . . . , tN , we set λ
+                                                                                                        e = (N +1)λ.
+Then
+                     ∀ (i, j) ∈ V × V, VarIV−GFF
+                                          G,
+                                           eλe   [φ(i) − φ(j)] ≤ VarIV−GFF
+                                                                    G,λ    [φ(i) − φ(j)] .
+In particular, by setting j = x,
+                                 ∀ i ∈ V, VarIV−GFF
+                                             G,
+                                              eλe   [φ(i)] ≤ VarIV−GFF
+                                                                G,λ    [φ(i)] .
+
+
+
+                                                                13
+Figure 2.4: Adding N vertices in the middle of an edge (with here N = 5). This operation reduces the
+variance of linear functionals of the field
+
+
+
+2.5     Power-law interactions
+In this section, we collect two properties which play an important role in the analysis of the delocalisation
+of the q-SOS long-range chain: the decomposition of the power-law interaction as a mixture of Gaussian
+interactions and the (standard) FKG inequality for collections of independent random variables.
+
+2.5.1. Gaussian decomposition of power-law interactions. We state here the decomposition of
+                                      q
+the power-law interaction x 7→ e−|x| (with q ∈ (0, 2]) into a mixture of centred Gaussian densities. This
+decomposition is a well-known result for which we refer to the article of Penson and Górska [30] (and
+the references therein).
+    We note that similar decompositions have played an important role in several contributions on random
+interfaces, for instance in the articles of Biskup-Kotecký [7], Biskup-Spohn [8] and Brydges-Spencer [9],
+and more recently in the article of Buchholz [10], Armstrong-Wu [2], and Sellke [32] to study real-
+valued height functions, and of van Engelenburg-Lis [35] and Aizenman-Harel-Peled-Shapiro [1] to study
+integer-valued height functions.
+Proposition 2.11 (Gaussian decomposition of power-law interactions). For any exponent q ∈ (0, 2],
+there exists a Borel probability measure µq on (0, ∞) such that, for any x ∈ R,
+                                               ˆ
+                                            q             2
+                                       e−|x| =       e−λx dµq (λ).                         (2.4)
+                                                   (0,∞)
+
+Remark 2.12.    • In the case of the integer-valued Gaussian free field (q = 2), we have µ2 = δ1 (the
+   Dirac measure at 1).
+      • For q ∈ (0, 2), the measure µq is uniquely characterized by (2.4), it is absolutely continuous with
+        respect to the Lebesgue measure, i.e., dµq (λ) = gq (λ)dλ, and the function gq has the following
+        features (see [28])
+                                       2+q/2
+                                                         q
+                                                                                           q
+                       gq (λ) ∼λ→0 Kq x 2−q exp −Aq λ− 2−q     and gq (λ) ∼λ→∞ Mq λ−1− 2 ,
+
+        for some explicit constants Kq , Aq , Mq ∈ (0, ∞). These properties imply the following tail estimates
+        on the measure µq : there exists a constant C := C(q) < ∞ such that
+                                                                  q
+                                                                !
+                                              1               K 2−q                           C
+                   ∀K ∈ (1, ∞), µq       0,        ≤ C exp −            and µq ([K, ∞)) ≤ q .
+                                             K                  C                            K2
+
+      • In the case of the SOS-model (q = 1), the following formula holds
+
+                                                             e−1/4x
+                                                  g1 (x) =     √ .
+                                                             2x πx
+
+2.5.2. The FKG inequality. In this section, we state the standard FKG inequality for collections of
+independent real-valued random variables.
+
+
+
+                                                      14
+Proposition 2.13 (Fortuin-Kasteleyn-Ginibre inequality). For n ∈ N, let λ1 , . . . , λn be independent
+nonnegative random variables, and let f, g : Rn → [0, ∞) be increasing (resp. decreasing) functions
+(see (2.1)). Then one has the inequality
+
+                      E [f (λ1 , . . . , λn )g(λ1 , . . . , λn )] ≥ E [f (λ1 , . . . , λn )] E [g(λ1 , . . . , λn )] .    (2.5)
+
+Remark 2.14. The inequality is stated for increasing functions depending on finitely many indepen-
+dent random variables but also holds for increasing functions depending on infinitely many independent
+random variables.
+
+2.6     Convention for constants
+Throughout this article, the symbols c and C denote positive constants which may vary monotonically
+from line to line, with C increasing larger than 1 and c decreasing smaller than 1. In Section 3, they
+may only depend on the range exponent α (and will sometimes depend on the inverse temperature β in
+which case this dependence will be made explicit and we will write Cβ and cβ instead of C and c). In
+Section 4, we allow these constants to depend on the range exponent α, the exponent q and the inverse
+temperature β.
+
+
+       3. Delocalisation for the integer-valued Gaussian long-range chain
+This section is devoted to the proof of Theorem 1.2 and is split into two subsections: Section 3.1 is
+devoted to the lower bounds and Section 3.2 is devoted to the upper bounds. Each subsection is split
+into several cases, depending on the value of the exponent α. We fix a large integer N ∈ N throughout
+the proof.
+
+3.1     The lower bounds
+
+3.1.1. The case α > 3. In this setting, we consider two integers i, j ∈ Z such that |i − j| > 1 and
+perform the following operations which all reduce the variance of the height φ(0) (we refer to Figures 3.1
+and 3.2 for guidance):
+
+      • We first consider the edge connecting the vertices i and j. This edge has a conductance equal to β|i−
+        j|−α . Using Proposition 2.10, we add (|i−j|−1) vertices on this edge and multiply the conductances
+        by |i − j| (N.B. this operation reduces the variance of the height φ(0) by Proposition 2.10). We
+        denote by i1 , . . . , i|i−j|−1 the new vertices. The conductance of any edge incident to one of the
+        vertices i1 , . . . , i|i−j|−1 is thus equal to β|i − j|1−α . We then apply Proposition 2.7 to identify the
+        vertex ik with i + k, for any k ∈ {1, . . . , |i − j| − 1}. These operations have the effect of erasing the
+        edge ij while increasing the values of the nearest neighbour conductances between i and j by the
+        additive constant β|i − j|1−α .
+      • We then iterate this operation with all pairs of non-nearest neighbour vertices i, j ∈ Z.
+After performing all these operations, we obtain a nearest neighbour Gaussian chain on {−N, . . . , N }.
+We next consider a vertex i ∈ {−N, . . . , N − 1} and its right-neighbour i + 1. After performing the
+operations mentioned above, the value of the conductance on the edge i(i + 1) is equal to
+                                                          X X                  1
+                                                      β                            α−1 .
+                                                          j≤i j ′ ≥i+1
+                                                                         |j − j ′ |
+
+We next note that, for any fixed j ≤ i and since α − 1 > 2, the following upper bound holds
+                                                 X             1                       C
+                                                                  α−1    ≤                  α−2 .
+                                             j ′ ≥i+1
+                                                        |j −   j′|           |i − j + 1|
+
+Since α − 2 > 1, we obtain
+                                                                                                 ∞
+                       X X                   1                 X             C                   X       C
+                                                α−1     ≤C                            α−2   =C               α−2   ≤ C.
+                       j≤i j ′ ≥i+1
+                                      |j −   j′|               j≤i
+                                                                     |i − j + 1|                 j=1   |j|
+
+
+                                                                      15
+Figure 3.1: Proof of the delocalisation when α > 3
+
+
+
+
+                       16
+Figure 3.2: Second part of the proof when α > 3: we apply the algorithm to every long-range edge
+reduces the problem to a nearest neighbour Gaussian chain with finite conductances
+
+
+
+The conductances of the nearest neighbour Gaussian chain are thus bounded uniformly in the parameter
+N . We finally perform a final operation on the chain (for which we refer to Figure 3.2): by Proposition 2.7,
+we identify the vertex i with the vertex −i for any i ∈ {1, . . . , N }. After performing this operation, we
+obtain a line of length N on which all the conductances are bounded uniformly in N (see Figures 3.2
+and 3.3).
+    At this stage, the variance of φ(0) can be easily estimated using the identity (2.3) of Remark 2.3
+(with λ = Cβ). We thus have
+                                 VarN,β,α [φ(0)] ≥ VarN,Cβ [φ(0)] = cβ N.
+
+
+
+3.1.2. The case α ∈ (2, 3). The argument in this setting is a refinement of the argument in the
+case α > 3. We first set γ := 3 − α ∈ (0, 1) and split the interval {−N, . . . , N } into approximately
+2N/N γ = 2N α−2 intervals of size N γ . Specifically, we let K := ⌈N α−2 ⌉, and, for any k ∈ {−K, . . . , K},
+denote by
+                                               ik := k⌈N γ ⌉.
+For every pair of integers i, j ∈ Z such that j > i and |i − j| > 1, we perform the following operations
+(we refer to Figures 3.4, 3.5 and 3.6 for guidance):
+   • We consider the edge connecting the vertices i and j. This edge has a conductance equal to
+     β|i − j|−α . We then consider the number
+                                   nij := |{i + 1, . . . , j − 1} ∩ {i−K , . . . , iK }| .
+      In words, this is the number of vertices of the form ik which are strictly between i and j (N.B. this
+      number can be equal to 0). Note that we always have nij ≤ (2K + 1) and that, if nij ≥ 2, then
+                                                  |i − j|         C|i − j|
+                                              c           ≤ nij ≤                                       (3.1)
+                                                    Nγ              Nγ
+
+                                                         17
+Figure 3.3: Last step of the proof in the case α > 3: we fold the nearest neighbour Gaussian chain to
+reduce the problem to a sum of independent random variables with finite variance.
+
+
+
+
+                                                 18
+      (N.B. the lower bound is not true for nij = 0, and the upper bound is not true for nij = 1 as two
+      vertices may be close to each other but can be placed on the line Z such that there is a vertex of
+      the set {i0 , . . . , iK } between them). If nij = 0, then we stop the procedure here. If nij > 0, then
+      we use Proposition 2.10 to add nij vertices on this edge and multiply the conductances by nij + 1.
+      We denote by j1 , . . . , jnij the new vertices. The conductance of any edge incident to one of the
+      vertices j1 , . . . , jnij is thus equal to β(nij + 1)|i − j|−α . We then apply Proposition 2.7 and, for any
+      k ∈ {2, . . . , nij }, identify the vertex jk with the k-th vertex in the intersection {i + 1, . . . , j − 1} ∩
+      {i−K , . . . , iK }.
+   • We then iterate this operation with all pairs of non-nearest neighbour vertices i, j ∈ {−N, . . . , N }.
+
+The graph obtained after performing these operations take the form of the one depicted on Figure 3.5
+and satisfies the following crucial property: all the long-range interactions lie inside the intervals
+
+                                        {i−K , . . . , i−K+1 }, . . . , {iK−1 , . . . , iK }.
+
+   We next estimate the value of the conductances in each interval of the form {i−k , . . . , i−k+1 }. To ease
+the notation, we will write the proof in the case of the interval {i0 , . . . , i1 } = {0, . . . , ⌈N γ ⌉}. We start
+with the (most important) conductance (see Figure 3.5): the one associated with the edge connecting
+the two extremal sites 0 and ⌈N γ ⌉ of the interval {0, . . . , ⌈N γ ⌉}. The value of this conductance is given
+by the formula
+                                            X X (nij + 1)
+                                          β                           .
+                                                     γ
+                                                          |i − j|α
+                                                      i≤0 j≥⌈N ⌉
+
+We then estimate the previous display by splitting the sum over the integers j ∈ {⌈N γ ⌉, . . . , N } (for
+which the inequality (3.1) can be applied, noting that, since the distance between i and j is larger than
+N γ , the upper bound holds even when nij = 1) and the integers j ≥ N (for which we use the bound
+nij ≤ (2K + 1) with K ≃ N α−2 ). We obtain, for any i ∈ {−N, . . . , 0},
+                                                           N
+                             X        (nij + 1)   C        X             1          X     1
+                                                ≤ γ                            + CK                            (3.2)
+                                       |i − j|α  N                  |i − j|α−1        |i − j|α
+                           j≥⌈N γ ⌉                      j=⌈N γ ⌉                          j≥N
+
+                                                    C        1                CK
+                                                  ≤                   +
+                                                   N γ |i − N γ |α−2          N α−1
+                                                    C        1                C
+                                                  ≤ γ                 +
+                                                   N |i − N γ |α−2            N
+                                                    C        1
+                                                  ≤ γ                ,
+                                                   N |i − N γ |α−2
+
+where we used N γ(α−1) ≤ N in the last inequality. Similarly, for any i ≤ −N (using this time only the
+bound nij ≤ (2K + 1)),
+
+                                                          |i|
+                                  X        (nij + 1)      X       1       X 1
+                                                     ≤ CK            + CK
+                                            |i − j|α            |i|α       |j|α
+                                j≥⌈N γ ⌉                      γ j=⌈N ⌉                   j≥|i|
+                                                         CK
+                                                       ≤ α−1 .
+                                                        |i|
+
+We finally sum over the negative integers and obtain
+                                           0
+           X X             (nij + 1)   C X         1           X    1
+                                   α
+                                     ≤   γ          γ α−2
+                                                          + CK
+                            |i − j|    N     |i − N |            |i|α−1
+            i≤0 j≥⌈N γ ⌉                       i=−N                              i≤−N
+                                                                                     γ
+                                                   0                       −⌈N ⌉
+                                         C         X           1         C X         1       X     1
+                                       ≤ γ                             + γ          α−2
+                                                                                        + CK      α−1
+                                        N                  N γ(α−2)     N        |i|           |i|
+                                               i=−⌈N γ ⌉                        i=−N             i≤−N
+
+                                              C                          CK
+                                       ≤              + CN 3−α−γ       + α−2
+                                         N (α−2)γ                       N
+                                       ≤ C,
+
+
+                                                                19
+Figure 3.4: First step of the proof in the case α ∈ (2, 3). The long-range edges are split when the interval
+{i, . . . , j} contains vertices of the form k⌈N γ ⌉ for k ∈ Z.
+
+
+
+
+                                                    20
+Figure 3.5: Last step of the proof in the case α ∈ (2, 3): we identify all the vertices in the same interval
+to reduce the problem to a nearest neighbour Gaussian chain. In the picture, all the blue vertices are
+identified together. Similarly, all the red vertices are identified together. These operations generate a
+graph containing two vertices drawn at the bottom
+
+
+
+
+Figure 3.6: Last step of the proof in the case α ∈ (2, 3): the nearest neighbour Gaussian chain has finite
+conductance and its length is of order N α−2 .
+
+
+
+
+                                                    21
+where in the second inequality we used that |j − N γ | ≥ N γ for any j ≤ 0 and |j − N γ | ≥ c|j| for
+any j ≤ −⌈N γ ⌉, and in the last inequality, we used the definition γ := 3 − α. This implies that the
+conductance of the edge connecting the extremal sites 0 and ⌈N γ ⌉ is bounded uniformly in N .
+   We then fix an integer k ∈ {1, . . . , ⌈N γ ⌉ − 1} and estimate the value of the conductance between k
+and ⌈N γ ⌉ (see Figure 3.5). The value of this conductance is given by the identity
+                                                         X        (nkj + 1)
+                                                   β                        .
+                                                                   |j − k|α
+                                                       j≥⌈N γ ⌉
+
+
+We estimate this term by splitting the sum over the integers j ∈ {⌈N γ ⌉, . . . , 2⌈N γ ⌉} (for which nkj = 1),
+and the integers j ∈ {2⌈N γ ⌉, . . . , N } (for which nkj ≥ 2 and (3.1) can be applied) and the integers j ≥ N
+(for which the inequality nkj ≤ (2K + 1) can be applied). We obtain
+                                           γ
+                                      2⌈N ⌉                               N                        ∞
+                 X        (nkj + 1)    X       C        C                 X             1          X  1
+                                    ≤                 + γ                                     + CK             (3.3)
+                           |j − k|α         |j − k| α  N                           |j − k|α−1        jα
+               j≥⌈N γ ⌉                   γ
+                                       j=⌈N ⌉                          j=2⌈N γ ⌉                         j=N
+                                                                         N
+                                                 C                C      X           1               1
+                                   ≤                    α−1   +                             + CK
+                                       |⌈N γ ⌉   − k|             Nγ               |j|α−1          N α−1
+                                                                       j=2⌈N γ ⌉
+                                                 C                 1   C       C
+                                   ≤                    α−1   +     γ γ(α−2)
+                                                                             +
+                                       |⌈N γ ⌉   − k|             N N          N
+                                                 C
+                                   ≤                    α−1 ,
+                                       |⌈N γ ⌉ − k|
+
+where in the second line, we used that |j − k| ≥ c|j| when j ≥ 2⌈N γ ⌉ and in the last line, we used that
+|⌈N γ ⌉ − k| ≤ N γ and N γ(α−1) ≤ N .
+   We finally use Proposition 2.7 to identify all the vertices {0, . . . , ⌈N γ ⌉ − 1} together. This operation
+transforms the interval {0, . . . , ⌈N γ ⌉} into a graph containing two vertices connected by a conductance
+whose value is bounded by
+                                               ⌈N γ ⌉−1
+                                                 X           Cβ
+                                        Cβ +
+                                                           γ      α−1 ≤ Cβ
+                                                 k=1
+                                                        |⌈N ⌉ − k|
+where we used that α − 1 > 1 (see Figures 3.5 and 3.6). This conductance is thus bounded uniformly in
+N . Applying the same operation to all the intervals the form {i−k , . . . , i−k+1 } yields a nearest neighbour
+Gaussian chain of length K ≃ N α−2 whose conductances are all bounded by Cβ. We may thus conclude
+as in the previous case that
+
+                                 VarN,β,α [φ(0)] ≥ VarK,Cβ [φ(0)] ≥ cβ N α−2 .
+
+
+
+3.1.3. The case α = 3. This case is in fact similar to the case α ∈ (2, 3), the main difference is that we
+partition the interval {−N, . . . , N } into approximately 2N/ ln N intervals of size ln N (instead of 2N/N γ
+intervals of size N γ ). We thus only point out the main differences with the proof of Section 3.1.2. For
+the conductance of the edge connecting the two extremities 0 and ⌈ln N ⌉ of the interval {0, . . . , ⌈ln N ⌉},
+we have the identity
+                                               X X (nij + 1)
+                                             β                      .
+                                                           |i − j|3
+                                                   i≤0 j≥⌈ln N ⌉
+
+This term can then be estimated as follows: for any i ∈ {−N, . . . , 0},
+                                         X         (nij + 1)     C       1
+                                                           3
+                                                             ≤                  ,
+                                                    |i − j|    ln N |i − ln N |
+                                       j≥⌈ln N ⌉
+
+and for any i ≤ −N ,
+                                               X        (nij + 1)   CN 1
+                                                                  ≤           .
+                                                         |i − j|3   ln N |i|2
+                                          j≥⌈ln N ⌉
+
+
+
+
+                                                                22
+Summing over the negative integers, we deduce that
+                                              0
+            X      X         (nij + 1)     C X       1        X CN
+                                     3
+                                       ≤                    +
+                              |i − j|    ln N   |i − ln N |    ln N |i|2
+             i≤0 j≥⌈ln N ⌉                      i=−N                 i≤−N
+
+                                                   0                         −⌈ln N ⌉
+                                           C       X             1      C     X          1   CN X 1
+                                     ≤                               +                     +
+                                         ln N                | ln N | ln N              |i| ln N  |i|2
+                                                i=−⌈ln N ⌉                   i=−N              i≤−N
+
+                                     ≤ C.
+
+The rest of the proof is then similar to the case α ∈ (2, 3). Using the same computation as in (3.3),
+we obtain that, for any k ∈ {1, . . . , ⌈ln N ⌉ − 1}, the conductance between the vertices k and ⌈ln N ⌉
+is upper bounded by the value Cβ/(⌈ln N ⌉ − k)2 . We finally use Proposition 2.7 to identify all the
+vertices {0, . . . , ⌈ln N ⌉ − 1} together. This operation transforms the graph {0, . . . , ⌈ln N ⌉ − 1} into a
+graph containing two vertices connected by a conductance whose value is bounded by Cβ.
+    Applying the same series of operations to all the intervals of the form {i−k , . . . , i−k+1 }, we obtain
+a nearest neighbour Gaussian chain of length N/ ln N whose conductances are all bounded by Cβ. We
+may thus conclude as in the previous cases.
+
+3.1.4. The case α = 2 at high temperature. In this section, we show that when the range exponent
+α is equal to 2 and the inverse temperature β is sufficiently small, the variance of the height φ(0) grows
+at least like the logarithm of the length of the chain. We note that two proofs of this result have already
+been obtained: one by Kjaer and Hilhorst [23] (using a duality transformation for the Gaussian chain)
+and one by Garban [18] (where the scaling limit of the chain is identified; in fact the proof written below
+shares strong similarities with his argument).
+    We will in fact prove an inequality which is valid for any inverse temperature β and relates the
+variance of the integer-valued Gaussian chain with α = 2 at inverse temperature β to the one of a two-
+dimensional integer-valued Gaussian free field at inverse temperature C0 β (for some explicit constant
+C0 > 1, see Proposition 3.2 below). This second model is known to undergo a localisation/delocalisation
+phase transition [15, 22, 24, 34, 1]. Combined with Proposition 3.2, these results imply the delocalisation
+of the Gaussian chain at high temperature.
+    We first introduce the version of the two-dimensional integer-valued Gaussian free field used in the
+statement and proof of Proposition 3.2. In order to state the definition, we fix an integer N ∈ N and
+introduce the notation:
+   • We let ΛN := {−N, . . . , N } × {−2N, . . . , 2N } ⊆ Z2 be a two-dimensional rectangle of short and
+     long side lengths N and 2N .
+   • We let ∂ΛN := x ∈ Z2 \ ΛN : ∃y ∈ ΛL , x ∼ y be the external vertex boundary of ΛL (writing
+                      
+
+     x ∼ y to mean that x, y ∈ Z2 are nearest neighbours), and set Λ+  N := ΛN ∪ ∂ΛN .
+
+   • We let ΩΛN := φ : Λ+
+                     
+                          N → Z : φ = 0 on ∂ΛN be the set of integer-valued height functions on the
+     box ΛN with Dirichlet boundary condition.
+Definition 3.1 (Two-dimensional integer-valued Gaussian free field). Given an integer N ∈ N and
+an inverse temperature β, we define the two dimensional integer-valued Gaussian free field at inverse
+temperature β ∈ (0, ∞) to be the probability distribution on ΩΛN given by Definition 1.7 where the
+graph is ΛN , the vertices of ∂ΛN are identified and assigned the role of root, and the conductances all
+equal β. We denote by Var2D−IVGFF
+                            N,β      the variance with respect to this measure.
+   We are now able to state the main result of this section.
+Proposition 3.2. There exists a constant C0 ∈ (1, ∞) such that, for any inverse temperature β ∈ (0, ∞),
+
+                                     Var2D−IVGFF
+                                        N,C0 β   [φ(0)] ≤ VarN,β,2 [φ(0)] .                              (3.4)
+
+Remark 3.3. As mentioned above, the result of Fröhlich and Spencer [15] (or to be precise, the result of
+Wirth [36, Proposition 8] who extends the techniques of [15] to include the Dirichlet boundary condition
+considered here) implies that there exists an inverse temperature βc > 0 and a constant c > 0 such that,
+for any β ≤ βc ,
+                                      c
+                                        ln N ≤ Var2D−IVGFF
+                                                    N,C0 β   [φ(0)] .
+                                      β
+
+                                                             23
+Combining this inequality with (3.4), we obtain that, for β sufficiently small,
+                                            c
+                                              ln N ≤ VarN,β,2 [φ(0)] .
+                                            β
+
+Proof. We first introduce the following collection of non-negative numbers (N.B. the choice for these
+constants is not unique; they are chosen so that the inequalities (3.5) and (3.6) hold but any other choice
+satisfying these inequalities is admissible):
+                                                                    r
+                                                                       kβ
+                             ∀(k, l) ∈ N × N with k ≤ l, ck,l := C1        > 0,
+                                                                       l l
+where C1 ∈ (1, ∞) is a constant chosen so that the following two inequalities are satisfied (the choice of
+the value of C1 affects the second inequality):
+   • For any k ∈ N,
+                                       ∞              √ X ∞
+                                       X                      1
+                                           ck,l = C1 β k      √ ≤ C1 C2 β,                                    (3.5)
+                                       l=k               l=k
+                                                             l l
+                          √ P∞        1
+      with C2 := supk∈N    k l=k      √
+                                     l l
+                                           < ∞.
+
+   • For any integer l ∈ N,
+                                             l                            l
+                                   l2    X 1     l2   2 √ X 1   l2
+                                      +2       =    +    l l √ ≤ .                                            (3.6)
+                                   C1     ck,l   C1   C1      k β
+                                            k=1                         k=1
+
+We then perform a series of operations which reduce the variance of the height φ(0), and map the
+Gaussian long-range chain (with α = 2) to a two-dimensional integer-valued Gaussian free field.
+    We first consider the two dimensional rectangle ΛN and identify the set {−N, . . . , N } with the
+horizontal line {−N, . . . , N } × {0} ⊆ ΛN . Then, for any pair of vertices i, j ∈ {−N, . . . , N } with i < j,
+we add 3(j − i) − 1 vertices on the edge connecting i to j, denote these vertices by x1 , . . . , x3(j−i)−1 and
+set x0 = i and x3(j−i) = j (see Figure 3.7).
+    We then assign the following conductances to the edges (of the form (xk , xk+1 )) created by the
+previous step (see Figure 3.8):
+   • For k ∈ {1, . . . , (j − i) − 1}, we assign the conductance ck,(j−i) to the edge connecting xk and xk+1 ;
+
+   • For k ∈ {(j − i), . . . , 2(j − i) − 1}, we assign the conductance        C1 β
+                                                                              (j−i)   to the edge connecting xk and
+     xk+1 ;
+   • For k ∈ {2(j − i), . . . , 3(j − i) − 1}, we assign the conductance c3(j−i)−k,j−i to the edge connecting
+     xk and xk+1 .
+Proposition 2.9 and the inequality (3.6) ensure that performing these operations reduces the variance of
+the height φ(0). We then identify the vertices x1 , . . . , x3(j−i)−1 with the ones of the two dimensional box
+ΛN as follows (see Figure 3.8):
+   • For k ∈ {1, . . . , (j − i)}, we identify the vertex xk with the vertex (i, k) ∈ ΛN .
+
+   • For k ∈ {(j −i), . . . , 2(j −i)}, we identify the vertex xk with the vertex (i+k −(j −i), (j −i)) ∈ ΛN .
+   • For k ∈ {2(j − i), . . . , 3(j − i) − 1}, we identify the vertex xk with the vertex (j, 3(j − i) − k) ∈ ΛN .
+We then perform these operations on all pairs of vertices i, j ∈ {−N, . . . , N } (N.B. when two vertices
+are identified to the same vertex of ΛN , then they are identified together; see Figures 3.9, 3.10 and 3.11).
+We then estimate the value of the conductances on each edge:
+   • On the horizontal edges (see Figure 3.9): for (k, l) ∈ ΛN , the conductance of the horizontal edge
+     {(k, l), (k + 1, l)} receives a contribution of β/l for each long-range edge of the form (i, i + l) such
+     that i ≤ k < i + l. There are (at most) l such contributions and we thus obtain
+
+                                                                   C1 β
+                                            c(k,l),(k+1,l) ≤ l ×        ≤ C1 β.
+                                                                    l
+
+
+                                                        24
+Figure 3.7: First step of the proof of Proposition 3.2. For i, j ∈ {−N, . . . , N } with i < j, 3(j − i) − 1
+vertices are added to the edge connecting the vertices i and j. On the figure, the value j − i = 2 was
+chosen and 5 vertices are added to the edge connecting i and j.
+
+
+
+
+Figure 3.8: Second step of the proof of Proposition 3.2: conductances are assigned to the edges created
+at the first step and the vertices x1 , . . . , x3(j−i)−1 are identified with vertices of the two-dimensional box
+ΛN .
+
+
+
+      • On the vertical edges: for (k, l) ∈ ΛN , the conductance of the vertical edge {(k, l), (k, l + 1)},
+        denoted by c(k,l),(k,l+1) below, receives a contribution from each long-range edge of the form (k, n) ∈
+        {−N, . . . , N }×{−N, . . . , N } with |k−n| > l, and each time the value of this contribution is cl,|k−n| .
+        We thus obtain
+                                                   X                    ∞
+                                                                        X
+                               c(k,l),(k,l+1) ≤            cl,|k−n| ≤ 2   cl,n ≤ 2C1 C2 β.
+                                               n∈{−L,...,L}             n=l
+                                                 |n−k|>l
+
+    We finally increase the value of all the conductances in the rectangle ΛN to 2C1 C2 β. This final
+operation reduces the value of the variance of φ(0) (where 0 now denotes the centre of the box ΛN ), and
+the model obtained after performing this final operation is the two dimensional integer-valued Gaussian
+free field in the rectangle ΛN with conductance equal to 2C1 C2 β. The proof of Proposition 3.2 is thus
+complete (by setting C0 := 2C1 C2 ).
+
+
+3.1.5. The case α ∈ (1, 2). This case is the simplest: using the monotonicity of the variance in the
+length of the chain (as mentioned in Remark 2.8), we have
+
+                                      cβ ≤ Var1,β,α [φ(0)] ≤ VarN,β,α [φ(0)] .
+
+3.2     The upper bounds
+This section is devoted to the proof of the upper bounds of Theorem 1.2. As in Section 3.1, we fix a
+large integer N ∈ N and split the proof into several cases, depending on the value of the exponent α.
+
+
+                                                         25
+Figure 3.9: Contributions from the two long-range edges (drawn in red and blue) to the horizontal edge
+connecting the vertices (0, 2) and (1, 2) (drawn in black).
+
+
+
+
+Figure 3.10: Contributions from two long-range edges (drawn in red and blue) to the two horizontal
+edges drawn in black.
+
+
+
+
+                                                 26
+Figure 3.11: End of the proof of Proposition 3.2. The graph obtained is a two-dimensional box and the
+conductance of each edge is smaller than C0 β (and sometimes equal to 0, as, for instance, for the edges
+in the bottom half of the box)
+
+
+
+3.2.1. The case α > 3. This case is the simplest. Using Proposition 2.6, we may delete all the edges
+which are either non-nearest neighbour or whose endpoints are negative integers. The resulting graph
+is a line on which all the conductances take the value β. Applying the identity (2.3) of Remark 2.3, we
+obtain
+                                         varN,β,α [φ(0)] ≤ Cβ N.
+
+
+
+3.2.2. The case α = 3 . This case is more technical and a multiscale argument has to be implemented
+in order to identify
+                   √ the logarithmic correction.              √
+    We set K := ⌊ N ⌋. For each even integer k ∈ {2, . . . , ⌊ N ⌋}, we construct a collection of (k/2 + 1)
+paths starting from the interval {−k, . . . , −k/2} and making jumps of size k to the left until they reach
+an integer smaller than −N . More precisely, for any integer i ∈ {−k, . . . , −k/2}, we let γk,i be the path
+starting from i and making jumps of size k until it reaches an integer smaller than −N . We then denote
+by Γk the set of paths constructed this way, i.e.,
+
+                                    Γk := {γk,i : i ∈ {−k, . . . , −k/2}} .
+
+We refer to Figure 3.12 for a visual description of set Γk in the case k = 4. An important observation
+has to be made here: two paths of the form γk,i and γk,i′ with i ̸= i′ use √    distinct long-range edges of
+length k. We then denote by Γ the union of all the sets Γk for k ∈ {2, . . . , ⌊ N ⌋}, i.e.,
+                                                        √
+                                                       ⌊ N⌋
+                                                       [
+                                                Γ :=          Γk .
+                                                       k=2
+
+Let us note that two paths of the form γk,i and γk′ ,i′ must also use distinct long-range edges: indeed,
+if k ̸= k ′ then the path γk,i uses only edges of length k and the path γk′ ,i′ uses only edges of length k ′ ,
+they are thus disjoint, and if k = k ′ , then we are in the case mentioned above.
+    We next perform the following operations on the path which all increase the variance of the height
+φ(0) (and refer to Figure 3.12 for guidance):
+                                                    √
+    • We first consider an integer k ∈ {2, . . . , ⌊ N ⌋} and an integer i ∈ {−k, . . . , −k/2}, and consider
+       the path γk,i . Applying Proposition 2.7, we may separate the vertices of γk,i from the line Z as
+
+
+                                                       27
+Figure 3.12: First part of the proof of the upper bound when α = 3. With the specific value k = 4,
+the 2 paths of the set Γ4 are drawn (one in red and one in blue). We then isolate these two paths from
+the line Z using the monotonicity under identification of vertices. In the last step depicted, we use the
+monotonicity under addition/deletion of vertices to generate a long-range edge connecting the starting
+and end points of the paths considered.
+
+
+
+
+                                                   28
+      described in the first two steps of Figure 3.12. We next apply Proposition 2.10 to erase all the
+      isolated vertices on the long-range edges (see the last step of Figure 3.12). This operation generates
+      an edge connecting the vertex i to the endpoint of the path γk,i with a conductance equal to
+
+                                                                 1
+                                                      ck,i := P⌈N/k⌉             .
+                                                                            k3
+                                                                   j=1      β
+
+      This conductance can be lower bounded as follows, for some constant c ∈ (0, 1),
+
+                                                                    cβ
+                                                          ck,i ≥        .                                   (3.7)
+                                                                   N k2
+
+   • We then iterate this operation to all the paths of Γ, this gives rise to |Γ| new edges connecting
+     an integer smaller than −N (the endpoints of the paths of Γ) to a vertex close to 0 (the starting
+     points of the paths of Γ) and whose conductance are lower bounded by (3.7).
+We next tackle a technical difficulty: the starting point of the paths of Γ is not the vertex 0 (specifically,
+the starting point of the path γk,i ∈ Γ is the vertex i). This is achieved thanks to the following argument
+(for which we refer to Figure 3.13).
+    We first note that for any i ∈ {−1, . . . , −K}, the vertex i can be the starting point of at most
+|i| paths of the set Γ (the paths {γk,i : k ∈ {2i, . . . , i} ∩ 2Z}). We then split the edge connecting i to
+0 into |i| edges with conductance equal to β/|i|4 (see Figure 3.13), use Proposition 2.7 to separate the
+paths {γk,i : k ∈ {i, . . . , 2i} ∩ 2Z} for the line Z and apply Proposition 2.10 to erase the isolated vertices.
+These operations all increase the variance of the height φ(0) and give rise to a collection of long-range
+edges connecting the vertex 0 to the region {x ∈ Z : x ≤ −N } whose conductances, denoted by e          ck,i , are
+equal to
+                                                               1
+                                                  ck,i :=
+                                                  e              |i|4
+                                                                      .
+                                                           1
+                                                          ck,i + β
+
+Using (3.7), these conductances can be lower bounded by
+
+                                                               cβ
+                                                 ck,i ≥                .
+                                                          N k 2 + |i|4
+                                                 e
+
+                                           √
+Using that k/2 ≤ |i| ≤ k and that k ≤ K ≤ ⌊ N ⌋, we obtain that |i|4 ≤ k 2 K 2 ≤ k 2 N . Consequently
+
+                                                                cβ
+                                                      ck,i ≥        .                                       (3.8)
+                                                               N k2
+                                                      e
+
+In the last step of the proof, we merge all the edges connecting the left side of −N to 0 together (N.B.
+due to the Dirichlet boundary condition, all the vertices on the left on −N can be identified together
+and this operation does not affect the distribution of the height function) and erase all the other edges.
+Note that this operation increases the variance of φ(0). We refer to Figure 3.14 for a visual description
+of this step. It generates a graph with one edge connecting the left side of −N to 0 whose conductance
+is equal to                               √
+                                          X N       X
+                                                            ck,i .
+                                                            e
+                                                k=1 i∈{−k,...,−k/2}
+                                               k even
+
+Using (3.8), we can lower bound this conductance by
+                √                                 √                                   √
+                N                                 N                                  N
+                X         X                    cβ X              X           1    cβ X 1   cβ ln N
+                                      ck,i   ≥                                  ≥        ≥         .
+                                                                             k2
+                                      e
+                                               N                                  N    k      N
+                k=1 i∈{−k,...,−k/2}               k=1 i∈{−k,...,−k/2}                 k=1
+               k even                            k even                              k even
+
+The variance of φ(0) is thus upper bounded by the one of an integer-valued Gaussian random variable
+with conductance equal to cβ ln N/N , which is itself bounded by CN/(β ln N ), see Lemma 2.2.
+
+
+
+
+                                                            29
+Figure 3.13: Second part of the proof of the upper bound when α = 3. We deal with the technical
+difficulty that the paths constructed in the previous step do not start from the vertex 0 and, in the
+pictures, 3 paths starting from i are depicted. To handle this difficulty, we make use of the edge
+connecting i to 0, split it into the number of paths ending at i and then isolate each of the paths.
+
+
+
+
+                                                 30
+Figure 3.14: Last part of the proof of the upper bound when α = 3. We merge all the edges connecting
+the region {i ∈ Z : i ≤ −N } to 0 which have been constructed in the previous step. This gives rise to a
+unique long-range edge connecting −N to 0 with a conductance of order β ln N/N.
+
+
+
+
+                                                  31
+Figure 3.15: First part of the proof: each edge connecting two vertices i ∈ Ik and j ∈ Ik+1 is split into
+|Γ| /(|Ik ||Ik+1 |) parallel edges.
+
+
+
+
+                                                   32
+Figure 3.16: On the top picture: Two paths, γ and γ  e of Γ are drawn (in blue and red respectively).
+They shall only use distinct edges. On the bottom picture: Proposition 2.7 is used to separate the path
+and generate direct lines connecting the vertex 0 to the region {n ∈ N : n ≥ N } where the Dirichlet
+boundary condition is imposed
+
+
+
+
+                                                  33
+Figure 3.17: Last step of the proof : all the edges connecting the vertex 0 to the region {n ∈ N : n ≥ N }
+are merged together and the conductances of all the other edges are reduced to 0 (i.e., the edges are
+deleted).
+
+
+
+
+                                                   34
+3.2.3. The case α ∈ (1, 3) via Bäumler’s technique. This section is devoted to the proof of the
+upper bounds of Theorem 1.2 for α ∈ (1, 3). We note that the argument written below is a (minor)
+adaptation of the proof of Bäumler [5, Proof of Theorem 1.1] of the recurrence of the one-dimensional
+random walk with long-range jumps (i.e., the argument is the same but has been adapted to match the
+formalism used in this article). We refer to Figures 3.15 and 3.16 and 3.17 for guidance.
+   We first let K be the largest integer such that 2K+1 ≤ N (i.e., K := ⌊ln2 N ⌋ − 1). We then consider
+the following collection of discrete intervals: for any k ∈ {0, . . . , K},
+                                         Ik := {2k , . . . , 2k+1 − 1}.
+We then denote by Γ the collection of finite paths
+                        Γ := {γ : {0, . . . , K} → N : ∀k ∈ {1, . . . , K}, γk ∈ Ik } .
+Note that Γ is a finite set and we denote by |Γ| its cardinality (N.B. it is equal to 2K(K+1)/2 ).
+   We then perform the following operations which all increase the variance of the height φ(0) (see
+Figures 3.15, 3.16 and 3.17 for guidance):
+   • For each integer k ∈ {0, . . . , K − 1} and each pair of vertices i ∈ Ik , j ∈ Ik+1 , we split the edge
+                                   |Γ|
+     connecting i and j into |Ik ||I  k+1 |
+                                            edges (N.B. this is the number of paths of Γ which visit both i
+     and j), and assign to each new edge the conductance
+
+                                                 β|Ik ||Ik+1 |      2(2−α)k
+                                        cij :=             α
+                                                               ≥ cβ         .
+                                                 |Γ||i − j|           |Γ|
+     This step is depicted on Figure 3.15.
+   • For each path γ ∈ Γ and each integer k ∈ {0, . . . , K}, we select an edge connecting the vertices γk
+     and γk+1 and denote this edge by eγ,k . We choose these edges so that they are all distinct (N.B.
+     this is possible thanks to the previous operation).
+   • We isolate the collection of edges {eγ,k : k ∈ {0, . . . , K}} from the rest of the chain (see Fig-
+     ure 3.16).
+   • We then erase the vertices on the line which has been isolated at the previous step (see Figure 3.17).
+     These operations generate an edge connecting 0 to γK (with γK > N the endpoint of γ) whose
+     conductance is equal to
+                                                                             −1
+                                                              
+                                                                       c |Γ| β if α ∈ (1, 2),
+                                                                             −1
+                              1                  cβ           
+                                                                        c |Γ| β
+                cγ := PK         1
+                                      ≥      PK (α−2)k ≥                         if α = 2,
+                         k=1 cγk γk+1     |Γ| k=1 2           
+                                                              
+                                                                          ln N
+                                                                     −1
+                                                                c |Γ| βN (2−α) if α ∈ (2, 3).
+                                                              
+
+
+   • We apply the previous operations to all the paths γ ∈ Γ, then merge together the |Γ| edges obtained
+     and add their conductance. This generates an edge connecting 0 to the region {x ∈ Z : x ≥ N }
+     (once again, due to the Dirichlet boundary condition, all these vertices can be identified together)
+     whose conductance is given by
+                                               
+                                               
+                                                        cβ if α ∈ (1, 2),
+                                               
+                                                       cβ
+                                      X        
+                                          cγ ≥              if α = 2,
+                                      γ∈Γ
+                                               
+                                                     ln N
+                                                 cβN (2−α) if α ∈ (2, 3).
+                                               
+                                               
+
+     We finally reduce to 0 the values of all the other conductances.
+    All the operations performed until now increase the variance of the height φ(0), and they show that
+this variance is smaller than the one of an integer-valued Gaussian random variable with a conductance
+equal to the constant c above. Applying Lemma 2.2, we obtain
+                                                 
+                                                 
+                                                         Cβ for α ∈ (1, 2),
+                               VarN,β,α [φ(0)] ≤     Cβ ln N for α = 2,
+                                                 
+                                                    Cβ N α−2 for α ∈ (2, 3).
+                                                 
+
+
+                                                      35
+       4. Delocalisation for the integer-valued q-SOS long-range chain
+This section is devoted to the proof of Theorem 1.5. The strategy is similar to the one used in Section 3
+                                                                                                                q
+with an additional step: following the recent article of Sellke [32], we first use that the potential x 7→ e−|x|
+can be decomposed into a mixture of centred Gaussian densities (see Proposition 2.11) together with
+the FKG inequality to rephrase the question of the delocalisation of the q-SOS long-range chain into the
+question of the delocalisation of the Gaussian chain equipped with i.i.d. random conductances, which can
+then be analysed using similar techniques as in the proof of Theorem 1.2. These random conductances
+follow a stable distribution of parameter q/2 ∈ (0, 1) and thus possess a heavy-tail which affects the
+behaviour of the chain (and modifies the growth exponent).
+    We note that, while an explicit dependence of the constants in the inverse temperature β could be
+obtained from the argument, this dependence is more difficult to follow than in the previous section
+(where all the constants were linear in β) and we thus decided not to keep track of it. We will thus from
+now on allow the constants to depend on the parameter β (in addition to the exponents α and q).
+    To simplify the notation, we set in all this section
+                                                                   2α
+                                          βq := β 2/q and αq :=       .
+                                                                    q
+
+4.1   The lower bound
+4.1.1. Domination by a Gaussian long-range chain. In this section, we relate the variance of the
+height of a q-SOS long-range chain to the one of a Gaussian long-range chain with random conductances.
+We first fix an exponent q ∈ (0, 2] and recall the definition of the probability distribution µq introduced
+in Proposition 2.11.
+Definition 4.1 (Random conductances). We let (λij )i,j∈Z be i.i.d. random variables distributed ac-
+cording to the measure µq . We denote by Pq the law of the conductances and by Eq the expectation
+with respect to Pq .
+    Let us fix an integer N ∈ N, an exponent α, an inverse temperature β, and a collection of conductances
+λ = (λij )i,j∈Z ∈ (0, ∞)Z×Z . We denote by µλN,β,α the finite-volume integer-valued Gaussian free field
+with long-range interaction and conductances λ. We denote by VarλN,β,α the variance with respect to
+µλN,β,α .
+Proposition 4.2 (Domination by a Gaussian chain with i.i.d. random conductances). For any integer
+N ∈ N, any inverse temperature β ∈ (0, ∞) and any range exponent α ∈ (1, ∞), one has the inequality
+                                                    h                  i
+                             Varq−SOS
+                                 N,β,α [φ(0)] ≥ E q  Varλ
+                                                        N,βq ,αq [φ(0)]  .
+
+Proof. We first write
+                                                                                           
+                                          P                2      P          |φ(i)−φ(j)|q
+                                              φ∈ΩN   |φ(0)| exp −β i,j∈Z        |i−j|α
+                      Varq−SOS
+                         N,β,α [φ(0)] =                         q−SOS
+                                                                                                .
+                                                               ZN,β,α
+
+We next use the identity stated in Proposition 2.11 to rewrite the numerator of the previous display as
+follows
+                                                         
+                                                        q
+             X         2
+                                     X    |φ(i) − φ(j)|
+                 |φ(0)| exp −β                           
+                                             |i − j|α
+            φ∈ΩN                    i,j∈Z
+                                                               q
+                    X          2
+                                  Y              |φ(i) − φ(j)|
+                 =       |φ(0)|         exp −β
+                                                     |i − j|α
+                   φ∈ΩN          i,j∈Z
+
+                                  Y ˆ
+                                                                             !
+                                                                           2
+                    X          2                            |φ(i) − φ(j)|
+                 =       |φ(0)|                exp −λβq                        dµq (λ)
+                                                               |i − j|αq
+                   φ∈ΩN          i,j∈Z (0,∞)
+                                 ˆ
+                                                                                  
+                                                                                 2
+                    X          2
+                                                       X   λ   β
+                                                             ij q |φ(i)  −  φ(j)|     Y
+                 =       |φ(0)|             exp −                       α
+                                                                                       dµq (λij ).
+                                   (0,∞)Z×Z                       |i − j| q
+                      φ∈ΩN                             i,j∈Z                        i,j∈Z
+
+
+
+                                                       36
+We then use of the identity
+                                                          
+                                                         2
+              X           2
+                                  X λ   β
+                                      ij q |φ(i) −  φ(j)|   = VarλN,β ,α [φ(0)] × ZN,β
+                                                                                    λ
+                    |φ(0)| exp −                                                      q ,αq
+                                                                                             ,
+                                           |i − j|αq                  q  q
+             φ∈ΩN                  i,j∈Z
+
+together with Definition 4.1 to obtain
+                                                     
+                                                    q
+             X         2
+                                   X   |φ(i) − φ(j)|        h
+                                                       = Eq VarλN,β ,α [φ(0)] × ZN,β
+                                                                                  λ
+                                                                                           i
+                 |φ(0)| exp −β                                                      q ,αq
+                                                                                             .
+                                          |i − j|α                  q  q
+            φ∈ΩN                    i,j∈Z
+
+The same computation yields the identity for the partition function
+                                                               
+                                                              q
+                   q−SOS
+                             X               X   |φ(i) − φ(j)|        h
+                                                                          λ
+                                                                                  i
+                 ZN,β,α   =       exp −β                         = Eq  Z N,βq ,αq .
+                                                    |i − j|α
+                                φ∈ΩN            i,j∈Z
+
+Combining the few previous results, we have obtained
+                                              h                               i
+                                           Eq VarλN,βq ,αq [φ(0)] × ZN,β
+                                                                     λ
+                                                                        q ,αq
+                        Varq−SOS
+                           N,β,α [φ(0)] =
+                                                        h          i            .
+                                                            λ
+                                                    Eq ZN,βq ,αq
+
+We finally note that the two functions λ 7→ VarλN,βq ,αq [φ(0)] and λ 7→ ZN,β
+                                                                            λ
+                                                                                q ,αq
+                                                                                      are both decreasing in
+the conductances λ = (λij )i,j∈Z . This result is a consequence of Proposition 2.4 and Remark 2.3. We
+may thus apply the FKG-inequality stated in Proposition 2.13 to obtain the inequality.
+                                    h                               i
+                                Eq VarλN,βq ,αq [φ(0)] × ZN,β
+                                                            λ
+                                                              q ,αq
+                                                                          h                   i
+             Varq−SOS
+                N,β,α [φ(0)] =
+                                             h            i           ≥ Eq VarλN,βq ,αq [φ(0)] .
+                                          Eq ZN,βλ
+                                                    q ,αq
+
+
+The proof of Proposition 4.2 is complete.
+    The following sections contain the proofs of the lower bounds of Theorem 1.5. They are obtained by
+combining the technique developed in Section 3.1 together with the results of the previous section. As
+in Section 3.1, we split the argument into different cases, depending on the value of the exponent α.
+
+4.1.2. The cases α > 2 + q/2 . Consider a random i.i.d. collection λ = (λij )i,j∈Z distributed under
+µq , and work with the quenched model with conductances λ.
+     After performing the same operations as in Section 3.1.1, we obtain a (nearest neighbour) line
+{0, . . . , N }, and, for any vertex i ∈ {−N, . . . , N − 1}, the value of the conductance on the edge i(i + 1)
+is equal to
+                                   X X              λjj ′               X X              λjj ′
+                          Ci := βq                         α  −1 + βq                          α −1 .
+                                   j≤i j ′ ≥i+1
+                                                |j − j ′ |  q
+                                                                      j≤−i−1 j ′ ≥−i
+                                                                                     |j − j ′ | q
+We note that the random variables (Ci )i∈{0,...,N −1} are identically distributed but not independent.
+   The variance of φ(0) can then be estimated using Remark 2.3 together with the observation that the
+variance of an integer-valued Gaussian random variable of conductance Ci is larger than ce−Ci . We thus
+obtain
+                                                           XN
+                                     VarλN,βq ,αq [φ(0)] ≥    ce−Ci .
+                                                             i=1
+
+Taking the expectation with respect to the conductances and applying Proposition 4.2, we deduce that
+                                              h                   i XN
+                        Varq−SOS                   λ
+                                                                       cEq e−Ci .
+                                                                              
+                           N,β,α [φ(0)] ≥ E q   VarN,βq ,αq [φ(0)] ≥
+                                                                      i=1
+
+To prove that this sum is of order N , we will show that there exists a constant K1/2 < ∞ such that, for
+any i ∈ {0, . . . , N − 1},
+                                                         1
+                                          Pq Ci < K1/2 > .                                        (4.1)
+                                                             2
+
+                                                        37
+(N.B. Since the random variables (Ci )i∈{1,...,N } are identically distributed, the left-hand side does not
+depend on the vertex i.) Let
+                                                X           λjj ′
+                                      S :=                        α −1 .
+                                             j≥2,j ′ ≤1
+                                                        |j − j ′ | q
+Then its Laplace transform satisfies
+                                                                                              αq −1
+                                                                      Y
+                                    LS (t) := Eq [e−tS ] =                   Lλ (t/ |j − j ′ |        ),
+                                                                j≥2,j ′ ≤1
+
+                                                                                        q/2
+where Lλ is the Laplace transform of the law µq , i.e., Lλ (t) = e−t . We thus have
+                                                                                                  
+                                                     
+                                                                                       −(α  −1)q/2
+                  Y                                                    X
+       LS (t) =        exp −tq/2 |j − j ′ |−(αq −1)q/2 = exp −tq/2         |j − j ′ |    q        .
+                 j≥2,j ′ ≤1                                                                j≥2,j ′ ≤1
+
+
+Under the assumption α > 2+q/2, we have 2 < (αq −1)q/2 which implies that the sum in the exponential
+on the right-hand side of the previous display is finite, i.e.,
+                                                            −(α −1)q/2
+                                           X
+                                 Cα,q :=          |j − j ′ | q         < ∞,
+                                                   j≥2,j ′ ≤1
+
+                              q/2                                                                           2/q
+and thus LS (t) = e−Cα,q t . We deduce that if α > 2 + q/2 then the law of the random variable S/Cα,q
+is the measure µq (as they have the same Laplace transform):
+
+                                                                S
+                                                                2/q
+                                                                      ∼ µq .
+                                                            Cα,q
+
+Thus, by Remark 2.12, we have, for any K ≥ 1,
+
+                                               Pq [S < K] ≥ 1 − CK −q/2 .
+
+Since the random variable Ci is the sum of two random variables whose law is the same as the one of S
+(multiplied by the factor βq ), we may combine the previous inequality with a union bound to deduce that
+there exists a constant K1/2 < ∞ (which depends on the parameters α, β, q) such that the inequality (4.1)
+is satisfied. We then deduce that
+                                            N
+                                            X                 N
+                                                            X
+                  Varq−SOS                         cEq e−Ci ≥   cµq (Ci < K1/2 )e−K1/2 ≥ cN.
+                                                      
+                     N,β,α [φ(0)] ≥
+                                             i=1                         i=1
+
+
+4.1.3. The cases α ∈ (2, 2 + q/2). The argument is similar to the one presented in Section 3.1.2, we
+will thus use the notation introduced there and only present the main differences. We set
+                                                         2
+                                               γ :=        (2 − α) + 1 ∈ (0, 1)                            (4.2)
+                                                         q
+and proceed as in the Gaussian case of Section 3.1.2 by first constructing blocks of length N γ and esti-
+mating the values of the various conductances (as depicted in Figure 3.4). As in the proof of Section 3.1.2,
+we focus on the interval {0, . . . , ⌈N γ ⌉}. We first consider the edge connecting the two extremities 0 and
+⌈N γ ⌉ and note that the value of the conductance of this edge is given by the formula
+                                                         X            (njj ′ + 1)λjj ′
+                                              βq                                       .
+                                                                        |j − j ′ |αq
+                                                   j≤0,j ′ ≥⌈N γ ⌉
+
+
+We then consider an integer k ∈ {1, . . . , ⌈N γ ⌉} and note that the value of the conductance on the edge
+connecting k to ⌈N γ ⌉ is given by the identity
+                                                          X         (nkj + 1)λkj
+                                                   βq                            .
+                                                                      |k − j|αq
+                                                        j≥⌈N γ ⌉
+
+
+
+                                                                    38
+We next use Proposition 2.7 to identify all the vertices {0, . . . , ⌈N γ ⌉ − 1} together (as depicted in
+Figure 3.5). This operation transforms the interval {0, . . . , ⌈N γ ⌉} into a graph containing two vertices
+connected by a conductance whose value is
+                                                                                      ⌈N γ ⌉−1
+                                            X    (njj ′ + 1)λij          X                        X       (nkj + 1)λkj
+                        C0 := βq                          ′  α
+                                                                  + βq                                                 .                           (4.3)
+                                                    |j − j |  q                                             |j − k|αq
+                                 j≤0,j ′ ≥⌈N γ ⌉                         k=1                     j≥⌈N γ ⌉
+                                 |               {z             }      |                               {z             }
+                                                   (4.3)−(i)                                       (4.3)−(ii)
+
+The next step of the argument is to show that the random conductance C0 does not take too large values.
+Specifically, we will show that there exists a constant C < ∞ (depending on α, β and q) such that for
+any K ≥ 1,
+                                       Pq [C0 < K] ≥ 1 − CK −q/2 .                                (4.4)
+We first estimate the term (4.3)-(i) using the inequality (3.1) to bound the term nij together with the
+trivial bound nij ≤ CN 1−γ (i.e., we bound nij by the maximal number of blocks of size ⌈N γ ⌉ in the
+interval {−N, . . . , N }). We obtain
+                                      C            X                     λjj ′                           X                λjj ′
+                (4.3) − (i) ≤                                                  α −1   + CN 1−γ                                   α                 (4.5)
+                                      Nγ                           |j −     j′| q                                      |j − j ′ | q
+                                              j∈{−N,...,0},                                          j≤0,j ′ ≥⌈N γ ⌉
+                                            j ′ ∈{⌈N γ ⌉,...,N }                                    j≤−N or j ′ ≥N
+
+Let
+                                 1               X                  λjj ′                           X              λjj ′
+                       Sγ :=                                             α −1    + N 1−γ                                  α .
+                                Nγ                             |j −   j′| q                                     |j − j ′ | q
+                                          j∈{−N,...,0},                                      j≤0,j ′ ≥⌈N γ ⌉
+                                        j ′ ∈{⌈N γ ⌉,...,N }                                j≤−N or j ′ ≥N
+
+Then
+                                                                                                                        
+                                                         −(α −1)                                                        −α
+                     Y                                                                  Y
+  LSγ (t) =                          Lλ N −γ t |j − j ′ | q        ×                               Lλ N 1−γ t |j − j ′ | q                         (4.6)
+                j∈{−N,...,0},                                                     j≤0,j≥⌈N γ ⌉
+              j ′ ∈{⌈N γ ⌉,...,N }                                               j≤−N or j≥N
+                                                                                                                                                 
+
+                                                                              −(αq −1)q/2                                                       −α 
+                 q/2 −γq/2                        X                                                                   X
+                −t N
+          = exp                                                   |j − j ′ |               − tq/2 N (α−2)                         |j − j ′ |     ,
+                                                                                                                                                   
+                                              j∈{−N,...,0},                                                      j≤0,j ′ ≥⌈N γ ⌉
+                                            j ′ ∈{⌈N γ ⌉,...,N }                                                j≤−N or j ′ ≥N
+
+where we used the identities (1 − γ)q/2 = α − 2 and αq q/2 = α in the last line. The value of the
+exponent γ has been chosen in (4.2) so that there exists a constant Cα,q ∈ (1, ∞) (independent of N )
+such that
+                                          −(α −1)q/2                              −α
+                       X                                        X
+           N −γq/2              |j − j ′ | q         + N (α−2)          |j − j ′ | ≤ Cα,q .
+                            j∈{−N,...,0},                                                  j≤0,j ′ ≥⌈N γ ⌉
+                          j ′ ∈{⌈N γ ⌉,...,N }                                            j≤−N or j ′ ≥N
+
+                                                                      2/q
+We thus deduce that the random variable Sγ /Cα,q (multiplied by a suitable non-negative number smaller
+than 1) is distributed according to µq . In particular, we have the tail estimates: for any K ≥ 1,
+
+                                                      Pq [Sγ < K] ≥ 1 − CK −q/2 .
+
+Combining the previous inequality with (4.5), we deduce that
+                                                             
+                                 X      (n jj ′ + 1)λjj ′
+                        Pq                               < K  ≥ 1 − CK −q/2 .                                                                    (4.7)
+                                 ′    γ
+                                           |j − j ′ |αq
+                                          j≤0,j ≥⌈N ⌉
+
+
+The term (4.3)-(ii) can be estimated using a similar argument: we first use the inequality (3.1) and the
+bound nij ≤ CN 1−γ to write
+                                                                                                
+                     ⌈N γ ⌉−1 2⌈N γ ⌉−1                 N −1
+                       X        X          λkj       1  X         λkj               X     λkj 
+    (4.3) − (ii) ≤ C         
+                                                αq
+                                                   + γ                αq −1
+                                                                            + N 1−γ                .
+                                     γ
+                                        |j − k|     N       γ
+                                                              |j − k|                  |j − k|αq
+                             k=1           j=⌈N ⌉                                j=2⌈N ⌉                                 j≥N
+
+
+
+                                                                            39
+Denoting by Seγ the random variable on the right-hand side, we may compute its Laplace transform and
+obtain
+                                                                                                       
+                      ⌈N γ ⌉−1 2⌈N γ ⌉−1                   N −1
+                                                        γq                (αq −1)q
+                                                                        −                             −α
+                        X        X                         X                                 X
+LSeγ (t) = exp −tq/2                   |j − k|−α + N − 2      |j − k|       2
+                                                                                   − N (α−2)   |j − k|  .
+                       k=1       j=⌈N γ ⌉                          j=2⌈N γ ⌉                   j≥N
+
+
+The value of the exponent γ has been selected so that the term inside the exponential is bounded
+uniformly in N . This implies the following tail estimate on the random variable Seγ , for any K ≥ 1,
+
+                                            Pq [Seγ < K] ≥ 1 − CK −q/2 ,
+
+and consequently                                                    
+                              ⌈N γ ⌉−1
+                                 X          X       (nkj + 1)λkj
+                         Pq                                     < K  ≥ 1 − CK −q/2 .
+                                                      |j − k|αq
+                                 k=1     j≥⌈N γ ⌉
+
+Combining the previous inequality with (4.7) completes the proof of (4.4).
+    The end of the proof is essentially identical to the one written in the Gaussian case in Section 3.1.2
+and in the case of the exponent α > 2 + q/2 written in Section 4.1.2: the problem has been reduced to
+                                                                                              2
+the question of the delocalisation of a nearest neighbour Gaussian chain of length N 1−γ = N q (α−2) with
+random conductance satisfying the tail estimate (4.4) which can be handled by first folding the chain as
+in Figure 3.3 and then applying Remark 2.3 as in Section 4.1.2.
+
+4.1.4. The case α = 2 + q/2. This case is essentially identical to the previous one: the only difference
+is that we replace the term N γ by the term (ln N )2/q (N.B. the reason for the exponent 2/q is that, when
+taking the Laplace transform as in (4.6), an exponent q/2 will be added to the term (ln N )−2/q so as to
+obtain a factor (ln N )−1 which is the correct renormalisation for the sum). We thus omit the technical
+details.
+
+4.1.5. The cases α ∈ (1, 2]. This case is the simplest: using the monotonicity of the variance
+VarλN,α,β [φ(0)] in the parameter N (which is a consequence of Proposition 2.7 even in the presence
+of arbitrary conductances), we may write
+                                         h                  i    h                  i
+                    Varq−SOS                 λ                       λ
+                        N,β,α [φ(0)] ≥ Eq VarN,βq ,αq [φ(0)] ≥ Eq Var1,βq ,αq [φ(0)] .
+
+
+For the chain of length 1, the distribution of the height φ(0) is an integer-valued Gaussian random
+variable with conductance equal to βq i∈Z\{0} λ0i /|i|αq (which is almost surely finite). We thus obtain
+                                      P
+
+                                   h                  i     h P                     i
+                                                              βq i∈Z\{0} λ0i /|i|αq
+               Varq−SOS                λ
+                  N,β,α [φ(0)] ≥ Eq Var1,βq ,αq [φ(0)] ≥ cEq e                        ≥ cβ .
+
+4.2   The upper bound
+This section is devoted to the upper bound of Theorem 1.5 and is split into two subsections. We first
+show that the variance of the height of the q-SOS long-range chain can be dominated from above by
+the one of a Gaussian chain with i.i.d. random conductances (distributed according to the probability
+distribution µ
+             eq defined below) which can then be estimated using the same technique as the one used
+for the Gaussian chain with range exponent α ∈ (1, 3) presented in Section 3.2.3.
+
+4.2.1. Domination by a Gaussian long-range chain.
+                                                    eq ). For q ∈ (0, 2), we denote by µ
+Definition 4.3 (Random conductances and the measure µ                                  eq the Borel
+probability measure on (0, ∞) given by the identity
+
+                                                           λ−1/2
+                                       eq (dλ) := ´ ∞
+                                       µ                                  µq (dλ).
+                                                      0
+                                                          λ−1/2 µq (dλ)
+
+We let (λij )i,j∈Z be i.i.d. random variables distributed according to the measure µ
+                                                                                   eq . We denote by E
+                                                                                                     eq
+the expectation with respect to the conductances (λij )i,j∈Z .
+
+
+                                                           40
+   We then prove the following inequality showing that the q-SOS long-range chain is more localised
+than a Gaussian random chain with independent conductances distributed according to the measure µ
+                                                                                                eq .
+Proposition 4.4 (Domination by a Gaussian chain with i.i.d. random conductances). For any integer
+N ∈ N, one has the inequality
+                                                   h                  i
+                              Varq−SOS
+                                 N,β,α [φ(0)] ≤ e q Varλ
+                                                E      N,βq ,αq [φ(0)]  .
+
+Remark 4.5. We note that the tail of the law µ  eq decays faster than the one of the measure µq (both
+tails decay as a power law, but not with the same exponent). This is the reason why the exponents in
+the upper and lower bounds of Theorem 1.5 are not equal. We further believe that, if the stochastic
+dominations stated in Propositions 4.2 and 4.4 could be improved so as to obtain dominations from
+above and below by Gaussian chains with i.i.d. random conductances such that the tails of the laws of
+the conductances decay at the same rate, then it would be possible to obtain matching exponents in the
+upper and lower bounds of Theorem 1.5.
+
+Proof. We start from the identity
+                                         ´
+                                               VarλN,βq ,αq [φ(0)] × ZN,β
+                                                                        λ
+                                                                                  Q
+                                          (0,∞)Z×Z                          q ,αq  i,j∈Z dµq (λij )
+                  Varq−SOS
+                     N,β,α    [φ(0)] =          ´            λ
+                                                                    Q
+                                                           Z
+                                                  (0,∞)Z×Z N,βq ,αq    i,j∈Z dµq (λij )
+                                         h                                i
+                                       Eq VarλN,βq ,αq [φ(0)] × ZN,β
+                                                                 λ
+                                                                    q ,αq
+                                     =               h         i            .
+                                                        λ
+                                                Eq ZN,βq ,αq
+
+On a formal level, the strategy is to use the definition of the measure µ              eq to rewrite the previous identity
+as follows                                  h                                                         i
+                                        e q Varλ                           λ
+                                                                                         Q      p
+                                       E        N,β q ,αq
+                                                           [φ(0)] × (ZN,β       q ,αq
+                                                                                       × i,j∈Z λij )
+                   Varq−SOS
+                       N,β,α [φ(0)] =
+                                                         h                            p i               ,
+                                                   e q Zλ                  Q
+                                                   E        N,βq ,αq ×        i,j∈Z     λij
+                                   λ
+                                              Q        p
+to show that the function λ 7→ ZN,β   q ,αq
+                                            × i,j∈Z λij is increasing in λ and to apply the FKG inequality
+(with one function decreasing and one increasing) to conclude.
+Q In order
+        p to make the previous argument rigorous, one needs to make sense of the infinite product
+  i,j∈Z   λij . This is achieved below by using an approximation argument.
+    Let us fix a large integer M ∈ N (whose value will be sent to infinity later). Given a collection of
+conductances λ := (λij )i,j∈Z×Z , we denote by λM := (λM            ij )i,j∈Z the collection of conductances defined
+                    M                                             M
+by the identities λij = λij if i, j ∈ {−M, . . . , M } and λij = 0 otherwise. We then consider the ratio of
+expectations                               h                                       i
+                                                M
+                                                                         λM
+                                      Eq VarλN,βq ,αq [φ(0)] × ZN,β          q ,αq
+                                                      h             i                .
+                                                 Eq ZN,β  λM
+                                                              q ,αq
+
+
+It is easy to show that this ratio converges to the variance Varq−SOS N,β,α [φ(0)] (as all the quantities involved
+are monotone in M ). Additionally, since there are now only finitely many random variables involved, we
+may use the definition of the measure µ    eq to write
+      h     M
+                                       i      h                                                              i
+                             λM
+  Eq VarλN,βq ,αq [φ(0)] × ZN,β            e q VarλM                     λM
+                                                                                     Q                p
+                                q ,α q
+                                           E      N,β q ,α q
+                                                             [φ(0)] × (Z N,βq ,α q
+                                                                                   ×  i,j∈{−M,...,M }   λij )
+                h
+                    M
+                          i              =                 h
+                                                                M
+                                                                                           p i                 . (4.8)
+                   λ                                           λ
+                                                                        Q
+             Eq ZN,βq ,αq                            Eq ZN,βq ,αq × i,j∈{−M,...,M } λij
+                                                     e
+
+                                                     λM
+                                                                 Q             p
+We then show that the function λ := (λij )i,j∈Z →
+                                                7 ZN,β  q ,αq
+                                                              × i,j∈{−M,...,M } λij is increasing and first
+we note that this property is equivalent to the following statement
+                                                                                        
+                                                  ∂          λ M           Y      p
+     ∀λ ∈ (0, ∞)Z×Z , ∀k, l ∈ {−M, . . . , M },      ln ZN,β    q ,αq
+                                                                       ×             λij  ≥ 0.      (4.9)
+                                                ∂λkl
+                                                                               i,j∈{−M,...,M }
+
+
+
+
+                                                           41
+To prove (4.9), we fix λ ∈ (0, ∞)Z×Z , fix k, l ∈ {−M, . . . , M } and write
+                                                       
+             ∂         λM               Y         p            ∂       M
+                                                                         λ
+                                                                                      ∂      p
+                 ln ZN,β q ,αq
+                                ×                  λ ij
+                                                         =        ln  Z N,βq ,αq +         ln λkl        (4.10)
+           ∂λkl                                              ∂λkl                     ∂λkl
+                                  i,j∈{−M,...,M }
+                                                                                           
+                                                                 1             ∂    λM           1
+                                                          = λM         ×           ZN,βq ,αq +        .
+                                                             ZN,βq ,αq      ∂λ  kl              2λ kl
+
+
+For the first term on the right-hand side, an explicit computation gives the bound
+                                               
+                        1          ∂    λM               βq          M
+                       M      ×        ZN,βq ,αq = −         αq
+                                                                VarλN,βq ,αq [φ(k) − φ(l)] .              (4.11)
+                     λ
+                    ZN,βq ,αq     ∂λkl                |k − l|
+
+We then reduce the value of all the conductances λij with (i, j) ̸= (k, l) to 0 and make two observations.
+First, by Proposition 2.4, this operation increases that value of the variance of φ(k) − φ(l). After
+performing this operation, the law of φ(k) − φ(l) is an integer-valued Gaussian random variable of
+conductance βq λkl /|k − l|αq . Applying Lemma 2.2, we have thus obtained
+                                          M                          1 |k − l|αq
+                                     VarλN,βq ,αq [φ(k) − φ(l)] ≤                .
+                                                                     2 βq λkl
+
+Combining the previous inequality with (4.10), we deduce that
+                                                             
+                                   1           ∂     λM             1
+                                 λM
+                                          ×        Z N,βq ,αq   ≥−       ,
+                               ZN,β q ,αq
+                                              ∂λkl                 2λ kl
+
+
+which, by (4.10), implies (4.9). Now that (4.9) has been established, we may apply the FKG-inequality
+to the right-hand side of (4.8) and obtain that
+                                                    h      M
+                                                                                      i
+                                                                            λM
+                                                Eq VarλN,βq ,αq [φ(0)] × ZN,β  q ,α q
+                       Varq−SOS
+                           N,β,α [φ(0)] = Mlim
+                                                                h         i
+                                            →∞                      λ M
+                                                            Eq ZN,βq ,αq
+                                                   h                    i
+                                        ≤ lim E e q VarλM
+                                                         N,βq ,αq [φ(0)]
+                                          M →∞
+                                             h                    i
+                                        =Ee q Varλ         [φ(0)]
+                                                  N,βq ,αq
+
+The proof of Proposition 4.4 is complete.
+
+4.2.2. Bäumler’s technique again. In the section, we readapt the argument of Section 3.2.3 to the
+case of the Gaussian chain with i.i.d. random conductances. The argument below is a minor adaptation
+of the proof presented there (which is itself a minor adaptation of the proof of [5, Proof of Theorem 1.1]).
+    Let us fix a (large) integer N ∈ N and let K be the largest integer such that 2K+1 ≤ N . As in the
+proof of Section 3.2.3, we introduce the intervals
+
+                                Ik := {2k , . . . , 2k+1 − 1} for k ∈ {0, . . . , K}.
+
+as well as the collections of paths
+
+                           Γ := {γ : {0, . . . , K} → N : ∀k ∈ {1, . . . , K}, γk ∈ Ik } .
+
+   We perform the following operations (referring to Figures 3.15 and 3.16 and 3.17 for guidance):
+
+   • For each integer k ∈ {0, . . . , K − 1} and each pair of vertices i ∈ Ik , j ∈ Ik+1 , we split the edge
+                                  |Γ|
+     connecting i and j into |Ik ||I k+1 |
+                                           edges to which we assign the conductance
+
+                                                βq λij |Ik ||Ik+1 |         2(2−αq )k
+                                       cij :=                 α
+                                                                    ≤ Cλ ij           .
+                                                  |Γ||i − j| q                 |Γ|
+
+   • For each path γ ∈ Γ and each integer k ∈ {0, . . . , K}, we select an edge connecting the vertices γk
+     and γk+1 and denote this edge by eγ,k . We choose these edges so that they are all distinct.
+
+
+                                                          42
+   • We then isolate the collection of edges {eγ,k : k ∈ {0, . . . , K}} from the rest of the chain and erase
+     the vertices on the line which has been isolated. These operations generate an edge connecting 0
+     to γK (with γK > N ) whose conductance is equal to
+                                                  1                            c
+                                    cγ := PK                    ≥                           .
+                                                                                2(αq −2)k
+                                                       1                  PK
+                                             k=1 cγk γk+1           |Γ|     k=1 λγk γk+1
+
+
+   • We apply the previous operations to all the paths γ ∈ Γ, then merge the |Γ| edges together and
+     add their conductance. This generates an edge connecting 0 to the region {n ∈ N : n ≥ N } whose
+     conductance is given by
+                                        X         c X         1
+                                   c :=    cγ ≥         PK 2(αq −2)k .
+                                                 |Γ|
+                                           γ∈Γ                  γ∈Γ       k=1 λγk γk+1
+
+      We finally reduce to 0 the values of all the other conductances.
+
+    All the operations performed until now increase the variance of the height φ(0), and they show that
+this variance is smaller than the one of an integer-valued Gaussian random variable with a conductance
+equal to the constant c above (whose variance is thus smaller than 1/c). Specifically, we have the upper
+bound
+                                                              |Γ|
+                               VarλN,βq ,αq q [φ(0)] ≤ C P        1      .
+                                                                 γ∈Γ PK         (α −2)k
+                                                                               2 q
+                                                                           k=1 λγ γ
+                                                                                  k k+1
+
+Using that the harmonic mean is smaller than the arithmetic mean, we may simplify the previous
+inequality by writing
+                                                       K
+                                                   C X X 2(αq −2)k
+                            VarλN,βq ,αq [φ(0)] ≤                  .
+                                                  |Γ|    λγk γk+1
+                                                                 γ∈Γ k=1
+
+Taking the expectation, we further deduce that
+                                                     K                      
+                          h
+                              λ
+                                             i   C X X (αq −2)k e      1
+                        Eq VarN,βq ,αq [φ(0)] ≤
+                        e                              2       Eq
+                                                |Γ|                 λγk γk+1
+                                                           γ∈Γ k=1
+                                                           K
+                                                       C X X (αq −2)k
+                                                 ≤           2
+                                                      |Γ|
+                                                           γ∈Γ k=1
+                                                          K
+                                                          X
+                                                 ≤C             2(αq −2)k
+                                                          k=1
+                                                      
+                                                      
+                                                                   Cβ for α < q,
+                                                 ≤          Cβ ln N for α = q,
+                                                      
+                                                          Cβ N αq −2 for α > q,
+                                                      
+
+where in the first inequality, we used the tail estimate (close to 0) of the measure µq stated in Remark 2.12
+(which implies that a similar tail estimate holds for the measure µ     eq ), and where we used the definition
+of the integer K in the last inequality.
+    We finally note that we always have (N.B. this is obtained by erasing all the long-range edges as in
+Section 3.2.1)                             h                  i
+                                        e q Varλ
+                                        E               [φ(0)] ≤ CN.
+                                                 N,βq ,αq
+
+Combining the two previous inequalities completes the proof of Theorem 1.5.
+
+    Acknowledgments. We thank Christophe Garban for enlightening discussions, constant availability
+and appealing conjectures on this localisation/delocalisation problems. We thank Aernout van Enter for
+his encouragements and his feedback on a previous version of the paper.
+
+
+
+
+                                                           43
+                                                 References
+ [1] M. Aizenman, M. Harel, R. Peled, and J. Shapiro. Depinning in integer-restricted Gaussian Fields and BKT
+     phases of two-component spin models. Preprint arXiv:2110.09498v3, 2022.
+ [2] S. Armstrong and W. Wu.           The scaling limit of the continuous solid-on-solid model.           Preprint
+     arXiv:2310.13630, 2023.
+ [3] R. Bauerschmidt, J. Park, and P.-F. Rodriguez. The Discrete Gaussian model, I. Renormalisation group
+     flow at high temperature. The Annals of Probability, 52(4):1253–1359, 2024.
+ [4] R. Bauerschmidt, J. Park, and P.-F. Rodriguez. The Discrete Gaussian model, II. Infinite-volume scaling
+     limit at high temperature. The Annals of Probability, 52(4):1360–1398, 2024.
+ [5] J. Bäumler. Recurrence and transience of symmetric random walks with long-range jumps. Electronic
+     Journal of Probability, 28:1–24, 2023.
+ [6] M. Biskup and H. Huang. Phase transition and critical behavior in hierarchical integer-valued Gaussian and
+     Coulomb gas models. Preprint arXiv:2412.08964, 2024.
+ [7] M. Biskup and R. Kotecký. Phase coexistence of gradient Gibbs states. Probability Theory and Related
+     Fields, 139(1):1–39, 2007.
+ [8] M. Biskup and H. Spohn. Scaling limit for a class of gradient fields with non-convex potentials. The Annals
+     of Probability, 39(1):224 – 251, 2011.
+ [9] D. Brydges and T. Spencer. Fluctuation estimates for sub-quadratic gradient field actions. Journal of
+     mathematical physics, 53(9), 2012.
+[10] S. Buchholz. Phase transitions for a class of gradient fields. Probability Theory and Related Fields, 179:969–
+     1022, 2021.
+[11] L. Coquille, A. van Enter, A. Le Ny, and W. M. Ruszel. Absence of Dobrushin states for 2d Long-Range
+     Ising Models. Journal of Statistical Physics, 172:1210–1222, 2018.
+[12] L. Coquille, A. van Enter, A. Le Ny, and W. M. Ruszel. Absence of Shift-Invariant Gibbs States (Delocali-
+     sation) for One-Dimensional Z-Valued Fields With Long-Range Interactions. Journal of Statistical Physics,
+     191(7):80, 2024.
+[13] F. Cornu, H. Hilhorst, and M. Bauer. New duality relation for the Discrete Gaussian SOS model on a torus.
+     Journal of Statistical Mechanics: Theory and Experiment, 2023(4):043206, 2023.
+[14] J. Fröhlich and Y. M. Park. Correlation Inequalities and the Thermodynamic Limit for Classical and
+     Quantum Continuous Systems. Communications in Mathematical Physics, 59(3):235–266, 1978.
+[15] J. Fröhlich and T. Spencer. The Kosterlitz-Thouless Transition in Two-Dimensional Abelian Spin Systems
+     and the Coulomb Gas. Communications in Mathematical Physics, 81(4):527–602, 1981.
+[16] J. Fröhlich and T. Spencer. The Phase Transition in the One-Dimensional Ising Model with 1/r2 Interaction
+     Energy. Communications in Mathematical Physics, 84(1):87–101, 1982.
+[17] J. Fröhlich and B. Zegarlinski. The Phase Transition in the Discrete Gaussian Chain with 1/r2 Interaction
+     Energy. Journal of Statistical Physics, 63:455–485, 1991.
+[18] C. Garban. Invisibility of the integers for the discrete Gaussian chain via a Caffarelli-Silvestre extension of
+     the discrete fractional Laplacian. Preprint arXiv:2312.04536, 2023.
+[19] C. Garban and A. Sepúlveda. Quantitative bounds on vortex fluctuations in 2d Coulomb gas and maximum
+     of the integer-valued Gaussian free field. Proceedings of the London Mathematical Society, 127(3):653–708,
+     2023.
+[20] C. Garban and A. Sepúlveda. Statistical reconstruction of the GFF and KT transition. Journal of the
+     European Mathematical Society, 26(2):639–694, 2023.
+[21] J. Ginibre. General formulation of Griffiths’ inequalities. Communications in Mathematical Physics, 16:310–
+     328, 1970.
+[22] V. Kharash and R. Peled. The Fröhlich-Spencer Proof of the Berezinskii-Kosterlitz-Thouless Transition.
+     Preprint arXiv:1711.04720, 2017.
+[23] K. Kjaer and H. Hilhorst. The Discrete Gaussian Chain with 1/rn Interactions: Exact Results. Journal of
+     Statistical Physics, 28:621–632, 1982.
+[24] P. Lammers. Height function delocalisation on cubic planar graphs. Probability Theory and Related Fields,
+     182(1):531–550, 2022.
+[25] P. Lammers. A dichotomy theory for height functions of the BKT transition. Preprint arXiv:2211.14365v3,
+     2022-26.
+
+
+
+                                                        44
+[26] P. Lammers and S. Ott. Delocalisation and absolute-value-FKG in the solid-on-solid model. Probability
+     Theory and Related Fields, 188(1):63–87, 2024.
+[27] B. Laslier and E. Lubetzky. Tilted Solid-On-Solid is liquid: scaling limit of SOS with a potential on a slope.
+     Preprint arXiv:2409.08745, 2024.
+                                                                     α
+[28] J. Mikusiński. On the function whose Laplace-transform is e−s . Studia Mathematica, 2(18):191–198, 1959.
+[29] J. Park. Central Limit Theorem for Multi-Point Functions of the 2D Discrete Gaussian Model at high
+     temperature. Communications in Mathematical Physics, 406(234), 2025.
+[30] K. Penson and K. Górska. Exact and explicit probability densities for one-sided Lévy stable distributions.
+     Physical review letters, 105(21):210604, 2010.
+[31] O. Regev and N. Stephens-Davidowitz. An inequality for Gaussians on lattices. SIAM Journal on Discrete
+     Mathematics, 31(2):749–757, 2017.
+[32] M. Sellke. Localization of Random Surfaces with Monotone Potentials and an FKG-Gaussian Correlation
+     Inequality. Preprint arXiv:2402.18737, 2024.
+[33] J. Slurink and H. Hilhorst. Roughening behavior of a one-dimensional crystal surface with inverse square
+     potential. Physica A: Statistical Mechanics and its Applications, 120(3):627–634, 1983.
+[34] D. van Engelenburg and M. Lis. An elementary proof of phase transition in the planar XY model. Commu-
+     nications in Mathematical Physics, 399(1):85–104, 2023.
+[35] D. van Engelenburg and M. Lis. On the duality between height functions and continuous spin models.
+     Probability and Mathematical Physics, 6:1291–1325, 2025.
+[36] M. Wirth. Maximum of the integer-valued Gaussian free field. Preprint arXiv:1907.08868, 2019.
+
+
+
+
+                                                        45
+
