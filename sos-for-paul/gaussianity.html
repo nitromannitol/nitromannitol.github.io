@@ -6,7 +6,7 @@
 <body>
 <header class="share-header"><a class="share-brand" href="index.html">SOS for Paul</a><nav aria-label="Project navigation"><a href="index.html">Overview</a><a href="gaussianity.html#simulation-section" aria-current="page">Simulation</a><a href="parameter-sweep.html">Parameter sweep</a><a href="conjectures.html">Conjectures</a><a href="results.html">Results</a><a href="data.html">Data</a><a href="paper.html">Paper</a></nav></header>
 <main>
-  <div class="intro"><div><div class="eyebrow">Real-valued q-SOS · conjectures and experiments</div><h1>What is the scaling limit?</h1><p>A proposed phase diagram, a construction of the candidate field, and the data generated for q = 1, α = 2.25. The conjectures extend beyond the parameters tested.</p></div><span class="mini-badge">φ(i) ∈ ℝ</span></div>
+  <div class="intro"><div><div class="eyebrow">Real-valued q-SOS · conjectures and experiments</div><h1>What is the scaling limit?</h1><p>At q = 1, α = 2.25, our current prediction is a non-Gaussian field with H = ¼: βn⁻⁵/⁴Σfφ should converge with positive excess kurtosis. This would exclude fractional Brownian motion. The <a href="conjectures.html#current-predictions-from-the-data">current predictions across q and α</a> incorporate the full 28-pair sweep.</p></div><span class="mini-badge">φ(i) ∈ ℝ</span></div>
   <div id="error" class="error hidden" role="alert"></div>
   <section id="generated-evidence" class="panel conjecture-panel">
     <div class="evidence-head"><div><div class="eyebrow">Generated data · saved locally</div><div id="generated-count" class="data-summary">Loading saved configurations…</div></div><a class="secondary" href="#simulation-section">Explore distributions ↓</a></div>
@@ -15,9 +15,9 @@
     <p class="evidence-note">The largest three sizes give a variance-based exponent H ≈ 0.242, close to ¼. Positive excess kurtosis persists, supporting a non-Gaussian working hypothesis. The n = 2048 even bump has about 514 effective samples; its tails remain uncertain. These data do not determine a unique continuum law.</p>
   </section>
   <section id="conjecture-section" class="panel conjecture-panel">
-    <div class="panel-title"><h2>A precise scaling-limit conjecture</h2><span class="conjecture-tag">Original hypotheses · now tested at 28 pairs</span></div>
-    <p><a href="parameter-sweep.html">Open the full parameter sweep</a> for distributions, scaling fits, joint moments and diagnostics. The original diagram below remains a hypothesis; the <a href="sweep-report.html">updated assessment</a> explains where the data support it and where they remain inconclusive.</p>
-    <p>For 0 &lt; q &lt; 2, my proposed crossover is <strong>α<sub>c</sub>(q) = 2 + q/2</strong>. In the rough interval 2 &lt; α &lt; α<sub>c</sub>, I conjecture the non-Gaussian field Q(q,α) defined below. At and above the crossover I conjecture a Brownian bridge. <strong>The q = 2 line is Gaussian throughout.</strong></p>
+    <div class="panel-title"><h2>The original phase-diagram hypothesis</h2><span class="conjecture-tag">Critical rows remain provisional</span></div>
+    <p>The sweep favors non-Gaussian rough limits at q = 0.5, 1 and 1.5, and Brownian bridges at α = 3.5. <strong>The nonlinear transition location and critical logarithms are not selected by the data.</strong> <a href="parameter-sweep.html">Open the parameter sweep</a> for the current prediction at each tested pair, with its distributions and diagnostics.</p>
+    <p>The original proposal below uses <strong>α<sub>c</sub>(q) = 2 + q/2</strong>, a non-Gaussian field for 2 &lt; α &lt; α<sub>c</sub>, and a Brownian bridge at and above α<sub>c</sub>. Its critical rows remain hypotheses to test. The specific cutoff law Q(q,α) is an untested candidate. <strong>The q = 2 line is Gaussian throughout.</strong></p>
     <div class="equation">Y<sub>n</sub>(f) = β<sup>1/q</sup> (n a<sub>n</sub>)<sup>−1</sup> Σ<sub>i=−n</sub><sup>n</sup> f(i/n) φ(i) &nbsp; ⟶ &nbsp; ⟨Φ, f⟩</div>
     <p>Convergence is proposed jointly for every finite collection of smooth compactly supported test functions on D = (−1,1). The entire exterior has height zero. β only changes amplitude by β<sup>−1/q</sup>; this is an exact identity for real heights.</p>
     <div class="conjecture-grid">
@@ -32,7 +32,7 @@
       <tr><td>α &gt; 2 + q/2</td><td>n<sup>1/2</sup></td><td>σ(q,α) B, a Brownian bridge</td><td>Tested close to the crossover and at α = 3.5</td></tr>
     </tbody></table></div>
     <p class="projection-note">B is the standard Brownian bridge on (−1,1). Each σ is a deterministic positive constant, not a fitted random amplitude. For α ≤ 2 the normalization concerns smooth averages; it is not the scale of one height. Extension to q &lt; 1 is especially tentative. This diagram makes no claim for q &gt; 2 or integer heights.</p>
-    <details open><summary>Precisely which non-Gaussian law? A constructive candidate</summary><div class="method-body">
+    <details><summary>An untested candidate for the full non-Gaussian law</summary><div class="method-body">
       <p>Fix 2 &lt; α &lt; 2 + q/2 and H = (α−2)/q. Let B be a standard Brownian bridge on D, extended by zero outside. For any fixed η &gt; 0 and cutoff ε &gt; 0, set U<sub>ε</sub> = η ε<sup>H−1/2</sup>B. Define a probability law ν<sub>ε</sub> by weighting this Gaussian reference:</p>
       <div class="equation">E<sub>ε</sub>(u) = ∬<sub>|x−y|&gt;ε</sub> |u(x)−u(y)|<sup>q</sup> / |x−y|<sup>α</sup> dx dy<br>ν<sub>ε</sub>(du) = Z<sub>ε</sub><sup>−1</sup> exp[−E<sub>ε</sub>(u)] Law(U<sub>ε</sub>)(du).</div>
       <p>The integral is over ordered pairs in ℝ², including the zero exterior. For each positive cutoff this is a specified probability measure. My <strong>stronger conjecture</strong> is that ν<sub>ε</sub> converges as ε ↓ 0, independently of η, and that its limit Q(q,α) is the lattice scaling limit. It should be non-Gaussian for q &lt; 2, reduce to G<sub>α</sub> for q = 2, and scale with exponent H when the domain is dilated.</p>
@@ -42,7 +42,7 @@
     </div></details>
     <details><summary>Gaussian line, constants, and falsifiable predictions</summary><div class="method-body">
       <p>G<sub>α</sub> is the centered Gaussian field with covariance (4L<sub>α</sub>)<sup>−1</sup>, where L<sub>α</sub>u(x) = PV ∫<sub>ℝ</sub>(u(x)−u(y))/|x−y|<sup>α</sup> dy and u = 0 outside D. This is the restricted, zero-exterior operator. At q = 2, the limit is exactly G<sub>α</sub> for 1 &lt; α &lt; 3, ½B at α = 3 under aₙ = √(n/log n), and [4ζ(α−2)]<sup>−1/2</sup>B at α &gt; 3 under aₙ = √n.</p>
-      <p>The nonlinear conjecture predicts nonzero limiting fourth cumulants below the crossover and vanishing normalized fourth cumulants at and above it. At q = 1, the crossover prediction is √n/log n at α = 2.5. The existing α = 2.25 data do not test this logarithm.</p>
+      <p>The original nonlinear conjecture predicts nonzero limiting fourth cumulants in the rough interval and vanishing normalized fourth cumulants at and above the upper crossover. At q = 1, α = 2.5, it proposes √n/log n. The new sweep tests this point: the fitted effective log power is −0.695, compared with the proposed −1, and κ(f) = 0.209 [0.120, 0.305] at n = 512. The limiting logarithm and Gaussianity remain unresolved.</p>
       <p>For the measured point, n<sup>−5/4</sup>Σfφ is the proposed pairing. At n = 1024 the even-minus-odd kurtosis interval is [0.052, 0.377], arguing against one independent scalar amplitude multiplying a Gaussian field. At n = 2048 that difference is less precise and its interval includes zero. Neither result singles out the stronger cutoff candidate.</p>
     </div></details>
     <div class="conjecture-nav"><a href="conjectures.html" target="_blank">Full mathematical statement and derivation ↗</a><a href="results.html" target="_blank">Simulation report ↗</a><a href="downloads/observations.csv.gz" download>Download generated observations (.csv.gz) ↓</a></div>

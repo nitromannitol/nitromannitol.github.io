@@ -2,14 +2,25 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Parameter sweep · SOS for Paul</title><link rel="stylesheet" href="share-site.css"><link rel="stylesheet" href="parameter-sweep.css">
 <script defer src="parameter-sweep-data.js"></script><script defer src="parameter-sweep.js"></script><meta name="robots" content="noindex, nofollow, noarchive"><meta name="referrer" content="same-origin"><link rel="stylesheet" href="share-site.css"></head>
-<body class="share-page"><header class="share-header"><a class="share-brand" href="index.html">SOS for Paul</a></header>
+<body class="share-page"><header class="share-header"><a class="share-brand" href="index.html">SOS for Paul</a><nav aria-label="Project navigation"><a href="index.html">Overview</a><a href="gaussianity.html#simulation-section">Simulation</a><a href="parameter-sweep.html" aria-current="page">Parameter sweep</a><a href="conjectures.html">Conjectures</a><a href="results.html">Results</a><a href="data.html">Data</a><a href="paper.html">Paper</a></nav></header>
 <main class="share-main sweep-main">
 <div class="eyebrow">Real heights · β = 1 · Full long-range interaction</div>
-<h1>Testing the phase diagram</h1>
-<p class="share-lead">A parameter sweep across q = ½, 1, 3/2 and 2. Each point compares several box sizes and independently seeded chains, with uncertainty from correlated samples.</p>
+<h1>What the data predict</h1>
+<p class="share-lead">Our best-supported nonlinear prediction is a non-Gaussian field with H = ¼ at q = 1, α = 2.25. The broader sweep favors non-Gaussian rough fields and Brownian bridges at large α.</p>
+<section id="current-predictions" class="prediction-summary" aria-labelledby="prediction-heading">
+<h2 id="prediction-heading">Current scaling-limit predictions</h2>
+<div class="prediction-grid">
+<article><div class="eyebrow">Rough regime · favored</div><h3>Non-Gaussian, H = (α−2)/q</h3><p>At (q, α) = (0.5, 2.125), (1, 2.25), (1.5, 2.375), predict a non-Gaussian limit of β<sup>1/q</sup>n<sup>−5/4</sup>Σfφ. The n = 512 kurtoses are 0.531, 0.340, 0.113. The exponent is less secure at q = 1.5 and closer to the proposed transition.</p></article>
+<article><div class="eyebrow">α = 3.5 · favored</div><h3>Gaussian Brownian bridge</h3><p>For q = 0.5, 1, 1.5, predict β<sup>1/q</sup>n<sup>−3/2</sup>Σfφ → σ⟨B<sub>D</sub>, f⟩, with deterministic σ &gt; 0. Fitted H = 0.496, 0.496, 0.492; kurtosis and covariance ratios are compatible with the bridge.</p></article>
+<article><div class="eyebrow">α = 1.75 · tentative</div><h3>Fractional Gaussian distribution</h3><p>Predict β<sup>1/q</sup>n<sup>−7/8</sup>Σfφ → σ⟨G<sub>1.75</sub>, f⟩. The trend favors Gaussian smooth averages, but powers and covariance ratios still drift. This is a weaker prediction.</p></article>
+</div>
+<p><strong>At q = 2, Gaussianity is exact.</strong> Along α = 2 + q/4, our working prediction is that the non-Gaussian family approaches the quadratic Gaussian limit as q ↑ 2.</p>
+<p><strong>At α = 2 and near α = 2 + q/2, no limiting law has been selected by these data.</strong> The original Gaussian critical limits, logarithms, and transition location remain provisional. At q = 0.5, α = 2.4, κ(f) is still 0.323 at n = 512, despite being above the proposed boundary.</p>
+<p class="sweep-small">The full non-Gaussian law is still unidentified; the Brownian-cutoff construction is an untested candidate. B<sub>D</sub> is the Brownian bridge on (−1,1); G<sub>α</sub> uses the restricted fractional operator with zero exterior. See the <a href="conjectures.html#current-predictions-from-the-data">precise current statement and its qualifications</a>.</p>
+</section>
 <div id="sweep-counts" class="share-stats" aria-live="polite"></div>
 <p class="sweep-caution">The displayed exponents and critical logarithms are the original hypotheses. Intervals measure Monte Carlo uncertainty; finite-size bias remains. All intervals are pointwise, so scanning many parameter pairs increases the chance of a false signal.</p>
-<div class="inline-actions"><a class="share-button" href="sweep-report.html">Findings and revised assessment</a><a class="share-button" href="conjectures.html">Mathematical conjectures</a><a class="share-button" href="data.html#parameter-sweep">Download this sweep</a></div>
+<div class="inline-actions"><a class="share-button primary" href="#selected-experiment">Inspect the data below</a><a class="share-button" href="sweep-report.html">Evidence for these predictions</a><a class="share-button" href="conjectures.html">Precise conjectures</a><a class="share-button" href="data.html#parameter-sweep">Download this sweep</a></div>
 <section id="selected-experiment">
 <div class="sweep-controls"><label>q <select id="sweep-q"><option value="0.5">0.5</option><option value="1" selected>1</option><option value="1.5">1.5</option><option value="2">2 · exact Gaussian control</option></select></label>
 <label>α <select id="sweep-alpha"></select></label><label>Box radius n <select id="sweep-n"></select></label><label>Projection <select id="sweep-projection"><option value="f">Even bump f</option><option value="g">Odd bump g</option></select></label></div>
@@ -26,6 +37,6 @@
 <h2>Joint shape and sampler checks</h2><div id="sweep-joint"></div>
 </section>
 <section id="all-parameters"><h2>All parameter pairs</h2><p>Click a row to inspect its distributions and chains. H is fitted from the three largest available sizes after subtracting the proposed logarithm. The fit does not correct unknown finite-size effects.</p>
-<div class="sweep-table"><table><thead><tr><th>q</th><th>α</th><th>Largest n</th><th>Original H</th><th>Fitted H, 95% interval</th><th>κ(f), 95% interval</th><th>κ(g)</th><th>ESS(f)</th><th>Mixing</th></tr></thead><tbody id="sweep-all-table"></tbody></table></div></section>
+<div class="sweep-table"><table><thead><tr><th>q</th><th>α</th><th>Current prediction</th><th>Largest n</th><th>Original H</th><th>Fitted H, 95% interval</th><th>κ(f), 95% interval</th><th>κ(g)</th><th>ESS(f)</th><th>Mixing</th></tr></thead><tbody id="sweep-all-table"></tbody></table></div></section>
 <section><h2>What was measured</h2><p>The even test function is f(t) = exp(1 − 1/(1 − (t/0.8)²)) on |t| &lt; 0.8 and zero elsewhere. The odd function is g(t) = 3t f(t)/0.8. We also record a narrow central bump, two separated bumps, point heights, increments and energy.</p><p>The mixed fourth residual is [E(X²Y²) − E(X²)E(Y²) − 2E(XY)²]/[Var(X)Var(Y)], with centered X and Y. It vanishes for jointly Gaussian observables. We compare several projections because Gaussian-looking marginals alone do not identify a field law.</p><p id="sweep-methods"></p><p>R̂ below 1.01 and at least 1,000 estimated effective samples in all three displayed smooth projections are screening criteria. Passing these checks does not prove equilibration. The exact energy mean and variance, each divided by (2n+1)/q, should equal one.</p></section>
 </main><footer class="share-footer">SOS for Paul · Finite-size experiments and conjectures</footer></body></html>
