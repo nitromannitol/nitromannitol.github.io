@@ -162,7 +162,7 @@ const publications = [
   title: "Superdiffusion and anomalous regularization in self-similar random incompressible flows",
   thumbnail: "images/algebraic-sd.png",
   thumbnailAnimation: "algebraic-superdiffusion",
-  altText: "A particle following a continuous path through a self-similar incompressible flow.",
+  altText: "A jagged Brownian path wandering through a finite random incompressible flow with several spatial scales.",
   authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
@@ -214,7 +214,7 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
 abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
     thumbnail: "images/sd.png",
     thumbnailAnimation: "critical-superdiffusion",
-    altText: "A positive-diffusivity particle trajectory crossing the streamlines of a critically correlated incompressible flow.",
+    altText: "A Brownian particle leaving a growing, irregular trail across the streamlines of a finite random incompressible flow.",
     year: 2024
   },
   {

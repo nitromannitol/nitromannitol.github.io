@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=a412ff37">
+<link rel="stylesheet" href="gallery.css?v=6b9501f1">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -41,235 +41,198 @@
     <button type="button" class="tab" role="tab" id="tab-own" aria-controls="sheet-own" aria-selected="true" data-tab="own">Research<span class="tab-n">18</span></button>
     <button type="button" class="tab" role="tab" id="tab-other" aria-controls="sheet-other" aria-selected="false" data-tab="other">Other models<span class="tab-n">5</span></button>
 </div>
-<div class="sheet" id="sheet-own" role="tabpanel" aria-labelledby="tab-own" data-panel="own">
-<a class="card" href="#manhattan-lattice" data-plate="manhattan-lattice">
+<div class="sheet collection" id="sheet-own" role="tabpanel" aria-labelledby="tab-own" data-panel="own">
+<nav class="collection-guide" aria-label="Explore research themes"><span class="collection-guide-label">Explore by idea</span><a href="#chapter-paths"><span>Paths and memory</span><small>3</small></a><a href="#chapter-sandpiles"><span>Sandpiles across scales</span><small>5</small></a><a href="#chapter-shapes"><span>Shapes from particles</span><small>4</small></a><a href="#chapter-motion"><span>Motion through disorder</span><small>4</small></a><a href="#chapter-harmonic"><span>Harmonic geometry</span><small>2</small></a></nav>
+<section class="exhibit" id="chapter-paths" aria-labelledby="heading-paths">
+<header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">I</span><h2 id="heading-paths">Paths and memory</h2></div><p>A street keeps its direction. An edge remembers a crossing. A rotor turns. Three ways for a walk to carry its past.</p></header>
+<div class="exhibit-grid exhibit-grid--trio">
+<a class="card card--feature" href="#manhattan-lattice" data-plate="manhattan-lattice">
     <span class="card-img">
         <img src="plates/p-manhattan-wall-paper.svg?v=13785715" alt="" loading="eager" decoding="async">
         <img class="card-img-alt" src="plates/p-manhattan-wall-void.svg?v=d153faa1" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-name">The randomly oriented Manhattan lattice</span></span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-copy"><span class="card-name">The randomly oriented Manhattan lattice</span><span class="card-description">Follow a walker through randomly directed streets and inspect its choices at each intersection.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#orrw-range" data-plate="orrw-range">
     <span class="card-img">
         <img src="plates/p-orrw-wall-paper.svg?v=e804193d" alt="" loading="eager" decoding="async">
         <img class="card-img-alt" src="plates/p-orrw-wall-void.svg?v=24b41d4a" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label"><span class="card-no" aria-hidden="true">02</span><span class="card-name">Once-reinforced random walk</span></span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">02</span><span class="card-copy"><span class="card-name">Once-reinforced random walk</span><span class="card-description">Trace a growing trail that attracts the walker back.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
-
-<a class="card" href="#random-sandpile" data-plate="random-sandpile">
+<a class="card" href="#rotor-walk" data-plate="rotor-walk">
     <span class="card-img">
-        <img src="plates/random-convergence-wall-paper.png" alt="" loading="eager" decoding="async">
+        <img src="plates/p7-wall-paper.png" alt="" loading="eager" decoding="async">
+        <img class="card-img-alt" src="plates/p7-wall-void.png" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">03</span><span class="card-copy"><span class="card-name">Eulerian walkers on Z&sup2;</span><span class="card-description">Turn each arrow clockwise and follow the walk’s growing range.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+</div>
+</section>
+<section class="exhibit" id="chapter-sandpiles" aria-labelledby="heading-sandpiles">
+<header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">II</span><h2 id="heading-sandpiles">Sandpiles across scales</h2></div><p>Local topplings create large-scale patterns. Look for the structure that survives a change of scale, dimension, or background.</p></header>
+<div class="exhibit-grid exhibit-grid--five">
+<a class="card card--feature" href="#random-sandpile" data-plate="random-sandpile">
+    <span class="card-img">
+        <img src="plates/random-convergence-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/random-convergence-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">03</span>
-        <span class="card-name">Convergence of the random Abelian sandpile</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">04</span><span class="card-copy"><span class="card-name">Convergence of the random Abelian sandpile</span><span class="card-description">Watch a random pile stabilize, then compare its patterns and toppling counts across five sizes.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#dimensional-reduction" data-plate="dimensional-reduction">
     <span class="card-img">
-        <img src="plates/p-dimred-wall-paper.png?v=a4f6292b" alt="" loading="eager" decoding="async">
+        <img src="plates/p-dimred-wall-paper.png?v=a4f6292b" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-dimred-wall-void.png?v=0db56dee" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">04</span>
-        <span class="card-name">Dynamic dimensional reduction</span>
-    </span>
-</a>
-<a class="card" href="#pareto-peeling" data-plate="pareto-peeling">
-    <span class="card-img">
-        <img src="plates/p-peeling-wall-paper.png" alt="" loading="eager" decoding="async">
-        <img class="card-img-alt" src="plates/p-peeling-wall-void.png" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">05</span>
-        <span class="card-name">Pareto peeling</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">05</span><span class="card-copy"><span class="card-name">Dynamic dimensional reduction</span><span class="card-description">Compare a cube’s central slice with a separately toppling square.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#f-lattice" data-plate="f-lattice">
     <span class="card-img">
-        <img src="plates/p5-wall-paper.png" alt="" loading="eager" decoding="async">
+        <img src="plates/p5-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p5-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">06</span>
-        <span class="card-name">Integer superharmonic matrices on the F-lattice</span>
-    </span>
-</a>
-<a class="card" href="#divisible" data-plate="divisible">
-    <span class="card-img">
-        <img src="plates/p-mcrt-wall-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-mcrt-wall-void.png" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">07</span>
-        <span class="card-name">Internal DLA on mated-CRT maps</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">06</span><span class="card-copy"><span class="card-name">Integer superharmonic matrices on the F-lattice</span><span class="card-description">Zoom from individual grain heights to the whole patterned pile.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#sandpile-rwrs" data-plate="sandpile-rwrs">
     <span class="card-img">
         <img src="plates/p-rwrs-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-rwrs-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">08</span>
-        <span class="card-name">Divisible sandpiles via random walks in random scenery</span>
-    </span>
-</a>
-<a class="card" href="#parking" data-plate="parking">
-    <span class="card-img">
-        <img src="plates/p-parking-wall-paper.svg" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-parking-wall-void.svg" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">09</span>
-        <span class="card-name">Sharpness and critical scaling of parking</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">07</span><span class="card-copy"><span class="card-name">Divisible sandpiles via random walks in random scenery</span><span class="card-description">Connect redistributed mass with a walk through random rewards.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#divisible-percolation" data-plate="divisible-percolation">
     <span class="card-img">
         <img src="plates/p-divperc-wall-paper.svg" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-divperc-wall-void.svg" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">10</span>
-        <span class="card-name">Quantitative explosion and percolation of the divisible sandpile</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">08</span><span class="card-copy"><span class="card-name">Quantitative explosion and percolation of the divisible sandpile</span><span class="card-description">Track toppling regions as they spread and join connected components.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
-<a class="card" href="#percolation" data-plate="percolation">
+</div>
+</section>
+<section class="exhibit" id="chapter-shapes" aria-labelledby="heading-shapes">
+<header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">III</span><h2 id="heading-shapes">Shapes from particles</h2></div><p>A cluster grows, a parking space fills, a geometric layer falls away. Local rules decide what shape comes next.</p></header>
+<div class="exhibit-grid exhibit-grid--pair">
+<a class="card card--feature" href="#pareto-peeling" data-plate="pareto-peeling">
     <span class="card-img">
-        <img src="plates/p-harmonic-deformed-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-harmonic-deformed-void.png" alt="" loading="lazy" decoding="async">
+        <img src="plates/p-peeling-wall-paper.png" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-peeling-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">11</span>
-        <span class="card-name">Rigidity of harmonic functions on the supercritical percolation cluster</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">09</span><span class="card-copy"><span class="card-name">Pareto peeling</span><span class="card-description">Peel a random point cloud layer by layer and change the geometry that shapes its boundaries.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
-<a class="card" href="#unique-continuation" data-plate="unique-continuation">
+<a class="card" href="#divisible" data-plate="divisible">
     <span class="card-img">
-        <img src="plates/p-unique-wall-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-unique-wall-void.png" alt="" loading="lazy" decoding="async">
+        <img src="plates/p-mcrt-wall-paper.png" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-mcrt-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">12</span>
-        <span class="card-name">Unique continuation on planar graphs</span>
-    </span>
-</a>
-<a class="card" href="#rotor-walk" data-plate="rotor-walk">
-    <span class="card-img">
-        <img src="plates/p7-wall-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p7-wall-void.png" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">13</span>
-        <span class="card-name">Eulerian walkers on Z&sup2;</span>
-    </span>
-</a>
-<a class="card" href="#einstein-relation" data-plate="einstein-relation">
-    <span class="card-img">
-        <img src="plates/p-einstein-ensemble-paper.svg?v=94921282" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-einstein-ensemble-void.svg?v=c9ca1472" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">14</span>
-        <span class="card-name">Quantitative Einstein relation</span>
-    </span>
-</a>
-<a class="card" href="#superdiffusion" data-plate="superdiffusion">
-    <span class="card-img">
-        <img src="plates/p-sd-wall-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-sd-wall-void.png" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">15</span>
-        <span class="card-name">Brownian motion in an incompressible random drift</span>
-    </span>
-</a>
-<a class="card" href="#sphere-packing" data-plate="sphere-packing">
-    <span class="card-img">
-        <img src="plates/p-gmc-index-paper.png" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-gmc-index-void.png" alt="" loading="lazy" decoding="async">
-    </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">16</span>
-        <span class="card-name">Random walk on orthogonal tilings</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">10</span><span class="card-copy"><span class="card-name">Internal DLA on mated-CRT maps</span><span class="card-description">Grow clusters on a random map encoded by paired Brownian paths.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#idla-cylinder" data-plate="idla-cylinder">
     <span class="card-img">
         <img src="plates/p-idla-cylinder-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-idla-cylinder-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">17</span>
-        <span class="card-name">Internal DLA on cylinders</span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">11</span><span class="card-copy"><span class="card-name">Internal DLA on cylinders</span><span class="card-description">Release walkers and inspect the growing boundary on a cylinder.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+<a class="card" href="#parking" data-plate="parking">
+    <span class="card-img">
+        <img src="plates/p-parking-wall-paper.svg" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-parking-wall-void.svg" alt="" loading="lazy" decoding="async">
     </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">12</span><span class="card-copy"><span class="card-name">Sharpness and critical scaling of parking</span><span class="card-description">Follow wandering cars as they compete for empty parking spots.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+</div>
+</section>
+<section class="exhibit" id="chapter-motion" aria-labelledby="heading-motion">
+<header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">IV</span><h2 id="heading-motion">Motion through disorder</h2></div><p>A small force, a swirling flow, an irregular tiling, a long jump. Change the surroundings and watch diffusion change with them.</p></header>
+<div class="exhibit-grid exhibit-grid--four">
+<a class="card card--feature" href="#einstein-relation" data-plate="einstein-relation">
+    <span class="card-img">
+        <img src="plates/p-einstein-ensemble-paper.svg?v=94921282" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-einstein-ensemble-void.svg?v=c9ca1472" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">13</span><span class="card-copy"><span class="card-name">Quantitative Einstein relation</span><span class="card-description">Compare paired diffusion histories with the same noise, and see how a small force changes their motion.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+<a class="card" href="#superdiffusion" data-plate="superdiffusion">
+    <span class="card-img">
+        <img src="plates/p-sd-wall-paper.png" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-sd-wall-void.png" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">14</span><span class="card-copy"><span class="card-name">Brownian motion in an incompressible random drift</span><span class="card-description">Follow Brownian motion through swirling flows at several spatial scales.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+<a class="card" href="#sphere-packing" data-plate="sphere-packing">
+    <span class="card-img">
+        <img src="plates/p-gmc-index-paper.png" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-gmc-index-void.png" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">15</span><span class="card-copy"><span class="card-name">Random walk on orthogonal tilings</span><span class="card-description">Cross irregular tiles along a walk weighted by their geometry.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#long-range-walk" data-plate="long-range-walk">
     <span class="card-img">
         <img src="plates/p-long-range-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-long-range-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">18</span>
-        <span class="card-name">Critical long-range random conductance walk</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">16</span><span class="card-copy"><span class="card-name">Critical long-range random conductance walk</span><span class="card-description">Follow a walk that mixes short steps with longer jumps.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 </div>
-<div class="sheet" id="sheet-other" role="tabpanel" aria-labelledby="tab-other" data-panel="other">
-<a class="card" href="#dla" data-plate="dla">
+</section>
+<section class="exhibit" id="chapter-harmonic" aria-labelledby="heading-harmonic">
+<header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">V</span><h2 id="heading-harmonic">Harmonic geometry</h2></div><p>The graph constrains the function. Explore deformations, oscillations, and the geometry hidden in harmonic coordinates.</p></header>
+<div class="exhibit-grid exhibit-grid--pair">
+<a class="card" href="#percolation" data-plate="percolation">
+    <span class="card-img">
+        <img src="plates/p-harmonic-deformed-paper.png" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-harmonic-deformed-void.png" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">17</span><span class="card-copy"><span class="card-name">Rigidity of harmonic functions on the supercritical percolation cluster</span><span class="card-description">Watch a random cluster deform into its harmonic coordinates.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+<a class="card" href="#unique-continuation" data-plate="unique-continuation">
+    <span class="card-img">
+        <img src="plates/p-unique-wall-paper.png" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-unique-wall-void.png" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">18</span><span class="card-copy"><span class="card-name">Unique continuation on planar graphs</span><span class="card-description">Change boundary oscillations and watch the regions of opposite sign.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+</div>
+</section>
+</div>
+<div class="sheet collection" id="sheet-other" role="tabpanel" aria-labelledby="tab-other" data-panel="other">
+<section class="exhibit exhibit--other" aria-labelledby="heading-other"><header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">+</span><h2 id="heading-other">More ways to build a pattern</h2></div><p>Grow branching clusters, build trees from random walks, steer particles with rotors, and fill gaps with tangent circles.</p></header><div class="exhibit-grid exhibit-grid--five">
+<a class="card card--feature" href="#dla" data-plate="dla">
     <span class="card-img">
         <img src="plates/p-dla-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-dla-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">O1</span>
-        <span class="card-name">Diffusion-limited aggregation</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">O1</span><span class="card-copy"><span class="card-name">Diffusion-limited aggregation</span><span class="card-description">Watch a branching cluster grow, one particle attachment at a time.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#idla" data-plate="idla">
     <span class="card-img">
         <img src="plates/p-idla-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-idla-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">O2</span>
-        <span class="card-name">Internal DLA</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">O2</span><span class="card-copy"><span class="card-name">Internal DLA</span><span class="card-description">Release random walkers from the center and watch them settle.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#ust" data-plate="ust">
     <span class="card-img">
         <img src="plates/p-ust-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-ust-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">O3</span>
-        <span class="card-name">Uniform spanning tree</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">O3</span><span class="card-copy"><span class="card-name">Uniform spanning tree</span><span class="card-description">Erase loops from random walks to build a spanning tree.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#rotor-aggregation" data-plate="rotor-aggregation">
     <span class="card-img">
         <img src="plates/p-rotor-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-rotor-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">O4</span>
-        <span class="card-name">Rotor-router aggregation</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">O4</span><span class="card-copy"><span class="card-name">Rotor-router aggregation</span><span class="card-description">Build a cluster with particles guided by rotating lattice arrows.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 <a class="card" href="#apollonian" data-plate="apollonian">
     <span class="card-img">
         <img src="plates/p4-wall-paper.png" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p4-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label">
-        <span class="card-no" aria-hidden="true">O5</span>
-        <span class="card-name">Integer superharmonic matrices on \(\mathbb{Z}^{2}\)</span>
-    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">O5</span><span class="card-copy"><span class="card-name">Integer superharmonic matrices on \(\mathbb{Z}^{2}\)</span><span class="card-description">Reflect tangent circles to fill the gaps in a circle packing.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
-</div>
+</div></section></div>
 </div>
 
 <footer class="colophon">
@@ -379,7 +342,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#manhattan-lattice" data-plate-link="manhattan-lattice"><span class="nav-dir">Previous</span><span class="nav-name">The randomly oriented Manhattan lattice</span></a>
-            <a class="nav-next" href="#random-sandpile" data-plate-link="random-sandpile"><span class="nav-dir">Next</span><span class="nav-name">Convergence of the random Abelian sandpile</span></a>
+            <a class="nav-next" href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Next</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
         </div>
     </nav>
 </section>
@@ -483,7 +446,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#orrw-range" data-plate-link="orrw-range"><span class="nav-dir">Previous</span><span class="nav-name">Once-reinforced random walk</span></a>
+            <a href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Previous</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
             <a class="nav-next" href="#dimensional-reduction" data-plate-link="dimensional-reduction"><span class="nav-dir">Next</span><span class="nav-name">Dynamic dimensional reduction</span></a>
         </div>
     </nav>
@@ -573,7 +536,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#random-sandpile" data-plate-link="random-sandpile"><span class="nav-dir">Previous</span><span class="nav-name">Convergence of the random Abelian sandpile</span></a>
-            <a class="nav-next" href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Next</span><span class="nav-name">Pareto peeling</span></a>
+            <a class="nav-next" href="#f-lattice" data-plate-link="f-lattice"><span class="nav-dir">Next</span><span class="nav-name">Integer superharmonic matrices on the F-lattice</span></a>
         </div>
     </nav>
 </section>
@@ -641,8 +604,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#dimensional-reduction" data-plate-link="dimensional-reduction"><span class="nav-dir">Previous</span><span class="nav-name">Dynamic dimensional reduction</span></a>
-            <a class="nav-next" href="#f-lattice" data-plate-link="f-lattice"><span class="nav-dir">Next</span><span class="nav-name">Integer superharmonic matrices on the F-lattice</span></a>
+            <a href="#divisible-percolation" data-plate-link="divisible-percolation"><span class="nav-dir">Previous</span><span class="nav-name">Quantitative explosion and percolation of the divisible sandpile</span></a>
+            <a class="nav-next" href="#divisible" data-plate-link="divisible"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA on mated-CRT maps</span></a>
         </div>
     </nav>
 </section>
@@ -743,8 +706,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Previous</span><span class="nav-name">Pareto peeling</span></a>
-            <a class="nav-next" href="#divisible" data-plate-link="divisible"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA on mated-CRT maps</span></a>
+            <a href="#dimensional-reduction" data-plate-link="dimensional-reduction"><span class="nav-dir">Previous</span><span class="nav-name">Dynamic dimensional reduction</span></a>
+            <a class="nav-next" href="#sandpile-rwrs" data-plate-link="sandpile-rwrs"><span class="nav-dir">Next</span><span class="nav-name">Divisible sandpiles via random walks in random scenery</span></a>
         </div>
     </nav>
 </section>
@@ -871,8 +834,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#f-lattice" data-plate-link="f-lattice"><span class="nav-dir">Previous</span><span class="nav-name">Integer superharmonic matrices on the F-lattice</span></a>
-            <a class="nav-next" href="#sandpile-rwrs" data-plate-link="sandpile-rwrs"><span class="nav-dir">Next</span><span class="nav-name">Divisible sandpiles via random walks in random scenery</span></a>
+            <a href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Previous</span><span class="nav-name">Pareto peeling</span></a>
+            <a class="nav-next" href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA on cylinders</span></a>
         </div>
     </nav>
 </section>
@@ -934,8 +897,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#divisible" data-plate-link="divisible"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on mated-CRT maps</span></a>
-            <a class="nav-next" href="#parking" data-plate-link="parking"><span class="nav-dir">Next</span><span class="nav-name">Sharpness and critical scaling of parking</span></a>
+            <a href="#f-lattice" data-plate-link="f-lattice"><span class="nav-dir">Previous</span><span class="nav-name">Integer superharmonic matrices on the F-lattice</span></a>
+            <a class="nav-next" href="#divisible-percolation" data-plate-link="divisible-percolation"><span class="nav-dir">Next</span><span class="nav-name">Quantitative explosion and percolation of the divisible sandpile</span></a>
         </div>
     </nav>
 </section>
@@ -1005,8 +968,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#sandpile-rwrs" data-plate-link="sandpile-rwrs"><span class="nav-dir">Previous</span><span class="nav-name">Divisible sandpiles via random walks in random scenery</span></a>
-            <a class="nav-next" href="#divisible-percolation" data-plate-link="divisible-percolation"><span class="nav-dir">Next</span><span class="nav-name">Quantitative explosion and percolation of the divisible sandpile</span></a>
+            <a href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on cylinders</span></a>
+            <a class="nav-next" href="#einstein-relation" data-plate-link="einstein-relation"><span class="nav-dir">Next</span><span class="nav-name">Quantitative Einstein relation</span></a>
         </div>
     </nav>
 </section>
@@ -1074,8 +1037,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#parking" data-plate-link="parking"><span class="nav-dir">Previous</span><span class="nav-name">Sharpness and critical scaling of parking</span></a>
-            <a class="nav-next" href="#percolation" data-plate-link="percolation"><span class="nav-dir">Next</span><span class="nav-name">Rigidity of harmonic functions on the supercritical percolation cluster</span></a>
+            <a href="#sandpile-rwrs" data-plate-link="sandpile-rwrs"><span class="nav-dir">Previous</span><span class="nav-name">Divisible sandpiles via random walks in random scenery</span></a>
+            <a class="nav-next" href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Next</span><span class="nav-name">Pareto peeling</span></a>
         </div>
     </nav>
 </section>
@@ -1181,7 +1144,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#divisible-percolation" data-plate-link="divisible-percolation"><span class="nav-dir">Previous</span><span class="nav-name">Quantitative explosion and percolation of the divisible sandpile</span></a>
+            <a href="#long-range-walk" data-plate-link="long-range-walk"><span class="nav-dir">Previous</span><span class="nav-name">Critical long-range random conductance walk</span></a>
             <a class="nav-next" href="#unique-continuation" data-plate-link="unique-continuation"><span class="nav-dir">Next</span><span class="nav-name">Unique continuation on planar graphs</span></a>
         </div>
     </nav>
@@ -1244,7 +1207,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#percolation" data-plate-link="percolation"><span class="nav-dir">Previous</span><span class="nav-name">Rigidity of harmonic functions on the supercritical percolation cluster</span></a>
-            <a class="nav-next" href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Next</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
+            <a class="nav-next" href="#dla" data-plate-link="dla"><span class="nav-dir">Next</span><span class="nav-name">Diffusion-limited aggregation</span></a>
         </div>
     </nav>
 </section>
@@ -1259,67 +1222,44 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-superdiffusion">Brownian motion in an incompressible random drift</h2>
-            <p class="def"><b>Definition.</b> Fix a smooth radial mollifier \(\rho\in C_c^\infty(B_1)\) with \(\int_{\mathbb R^2}\rho=1\). Let \(\Phi\) be a whole-plane Gaussian free field modulo additive constants, set \(\psi=\rho*\Phi\), and let \(f=\nabla^\perp\psi=(\partial_2\psi,-\partial_1\psi)\). For \(\nu&gt;0\), the diffusion solves \(dX_t=f(X_t)\,dt+\sqrt{2\nu}\,dW_t\) with \(X_0=0\), where \(W\) is standard two-dimensional Brownian motion. Since \(f\cdot\nabla\psi=0\), the drift is tangent to the level sets of \(\psi\).</p>
-            <figure class="rulefig">
-                <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-superdiffusion" width="1080" height="1080" data-rule-anim="superdiffusion" role="img" aria-label="Brownian motion plus a multiscale incompressible drift"></canvas>
-                </div>
-            </figure>
+            <p class="lead">A particle wanders through a fixed random flow.</p>
+            <p>Brownian motion gives the particle its irregular steps; the surrounding flow carries it along. Follow the moving point and the trail it leaves behind, or pull back to see its whole journey.</p>
         </div>
     </section>
 
-    <section class="band band--void band--model-live band--sd-lattice">
-        <div class="instrument instrument--model" data-model-theme="superdiffusion">
-            <div class="sd-toy-note">
-                <p><b>Periodic cellular flow.</b> Here \(\psi(x,y)=0.26\cos(\pi x)\cos(\pi y)\), \(b=(\partial_2\psi,-\partial_1\psi)\), and \(dX_t=b(X_t)\,dt+\sqrt{2\kappa}\,dW_t\) with \(\kappa=0.003\). The half-integer grid is the separatrix set. Advection moves the particle rapidly along a level set of \(\psi\); Brownian noise permits the slower crossings between cells. After four sustained cell changes, the camera pulls back and the cell-index process \(\lfloor X_t+(1/2,1/2)\rfloor\) becomes a coarse random walk. Periodic homogenization gives \(D_{\mathrm{eff}}&gt;\kappa\) and \(\varepsilon X_{t/\varepsilon^2}\Rightarrow\sqrt{2D_{\mathrm{eff}}}\,B_t\). The displayed path is one continuous Euler&ndash;Maruyama trajectory with time step 0.002; playback accelerates physical time without reordering or splicing its samples.</p>
-            </div>
-            <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="sd-lattice-canvas" width="1440" height="1440" role="img" aria-label="One linearly interpolated numerical path of an advection-diffusion SDE in a fixed periodic cellular flow. Brownian noise crosses cell separatrices; the camera pulls back to show the cell-to-cell motion on larger scales."></canvas>
-            </div>
+    <section class="band band--void band--model-live band--flow-walk">
+        <div class="instrument instrument--model instrument--flow" data-model-theme="superdiffusion">
+
+            <div class="stage model-stage model-stage--flow" style="--stage-max:900px"><canvas id="sd-canvas" width="1800" height="1260" role="img" aria-label="A numerical Brownian path in a fixed random incompressible flow. The walker leaves its full trajectory. Follow shows the motion at a fixed spatial scale; Whole path shows the accumulated trace."></canvas></div>
+            <div class="model-control-shelf" aria-label="Superdiffusion controls"><div class="model-control-groups">
+
+                <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-sd-view="follow" aria-pressed="true">Follow</button><button type="button" class="btn" data-sd-view="whole" aria-pressed="false">Whole path</button></div></div>
+                <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-sd-run="pause">Pause</button><button type="button" class="btn" data-sd-run="replay">Replay</button><button type="button" class="btn" data-sd-run="new">New walk</button></div></div>
+            </div></div>
+            <div class="flow-readout"><span>Time <output id="sd-time" aria-live="off">0.0</output></span><p id="sd-note" class="film-status" role="status" aria-live="polite"></p></div>
+            <p class="caption">The trace retains the small, irregular Brownian steps as the flow carries the particle. Follow keeps the spatial scale fixed; Whole path fits the same accumulated trajectory. Replay uses the same noise, and New walk samples another trajectory in the same field.</p>
+            <details class="deeper flow-details"><summary>The finite simulation</summary><p>The numerical path solves \(dX=\nabla^\perp\psi\,dt+\sqrt{2\kappa}\,dW\), with \(\kappa=0.30\) and Euler&ndash;Maruyama step \(\Delta t=0.004\). The stream function is a fixed, 48-periodic random Fourier field with five wavelength bands. Each band contributes the same stream-function variance. Playback advances physical time at a constant rate. This finite field illustrates transport by random drift; the theorems below concern infinite-scale random fields.</p></details>
         </div>
     </section>
 
-
-    <section class="band band--void band--model-live">
-        <div class="instrument instrument--model" data-model-theme="superdiffusion">
-            <div class="model-control-shelf" aria-label="Superdiffusion controls">
-                <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run model-run--two"><button type="button" class="btn is-on" data-sd-run="pause">Pause</button><button type="button" class="btn" data-sd-run="replay">Replay</button></div></div>
-                </div>
-            </div>
-            <div class="stage model-stage" style="--stage-max:720px">
-	                <canvas id="sd-canvas" width="1440" height="1440" role="img" aria-label="One continuously interpolated numerical trajectory, computed with Heun integration for the drift and Euler-Maruyama noise, in a fixed random incompressible flow. Low-pass contours show the fixed flow at four spatial scales; the expanding camera retains the full trajectory."></canvas>
-            </div>
-            <p class="caption">One stored path of dX = ∇⊥ψ dt + √(2κ) dW with κ = 0.25 and time step 0.05, on a fixed 3,072-periodic stream field ψ. The path is one continuous trajectory. Background: the same field at four scales, crops of half-width 108, 252, 588 and 1,372, each smoothed at 1/44 of its width. Playback speed is proportional to the square of the camera half-width.</p>
+    <section class="band band--void band--model-live band--flow-walk">
+        <div class="instrument instrument--model instrument--flow" data-model-theme="superdiffusion">
+            <div class="flow-heading"><p class="family">Self-similar flow</p><h3>Change the balance of spatial scales</h3></div>
+            <div class="stage model-stage model-stage--flow" style="--stage-max:900px"><canvas id="algebraic-sd-canvas" width="1800" height="1260" role="img" aria-label="A numerical Brownian path in a fixed random incompressible flow. The walker leaves its full trajectory. Follow shows the motion at a fixed spatial scale; Whole path shows the accumulated trace."></canvas></div>
+            <div class="model-control-shelf" aria-label="Self-similar flow controls"><div class="model-control-groups">
+                <div class="model-control-group"><span class="model-control-label">Hurst exponent \(\gamma\)</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-algebraic-gamma=".05" aria-pressed="false">0.05</button><button type="button" class="btn is-on" data-algebraic-gamma=".10" aria-pressed="true">0.10</button><button type="button" class="btn" data-algebraic-gamma=".15" aria-pressed="false">0.15</button></div></div>
+                <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-algebraic-view="follow" aria-pressed="true">Follow</button><button type="button" class="btn" data-algebraic-view="whole" aria-pressed="false">Whole path</button></div></div>
+                <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-algebraic-run="pause">Pause</button><button type="button" class="btn" data-algebraic-run="replay">Replay</button><button type="button" class="btn" data-algebraic-run="new">New walk</button></div></div>
+            </div></div>
+            <div class="flow-readout"><span>Time <output id="algebraic-sd-time" aria-live="off">0.0</output></span><p id="algebraic-sd-note" class="film-status" role="status" aria-live="polite"></p></div>
+            <p class="caption">The trace retains the small, irregular Brownian steps as the flow carries the particle. Follow keeps the spatial scale fixed; Whole path fits the same accumulated trajectory. Replay uses the same noise, and New walk samples another trajectory in the same field.</p>
+            <details class="deeper flow-details"><summary>The finite simulation</summary><p>The numerical path solves \(dX=\nabla^\perp\psi\,dt+\sqrt{2\kappa}\,dW\), with \(\kappa=0.30\) and Euler&ndash;Maruyama step \(\Delta t=0.004\). The stream function is a fixed, 48-periodic random Fourier field with five wavelength bands. In band \(j\), its variance is weighted by \(2^{-2\gamma j}\). Playback advances physical time at a constant rate. This finite field illustrates transport by random drift; the theorems below concern infinite-scale random fields.</p></details>
         </div>
     </section>
-
-
-    <section class="band band--void band--model-live">
-        <div class="instrument instrument--model" data-model-theme="superdiffusion">
-            <div class="model-control-shelf" aria-label="Positive-Hurst self-similar-flow controls">
-                <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Hurst exponent \(\gamma\)</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-algebraic-gamma=".05" aria-pressed="false">0.05</button><button type="button" class="btn is-on" data-algebraic-gamma=".10" aria-pressed="true">0.10</button><button type="button" class="btn" data-algebraic-gamma=".15" aria-pressed="false">0.15</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-algebraic-view="flow" aria-pressed="true">Flow</button><button type="button" class="btn" data-algebraic-view="scaling" aria-pressed="false">Scaling</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-algebraic-run="pause">Pause</button><button type="button" class="btn" data-algebraic-run="replay">Replay</button></div></div>
-                </div>
-            </div>
-            <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="algebraic-sd-canvas" width="1440" height="1440" role="img" aria-label="One linearly interpolated positive-diffusivity Euler-Maruyama path in a fixed five-octave analytic divergence-free flow. The camera expands to retain the full path; the scaling view displays the exponent one divided by the quantity two minus gamma."></canvas>
-                <span class="model-phase-chip" id="algebraic-sd-note">Finite five-scale analytic flow</span>
-            </div>
-            <dl class="readout model-readout">
-                <div><dt>Infinite self-similar model: displacement exponent</dt><dd id="algebraic-sd-exponent">\(1/(2-\gamma)\)</dd></div>
-                <div><dt>Finite field</dt><dd id="algebraic-sd-scale">five frequencies; \(\kappa=0.045\)</dd></div>
-            </dl>
-            <div class="model-key algebraic-sd-key"><span>Contours of the fixed stream function</span><span>one Euler&ndash;Maruyama path</span></div>
-            <p class="caption">ψ(x) = Σₖ aₖ sin(ωₖx₁ + pₖ) sin(ωₖx₂ + qₖ), k = 0, …, 4, with ωₖ = 2ᵏ·2π/24, aₖ = 0.62 ωₖ⁻¹⁻ᵞ, p = (0.31, 1.47, 2.28, 4.01, 5.18), q = (1.09, 2.76, 0.58, 3.34, 4.63). One path of dX = ∇⊥ψ dt + √(2κ) dW with κ = 0.045 and time step 0.0045. This finite periodic flow is diffusive at long times. The theorem below concerns the infinite self-similar model, with exponent 1/(2−γ).</p>
-        </div>
-    </section>
-
 
     <section class="band band--paper">
         <div class="col">
+            <p class="def"><b>Definition.</b> Fix a smooth radial mollifier \(\rho\in C_c^\infty(B_1)\) with \(\int_{\mathbb R^2}\rho=1\). Let \(\Phi\) be a whole-plane Gaussian free field modulo additive constants, set \(\psi=\rho*\Phi\), and let \(f=\nabla^\perp\psi=(\partial_2\psi,-\partial_1\psi)\). For \(\nu&gt;0\), the diffusion solves \(dX_t=f(X_t)\,dt+\sqrt{2\nu}\,dW_t\) with \(X_0=0\), where \(W\) is standard two-dimensional Brownian motion. Since \(f\cdot\nabla\psi=0\), the drift is tangent to the level sets of \(\psi\).</p>
             <div class="sd-theorem-stack">
                 <article class="sd-theorem-card">
                     <p class="sd-theorem-kicker">Theorem &middot; critical log-correlated flow</p>
@@ -1345,7 +1285,7 @@
                     <p class="src">(Armstrong&ndash;Bou-Rabee&ndash;Kuusi, <a href="https://arxiv.org/abs/2601.22142">arXiv:2601.22142</a>)</p>
                 </article>
             </div>
-            <p class="sd-animation-note">The periodic and positive-Hurst paths use Euler&ndash;Maruyama. The critical random path uses Heun integration for the drift and Euler&ndash;Maruyama noise. Each canvas draws a continuous interpolation of one numerical trajectory and expands its camera to retain the full path.</p>
+            <p class="sd-animation-note">The two random-flow animations show continuous interpolations of Euler&ndash;Maruyama paths with positive Brownian diffusivity. Their finite Fourier fields illustrate the motion; they do not measure the asymptotic exponents in these theorems.</p>
             <details class="deeper"><summary>Precise statement</summary>
             <p><b>Critical hypotheses.</b> Let \(d\ge2\), \(\nu\in(0,1]\), and \(\square_n=(-3^n/2,3^n/2)^d\). Let \(\mathbf j_n:\mathbb R^d\to\mathbb R_{\mathrm{skew}}^{d\times d}\), \(n\ge0\), be stationary random fields with joint law \(\mathbf P\). Define \(\mathbf k(x)-\mathbf k(y)=\sum_{n\ge0}(\mathbf j_n(x)-\mathbf j_n(y))\) and \(f=\nabla\!\cdot\mathbf k=\sum_{n\ge0}\nabla\!\cdot\mathbf j_n\). Let \(X_0=0\) and let \(X\) have generator \(\mathcal L=\nabla\!\cdot(\nu I+\mathbf k)\nabla=\nu\Delta+f\cdot\nabla\). The assumptions are: (J1) \(\mathbf j_n\) has range of dependence \(3^n\sqrt d\); (J2) collections indexed by disjoint sets of scales are independent; (J3) \(\mathbf j_n\in C_{\mathrm{loc}}^{1,1}\) almost surely and, for \(s\ge1\), \[\mathbf P\!\left[\|\mathbf j_n\|_{L^\infty(\square_n)}+\sqrt d\,3^n\|\nabla\mathbf j_n\|_{L^\infty(\square_n)}+d3^{2n}\|\nabla^2\mathbf j_n\|_{L^\infty(\square_n)}&gt;s\right]\le e^{-s^2};\] (J4) the joint law is invariant under \(\mathbf j_n\mapsto-\mathbf j_n\) and under \(\mathbf j_n(x)\mapsto R^{\mathsf T}\mathbf j_n(Rx)R\) for every signed permutation matrix \(R\); and (J5) there are \(c_*,C_*\in(0,\infty)\) such that, for \(0\le n&lt;m\) and \(e\in\partial B_1\), \[\left|\mathbf E\!\left[\left|\nabla\Delta^{-1}\!\left(\nabla\!\cdot\sum_{\ell=n+1}^{m}\mathbf j_\ell e\right)(0)\right|^2\right]-c_*(\log3)(m-n)\right|\le C_*.\]</p>
             <p>Write \(M_f(t)=\mathbf E_0^f|X_t|^2\), where \(f\) is fixed and the expectation is over Brownian noise. Then \(M_f(t)/(t\sqrt{\log t})\to2dc_*\) in \(\mathbf P\)-probability. If \(W\) is standard \(d\)-dimensional Brownian motion, then, for \(\mathbf P\)-almost every \(f\), \[|\log\varepsilon^2|^{-1/4}\varepsilon X_{t/\varepsilon^2}\Longrightarrow\sqrt{2c_*}\,W_t\] in law in the topology of uniform convergence on compact time intervals. For the standard mollified planar GFF, \(c_*=1/(2\pi)\), so the mean-square coefficient in dimension two is \(2/\pi\).</p>
@@ -1356,6 +1296,19 @@
             <p class="cite">S. Armstrong, A. Bou-Rabee and T. Kuusi, &ldquo;Superdiffusive central limit theorem for a Brownian particle in a critically-correlated incompressible random drift&rdquo;, <em>Inventiones Mathematicae</em>, to appear, <a href="https://arxiv.org/abs/2404.01115">arXiv:2404.01115</a>; &ldquo;Superdiffusion and anomalous regularization in self-similar random incompressible flows&rdquo; (2026), <a href="https://arxiv.org/abs/2601.22142">arXiv:2601.22142</a>. The \(\sqrt{\log\,t}\) behaviour in the curl of the 2D GFF is due to G. Cannizzaro, L. Haunschmid-Sibitz and F. Toninelli, <a href="https://arxiv.org/abs/2106.06264">arXiv:2106.06264</a>. See also G. Chatzigeorgiou, P. Morfe, F. Otto and L. Wang, &ldquo;The Gaussian free field as a stream function&rdquo;, <em>Ann. Probab.</em> 53 (2025), <a href="https://arxiv.org/abs/2212.14244">arXiv:2212.14244</a>.</p>
         </div>
     </section>
+
+    <details class="related-models"><summary>Related model: motion between periodic flow cells</summary>
+    <section class="band band--void band--model-live band--sd-lattice">
+        <div class="instrument instrument--model" data-model-theme="superdiffusion">
+            <div class="sd-toy-note">
+                <p><b>Periodic cellular flow.</b> Here \(\psi(x,y)=0.26\cos(\pi x)\cos(\pi y)\), \(b=(\partial_2\psi,-\partial_1\psi)\), and \(dX_t=b(X_t)\,dt+\sqrt{2\kappa}\,dW_t\) with \(\kappa=0.003\). The half-integer grid is the separatrix set. Advection moves the particle rapidly along a level set of \(\psi\); Brownian noise permits the slower crossings between cells. After four sustained cell changes, the camera pulls back and the cell-index process \(\lfloor X_t+(1/2,1/2)\rfloor\) becomes a coarse random walk. Periodic homogenization gives \(D_{\mathrm{eff}}&gt;\kappa\) and \(\varepsilon X_{t/\varepsilon^2}\Rightarrow\sqrt{2D_{\mathrm{eff}}}\,B_t\). The displayed path is one continuous Euler&ndash;Maruyama trajectory with time step 0.002; playback accelerates physical time without reordering or splicing its samples.</p>
+            </div>
+            <div class="stage model-stage" style="--stage-max:720px">
+                <canvas id="sd-lattice-canvas" width="1440" height="1440" role="img" aria-label="One linearly interpolated numerical path of an advection-diffusion SDE in a fixed periodic cellular flow. Brownian noise crosses cell separatrices; the camera pulls back to show the cell-to-cell motion on larger scales."></canvas>
+            </div>
+        </div>
+    </section>
+    </details>
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
@@ -1419,7 +1372,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#rotor-walk" data-plate-link="rotor-walk"><span class="nav-dir">Previous</span><span class="nav-name">Eulerian walkers on Z&sup2;</span></a>
+            <a href="#parking" data-plate-link="parking"><span class="nav-dir">Previous</span><span class="nav-name">Sharpness and critical scaling of parking</span></a>
             <a class="nav-next" href="#superdiffusion" data-plate-link="superdiffusion"><span class="nav-dir">Next</span><span class="nav-name">Brownian motion in an incompressible random drift</span></a>
         </div>
     </nav>
@@ -1484,7 +1437,7 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#superdiffusion" data-plate-link="superdiffusion"><span class="nav-dir">Previous</span><span class="nav-name">Brownian motion in an incompressible random drift</span></a>
-            <a class="nav-next" href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA on cylinders</span></a>
+            <a class="nav-next" href="#long-range-walk" data-plate-link="long-range-walk"><span class="nav-dir">Next</span><span class="nav-name">Critical long-range random conductance walk</span></a>
         </div>
     </nav>
 </section>
@@ -1615,8 +1568,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#sphere-packing" data-plate-link="sphere-packing"><span class="nav-dir">Previous</span><span class="nav-name">Random walk on orthogonal tilings</span></a>
-            <a class="nav-next" href="#long-range-walk" data-plate-link="long-range-walk"><span class="nav-dir">Next</span><span class="nav-name">Critical long-range random conductance walk</span></a>
+            <a href="#divisible" data-plate-link="divisible"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on mated-CRT maps</span></a>
+            <a class="nav-next" href="#parking" data-plate-link="parking"><span class="nav-dir">Next</span><span class="nav-name">Sharpness and critical scaling of parking</span></a>
         </div>
     </nav>
 </section>
@@ -1679,8 +1632,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#idla-cylinder" data-plate-link="idla-cylinder"><span class="nav-dir">Previous</span><span class="nav-name">Internal DLA on cylinders</span></a>
-            <a class="nav-next" href="#dla" data-plate-link="dla"><span class="nav-dir">Next</span><span class="nav-name">Diffusion-limited aggregation</span></a>
+            <a href="#sphere-packing" data-plate-link="sphere-packing"><span class="nav-dir">Previous</span><span class="nav-name">Random walk on orthogonal tilings</span></a>
+            <a class="nav-next" href="#percolation" data-plate-link="percolation"><span class="nav-dir">Next</span><span class="nav-name">Rigidity of harmonic functions on the supercritical percolation cluster</span></a>
         </div>
     </nav>
 </section>
@@ -1799,8 +1752,8 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#unique-continuation" data-plate-link="unique-continuation"><span class="nav-dir">Previous</span><span class="nav-name">Unique continuation on planar graphs</span></a>
-            <a class="nav-next" href="#einstein-relation" data-plate-link="einstein-relation"><span class="nav-dir">Next</span><span class="nav-name">Quantitative Einstein relation</span></a>
+            <a href="#orrw-range" data-plate-link="orrw-range"><span class="nav-dir">Previous</span><span class="nav-name">Once-reinforced random walk</span></a>
+            <a class="nav-next" href="#random-sandpile" data-plate-link="random-sandpile"><span class="nav-dir">Next</span><span class="nav-name">Convergence of the random Abelian sandpile</span></a>
         </div>
     </nav>
 </section>
@@ -1862,7 +1815,7 @@
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
-            <a href="#long-range-walk" data-plate-link="long-range-walk"><span class="nav-dir">Previous</span><span class="nav-name">Critical long-range random conductance walk</span></a>
+            <a href="#unique-continuation" data-plate-link="unique-continuation"><span class="nav-dir">Previous</span><span class="nav-name">Unique continuation on planar graphs</span></a>
             <a class="nav-next" href="#idla" data-plate-link="idla"><span class="nav-dir">Next</span><span class="nav-name">Internal DLA</span></a>
         </div>
     </nav>
@@ -2168,6 +2121,7 @@ window.typeset = function (root) {
 <script defer src="../einstein-motion.js?v=d1e6112c"></script>
 <script defer src="manhattan.js?v=276171ee"></script>
 <script defer src="orrw.js?v=c8a602e1"></script>
-<script defer src="gallery.js?v=27d0abe9"></script>
+<script defer src="../flow-walk.js?v=a57df1ba"></script>
+<script defer src="gallery.js?v=90b66f11"></script>
 </body>
 </html>

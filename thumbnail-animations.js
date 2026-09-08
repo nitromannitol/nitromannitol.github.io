@@ -363,47 +363,20 @@
     }
 
     function makeFlow(ctx,W,algebraic){
-        const rand=randomFactory(algebraic?0xa16eb2:0xc8171c),modes=[];
-        const modeList=algebraic?[[1,0],[0,1],[1,1],[2,1],[1,2],[2,-1],[3,1],[1,-3],[4,1],[2,3]]:[[1,0],[0,1],[1,1],[1,-1],[2,1],[1,2],[2,-1],[3,1]];
-        modeList.forEach(k=>{const r=Math.hypot(k[0],k[1]),amp=(algebraic?Math.pow(r,-1.68):Math.pow(r,-2.05))*(.72+.56*rand());modes.push({kx:k[0]*.72,ky:k[1]*.72,amp,phase:TAU*rand()});});
-        function field(x,y){let psi=0,gx=0,gy=0;modes.forEach(m=>{const a=m.kx*x+m.ky*y+m.phase,s=Math.sin(a),c=Math.cos(a);psi+=m.amp*c;gx-=m.amp*m.kx*s;gy-=m.amp*m.ky*s;});return[psi,gy,-gx];}
-        const path=[[0,0]];let x=0,y=0;
-        for(let i=0;i<2600;i++){const f=field(x,y),dt=.026,diff=algebraic?.024:.030;x+=f[1]*dt*(algebraic?.78:.68)+diff*gaussian(rand);y+=f[2]*dt*(algebraic?.78:.68)+diff*gaussian(rand);path.push([x,y]);}
-        let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;path.forEach(p=>{minX=Math.min(minX,p[0]);maxX=Math.max(maxX,p[0]);minY=Math.min(minY,p[1]);maxY=Math.max(maxY,p[1]);});
-        const span=Math.max(5.8,maxX-minX,maxY-minY),wx=(minX+maxX)/2,wy=(minY+maxY)/2,loX=wx-span*.58,loY=wy-span*.58,world=span*1.16,pad=18,tf=p=>[pad+(p[0]-loX)*(W-2*pad)/world,pad+(p[1]-loY)*(W-2*pad)/world];
-        const N=76,values=new Float32Array(N*N);let fmin=Infinity,fmax=-Infinity;
-        for(let j=0;j<N;j++)for(let i=0;i<N;i++){const v=field(loX+world*i/(N-1),loY+world*j/(N-1))[0];values[j*N+i]=v;fmin=Math.min(fmin,v);fmax=Math.max(fmax,v);}
-        const contours=[];
-        function edgePoint(i,j,e,level){let a,b;if(e===0){a=[i,j];b=[i+1,j];}else if(e===1){a=[i+1,j];b=[i+1,j+1];}else if(e===2){a=[i+1,j+1];b=[i,j+1];}else{a=[i,j+1];b=[i,j];}const va=values[a[1]*N+a[0]],vb=values[b[1]*N+b[0]],q=Math.abs(vb-va)<1e-9?.5:(level-va)/(vb-va);return[pad+(a[0]+q*(b[0]-a[0]))*(W-2*pad)/(N-1),pad+(a[1]+q*(b[1]-a[1]))*(W-2*pad)/(N-1)];}
-        for(let li=1;li<=15;li++){const level=mix(fmin,fmax,li/16),segments=[];for(let j=0;j<N-1;j++)for(let i=0;i<N-1;i++){const bits=(values[j*N+i]>level?1:0)|(values[j*N+i+1]>level?2:0)|(values[(j+1)*N+i+1]>level?4:0)|(values[(j+1)*N+i]>level?8:0),table=[[],[[3,0]],[[0,1]],[[3,1]],[[1,2]],[[3,2],[0,1]],[[0,2]],[[3,2]],[[2,3]],[[0,2]],[[0,3],[1,2]],[[1,2]],[[1,3]],[[0,1]],[[3,0]],[]];for(const pair of table[bits])segments.push([edgePoint(i,j,pair[0],level),edgePoint(i,j,pair[1],level)]);}contours.push({level,segments});}
-        // Cache the stream function contours. Short moving streamlines show
-        // the velocity field independently of the noisy tagged particle.
-        const backdrop=document.createElement('canvas');backdrop.width=backdrop.height=W;const bc=backdrop.getContext('2d');
-        contours.forEach((c,i)=>{bc.beginPath();c.segments.forEach(s=>{bc.moveTo(...s[0]);bc.lineTo(...s[1]);});bc.strokeStyle=i%3===0?C.slate:(i%2?C.cyan:C.rose);bc.globalAlpha=i%3===0?.48:.26;bc.lineWidth=i%3===0?1.85:1.35;bc.stroke();});
-        const tracers=[];
-        for(let j=0;j<5;j++)for(let i=0;i<5;i++){
-            const points=[],seedX=loX+world*(i+.25+.45*rand())/5,seedY=loY+world*(j+.25+.45*rand())/5;let x=seedX,y=seedY;
-            for(let k=0;k<430;k++){points.push([x,y]);const f=field(x,y);x+=f[1]*.02;y+=f[2]*.02;}
-            tracers.push(points);
-        }
+        const model=globalThis.FlowWalk;
+        if(!model)throw new Error('Random-flow model unavailable');
+        let run=model.create({seed:algebraic?0xa16eb2:0xc8171c,gamma:algebraic?.10:0});
+        let paint=model.createPainter(run,{dark:DARK,compact:true}),camera=model.camera(run,null);
+        let previous=0,carry=0;
         return function(t){
-            ground(ctx,W);ctx.drawImage(backdrop,0,0);
-            ctx.save();ctx.beginPath();ctx.rect(pad,pad,W-2*pad,W-2*pad);ctx.clip();
-            const period=algebraic?15:13,q=(t%period)/period,amount=q<.93?q/.93:1;
-            ctx.globalAlpha=.44;
-            tracers.forEach((points,j)=>{
-                const phase=((t*.055+j*.173)%1),k=12+Math.floor(phase*(points.length-14)),part=points.slice(k-12,k+1);
-                ctx.globalAlpha=.44*smooth(phase/.08)*smooth((1-phase)/.08);
-                trace(ctx,part,1,C.cyan,1.9,tf);const a=tf(part[part.length-2]),b=tf(part[part.length-1]);
-                arrow(ctx,b[0],b[1],Math.atan2(b[1]-a[1],b[0]-a[0]),5.2,C.cyan,1.5);
-            });
-            ctx.globalAlpha=1;
-            const z=amount*(path.length-1),end=Math.floor(z),start=Math.max(0,end-650),shown=path.slice(start,end+1);
-            if(end<path.length-1)shown.push([mix(path[end][0],path[end+1][0],z-end),mix(path[end][1],path[end+1][1],z-end)]);
-            const col=algebraic?C.yellow:C.ink;
-            trace(ctx,shown,1,C.bg,6.5,tf);trace(ctx,shown,1,col,3.1,tf);
-            const p=tf(shown[shown.length-1]);dot(ctx,p[0],p[1],6.5,col,C.bg,2.5);ctx.restore();
-            if(q>.93)fadeOut(ctx,W,smooth((q-.93)/.07));
+            if(t<previous){run=model.create({seed:algebraic?0xa16eb2:0xc8171c,gamma:algebraic?.10:0});paint=model.createPainter(run,{dark:DARK,compact:true});camera=model.camera(run,null);previous=0;carry=0;}
+            const elapsed=Math.max(0,t-previous);previous=t;
+            carry+=elapsed*2.4/model.DT;
+            const steps=Math.floor(carry);carry-=steps;
+            if(steps)model.advance(run,steps);
+            camera=model.camera(run,camera,'follow',elapsed);
+            paint(ctx,W,W,camera,{cssWidth:Math.max(140,ctx.canvas.getBoundingClientRect().width),view:'follow'});
+            return true;
         };
     }
 
