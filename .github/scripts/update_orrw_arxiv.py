@@ -1,4 +1,4 @@
-"""One-off, author-authorized arXiv link update after the ORRW announcement."""
+"""One-off, author-authorized arXiv link update for the ORRW and Manhattan announcements."""
 import argparse
 import base64
 from datetime import datetime, timezone
@@ -17,8 +17,12 @@ import xml.etree.ElementTree as ET
 
 REPO = 'nitromannitol/nitromannitol.github.io'
 WORKFLOW = 'orrw-arxiv.yml'
-START = datetime(2026, 9, 8, 4, 40, tzinfo=timezone.utc)
+START = datetime(2026, 9, 8, 0, 0, tzinfo=timezone.utc)
 TITLE = 'Once-reinforced random walk on Zd has range exponent at least d/(d+1)'
+PAPERS = {
+    'orrw-range-exponent': TITLE,
+    'manhattan-lattice-transient': 'The randomly oriented Manhattan lattice in 2D is transient',
+}
 AUTHORS = {'Ahmed Bou-Rabee', 'Yuval Peres'}
 ATOM = '{http://www.w3.org/2005/Atom}'
 ENTRY = re.compile(r'(?ms)^  \{\n    id: "orrw-range-exponent",.*?^  \},?')
@@ -40,16 +44,16 @@ def normal_author(name):
     return normal(name)
 
 
-def matching(title, authors):
-    return normal(title) == normal(TITLE) and {normal_author(a) for a in authors} == {normal_author(a) for a in AUTHORS}
+def matching(title, authors, expected_title=TITLE):
+    return normal(title) == normal(expected_title) and {normal_author(a) for a in authors} == {normal_author(a) for a in AUTHORS}
 
 
-def find_paper(xml):
+def find_paper(xml, expected_title=TITLE):
     matches = set()
     for item in ET.fromstring(xml).findall(ATOM + 'entry'):
         title = item.findtext(ATOM + 'title', '')
         authors = [a.findtext(ATOM + 'name', '') for a in item.findall(ATOM + 'author')]
-        if not matching(title, authors):
+        if not matching(title, authors, expected_title):
             continue
         identifier = item.findtext(ATOM + 'id', '')
         match = re.fullmatch(r'https?://arxiv\.org/abs/(\d{4}\.\d{4,5})(?:v\d+)?', identifier)
@@ -61,17 +65,18 @@ def find_paper(xml):
     return next(iter(matches), None)
 
 
-def update_links(source, identifier):
+def update_links(source, identifier, entry_id='orrw-range-exponent'):
     if not re.fullmatch(r'\d{4}\.\d{4,5}', identifier):
         raise ValueError('Not a public arXiv identifier')
-    entries = list(ENTRY.finditer(source))
+    pattern = re.compile(r'(?ms)^  \{\n    id: "' + re.escape(entry_id) + r'",.*?^  \},?')
+    entries = list(pattern.finditer(source))
     if len(entries) != 1:
-        raise ValueError('Expected exactly one ORRW publication entry')
+        raise ValueError('Expected exactly one target publication entry')
     entry = entries[0]
     block = entry[0]
     links = list(ARXIV_LINK.finditer(block))
     if len(links) != 1:
-        raise ValueError('Expected exactly one ORRW arXiv link')
+        raise ValueError('Expected exactly one target arXiv link')
     abstract_url = f'https://arxiv.org/abs/{identifier}'
     pdf_url = f'https://arxiv.org/pdf/{identifier}'
     if links[0][1] not in ('', abstract_url):
@@ -115,9 +120,9 @@ class Metadata(HTMLParser):
             self.values.setdefault(attrs.get('name', '').lower(), []).append(attrs.get('content', ''))
 
 
-def verify_public(identifier):
+def verify_public(identifier, expected_title=TITLE):
     meta = Metadata(fetch(f'https://arxiv.org/abs/{identifier}').decode()).values
-    if not matching(' '.join(meta.get('citation_title', [])), meta.get('citation_author', [])):
+    if not matching(' '.join(meta.get('citation_title', [])), meta.get('citation_author', []), expected_title):
         raise ValueError('Public abstract page does not confirm the title and both authors')
     if meta.get('citation_arxiv_id', []) not in ([identifier], [identifier + 'v1']):
         raise ValueError('Public abstract page does not confirm the identifier')
@@ -126,33 +131,78 @@ def verify_public(identifier):
         raise ValueError('Public PDF is not available yet')
 
 
+def discover():
+    # Search the public API first. The HTML author search provides a fallback
+    # when the API is rate-limited or has not yet indexed an announcement.
+    query = urlencode({'search_query': 'au:Peres AND (ti:range OR ti:Manhattan)',
+                       'max_results': 100, 'sortBy': 'submittedDate', 'sortOrder': 'descending'})
+    found = {}
+    try:
+        xml = fetch('https://export.arxiv.org/api/query?' + query)
+        for entry_id, title in PAPERS.items():
+            identifier = find_paper(xml, title)
+            if identifier:
+                found[entry_id] = identifier
+    except Exception as error:
+        print(f'arXiv API unavailable: {error}')
+    if len(found) < len(PAPERS):
+        time.sleep(3)
+        query = urlencode({'query': 'Ahmed Bou-Rabee', 'searchtype': 'author',
+                           'abstracts': 'show', 'order': '-announced_date_first', 'size': 50})
+        html = fetch('https://arxiv.org/search/?' + query).decode()
+        found.update(find_search_results(html))
+    return found
+
+
+def find_search_results(html):
+    found = {}
+    for block in re.split(r'<li class="arxiv-result">', html)[1:]:
+        title = re.search(r'<p[^>]*class="[^"]*\btitle\b[^"]*"[^>]*>(.*?)</p>', block, re.S)
+        authors = re.search(r'<p[^>]*class="authors"[^>]*>(.*?)</p>', block, re.S)
+        identifier = re.search(r'href="https?://arxiv\.org/abs/(\d{4}\.\d{4,5})(?:v\d+)?"', block)
+        if not (title and authors and identifier):
+            continue
+        names = re.findall(r'<a[^>]*>(.*?)</a>', authors[1], re.S)
+        for entry_id, expected in PAPERS.items():
+            if matching(title[1], names, expected):
+                if entry_id in found and found[entry_id] != identifier[1]:
+                    raise ValueError('Multiple matching identifiers in arXiv search')
+                found[entry_id] = identifier[1]
+    return found
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', action='store_true')
     args = parser.parse_args()
-    now = datetime.now(timezone.utc)
-    if now < START:
+    if datetime.now(timezone.utc) < START:
         print(f'Waiting until {START.isoformat()}; no website changes.')
         return
-    query = urlencode({'search_query': 'au:Peres AND ti:range', 'max_results': 100,
-                       'sortBy': 'submittedDate', 'sortOrder': 'descending'})
-    identifier = find_paper(fetch('https://export.arxiv.org/api/query?' + query))
-    if identifier is None:
-        print('ORRW is not listed publicly yet; the next scheduled run will retry.')
+    found = discover()
+    if not found:
+        print('Neither paper is listed publicly yet; the next scheduled run will retry.')
         return
-    time.sleep(3)
-    verify_public(identifier)
-    # Read master afresh, so concurrent website edits are preserved. The contents
-    # API rejects a stale file SHA rather than overwriting a simultaneous edit.
+    verified = {}
+    for entry_id, identifier in found.items():
+        try:
+            time.sleep(3)
+            verify_public(identifier, PAPERS[entry_id])
+            verified[entry_id] = identifier
+        except Exception as error:
+            print(f'{entry_id}: public abstract/PDF verification pending: {error}')
+    if not verified:
+        raise RuntimeError('No discovered identifier could be verified publicly')
     current = gh('contents/publications.js?ref=master')
     old = base64.b64decode(current['content']).decode()
-    new = update_links(old, identifier)
+    new = old
+    for entry_id, identifier in verified.items():
+        new = update_links(new, identifier, entry_id)
     if args.dry_run:
-        print(f'Verified {identifier}; dry run, no writes.')
+        print(f'Verified {verified}; dry run, no writes.')
         return
     if new != old:
         gh('contents/publications.js', 'PUT', {
-            'message': f'Add verified ORRW arXiv links ({identifier})',
+            'message': 'Add verified arXiv links for ' + ', '.join(verified),
             'content': base64.b64encode(new.encode()).decode(),
             'sha': current['sha'], 'branch': 'master'})
     # GITHUB_TOKEN commits do not themselves trigger Pages builds.
@@ -160,11 +210,15 @@ def main():
     for attempt in range(24):
         time.sleep(15)
         try:
-            live = fetch(f'https://nitromannitol.github.io/publications.js?orrw-check={int(time.time())}').decode()
-            if update_links(live, identifier) == live:
-                print(f'Published and verified https://arxiv.org/abs/{identifier} and its PDF link.')
-                gh(f'actions/workflows/{WORKFLOW}/disable', 'PUT')
-                print('One-off workflow disabled after successful publication.')
+            live = fetch(f'https://nitromannitol.github.io/publications.js?arxiv-check={int(time.time())}').decode()
+            if all(update_links(live, identifier, entry_id) == live
+                   for entry_id, identifier in verified.items()):
+                print(f'Published and verified on the live webpage: {verified}')
+                if len(verified) == len(PAPERS):
+                    gh(f'actions/workflows/{WORKFLOW}/disable', 'PUT')
+                    print('Workflow disabled after both papers were published.')
+                else:
+                    print('Continuing hourly checks for the other paper.')
                 return
         except Exception as error:
             print(f'Waiting for deployment: {error}')

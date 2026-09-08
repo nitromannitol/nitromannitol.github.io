@@ -64,6 +64,24 @@ class Tests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 updater.update_links(source, '2609.99999')
 
+    def test_manhattan_match(self):
+        title = updater.PAPERS['manhattan-lattice-transient']
+        self.assertEqual(updater.find_paper(feed(title=title), title), '2609.99999')
+        self.assertIsNone(updater.find_paper(feed(), title))
+
+    def test_html_search(self):
+        title = updater.PAPERS['manhattan-lattice-transient']
+        html = '<li class="arxiv-result"><a href="https://arxiv.org/abs/2609.99998">arXiv</a><p class="title is-5 mathjax">' + title + '</p><p class="authors"><a>Ahmed Bou-Rabee</a>, <a>Yuval Peres</a></p></li>'
+        self.assertEqual(updater.find_search_results(html), {'manhattan-lattice-transient': '2609.99998'})
+        self.assertEqual(updater.find_search_results(html.replace('Ahmed Bou-Rabee', 'Someone Else')), {})
+
+    def test_both_entries_updated_independently(self):
+        result = updater.update_links(SOURCE, '2609.99999')
+        result = updater.update_links(result, '2609.99998', 'manhattan-lattice-transient')
+        self.assertEqual(updater.update_links(result, '2609.99999'), result)
+        self.assertEqual(updater.update_links(result, '2609.99998', 'manhattan-lattice-transient'), result)
+        self.assertIn('Unrelated author edit', result)
+
     def test_start_gate_makes_no_requests(self):
         from datetime import datetime, timezone
         with patch.object(updater, 'datetime') as clock, patch.object(updater, 'fetch') as fetch, patch('sys.argv', ['updater']):

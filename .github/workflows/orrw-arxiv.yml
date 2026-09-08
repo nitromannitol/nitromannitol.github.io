@@ -1,4 +1,4 @@
-name: Publish ORRW arXiv links
+name: Publish ORRW and Manhattan arXiv links
 on:
   schedule:
     - cron: '47 * * * *'
