@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parameter sweep · SOS for Paul</title><link rel="stylesheet" href="share-site.css"><link rel="stylesheet" href="parameter-sweep.css">
+<script defer src="parameter-sweep-data.js"></script><script defer src="parameter-sweep.js"></script><meta name="robots" content="noindex, nofollow, noarchive"><meta name="referrer" content="same-origin"><link rel="stylesheet" href="share-site.css"></head>
+<body class="share-page"><header class="share-header"><a class="share-brand" href="index.html">SOS for Paul</a></header>
+<main class="share-main sweep-main">
+<div class="eyebrow">Real heights · β = 1 · Full long-range interaction</div>
+<h1>Testing the phase diagram</h1>
+<p class="share-lead">A parameter sweep across q = ½, 1, 3/2 and 2. Each point compares several box sizes and independently seeded chains, with uncertainty from correlated samples.</p>
+<div id="sweep-counts" class="share-stats" aria-live="polite"></div>
+<p class="sweep-caution">The displayed exponents and critical logarithms are the original hypotheses. Intervals measure Monte Carlo uncertainty; finite-size bias remains. All intervals are pointwise, so scanning many parameter pairs increases the chance of a false signal.</p>
+<div class="inline-actions"><a class="share-button" href="sweep-report.html">Findings and revised assessment</a><a class="share-button" href="conjectures.html">Mathematical conjectures</a><a class="share-button" href="data.html#parameter-sweep">Download this sweep</a></div>
+<section id="selected-experiment">
+<div class="sweep-controls"><label>q <select id="sweep-q"><option value="0.5">0.5</option><option value="1" selected>1</option><option value="1.5">1.5</option><option value="2">2 · exact Gaussian control</option></select></label>
+<label>α <select id="sweep-alpha"></select></label><label>Box radius n <select id="sweep-n"></select></label><label>Projection <select id="sweep-projection"><option value="f">Even bump f</option><option value="g">Odd bump g</option></select></label></div>
+<div id="sweep-reading" class="sweep-reading" aria-live="polite"></div>
+<div class="sweep-panels">
+<article class="sweep-panel"><h2>Does the proposed scale stabilize?</h2><p>Variance of n⁻¹aₙ⁻¹Σf(i/n)φ(i); bars are approximate 95% intervals. Blue: exact quadratic covariance when q = 2.</p><canvas id="sweep-variance" role="img" aria-label="Normalized variance versus box radius"></canvas></article>
+<article class="sweep-panel"><h2>Does excess kurtosis vanish?</h2><p>Even bump (green), odd bump (orange), narrow bump (purple). Gaussian excess kurtosis is zero.</p><canvas id="sweep-kurtosis" role="img" aria-label="Three smooth observable kurtoses versus box radius"></canvas></article>
+<article class="sweep-panel"><h2>Distribution at the selected size</h2><p>Standardized empirical density and a standard normal reference. A close histogram does not establish a Gaussian joint limit.</p><canvas id="sweep-histogram" role="img" aria-label="Empirical histogram and Gaussian reference"></canvas></article>
+<article class="sweep-panel"><h2>Gaussian Q–Q comparison</h2><p>Empirical standardized quantiles against normal quantiles. Heavy tails bend away from the diagonal.</p><canvas id="sweep-qq" role="img" aria-label="Gaussian quantile comparison"></canvas></article>
+<article class="sweep-panel"><h2>Three independent chains</h2><p>Every fortieth retained even-bump pairing is plotted. Full recordings are available in the downloads.</p><canvas id="sweep-traces" role="img" aria-label="Traces from three independent chains"></canvas></article>
+<article class="sweep-panel"><h2>One final field from each chain</h2><p>Heights divided by the proposed aₙ. For α ≤ 2, smooth-average normalization need not stabilize point heights.</p><canvas id="sweep-profiles" role="img" aria-label="Final sampled interface profiles"></canvas></article>
+</div>
+<h2>Measurements at every size</h2><div class="sweep-table"><table><thead><tr><th>n</th><th>Sampler</th><th>Var(Yₙ(f))</th><th>κ(f), 95% interval</th><th>κ(g)</th><th>Mixed fourth residual</th><th>ESS(f) / ESS(f⁴)</th><th>R̂(f) / R̂(f²)</th></tr></thead><tbody id="sweep-size-table"></tbody></table></div>
+<h2>Joint shape and sampler checks</h2><div id="sweep-joint"></div>
+</section>
+<section id="all-parameters"><h2>All parameter pairs</h2><p>Click a row to inspect its distributions and chains. H is fitted from the three largest available sizes after subtracting the proposed logarithm. The fit does not correct unknown finite-size effects.</p>
+<div class="sweep-table"><table><thead><tr><th>q</th><th>α</th><th>Largest n</th><th>Original H</th><th>Fitted H, 95% interval</th><th>κ(f), 95% interval</th><th>κ(g)</th><th>ESS(f)</th><th>Mixing</th></tr></thead><tbody id="sweep-all-table"></tbody></table></div></section>
+<section><h2>What was measured</h2><p>The even test function is f(t) = exp(1 − 1/(1 − (t/0.8)²)) on |t| &lt; 0.8 and zero elsewhere. The odd function is g(t) = 3t f(t)/0.8. We also record a narrow central bump, two separated bumps, point heights, increments and energy.</p><p>The mixed fourth residual is [E(X²Y²) − E(X²)E(Y²) − 2E(XY)²]/[Var(X)Var(Y)], with centered X and Y. It vanishes for jointly Gaussian observables. We compare several projections because Gaussian-looking marginals alone do not identify a field law.</p><p id="sweep-methods"></p><p>R̂ below 1.01 and at least 1,000 estimated effective samples in all three displayed smooth projections are screening criteria. Passing these checks does not prove equilibration. The exact energy mean and variance, each divided by (2n+1)/q, should equal one.</p></section>
+</main><footer class="share-footer">SOS for Paul · Finite-size experiments and conjectures</footer></body></html>

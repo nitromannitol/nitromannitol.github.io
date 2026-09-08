@@ -1,0 +1,682 @@
+{
+  "passed": true,
+  "configurations": 3456000,
+  "totalGeneratedRecordings": 4344000,
+  "totalGeneratedChains": 531,
+  "completedCells": 140,
+  "qEnergyMeanRange": [
+    0.9970338897742413,
+    1.002185345129997
+  ],
+  "qEnergyVarianceRange": [
+    0.9623428249470654,
+    1.0372830677389198
+  ],
+  "gaussianControls": [
+    {
+      "key": "q2-a1.75",
+      "N": 32,
+      "ratio": 0.9992806494978034,
+      "interval": [
+        0.9828123633185014,
+        1.0156819275297035
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.02626760768390124,
+      "kurtosisInterval": [
+        -0.03295859640199541,
+        0.08880634159664615
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a1.75",
+      "N": 64,
+      "ratio": 1.014924463047277,
+      "interval": [
+        0.9991990825376271,
+        1.0313453551125225
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.04570849236931229,
+      "kurtosisInterval": [
+        -0.012013118752073646,
+        0.11137647575485245
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a1.75",
+      "N": 128,
+      "ratio": 1.0114514080557315,
+      "interval": [
+        0.9932456168000077,
+        1.0294802140907713
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.052272114200544006,
+      "kurtosisInterval": [
+        -0.010218740816454418,
+        0.11736643239872617
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a1.75",
+      "N": 256,
+      "ratio": 0.9911598078682556,
+      "interval": [
+        0.9699739327399345,
+        1.0105084735430565
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.07146582891974029,
+      "kurtosisInterval": [
+        -0.11987465579897026,
+        -0.019463644471985463
+      ],
+      "kurtosisCovered": false,
+      "adequate": true
+    },
+    {
+      "key": "q2-a1.75",
+      "N": 512,
+      "ratio": 0.9983868071339453,
+      "interval": [
+        0.9797430980694786,
+        1.017693164271067
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.04893259717858989,
+      "kurtosisInterval": [
+        -0.007669476862555547,
+        0.1051316500000283
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2",
+      "N": 32,
+      "ratio": 0.9909834422690359,
+      "interval": [
+        0.9764557197241399,
+        1.0053230023729647
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.007325020273963645,
+      "kurtosisInterval": [
+        -0.06586183750468638,
+        0.07558863942090462
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2",
+      "N": 64,
+      "ratio": 0.9893407470573036,
+      "interval": [
+        0.9677660063288531,
+        1.0134472741217826
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.008667062665705938,
+      "kurtosisInterval": [
+        -0.04918894947391629,
+        0.07683278943787727
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2",
+      "N": 128,
+      "ratio": 0.9843562356821478,
+      "interval": [
+        0.9652506753329417,
+        1.0032477945145795
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.03159481054048552,
+      "kurtosisInterval": [
+        -0.03546194767528019,
+        0.09812334710504454
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2",
+      "N": 256,
+      "ratio": 0.9984157042469807,
+      "interval": [
+        0.9787320169876884,
+        1.016543905602595
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.0207579405087559,
+      "kurtosisInterval": [
+        -0.03204319091608239,
+        0.07930645678315681
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2",
+      "N": 512,
+      "ratio": 0.9947636742331226,
+      "interval": [
+        0.9711404983571473,
+        1.017902279732016
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.055521454705973916,
+      "kurtosisInterval": [
+        -0.02471827449093355,
+        0.14621644963533934
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.5",
+      "N": 32,
+      "ratio": 0.9892616531114222,
+      "interval": [
+        0.9682103805784449,
+        1.0120340883286612
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.005816736879551421,
+      "kurtosisInterval": [
+        -0.07009015659257607,
+        0.06285328801868484
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.5",
+      "N": 64,
+      "ratio": 1.010182311359184,
+      "interval": [
+        0.9862463940458339,
+        1.0351149250421177
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.03453988522407325,
+      "kurtosisInterval": [
+        -0.09153178615612702,
+        0.02519769076653755
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.5",
+      "N": 128,
+      "ratio": 1.0009911088351293,
+      "interval": [
+        0.9765298404843076,
+        1.025404239586751
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.02147951891183597,
+      "kurtosisInterval": [
+        -0.07797827387698268,
+        0.040222693716451575
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.5",
+      "N": 256,
+      "ratio": 1.0030895331383656,
+      "interval": [
+        0.9709691349461922,
+        1.0382203542035302
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.03342479375925489,
+      "kurtosisInterval": [
+        -0.03236765552375785,
+        0.09694922662373007
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.5",
+      "N": 512,
+      "ratio": 0.9764704440398547,
+      "interval": [
+        0.9461661101990346,
+        1.0070680609897578
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.04654063300980482,
+      "kurtosisInterval": [
+        -0.11544780167442108,
+        0.032159708708711224
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 32,
+      "ratio": 1.0081219321006505,
+      "interval": [
+        0.9789869166632504,
+        1.0366450124389943
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.036028734892909586,
+      "kurtosisInterval": [
+        -0.014752869073030857,
+        0.08417447207829715
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 64,
+      "ratio": 0.9855448696291478,
+      "interval": [
+        0.9556846277363811,
+        1.0168236492318492
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.004457926862892148,
+      "kurtosisInterval": [
+        -0.06658420424463728,
+        0.0785813481422031
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 128,
+      "ratio": 1.022904182112463,
+      "interval": [
+        0.9928325737176372,
+        1.0537852196245503
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.0015660414388900534,
+      "kurtosisInterval": [
+        -0.07860651140473042,
+        0.08308362375169033
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 256,
+      "ratio": 1.0180507232014608,
+      "interval": [
+        0.9719743812773749,
+        1.0623951815513617
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.10385364054607615,
+      "kurtosisInterval": [
+        -0.0014888446521328462,
+        0.2095891551801139
+      ],
+      "kurtosisCovered": true,
+      "adequate": false
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 512,
+      "ratio": 1.0245508628976192,
+      "interval": [
+        0.9704232562453724,
+        1.085100544097623
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.03954079429261759,
+      "kurtosisInterval": [
+        -0.1394459978574807,
+        0.05712887123896112
+      ],
+      "kurtosisCovered": true,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3",
+      "N": 32,
+      "ratio": 0.9976523864164982,
+      "interval": [
+        0.9721002505894657,
+        1.0234408977105225
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.03539466757987464,
+      "kurtosisInterval": [
+        -0.08921324403507458,
+        0.018770845339437976
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3",
+      "N": 64,
+      "ratio": 1.0069390490290697,
+      "interval": [
+        0.975849969020498,
+        1.0374091945271768
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.0048288829508518205,
+      "kurtosisInterval": [
+        -0.08043045025690407,
+        0.08481605896740567
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3",
+      "N": 128,
+      "ratio": 0.9629343304625171,
+      "interval": [
+        0.9276629072665568,
+        0.9970996426461964
+      ],
+      "varianceCovered": false,
+      "kurtosis": -0.04319689951245209,
+      "kurtosisInterval": [
+        -0.0981736169104876,
+        0.011675627363745876
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3",
+      "N": 256,
+      "ratio": 1.0000872006096975,
+      "interval": [
+        0.9454075524896104,
+        1.0454054835285047
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.02113551942717251,
+      "kurtosisInterval": [
+        -0.07226927558334625,
+        0.1258591150167804
+      ],
+      "kurtosisCovered": true,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3",
+      "N": 512,
+      "ratio": 1.0083977995504985,
+      "interval": [
+        0.9443377291151454,
+        1.0691938865332566
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.02226952701923368,
+      "kurtosisInterval": [
+        -0.11152531218163036,
+        0.06966403478884589
+      ],
+      "kurtosisCovered": true,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 32,
+      "ratio": 1.0124444715078285,
+      "interval": [
+        0.9900608709467548,
+        1.032974490420036
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.03752136356893976,
+      "kurtosisInterval": [
+        -0.09725045391153973,
+        0.0248560580713895
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 64,
+      "ratio": 1.0143344625075015,
+      "interval": [
+        0.9800893377346919,
+        1.0529200913720367
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.043467720031190815,
+      "kurtosisInterval": [
+        -0.10375889325740843,
+        0.019814793549417262
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 128,
+      "ratio": 1.0014424855193724,
+      "interval": [
+        0.9635888042910489,
+        1.0381933673495394
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.0064816691220026534,
+      "kurtosisInterval": [
+        -0.10586865275717908,
+        0.12048448211028161
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 256,
+      "ratio": 1.0381259146545037,
+      "interval": [
+        0.9784594961731258,
+        1.1038467145271682
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.011111635400534947,
+      "kurtosisInterval": [
+        -0.08324585552750838,
+        0.09921909646468326
+      ],
+      "kurtosisCovered": true,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 512,
+      "ratio": 0.940652880056006,
+      "interval": [
+        0.8811823340988779,
+        1.0095083579683581
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.018117533124975882,
+      "kurtosisInterval": [
+        -0.09456902946330385,
+        0.050843097357555385
+      ],
+      "kurtosisCovered": true,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3.5",
+      "N": 32,
+      "ratio": 1.0049781695782989,
+      "interval": [
+        0.9822907071155245,
+        1.0270717682887507
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.051807557395101345,
+      "kurtosisInterval": [
+        -0.12571726977212871,
+        0.022431259094778576
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.5",
+      "N": 64,
+      "ratio": 0.9607507660529763,
+      "interval": [
+        0.926441310048149,
+        0.9962341389894502
+      ],
+      "varianceCovered": false,
+      "kurtosis": -0.01191289647501348,
+      "kurtosisInterval": [
+        -0.09718090209614084,
+        0.06478327936798436
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.5",
+      "N": 128,
+      "ratio": 1.0149145769326224,
+      "interval": [
+        0.9900514723996313,
+        1.03807923268688
+      ],
+      "varianceCovered": true,
+      "kurtosis": 0.005781027607614675,
+      "kurtosisInterval": [
+        -0.08606410031280261,
+        0.09145813682967573
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.5",
+      "N": 256,
+      "ratio": 0.9859484722793767,
+      "interval": [
+        0.9574382536085492,
+        1.0143149769801758
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.005931662722976849,
+      "kurtosisInterval": [
+        -0.07215809950423926,
+        0.06519256875657417
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    },
+    {
+      "key": "q2-a3.5",
+      "N": 512,
+      "ratio": 1.006390902241841,
+      "interval": [
+        0.9754635241109635,
+        1.0366373434203424
+      ],
+      "varianceCovered": true,
+      "kurtosis": -0.04474967786198114,
+      "kurtosisInterval": [
+        -0.13228479174167268,
+        0.044268042285369125
+      ],
+      "kurtosisCovered": true,
+      "adequate": true
+    }
+  ],
+  "gaussianMeanVarianceRatio": 0.9990921264833001,
+  "gaussianVarianceCoverage95": 33,
+  "gaussianKurtosisCoverage95": 34,
+  "cellsFlaggedByMixingScreen": [
+    {
+      "key": "q0.5-a3.5",
+      "N": 32,
+      "maxRhat": 1.0099639465819545,
+      "minSmoothESS": 563.3256520781904,
+      "minFourthESS": 1543.0427149743045,
+      "adequate": false
+    },
+    {
+      "key": "q0.5-a3.5",
+      "N": 64,
+      "maxRhat": 1.0142649360030889,
+      "minSmoothESS": 330.4251357511756,
+      "minFourthESS": 568.0735469091728,
+      "adequate": false
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 256,
+      "maxRhat": 1.007675779189066,
+      "minSmoothESS": 951.1917490135888,
+      "minFourthESS": 4757.833898520817,
+      "adequate": false
+    },
+    {
+      "key": "q2-a2.8",
+      "N": 512,
+      "maxRhat": 1.0067653471127742,
+      "minSmoothESS": 511.25150287549457,
+      "minFourthESS": 3295.840241620095,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3",
+      "N": 256,
+      "maxRhat": 1.0074049339725042,
+      "minSmoothESS": 514.78869490834,
+      "minFourthESS": 4388.469491554533,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3",
+      "N": 512,
+      "maxRhat": 1.0213402266100868,
+      "minSmoothESS": 337.93661440132837,
+      "minFourthESS": 3500.007393077234,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 256,
+      "maxRhat": 1.0039715405548792,
+      "minSmoothESS": 523.0274900948746,
+      "minFourthESS": 3978.361059281055,
+      "adequate": false
+    },
+    {
+      "key": "q2-a3.15",
+      "N": 512,
+      "maxRhat": 1.0163119631452033,
+      "minSmoothESS": 294.9113716044152,
+      "minFourthESS": 2421.1807485979675,
+      "adequate": false
+    }
+  ],
+  "notes": "Coverage is reported, not forced to 100%. The intervals are pointwise. All original slow chains remain archived; this audit concerns the displayed cells."
+}

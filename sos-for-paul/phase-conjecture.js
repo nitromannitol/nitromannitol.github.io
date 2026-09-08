@@ -23,10 +23,11 @@
       description=q===2?'The limit is ½ B on (−1,1), for the ordered-pair energy convention used here.':'The proposed limit is σ(q) B on (−1,1). The positive amplitude σ(q) is not fitted or identified by the current experiments.';
     }else{
       power=.5;law='brownian';title='Brownian bridge';
-      description=q===2?'The limit is [4 ζ(α−2)]⁻½ B on (−1,1).':'The proposed limit is σ(q,α) B on (−1,1), with deterministic positive amplitude. This regime has not been simulated in the saved q = 1 experiment.';
+      description=q===2?'The limit is [4 ζ(α−2)]⁻½ B on (−1,1).':'The proposed limit is σ(q,α) B on (−1,1), with deterministic positive amplitude. The parameter sweep tests finite-size scaling and joint moments in this regime.';
     }
     const measured=Math.abs(q-1)<tol&&Math.abs(alpha-2.25)<tol;
-    const status=q===2?'Quadratic case: the limiting field is Gaussian.':measured?'Measured here through n = 2048. The data support the exponent and non-Gaussian shape; they do not identify the cutoff law.':alpha<=2+tol?'Speculative extrapolation without simulation evidence here.':q<1?'Untested extrapolation to nonconvex potentials q < 1.':'Untested conjecture at these parameters.';
+    const sweep=(globalThis.PARAMETER_SWEEP_STATUS||[]).find(p=>Math.abs(p.q-q)<tol&&Math.abs(p.alpha-alpha)<tol);
+    const status=q===2?'Quadratic case: Gaussian already at finite n; exact covariance comparisons are in the parameter sweep.':measured?'Measured through n = 2048 in the original study, with an independent sweep replication. The data favor H = ¼ and non-Gaussianity; they do not identify the cutoff law.':sweep?'Simulated through n = '+sweep.N+' in the parameter sweep. See the measured exponents, kurtosis intervals and mixing diagnostics; the limiting law remains conjectural.':'No saved run at this exact parameter pair. Interpolation of the phase diagram remains a conjecture.';
     return {q,alpha,critical,power,logPower,law,title,description,status,measured};
   }
   const num=x=>Math.abs(x-Math.round(x))<1e-9?String(Math.round(x)):x.toFixed(3).replace(/0+$/,'').replace(/\.$/,'');
@@ -55,7 +56,7 @@
       ctx.beginPath();ctx.moveTo(x(2),t);ctx.lineTo(x(2),b);ctx.strokeStyle='#7388a6';ctx.lineWidth=3;ctx.stroke();
       ctx.fillStyle='#4e685d';ctx.textAlign='center';ctx.fillText('Brownian bridge',x(1.1),y(3.5));ctx.fillText('Non-Gaussian candidate',x(1.25),y(2.22));ctx.fillText('Gaussian generalized field',x(1.1),y(1.55));
       ctx.textAlign='left';ctx.fillStyle='#a15e35';ctx.fillText('αc = 2 + q/2',x(.34),y(2.75));ctx.fillStyle='#71807a';ctx.fillText('α',8,15);ctx.textAlign='right';ctx.fillText('q',r,b+28);
-      ctx.beginPath();ctx.arc(x(1),y(2.25),4,0,2*Math.PI);ctx.fillStyle='#203b3a';ctx.fill();
+      for(const p of window.PARAMETER_SWEEP_STATUS||[{q:1,alpha:2.25}]){ctx.beginPath();ctx.arc(x(p.q),y(p.alpha),3,0,2*Math.PI);ctx.fillStyle='#203b3a';ctx.fill();}
       ctx.beginPath();ctx.arc(x(current.q),y(current.alpha),7,0,2*Math.PI);ctx.strokeStyle='#b56532';ctx.lineWidth=2.5;ctx.stroke();
     }
     function render(){
