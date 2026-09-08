@@ -94,9 +94,9 @@ const publications = [
   {
     id: "einstein-relation",
     title: "Quantitative Einstein relation for reversible diffusions in a random environment",
-    thumbnail: "images/einstein_paths.png",
+    thumbnail: "gallery/plates/p-einstein-thumbnail.svg",
     thumbnailAnimation: "einstein-relation",
-    altText: "Paired unforced and weakly forced diffusion paths in the same random potential.",
+    altText: "Paired diffusion histories: time runs left to right, with blue unforced paths and gold paths under a small constant force.",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Ruizhe Xu", url: "https://arxiv.org/search/?query=%22Ruizhe+Xu%22&searchtype=author&abstracts=show&order=-announced_date_first&size=50" }
@@ -395,9 +395,9 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
       { type: "Pictures", url: "https://twitter.com/sandpileofthed1" }
     ],
         abstract:"I show that the Abelian sandpile, started with a random initial configuration on any periodic lattice, approximates the solution of a deterministic, fully nonlinear elliptic PDE at large scales. The PDE is implicitly identified through the ergodic theorem, using ideas from non-divergence form stochastic homogenization. Although the exact form of the PDE remains unknown, it is definitively non-universal: it depends on the fine, local structure of both the initial lattice and randomness.",
-    thumbnail: "images/random_pile.png",
+    thumbnail: "gallery/plates/random-convergence-hero.png",
     thumbnailAnimation: "random-sandpile",
-    altText: "An exact random-background Abelian sandpile viewed from microscopic lattice scale to its macroscopic profile."
+    altText: "Computed stabilization of random 3 or 5 grain heights in disks of increasing radius, shown at the same macroscopic scale."
   }
 ];
 

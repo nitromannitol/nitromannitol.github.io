@@ -1,126 +1,78 @@
 #!/usr/bin/env node
-/* Render the gallery wall from the gallery's actual potential, gradient and
-   Gaussian generator. Only the presentation lives here; the SDE is shared. */
+/* Render the two gallery covers from the shared, actual diffusion histories.
+ * Presentation only: integration, noise, and statistics live in einstein-motion.js.
+ */
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const source = fs.readFileSync(path.join(root, 'gallery/gallery.js'), 'utf8');
-function helper(name) {
-    const start = source.indexOf('function ' + name + '(');
-    if (start < 0) throw new Error('Missing gallery helper: ' + name);
-    const open = source.indexOf('{', start);
-    let depth = 1, end = open + 1;
-    for (; depth && end < source.length; end++) {
-        if (source[end] === '{') depth++;
-        if (source[end] === '}') depth--;
-    }
-    if (depth) throw new Error('Unclosed gallery helper: ' + name);
-    return source.slice(start, end);
-}
-const shared = vm.runInNewContext(
-    ['einsteinPotential', 'einsteinGradient', 'einsteinNoise'].map(helper).join('\n') +
-    '\n({potential:einsteinPotential,gradient:einsteinGradient,noise:einsteinNoise})');
-const maker = source.slice(source.indexOf('makers.einstein = function'));
-const M = Number(maker.match(/\bM = (\d+)/)?.[1]);
-const dt = Number(maker.match(/\bDT = ([.\d]+)/)?.[1]);
-const lambda = Number(maker.match(/let lambda = ([.\d]+)/)?.[1]);
-const seed = Number(maker.match(/sampleSeed = (0x[0-9a-f]+)/i)?.[1]);
-if (!(M > 0 && dt > 0 && lambda > 0 && seed > 0)) throw new Error('Gallery simulation constants changed');
-const time = 1 / (lambda * lambda), steps = Math.round(time / dt);
-const noise = shared.noise(seed), sq = Math.sqrt(dt), gradient = [0, 0];
-const sides = [0, 1].map(() => ({x:new Float64Array(M),y:new Float64Array(M),trails:[[],[],[]]}));
-for (let k = 1; k <= steps; k++) {
-    for (let i = 0; i < M; i++) {
-        const zx = sq * noise(), zy = sq * noise();
-        sides.forEach((s, side) => {
-            shared.gradient(s.x[i], s.y[i], gradient);
-            s.x[i] += ((side ? lambda : 0) - gradient[0]) * dt + zx;
-            s.y[i] += -gradient[1] * dt + zy;
-            if (i < 3 && k >= steps - Math.round(6 / dt) && k % 4 === 0)
-                s.trails[i].push([s.x[i], s.y[i]]);
-        });
-    }
-}
-for (const s of sides) {
-    s.mx = s.x.reduce((a, x) => a + x / M, 0);
-    s.my = s.y.reduce((a, y) => a + y / M, 0);
-    let vx = 0, vy = 0, cov = 0;
-    for (let i = 0; i < M; i++) {
-        const x = s.x[i] - s.mx, y = s.y[i] - s.my;
-        vx += x*x/(M-1); vy += y*y/(M-1); cov += x*y/(M-1);
-    }
-    const delta = Math.hypot(vx-vy, 2*cov);
-    s.major = Math.sqrt((vx+vy+delta)/2); s.minor = Math.sqrt((vx+vy-delta)/2);
-    s.angle = -Math.atan2(2*cov, vx-vy)*90/Math.PI;
-}
+const context = vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(root, 'einstein-motion.js'), 'utf8'), context,
+    { filename: 'einstein-motion.js' });
+const run = context.EinsteinMotion.generate({ force: .125, seed: 0x4e554c4c, pairs: 32, samples: 900 });
 
-const W = 1200, H = 600, panels = [{x:34,y:50,w:546,h:506},{x:620,y:50,w:546,h:506}];
-const allX = sides.flatMap(s => Array.from(s.x));
-const allY = sides.flatMap(s => Array.from(s.y));
-const lowX = Math.min(0,...allX), highX = Math.max(0,...allX);
-const lowY = Math.min(0,...allY), highY = Math.max(0,...allY);
-const camera = {x:(lowX+highX)/2,y:(lowY+highY)/2};
-const scale = Math.min(478/(highX-lowX),428/(highY-lowY));
 const f = n => Number(n.toFixed(2));
-function transform(side,x,y) {
-    const p=panels[side];
-    return [p.x+p.w/2+(x-camera.x)*scale,p.y+p.h/2-(y-camera.y)*scale];
-}
-function contour(side) {
-    const p=panels[side], N=108, values=[], level=.45;
-    for(let y=0;y<=N;y++) for(let x=0;x<=N;x++)
-        values.push(shared.potential(camera.x+(x/N-.5)*p.w/scale,camera.y-(y/N-.5)*p.h/scale));
-    const parts=[];
-    for(let y=0;y<N;y++) for(let x=0;x<N;x++) {
-        const k=y*(N+1)+x, v=[values[k],values[k+1],values[k+N+2],values[k+N+1]];
-        const corners=[[x,y],[x+1,y],[x+1,y+1],[x,y+1]], cuts=[];
-        for(let e=0;e<4;e++) {
-            const next=(e+1)%4;
-            if((v[e]<level)===(v[next]<level))continue;
-            const q=(level-v[e])/(v[next]-v[e]);
-            cuts.push([p.x+(corners[e][0]+q*(corners[next][0]-corners[e][0]))/N*p.w,
-                       p.y+(corners[e][1]+q*(corners[next][1]-corners[e][1]))/N*p.h]);
-        }
-        for(let j=0;j+1<cuts.length;j+=2)
-            parts.push('M'+cuts[j].map(f).join(',')+'L'+cuts[j+1].map(f).join(','));
-    }
-    return parts.join('');
-}
-const contours = [contour(0), contour(1)];
-for(const theme of ['paper','void']) {
-    const dark=theme==='void', ground=dark?'#15131A':'#F2EDE2';
-    const colors=dark?['#69C8F2','#F2BF62']:['#267CA6','#B97813'];
-    const ink=dark?'#F2EDE2':'#24232D', quiet=dark?'#A6A0B1':'#807A70';
-    const out=[`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="title desc">`,
-        '<title id="title">The same noise, with and without a small force</title>',
-        `<desc id="desc">${M} paired Euler–Maruyama diffusions at time ${time}, step ${dt}, force ${lambda}, seed ${seed}. Both ensembles start at the origin and share their Gaussian increments pairwise. The potential and noise generator are read from gallery.js. Blue is unforced; gold is forced to the right. Both panels use exactly the same camera and scale. Dots are actual endpoints; short trails retain every fourth sample of the final six time units for the first three particles. Dashed ellipses show one empirical standard deviation, and crosses mark the empirical centroids. The hollow ring is the common starting position. Faint lines are one numerical contour of the same potential.</desc>`,
+const last = run.samples - 1;
+
+const formats = [
+    { theme: 'paper', W: 1200, H: 600, filename: 'p-einstein-ensemble-paper.svg' },
+    { theme: 'void', W: 1200, H: 600, filename: 'p-einstein-ensemble-void.svg' },
+    { theme: 'paper', W: 600, H: 600, filename: 'p-einstein-thumbnail.svg' }
+];
+for (const { theme, W, H, filename } of formats) {
+    const compact = W === H;
+    const left = W * (compact ? .07 : .06), right = W * .95;
+    const top = H * (compact ? .075 : .07), bottom = H * (compact ? .925 : .93);
+    const x = s => left + (right - left) * s / (run.samples - 1);
+    const y = value => bottom - (value - run.yMin) / (run.yMax - run.yMin) * (bottom - top);
+    const point = (series, s) => f(x(s)) + ',' + f(y(series[s]));
+    const line = series => 'M' + series.map((_, s) => point(series, s)).join(' ');
+    const band = line(run.mean0) + 'L' + run.mean1.map((_, s) =>
+        point(run.mean1, run.samples - 1 - s)).join(' ') + 'Z';
+    const dark = theme === 'void', ground = dark ? '#15141c' : '#faf9f5';
+    const colors = dark ? ['#66d9ff', '#ffc565'] : ['#087491', '#b96308'];
+    const ink = dark ? '#eeeae4' : '#292b35';
+    const out = [
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="title desc" data-force="${run.force}" data-pairs="${run.pairs}" data-samples="${run.samples}">`,
+        '<title id="title">A small force separates two families of diffusion histories</title>',
+        `<desc id="desc">Time runs from left to right, from zero to ${run.duration}; height shows horizontal displacement, with positive displacement upward. Cyan threads are ${run.pairs} unforced diffusion histories; amber threads are their forced copies with force ${run.force}. Each pair starts at the origin and receives exactly the same Brownian increments. The simulation in einstein-motion.js uses unit Brownian noise, drift minus the gradient of its fixed smooth scalar potential, and Euler–Maruyama step ${run.dt}; ${run.samples} equally spaced observations use linear interpolation between neighboring integration steps. Both families share one fixed displacement scale, computed from the complete histories. Bright curves are the actual empirical means; dots mark final positions. The smooth potential illustrates the mechanism and is not a finite-range random environment. The image does not assert finite-time equality of mobility and variance rate or demonstrate the theorem's convergence rate.</desc>`,
+        '<defs><linearGradient id="wash" x1="0%" y1="100%" x2="100%" y2="0%">',
+        `<stop offset="0" stop-color="${colors[0]}" stop-opacity="${dark ? .032 : .022}"/>`,
+        `<stop offset="1" stop-color="${colors[1]}" stop-opacity="${dark ? .024 : .018}"/>`,
+        '</linearGradient></defs>',
         `<rect width="${W}" height="${H}" fill="${ground}"/>`,
-        `<path d="M600,68V534" stroke="${quiet}" stroke-opacity=".18"/>`];
-    sides.forEach((s,side)=>{
-        const color=colors[side], p=panels[side], tx=(x,y)=>transform(side,x,y);
-        const [ox,oy]=tx(0,0),[mx,my]=tx(s.mx,s.my);
-        out.push(`<defs><clipPath id="panel${side}"><rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}"/></clipPath></defs><g clip-path="url(#panel${side})">`);
-        out.push(`<path d="${contours[side]}" fill="none" stroke="${quiet}" stroke-width="1.1" opacity="${dark?.11:.12}"/>`);
-        out.push(`<ellipse cx="${f(mx)}" cy="${f(my)}" rx="${f(s.major*scale)}" ry="${f(s.minor*scale)}" transform="rotate(${f(s.angle)} ${f(mx)} ${f(my)})" fill="${color}" fill-opacity=".045" stroke="${color}" stroke-opacity=".7" stroke-width="2.5" stroke-dasharray="9 8"/>`);
-        out.push(`<path d="M${f(ox)},${p.y+27}V${p.y+p.h-24}" stroke="${quiet}" stroke-width="1.5" stroke-dasharray="3 9" opacity=".28"/>`);
-        s.trails.forEach((trail,j)=>{
-            const d=trail.map((q,k)=>(k?'L':'M')+tx(...q).map(f).join(',')).join('');
-            out.push(`<path d="${d}" fill="none" stroke="${ground}" stroke-width="${j?5:7}" stroke-linejoin="round" stroke-linecap="round"/>`);
-            out.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="${j?2.6:4}" opacity="${j?.5:.95}" stroke-linejoin="round" stroke-linecap="round"/>`);
-        });
-        for(let i=M-1;i>=0;i--) {
-            const [x,y]=tx(s.x[i],s.y[i]);
-            out.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${i<3?7.3:4.6}" fill="${color}" fill-opacity="${i<3?1:.74}"${i<3?' stroke="'+ground+'" stroke-width="2"':''}/>`);
-        }
-        out.push(`<circle cx="${f(ox)}" cy="${f(oy)}" r="6" fill="${ground}" stroke="${quiet}" stroke-width="2.2"/>`);
-        out.push(`<path d="M${f(mx-8)},${f(my)}H${f(mx+8)}M${f(mx)},${f(my-8)}V${f(my+8)}" stroke="${ground}" stroke-width="7"/><path d="M${f(mx-8)},${f(my)}H${f(mx+8)}M${f(mx)},${f(my-8)}V${f(my+8)}" stroke="${ink}" stroke-width="3"/>`);
+        `<rect width="${W}" height="${H}" fill="url(#wash)"/>`,
+        `<path d="M${left},${f(y(0))}H${right}" fill="none" stroke="${ink}" stroke-width="1.5" opacity="${dark ? .14 : .18}"/>`,
+        `<path d="M${right},${top}V${bottom}" fill="none" stroke="${ink}" stroke-width="1.5" opacity="${dark ? .13 : .16}"/>`,
+        `<path d="${band}" fill="${colors[1]}" opacity="${dark ? .045 : .035}"/>`
+    ];
+    [run.x0, run.x1].forEach((histories, group) => {
+        const color = colors[group];
+        out.push(`<g fill="none" stroke="${color}" stroke-width="1.65" stroke-opacity=".26" stroke-linejoin="round" stroke-linecap="round">`);
+        for (const series of histories) out.push(`<path d="${line(series)}"/>`);
         out.push('</g>');
-        if(side) out.push(`<path d="M918,37H1011M996,25L1012,37L996,49" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`);
+        out.push(`<path d="${line(histories[0])}" fill="none" stroke="${color}" stroke-width="2.33" opacity=".58" stroke-linejoin="round" stroke-linecap="round"/>`);
+        out.push(`<g fill="${color}" fill-opacity=".64">`);
+        for (const series of histories) out.push(`<circle cx="${right}" cy="${f(y(series[last]))}" r="3"/>`);
+        out.push('</g>');
     });
+    [run.mean0, run.mean1].forEach((series, group) => {
+        const color = colors[group], d = line(series), endY = f(y(series[last]));
+        out.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="13.5" opacity="${dark ? .12 : .08}" stroke-linejoin="round" stroke-linecap="round"/>`);
+        out.push(`<path d="${d}" fill="none" stroke="${color}" stroke-width="4.35" stroke-linejoin="round" stroke-linecap="round"/>`);
+        out.push(`<circle cx="${right}" cy="${endY}" r="18" fill="${color}" fill-opacity="${dark ? .09 : .07}"/>`);
+        out.push(`<circle cx="${right}" cy="${endY}" r="6.6" fill="${color}"/>`);
+        out.push(`<circle cx="${right}" cy="${endY}" r="2.1" fill="${dark ? '#fff9e9' : '#fff'}" fill-opacity=".88"/>`);
+    });
+    out.push(`<circle cx="${left}" cy="${f(y(0))}" r="4.5" fill="${ink}" fill-opacity=".85"/>`);
     out.push('</svg>');
-    fs.writeFileSync(path.join(root,`gallery/plates/p-einstein-ensemble-${theme}.svg`),out.join('\n')+'\n');
+    fs.writeFileSync(path.join(root, 'gallery/plates', filename), out.join('\n') + '\n');
 }
-console.log(JSON.stringify({particles:M,time,dt,lambda,seed,means:sides.map(s=>[s.mx,s.my]),scale},null,2));
+console.log(JSON.stringify({
+    pairs: run.pairs, samples: run.samples, time: run.duration, dt: run.dt,
+    force: run.force, seed: run.seed, displacementRange: [run.yMin, run.yMax],
+    means: [run.mean0[last], run.mean1[last]],
+    diffusion: run.diffusion[last], mobility: run.mobility[last]
+}, null, 2));

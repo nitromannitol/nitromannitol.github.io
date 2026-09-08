@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=481f8c9d">
+<link rel="stylesheet" href="gallery.css?v=815e1d25">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -44,12 +44,12 @@
 <div class="sheet" id="sheet-own" role="tabpanel" aria-labelledby="tab-own" data-panel="own">
 <a class="card" href="#random-sandpile" data-plate="random-sandpile">
     <span class="card-img">
-        <img src="plates/p6-wall-paper.png" alt="" loading="eager" decoding="async">
-        <img class="card-img-alt" src="plates/p6-wall-void.png" alt="" loading="lazy" decoding="async">
+        <img src="plates/random-convergence-wall-paper.png" alt="" loading="eager" decoding="async">
+        <img class="card-img-alt" src="plates/random-convergence-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
         <span class="card-no" aria-hidden="true">01</span>
-        <span class="card-name">Sandpile on a random background</span>
+        <span class="card-name">Convergence of the random Abelian sandpile</span>
     </span>
 </a>
 <a class="card" href="#dimensional-reduction" data-plate="dimensional-reduction">
@@ -154,8 +154,8 @@
 </a>
 <a class="card card--wide" href="#einstein-relation" data-plate="einstein-relation">
     <span class="card-img">
-        <img src="plates/p-einstein-ensemble-paper.svg" alt="" loading="lazy" decoding="async">
-        <img class="card-img-alt" src="plates/p-einstein-ensemble-void.svg" alt="" loading="lazy" decoding="async">
+        <img src="plates/p-einstein-ensemble-paper.svg?v=94921282" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-einstein-ensemble-void.svg?v=c9ca1472" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label">
         <span class="card-no" aria-hidden="true">12</span>
@@ -267,44 +267,54 @@
 <section class="study" id="study-random-sandpile" data-plate="random-sandpile" aria-labelledby="t-random-sandpile" role="dialog" aria-modal="true" hidden>
     <div class="study-bar">
         <button type="button" class="study-back" data-close>&larr;&ensp;Models</button>
-        <span class="study-title">Sandpile on a random background</span>
+        <span class="study-title">Convergence of the random Abelian sandpile</span>
     </div>
 
     <section class="band band--paper band--head">
         <div class="col">
             <p class="family">Sandpiles</p>
-            <h2 id="t-random-sandpile">Sandpile on a random background</h2>
-            <p class="def"><b>Definition.</b> Fix \(d\ge2\), a background \(\eta:\mathbb Z^d\to\mathbb Z\), and \(n\in\mathbb Z_{\ge0}\). Starting from \(\eta+n\delta_0\), a legal toppling at a site \(x\) of height at least \(2d\) subtracts \(2d\) grains at \(x\) and adds one grain at each \(x\pm e_i\). The configuration stabilizes if every site topples finitely often. The background \(\eta\) is explosive if \(\eta+m\delta_0\) is not stabilizable for some integer \(m\ge1\).</p>
+            <h2 id="t-random-sandpile">Convergence of the random Abelian sandpile</h2>
+            <p class="lead">Random grains. A reproducible large-scale shape.</p>
+            <p class="def">Put 3 or 5 grains at each lattice site in a disk of radius \(R\), independently with equal probability, and zero outside. A site with at least 4 grains sends one to each of its four neighbors. Watch the pile stabilize, then increase \(R\) while keeping the same macroscopic view.</p>
             <figure class="rulefig">
                 <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-random-sandpile" width="1080" height="1080" data-rule-anim="random-sandpile" role="img" aria-label="freeze a random background; add grains at the origin"></canvas>
+                    <canvas id="rule-random-sandpile" width="1080" height="1080" data-rule-anim="random-sandpile" role="img" aria-label="Stabilization of a small disk with random 3 or 5 grain heights, showing four-neighbor transfers"></canvas>
                 </div>
             </figure>
         </div>
     </section>
 
-    <section class="band band--void band--model-live">
-        <div class="instrument instrument--model" data-model-theme="random-sandpile">
-            <div class="model-control-shelf" aria-label="Random-background sandpile controls">
-                <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Background</span><div class="model-segmented"><button type="button" class="btn" data-p6-mode="empty" aria-pressed="false">Empty</button><button type="button" class="btn is-on" data-p6-mode="random" aria-pressed="true">Holes</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-p6-run="pause">Pause</button><button type="button" class="btn" data-p6-run="replay">Replay</button></div></div>
-                </div>
+    <section class="band band--void band--model-live band--convergence">
+        <div class="instrument instrument--model instrument--convergence" data-model-theme="random-sandpile">
+            <div class="model-control-shelf" aria-label="Random sandpile convergence controls">
+                <div class="convergence-control-row"><div class="model-control-group"><span class="model-control-label">Initial radius \(R\)</span><div class="model-segmented"><button type="button" class="btn" data-p6-radius="12" aria-pressed="false">12</button><button type="button" class="btn" data-p6-radius="24" aria-pressed="false">24</button><button type="button" class="btn" data-p6-radius="48" aria-pressed="false">48</button><button type="button" class="btn is-on" data-p6-radius="96" aria-pressed="true">96</button><button type="button" class="btn" data-p6-radius="192" aria-pressed="false">192</button></div></div>
+                <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented model-segmented--three"><button type="button" class="btn is-on" data-p6-view="heights" aria-pressed="true">Grains</button><button type="button" class="btn" data-p6-view="odometer" aria-pressed="false">Topplings</button><button type="button" class="btn" data-p6-view="scales" aria-pressed="false">Compare scales</button></div></div></div>
             </div>
-            <div class="stage model-stage" style="--stage-max:720px">
-                <canvas id="p6-canvas" width="1440" height="1440" role="img" aria-label="First-toppling chronology for one exact sandpile computation. Empty and random-hole backgrounds stabilize after 4.2 million grains are added at the origin; the explosive background is shown through parallel round 1858 and is still active at the cutoff."></canvas>
-                <span class="model-phase-chip" id="p6-note">Loading data</span>
-            </div>
-            <dl class="readout model-readout">
-                <div><dt id="p6-round-label">Toppling sweep</dt><dd id="p6-round">0</dd></div>
-                <div><dt>Sites fired at least once</dt><dd id="p6-fired">0</dd></div>
-            </dl>
-            <div class="model-key" id="p6-key"><span id="p6-key-title">Stable height</span><span class="model-swatches p6-height-items" id="p6-height-items" aria-hidden="true"><i>0</i><i>1</i><i>2</i><i>3</i></span></div>
-            <p class="caption">Two stored runs. Empty: background 0 at every site. Holes: background −1 or 0 at each site, independently, each with probability 1/2. In both, 4,200,000 grains are added at the origin and the configuration stabilizes. A site is coloured by its final stable height (0, 1, 2 or 3) from the first legal sweep in which it topples. Cream line: the boundary of the set of sites that have toppled.</p>
+            <div class="stage model-stage model-stage--convergence" style="--stage-max:900px"><canvas id="p6-canvas" width="1440" height="1160" role="img" aria-label="Actual stabilization of independent 3 or 5 grain heights in a disk, zero outside. Warm cells are unstable. Switch to normalized toppling counts or compare five radii on the same spatial scale."></canvas><span class="model-phase-chip" id="p6-note">Loading computed run</span></div>
+            <div class="film-timeline"><label for="p6-time">Progress</label><input id="p6-time" type="range" min="0" max="1000" value="0" aria-label="Stabilization progress"><span class="model-run"><button type="button" class="btn is-on" data-p6-run="pause">Pause</button><button type="button" class="btn" data-p6-run="replay">Replay</button><button type="button" class="btn" data-p6-run="new">New realization</button></span></div>
+            <dl class="readout model-readout"><div><dt>Legal sweep</dt><dd id="p6-round">0</dd></div><div><dt>Grains conserved</dt><dd id="p6-mass">0</dd></div><div><dt>Spatial scaling</dt><dd id="p6-scale">\(x/R\)</dd></div></dl>
+            <div class="convergence-key"><span>Grains per site</span><span><i style="background:#15131A"></i>0</span><span><i style="background:#524469"></i>1</span><span><i style="background:#BA5C74"></i>2</span><span><i style="background:#A6DAE6"></i>3</span><span><i style="background:#F9D877"></i>unstable</span></div>
+            <p class="caption">Computed legal topplings from a fair-coin 3/5 background in a disk. Every frame records an actual configuration; total mass is conserved. Playback is retimed by cumulative topplings; the counter shows actual legal sweeps. Each radius uses the same random field restricted to a larger disk. All views use coordinates \(x/R\); the toppling-count view shows \(u_R/R^2\). Compare scales to see the microscopic pattern and macroscopic profile together. Two realizations are available.</p>
         </div>
     </section>
 
 
+    <section class="band band--paper">
+        <div class="col">
+            <p class="statement"><b>Theorem.</b> Domain-background regime. Let \(d\ge2\), let \(W\subset\mathbb R^d\) be a bounded Lipschitz domain, and let \(\eta\) be a bounded, stationary, ergodic, integer-valued field satisfying \(\mathbf E\eta(0)&gt;2d-1\). If \(v_n\) is the odometer obtained by putting \(\eta\) on \(nW\cap\mathbb Z^d\) and zero outside, then \(n^{-2}v_n([nx])\) converges almost surely and uniformly to \[\bar v=\min\{v\in C(\mathbb R^d):v\ge0,\ \bar F_\eta(D^2v)\le0\text{ in }W,\ \bar F_0(D^2v)\le0\text{ in }\mathbb R^d\}.\] Here \(\bar F_\eta\) and \(\bar F_0\) are the deterministic effective operators for the background laws of \(\eta\) and the zero field, respectively, and the inequalities are interpreted in the viscosity sense. The rescaled stable configurations \(\bar s_n(x):=s_n([nx])\) converge weak-* to a deterministic \(s\in L^\infty(\mathbb R^d)\), with \(s=\Delta\bar v+\mathbf E\eta(0)\) weakly in \(W\) and \(s=\Delta\bar v\) weakly outside \(W\). <span class="src">(Bou-Rabee, <a href="https://arxiv.org/abs/1909.07849">arXiv:1909.07849</a>, Theorem 1.1)</span></p>
+            <p class="statement"><b>Theorem.</b> Point-source regime. Let \(d\ge2\), let \(\eta_{\min}\in\mathbb Z\), and let \(\eta\) be a stationary ergodic integer-valued field satisfying \(\eta_{\min}\le\eta(x)\le2d-2\) almost surely. Let \(v_n\) be the odometer after adding \(n\delta_0\), and let \([x]\) denote a nearest point of \(\mathbb Z^d\) to \(x\). Almost surely, \(n^{-2/d}v_n([n^{1/d}x])\to\bar v+G\) locally uniformly on \(\mathbb R^d\setminus\{0\}\), where \(G\) is the Laplacian fundamental solution, \(\bar F_\eta\) is the deterministic effective operator associated with the law of \(\eta\), and \(\bar v=\inf\{v\in C(\mathbb R^d):v\ge-G,\ \bar F_\eta(D^2(v+G))\le0\}\). The differential inequality is interpreted in the viscosity sense. <span class="src">(Bou-Rabee, <a href="https://arxiv.org/abs/1909.07849">arXiv:1909.07849</a>, Theorem 9.2)</span></p>
+            <p class="statement"><b>Theorem.</b> Explosive arrival times. Let \(d\ge2\), let \(p\in(0,1]\), and let \(\eta(x)\) be i.i.d., equal to \(2d-1\) with probability \(p\) and \(2d-2\) otherwise. Let \(M_\eta=\min\{m\ge1:\eta+m\delta_0\text{ is not stabilizable}\}\). Add \(M_\eta\delta_0\), use parallel toppling odometers \(v_t\), and set \(T_\eta(x)=\min\{t\ge1:v_t(x)&gt;0\}\). Almost surely, \(n^{-1}T_\eta([nx])\to N_p(x)\) locally uniformly, where \(N_p\) is deterministic, continuous, convex, and one-homogeneous. Consequently \(t^{-1}\{v_t&gt;0\}\) converges in symmetric-difference volume to the convex set \(\{N_p\le1\}\); Hausdorff convergence is not asserted. <span class="src">(Bou-Rabee, <a href="https://arxiv.org/abs/2102.04422">arXiv:2102.04422</a>, Theorems 1.2&ndash;1.3)</span></p>
+            <p class="statement"><b>Question.</b> Identify the effective operator explicitly as a function of the background law. The theorem defines it implicitly through an ergodic limit.</p>
+            <details class="deeper"><summary>Details</summary>
+            <p><b>Proof idea, compact growth.</b> The sandpile least-action principle is recast as a discrete nonlinear PDE. Subadditive limits of discrete subgradient measures identify \(\bar F_\eta\); compactness, a comparison principle, and viscosity-solution stability then identify every subsequential odometer limit.</p>
+            <p><b>Finite crossing lemma.</b> In a box \(Q_k\), freeze the complement and one coordinate line at odometer one. If every parallel coordinate line contains a site of height \(2d-1\) and all other sites have height at least \(2d-2\), then a legal line-by-line toppling schedule makes every site of \(Q_k\) topple within \(k^d\) steps. For an i.i.d. Bernoulli background this cell event has probability tending to one as \(k\to\infty\).</p>
+            <p><b>Proof idea, explosion.</b> A bootstrap-percolation comparison gives uniform linear crossing bounds. The parallel arrival time is compared with a last-wave process whose penultimate-cluster passage time is subadditive; the subadditive ergodic theorem produces \(N_p\), and deterministic wave comparisons transfer the limit back to the sandpile.</p>
+            <p>The same paper constructs random and deterministic explosive backgrounds for which \(t^{-1}\{v_t&gt;0\}\) does not converge to a limit shape.</p>
+            </details>
+            <p class="cite">A. Bou-Rabee, &ldquo;Convergence of the random Abelian sandpile&rdquo;, <em>Ann. Probab.</em> 49 (2021), <a href="https://arxiv.org/abs/1909.07849">arXiv:1909.07849</a>; &ldquo;A shape theorem for exploding sandpiles&rdquo;, <em>Ann. Appl. Probab.</em> 34 (2024), <a href="https://arxiv.org/abs/2102.04422">arXiv:2102.04422</a>. Growth and explosion in sandpiles were studied by A. Fey, L. Levine and Y. Peres, <em>J. Stat. Phys.</em> 138 (2010).</p>
+        </div>
+    </section>
+    <details class="related-models"><summary>Related model: exploding sandpiles</summary>
     <section class="band band--void band--model-live">
         <div class="instrument instrument--model" data-model-theme="random-sandpile">
             <div class="model-control-shelf" aria-label="Explosive-background sandpile controls">
@@ -348,22 +358,7 @@
     </section>
 
 
-    <section class="band band--paper">
-        <div class="col">
-            <p class="statement"><b>Theorem.</b> Point-source regime. Let \(d\ge2\), let \(\eta_{\min}\in\mathbb Z\), and let \(\eta\) be a stationary ergodic integer-valued field satisfying \(\eta_{\min}\le\eta(x)\le2d-2\) almost surely. Let \(v_n\) be the odometer after adding \(n\delta_0\), and let \([x]\) denote a nearest point of \(\mathbb Z^d\) to \(x\). Almost surely, \(n^{-2/d}v_n([n^{1/d}x])\to\bar v+G\) locally uniformly on \(\mathbb R^d\setminus\{0\}\), where \(G\) is the Laplacian fundamental solution, \(\bar F_\eta\) is the deterministic effective operator associated with the law of \(\eta\), and \(\bar v=\inf\{v\in C(\mathbb R^d):v\ge-G,\ \bar F_\eta(D^2(v+G))\le0\}\). The differential inequality is interpreted in the viscosity sense. <span class="src">(Bou-Rabee, <a href="https://arxiv.org/abs/1909.07849">arXiv:1909.07849</a>, Theorem 9.2)</span></p>
-            <p class="statement"><b>Observation.</b> In the displayed 4.2-million-grain finite sample, replacing the empty background by independent heights 0 and \(-1\), each with probability \(1/2\), changes the stable height pattern and the toppled region.</p>
-            <p class="statement"><b>Theorem.</b> Domain-background regime. Let \(d\ge2\), let \(W\subset\mathbb R^d\) be a bounded Lipschitz domain, and let \(\eta\) be a bounded, stationary, ergodic, integer-valued field satisfying \(\mathbf E\eta(0)&gt;2d-1\). If \(v_n\) is the odometer obtained by putting \(\eta\) on \(nW\cap\mathbb Z^d\) and zero outside, then \(n^{-2}v_n([nx])\) converges almost surely and uniformly to \[\bar v=\min\{v\in C(\mathbb R^d):v\ge0,\ \bar F_\eta(D^2v)\le0\text{ in }W,\ \bar F_0(D^2v)\le0\text{ in }\mathbb R^d\}.\] Here \(\bar F_\eta\) and \(\bar F_0\) are the deterministic effective operators for the background laws of \(\eta\) and the zero field, respectively, and the inequalities are interpreted in the viscosity sense. The rescaled stable configurations \(\bar s_n(x):=s_n([nx])\) converge weak-* to a deterministic \(s\in L^\infty(\mathbb R^d)\), with \(s=\Delta\bar v+\mathbf E\eta(0)\) weakly in \(W\) and \(s=\Delta\bar v\) weakly outside \(W\). <span class="src">(Bou-Rabee, <a href="https://arxiv.org/abs/1909.07849">arXiv:1909.07849</a>, Theorem 1.1)</span></p>
-            <p class="statement"><b>Theorem.</b> Explosive arrival times. Let \(d\ge2\), let \(p\in(0,1]\), and let \(\eta(x)\) be i.i.d., equal to \(2d-1\) with probability \(p\) and \(2d-2\) otherwise. Let \(M_\eta=\min\{m\ge1:\eta+m\delta_0\text{ is not stabilizable}\}\). Add \(M_\eta\delta_0\), use parallel toppling odometers \(v_t\), and set \(T_\eta(x)=\min\{t\ge1:v_t(x)&gt;0\}\). Almost surely, \(n^{-1}T_\eta([nx])\to N_p(x)\) locally uniformly, where \(N_p\) is deterministic, continuous, convex, and one-homogeneous. Consequently \(t^{-1}\{v_t&gt;0\}\) converges in symmetric-difference volume to the convex set \(\{N_p\le1\}\); Hausdorff convergence is not asserted. <span class="src">(Bou-Rabee, <a href="https://arxiv.org/abs/2102.04422">arXiv:2102.04422</a>, Theorems 1.2&ndash;1.3)</span></p>
-            <p class="statement"><b>Question.</b> Identify the effective operator explicitly as a function of the background law. The theorem defines it implicitly through an ergodic limit.</p>
-            <details class="deeper"><summary>Details</summary>
-            <p><b>Proof idea, compact growth.</b> The sandpile least-action principle is recast as a discrete nonlinear PDE. Subadditive limits of discrete subgradient measures identify \(\bar F_\eta\); compactness, a comparison principle, and viscosity-solution stability then identify every subsequential odometer limit.</p>
-            <p><b>Finite crossing lemma.</b> In a box \(Q_k\), freeze the complement and one coordinate line at odometer one. If every parallel coordinate line contains a site of height \(2d-1\) and all other sites have height at least \(2d-2\), then a legal line-by-line toppling schedule makes every site of \(Q_k\) topple within \(k^d\) steps. For an i.i.d. Bernoulli background this cell event has probability tending to one as \(k\to\infty\).</p>
-            <p><b>Proof idea, explosion.</b> A bootstrap-percolation comparison gives uniform linear crossing bounds. The parallel arrival time is compared with a last-wave process whose penultimate-cluster passage time is subadditive; the subadditive ergodic theorem produces \(N_p\), and deterministic wave comparisons transfer the limit back to the sandpile.</p>
-            <p>The same paper constructs random and deterministic explosive backgrounds for which \(t^{-1}\{v_t&gt;0\}\) does not converge to a limit shape.</p>
-            </details>
-            <p class="cite">A. Bou-Rabee, &ldquo;Convergence of the random Abelian sandpile&rdquo;, <em>Ann. Probab.</em> 49 (2021), <a href="https://arxiv.org/abs/1909.07849">arXiv:1909.07849</a>; &ldquo;A shape theorem for exploding sandpiles&rdquo;, <em>Ann. Appl. Probab.</em> 34 (2024), <a href="https://arxiv.org/abs/2102.04422">arXiv:2102.04422</a>. Growth and explosion in sandpiles were studied by A. Fey, L. Levine and Y. Peres, <em>J. Stat. Phys.</em> 138 (2010).</p>
-        </div>
-    </section>
+    </details>
 
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
@@ -1259,46 +1254,38 @@
         <div class="col">
             <p class="family">Walks</p>
             <h2 id="t-einstein-relation">Quantitative Einstein relation</h2>
-            <p class="def"><b>Definition.</b> On a probability space \((\Omega,\mathcal F,\mathbb Q)\), let \(d\ge2\), \(\Lambda,r_0\ge1\), let \(\mathbf a\) be a symmetric positive-definite matrix field, and let \(V\) be a scalar field. Assume \((\mathbf a,V)\) is stationary with range of dependence \(r_0\), \(\Lambda^{-1}|\xi|^2\le\xi\cdot\mathbf a(x)\xi\le\Lambda|\xi|^2\), \(|V(x)|\le\Lambda\), and both fields are \(\Lambda\)-Lipschitz. The unforced generator is \(\mathcal Lf=\tfrac12e^{2V}\nabla\!\cdot(e^{-2V}\mathbf a\nabla f)\). For \(\mathbb Q\)-almost every environment, \(\varepsilon X_{t/\varepsilon^2}\Rightarrow W_t\), where \(\mathbf E[W_t\otimes W_t]=t\Sigma_X\). Adding force \(\lambda e_1\) gives \(\mathcal L^\lambda f=\mathcal Lf+\lambda\mathbf a e_1\!\cdot\nabla f\); define the deterministic velocity \(\ell_X(\lambda)\) by \(X_t^\lambda/t\to\ell_X(\lambda)\) almost surely.</p>
-            <figure class="rulefig">
-                <div class="stage" style="--stage-max:360px">
-                    <canvas id="rule-einstein-relation" width="1080" height="1080" data-rule-anim="einstein-relation" role="img" aria-label="Two ensembles in the same smooth potential, driven by the same Brownian increments. A small force shifts the second ensemble. The fluctuation and force scales meet at t equals lambda to the power minus two."></canvas>
-                </div>
-            </figure>
+            <p class="lead">Watch a small force accumulate along a random trajectory.</p>
+            <p>Time moves from left to right. Each gold path receives the same Brownian noise as its blue partner, plus a constant force. Their histories reveal how a persistent push changes random motion.</p>
         </div>
     </section>
 
-    <section class="band band--void band--model-live">
+    <section class="band band--void band--model-live band--einstein-film">
         <div class="instrument instrument--model instrument--einstein" data-model-theme="superdiffusion">
-            <div class="einstein-heading"><p class="family">Fluctuation &amp; response</p><h3>One environment. Two ensembles.</h3><p>A small force shifts the cloud. Compare that response with the cloud&rsquo;s natural spread.</p></div>
+            <div class="einstein-legend"><span><i class="einstein-unforced"></i>No force</span><span><i class="einstein-tilted"></i>Small constant force</span><span>32 paired histories</span></div>
+            <div class="stage model-stage model-stage--einstein" style="--stage-max:980px">
+                <canvas id="einstein-canvas" width="1600" height="1040" role="img" aria-label="An unfolding drawing of 32 paired diffusion histories. Time runs left to right; height is horizontal displacement. Blue paths are unforced and gold paths receive a small constant force. Thick lines show their sample means."></canvas>
+            </div>
+            <div class="film-timeline"><label for="einstein-time-input">Time</label><input id="einstein-time-input" type="range" min="0" max="1000" value="0" aria-label="Time along the paired diffusion histories"><output id="einstein-time" for="einstein-time-input">0</output></div>
             <div class="model-control-shelf" aria-label="Einstein-relation controls">
                 <div class="model-control-groups">
-                    <div class="model-control-group"><span class="model-control-label">Force \(\lambda\)</span><div class="model-segmented model-segmented--four"><button type="button" class="btn" data-einstein-force=".25" aria-pressed="false">\(2^{-2}\)</button><button type="button" class="btn is-on" data-einstein-force=".125" aria-pressed="true">\(2^{-3}\)</button><button type="button" class="btn" data-einstein-force=".0625" aria-pressed="false">\(2^{-4}\)</button><button type="button" class="btn" data-einstein-force=".03125" aria-pressed="false">\(2^{-5}\)</button></div></div>
-                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-einstein-run="pause">Pause</button><button type="button" class="btn" data-einstein-run="replay">Replay</button><button type="button" class="btn" data-einstein-run="sample">New sample</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Force \(\lambda\)</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-einstein-force=".25" aria-pressed="false">\(2^{-2}\)</button><button type="button" class="btn is-on" data-einstein-force=".125" aria-pressed="true">\(2^{-3}\)</button><button type="button" class="btn" data-einstein-force=".0625" aria-pressed="false">\(2^{-4}\)</button></div></div>
+                    <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-einstein-run="pause">Pause</button><button type="button" class="btn" data-einstein-run="replay">Replay</button><button type="button" class="btn" data-einstein-run="sample">New realization</button></div></div>
                 </div>
             </div>
-            <div class="stage model-stage model-stage--einstein" style="--stage-max:840px">
-                <canvas id="einstein-canvas" width="2160" height="2220" role="img" aria-label="128 pairs of unforced and forced diffusions in a fixed smooth potential. The two panels share spatial axes and Brownian increments. Dots are current positions; bright paths track one pair; crosses mark ensemble means; dashed ellipses show one covariance scale. Below, histograms compare horizontal positions and rulers compare square root t with lambda t."></canvas>
-                <span class="model-phase-chip" id="einstein-note">Reversible diffusion</span>
-            </div>
-            <dl class="readout model-readout">
-                <div><dt>Time \(t\)</dt><dd id="einstein-time">0.0</dd></div>
-                <div><dt>Scale balance \(\lambda\sqrt t\)</dt><dd id="einstein-balance">0.00</dd></div>
-                <div><dt>Spread \(\widehat\Sigma_{11,t}\)</dt><dd id="einstein-diffusion">0.000</dd></div>
-                <div><dt>Response \(\widehat\mu_t\)</dt><dd id="einstein-mobility">0.000</dd></div>
-            </dl>
-            <div class="model-key einstein-key"><span>128 paired particles</span><span class="einstein-key-items"><i class="einstein-unforced" aria-hidden="true"></i>no force <i class="einstein-tilted" aria-hidden="true"></i>with force</span></div>
-            <p class="caption">Each pair receives the same Brownian increments in the same potential. The force acts to the right. Crosses show the cloud centers; dashed ellipses show one covariance scale, not confidence regions. Both spatial panels and the histograms use the same horizontal scale. The blue and gold rulers compare \(\sqrt t\) with \(\lambda t\); they meet at \(t_* = \lambda^{-2}\). Every force setting runs past that time; Replay reuses the noise, and New sample draws another realization.</p>
-            <details class="deeper einstein-details"><summary>What is being measured?</summary>
-                <p>Spread is the unbiased sample variance of the unforced horizontal positions, divided by \(t\). Response is the difference between the forced and unforced horizontal sample means, divided by \(\lambda t\). Pairing the noise reduces the sampling error in this comparison. These finite-time, finite-ensemble estimates need not agree or converge monotonically.</p>
-                <p>The simulation uses 128 pairs starting at the origin, \(dX=-\nabla V(X)\,dt+dB\) and \(dY=(-\nabla V(Y)+\lambda e_1)\,dt+dB\), with Euler&ndash;Maruyama time step 0.025 and \(V(x,y)=0.46\sin(x+0.23)+0.31\cos(y-0.41)+0.22\sin(x+0.73y)+0.15\cos(1.7x-0.8y)\). The fixed smooth potential illustrates the mechanism; it does not realize the finite-range random environment of the theorem. Playback speed depends on the force so each run reaches \(1.5\lambda^{-2}\).</p>
+            <p class="caption">The vertical coordinate is displacement along the force, rather than a second spatial coordinate. Fine threads trace individual paths; the thicker blue and gold curves trace the two sample means. The complete histories share one fixed scale. Drag the time bar to examine any moment, or replay with the same noise.</p>
+            <details class="deeper einstein-details"><summary>The Einstein relation and this experiment</summary>
+                <p>The Einstein relation identifies the small-force velocity response with the long-time variance rate of the unforced diffusion. Here the measured spread is the unbiased horizontal sample variance divided by \(t\); the measured response is the difference of sample means divided by \(\lambda t\).</p>
+                <dl class="readout model-readout"><div><dt>Spread \(\widehat\Sigma_{11,t}\)</dt><dd id="einstein-diffusion">&mdash;</dd></div><div><dt>Response \(\widehat\mu_t\)</dt><dd id="einstein-mobility">&mdash;</dd></div></dl>
+                <p>We integrate 32 pairs from the origin with \(dX=-\nabla V(X)\,dt+dB\), \(dY=(-\nabla V(Y)+\lambda e_1)\,dt+dB\), Euler&ndash;Maruyama step 0.025, and \(V(x,y)=0.46\sin(x+0.23)+0.31\cos(y-0.41)+0.22\sin(x+0.73y)+0.15\cos(1.7x-0.8y)\). Every run extends to \(4\lambda^{-2}\); playback speed changes with the force. The fixed smooth potential illustrates the mechanism, not the finite-range random environment of the theorem. These finite-time estimates need not agree or converge monotonically.</p>
             </details>
+            <p id="einstein-note" class="film-status" role="status" aria-live="polite"></p>
         </div>
     </section>
 
 
     <section class="band band--paper">
         <div class="col">
+            <p class="def"><b>Definition.</b> On a probability space \((\Omega,\mathcal F,\mathbb Q)\), let \(d\ge2\), \(\Lambda,r_0\ge1\), let \(\mathbf a\) be a symmetric positive-definite matrix field, and let \(V\) be a scalar field. Assume \((\mathbf a,V)\) is stationary with range of dependence \(r_0\), \(\Lambda^{-1}|\xi|^2\le\xi\cdot\mathbf a(x)\xi\le\Lambda|\xi|^2\), \(|V(x)|\le\Lambda\), and both fields are \(\Lambda\)-Lipschitz. The unforced generator is \(\mathcal Lf=\tfrac12e^{2V}\nabla\!\cdot(e^{-2V}\mathbf a\nabla f)\). For \(\mathbb Q\)-almost every environment, \(\varepsilon X_{t/\varepsilon^2}\Rightarrow W_t\), where \(\mathbf E[W_t\otimes W_t]=t\Sigma_X\). Adding force \(\lambda e_1\) gives \(\mathcal L^\lambda f=\mathcal Lf+\lambda\mathbf a e_1\!\cdot\nabla f\); define the deterministic velocity \(\ell_X(\lambda)\) by \(X_t^\lambda/t\to\ell_X(\lambda)\) almost surely.</p>
             <p class="statement"><b>Theorem.</b> Under the hypotheses above, there is a deterministic \(\beta_*=\beta_*(d)\in(0,1/4)\) and a random scale \(\lambda_0:\Omega\to(0,1]\) such that, \(\mathbb Q\)-almost surely, \[\left|\frac{\ell_X(\lambda)}{\lambda}-\Sigma_Xe_1\right|\le\lambda^{\beta_*}\qquad(0&lt;\lambda\le\lambda_0).\] There are \(C,c&gt;0\) and \(\sigma\in(0,1)\), depending only on \((d,\Lambda,r_0)\), such that \(\mathbb Q(\lambda_0\le\lambda)\le C\exp[-c(\log(1/\lambda))^\sigma]\) for every \(\lambda\in(0,1]\). <span class="src">(Bou-Rabee&ndash;Xu, <a href="https://arxiv.org/abs/2605.26082">arXiv:2605.26082</a>, Theorem 1.2)</span></p>
             <p class="statement"><b>Question.</b> Prove the conjectured sharp rate \(\lambda\) for \(d\ge3\) and \(\lambda\sqrt{\log(1/\lambda)}\) for \(d=2\).</p>
             <details class="deeper"><summary>Details</summary>
@@ -2057,6 +2044,7 @@ window.typeset = function (root) {
 </script>
 <script defer src="vendor/katex/katex.min.js?v=4881bfc9"></script>
 <script defer src="vendor/katex/auto-render.min.js?v=61e52860"></script>
-<script defer src="gallery.js?v=fe6709c1"></script>
+<script defer src="../einstein-motion.js?v=d1e6112c"></script>
+<script defer src="gallery.js?v=736dab5b"></script>
 </body>
 </html>

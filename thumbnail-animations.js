@@ -262,70 +262,14 @@
         };
     }
 
-    function makeEinstein(ctx,W){
-        // Coupled Euler–Maruyama paths in the same scalar potential as the
-        // gallery. Both particles receive the same Brownian increments.
-        const rand=randomFactory(0xe1757e1),count=48,steps=640,dt=.018,force=.24;
-        const paths=[],means=[[],[]],spread=[[],[]],world=16,ox=W*.42,oy=W*.49,scale=(W-32)/world;
-        const tf=p=>[ox+p[0]*scale,oy-p[1]*scale];
-        function potential(x,y){return .46*Math.sin(x+.23)+.31*Math.cos(y-.41)+.22*Math.sin(x+.73*y)+.15*Math.cos(1.7*x-.8*y);}
-        function drift(x,y){return [-.46*Math.cos(x+.23)-.22*Math.cos(x+.73*y)+.255*Math.sin(1.7*x-.8*y),.31*Math.sin(y-.41)-.1606*Math.cos(x+.73*y)-.12*Math.sin(1.7*x-.8*y)];}
-        for(let j=0;j<count;j++){
-            const pair=[[[0,0]],[[0,0]]];
-            for(let k=1;k<=steps;k++){
-                const dx=Math.sqrt(dt)*gaussian(rand),dy=Math.sqrt(dt)*gaussian(rand);
-                for(let group=0;group<2;group++){
-                    const p=pair[group][k-1],d=drift(p[0],p[1]);
-                    pair[group].push([p[0]+(d[0]+group*force)*dt+dx,p[1]+d[1]*dt+dy]);
-                }
-            }
-            paths.push(pair);
-        }
-        for(let group=0;group<2;group++)for(let k=0;k<=steps;k++){
-            let x=0,y=0;for(const pair of paths){x+=pair[group][k][0];y+=pair[group][k][1];}x/=count;y/=count;
-            let xx=0,xy=0,yy=0;for(const pair of paths){const p=pair[group][k],dx=p[0]-x,dy=p[1]-y;xx+=dx*dx;xy+=dx*dy;yy+=dy*dy;}
-            means[group].push([x,y]);spread[group].push([xx/count,xy/count,yy/count]);
-        }
-        const terrain=document.createElement('canvas');terrain.width=terrain.height=W;const tc=terrain.getContext('2d'),N=52,values=[];
-        for(let y=0;y<N;y++)for(let x=0;x<N;x++)values.push(potential((x*W/(N-1)-ox)/scale,(oy-y*W/(N-1))/scale));
-        const edges=[[0,1],[1,2],[2,3],[3,0]];
-        tc.lineWidth=1.15;tc.strokeStyle=C.slate;tc.globalAlpha=DARK?.20:.16;
-        for(let level=-.8;level<=.8;level+=.2){tc.beginPath();
-            for(let y=0;y<N-1;y++)for(let x=0;x<N-1;x++){
-                const corners=[[x,y],[x+1,y],[x+1,y+1],[x,y+1]],v=corners.map(p=>values[p[1]*N+p[0]]),cross=[];
-                for(const [a,b] of edges)if((v[a]>level)!==(v[b]>level)){
-                    const f=(level-v[a])/(v[b]-v[a]);cross.push([mix(corners[a][0],corners[b][0],f)*W/(N-1),mix(corners[a][1],corners[b][1],f)*W/(N-1)]);
-                }
-                for(let j=0;j+1<cross.length;j+=2){tc.moveTo(...cross[j]);tc.lineTo(...cross[j+1]);}
-            }tc.stroke();
-        }
-        function ellipse(group,k,color){
-            const [xx,xy,yy]=spread[group][k],delta=Math.hypot(xx-yy,2*xy),angle=-.5*Math.atan2(2*xy,xx-yy),p=tf(means[group][k]);
-            ctx.beginPath();ctx.ellipse(p[0],p[1],Math.sqrt(Math.max(.002,(xx+yy+delta)/2))*scale,Math.sqrt(Math.max(.002,(xx+yy-delta)/2))*scale,angle,0,TAU);
-            ctx.fillStyle=color;ctx.globalAlpha=.07;ctx.fill();ctx.globalAlpha=.68;ctx.strokeStyle=color;ctx.lineWidth=2.4;ctx.stroke();ctx.globalAlpha=1;
-        }
-        return function(t){
-            ground(ctx,W);ctx.drawImage(terrain,0,0);
-            const local=t%14,amount=.025+.975*Math.min(1,local/11.8),k=Math.min(steps,Math.floor(amount*steps)),colors=[C.cyan,DARK?'#F2BF62':'#AD6B0A'];
-            ctx.save();ctx.beginPath();ctx.rect(12,42,W-24,W-86);ctx.clip();
-            for(let group=0;group<2;group++)ellipse(group,k,colors[group]);
-            for(let group=0;group<2;group++){
-                ctx.globalAlpha=.64;
-                for(const pair of paths){const p=tf(pair[group][k]);dot(ctx,p[0],p[1],3.5,colors[group]);}
-                ctx.globalAlpha=1;
-                const shown=paths[7][group].slice(Math.max(0,k-100),k+1);
-                trace(ctx,shown,1,C.bg,6.2,tf);trace(ctx,shown,1,colors[group],3.3,tf);
-                const p=tf(shown[shown.length-1]);dot(ctx,p[0],p[1],6.4,colors[group],C.bg,2.4);
-            }
-            const a=tf(means[0][k]),b=tf(means[1][k]);
-            ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.setLineDash([5,4]);ctx.strokeStyle=C.ink;ctx.lineWidth=1.7;ctx.stroke();ctx.setLineDash([]);
-            for(let group=0;group<2;group++){const p=tf(means[group][k]);dot(ctx,p[0],p[1],7.5,C.bg,colors[group],3);dot(ctx,p[0],p[1],2.8,colors[group]);}
-            dot(ctx,ox,oy,2.8,C.ink);ctx.restore();
-            ctx.font='500 24px system-ui, sans-serif';ctx.textBaseline='middle';
-            ctx.fillStyle=colors[1];ctx.fillText('small force',W-180,23);arrow(ctx,W-51,23,0,25,colors[1],2.6);
-            dot(ctx,30,W-22,5,C.cyan);ctx.fillStyle=C.ink;ctx.fillText('unforced',44,W-22);
-            dot(ctx,W*.55,W-22,5,colors[1]);ctx.fillText('forced',W*.55+14,W-22);
-            if(local>13.4)fadeOut(ctx,W,smooth((local-13.4)/.6));
+    function makeEinstein(ctx, W) {
+        const model = globalThis.EinsteinMotion;
+        if (!model) return function () { ground(ctx, W); };
+        const run = model.generate({force: .125, seed: 0x4e554c4c, pairs: 32, samples: 900});
+        return function (t) {
+            const local = t % 17, progress = .20 + .80 * Math.min(1, local / 14);
+            model.paint(ctx, W, W, run, progress, {dark: DARK, compact: true});
+            if (local > 16.4) fadeOut(ctx, W, smooth((local - 16.4) / .6));
         };
     }
 
@@ -709,9 +653,35 @@
     }
 
     function makeRandomSandpile(ctx,W){
-        const image=new Image();
-        function draw(t){ground(ctx,W);if(!draw.ready)return false;const q=(t%13)/13;let zoom;if(q<.12)zoom=0;else if(q<.58)zoom=smooth((q-.12)/.46);else if(q<.82)zoom=1;else if(q<.95)zoom=1-smooth((q-.82)/.13);else zoom=0;const full=image.width,crop=Math.exp(mix(Math.log(185),Math.log(full),zoom)),cx=full*.50,cy=full*.50,sx=clamp(cx-crop/2,0,full-crop),sy=clamp(cy-crop/2,0,full-crop),inset=8,dest=W-16;ctx.imageSmoothingEnabled=crop>dest;ctx.imageSmoothingQuality='high';ctx.drawImage(image,sx,sy,crop,crop,inset,inset,dest,dest);return true;}
-        draw.ready=false;draw.failed=false;image.onload=()=>{draw.ready=true;};image.onerror=()=>{draw.failed=true;};image.src='gallery/plates/p6-random-hero-void.png';return draw;
+        // Figure 1 of Convergence of the random Abelian sandpile: an i.i.d.
+        // 3/5 disk, zero outside. Replay true legal intermediate states, then
+        // compare independently stabilized larger disks at the same x/R scale.
+        const scratch=document.createElement('canvas'),sc=scratch.getContext('2d',{willReadFrequently:true});
+        const plate=document.createElement('canvas'),pc=plate.getContext('2d');
+        const colors=DARK?[[30,30,36],[96,82,119],[186,92,116],[166,218,230],[249,216,119]]
+                         :[[255,255,255],[101,80,127],[169,56,87],[58,145,171],[218,160,36]];
+        let meta=null,run=null,atlas=null,scales=null,lastKey='';
+        function paintData(source,index,size,columns,key){
+            if(key===lastKey)return;
+            scratch.width=scratch.height=size;plate.width=plate.height=size;
+            sc.drawImage(source,index%columns*size,Math.floor(index/columns)*size,size,size,0,0,size,size);
+            const im=sc.getImageData(0,0,size,size),p=im.data;
+            for(let i=0;i<p.length;i+=4){const h=p[i],u=p[i+1]+256*p[i+2],c=colors[Math.min(4,h)];p[i]=c[0];p[i+1]=c[1];p[i+2]=c[2];p[i+3]=(h||u)?255:0;}
+            pc.putImageData(im,0,0);lastKey=key;
+        }
+        function draw(t){
+            if(!draw.ready)return false;
+            ground(ctx,W);const local=t%21;
+            if(local<12){const q=clamp((local-.65)/9.5,0,1),target=q*run.topplings[run.frames-1];let f=0;while(f+1<run.frames&&run.topplings[f+1]<=target)f++;if(q>=1)f=run.frames-1;paintData(atlas,f,run.size,run.columns,'e'+f);}
+            else {const i=Math.min(4,Math.floor((local-12)/1.6));paintData(scales,i,385,5,'s'+i);}
+            const side=(W-12)*(local<12?run.size/(3.2*run.radius):1);ctx.imageSmoothingEnabled=false;ctx.drawImage(plate,(W-side)/2,(W-side)/2,side,side);
+            if(local>20.6)fadeOut(ctx,W,(local-20.6)/.4);
+            return true;
+        }
+        function load(url){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=url;});}
+        draw.ready=false;draw.failed=false;
+        fetch('gallery/plates/random-convergence.json').then(r=>{if(!r.ok)throw Error(r.status);return r.json();}).then(m=>{meta=m;run=meta.runs.find(r=>r.radius===48&&r.seed===777);return Promise.all([load('gallery/plates/'+run.file),load('gallery/plates/random-convergence-scales-777.png')]);}).then(images=>{atlas=images[0];scales=images[1];draw.ready=true;}).catch(()=>{draw.failed=true;});
+        return draw;
     }
 
     function makeManhattan(ctx,W){

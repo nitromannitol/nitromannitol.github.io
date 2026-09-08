@@ -55,7 +55,7 @@ const PAGE_MAKERS = {
     'long-range-walk':   ['longrangeintro', 'longrange'],
     'pareto-peeling':    ['peelintro', 'peeling'],
     'percolation':       ['percolationintro', 'percpanels', 'harmonic', 'percgadget'],
-    'einstein-relation': ['einsteinintro', 'einstein'],
+    'einstein-relation': ['einstein'],
     'sandpile-rwrs':     ['rwrsintro', 'rwrs'],
     'parking':           ['parkingintro', 'parking'],
     'divisible-percolation': ['divpercintro', 'divperc'],
@@ -91,7 +91,7 @@ const MAKER_TARGETS = {
     peelintro: '#rule-pareto-peeling', peeling: '#peel-canvas',
     percolationintro: '#rule-percolation', percpanels: '#perc-def-canvas',
     harmonic: '#harmonic-canvas', percgadget: '#perc-gadget-canvas',
-    einsteinintro: '#rule-einstein-relation', einstein: '#einstein-canvas',
+    einstein: '#einstein-canvas',
     rwrsintro: '#rule-sandpile-rwrs', rwrs: '#rwrs-canvas',
     parkingintro: '#rule-parking', parking: '#parking-canvas',
     divpercintro: '#rule-divisible-percolation', divperc: '#divperc-canvas',
@@ -102,7 +102,7 @@ const TITLES = {
     'dimensional-reduction': 'Dynamic dimensional reduction',
     'apollonian': 'Integer superharmonic matrices on Z\u00b2',
     'f-lattice': 'Integer superharmonic matrices on the F-lattice',
-    'random-sandpile': 'Sandpile on a random background',
+    'random-sandpile': 'Convergence of the random Abelian sandpile',
     'divisible': 'Internal DLA on mated-CRT maps',
     'idla-cylinder': 'Internal DLA on cylinders',
     'idla': 'Internal DLA',
@@ -2360,7 +2360,145 @@ const Instruments = (function () {
             }
         };
     }
-    makers.randombg = function () { return randomBackgroundMaker({ prefix: 'p6', mode: 'random' }); };
+    makers.randombg = function () {
+        const canvas = $('#p6-canvas');
+        if (!canvas) return null;
+        const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+        const note = $('#p6-note'), range = $('#p6-time'), key = $('.convergence-key');
+        const grainKey = key ? key.innerHTML : '';
+        let keyView = 'heights';
+        const tile = document.createElement('canvas'), tctx = tile.getContext('2d', { willReadFrequently: true });
+        const field = document.createElement('canvas'), fctx = field.getContext('2d');
+        const palette = [[21,19,26],[82,68,105],[186,92,116],[166,218,230],[249,216,119]];
+        const ramp = [[21,19,26],[42,43,77],[82,78,145],[174,91,144],[244,167,130],[255,232,179]];
+        const lines = ['#A8D8E8','#BA5C74','#E9C36C','#8B81CE','#F2EDE2'];
+        let metadata = null, run = null, atlas = null, scaleAtlas = null;
+        let radius = 96, seed = 777, view = 'heights', position = REDUCED ? 1 : 0;
+        let elapsed = REDUCED ? 17600 : 0, lastNow = 0, raf = 0, pageAwake = true, userPaused = REDUCED;
+        let loading = true, loadToken = 0, frameIndex = -1, fieldView = '', raw = null;
+        const scaleCache = new Map();
+        const duration = 21500, lead = 900, motion = 15400;
+        function label(text, x, y, size, color, align) {
+            ctx.fillStyle = color || '#C9BFA8'; ctx.font = '400 ' + size + 'px "IBM Plex Mono", monospace';
+            ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y);
+        }
+        function colorOdo(q) {
+            const t = Math.max(0, Math.min(1, q / metadata.odometerScale)) * (ramp.length - 1);
+            const k = Math.min(ramp.length - 2, Math.floor(t)), f = t - k;
+            return ramp[k].map(function (v, j) { return Math.round(v * (1-f) + ramp[k+1][j] * f); });
+        }
+        function indexAtPosition() {
+            const target=position*run.topplings[run.frames-1];
+            let lo=0,hi=run.frames-1;
+            while(lo<hi){const mid=Math.ceil((lo+hi)/2);if(run.topplings[mid]<=target)lo=mid;else hi=mid-1;}
+            return position>=1?run.frames-1:lo;
+        }
+        function decode(index) {
+            if (frameIndex === index && raw) return;
+            tile.width = tile.height = run.size;
+            tctx.drawImage(atlas, (index % run.columns) * run.size, Math.floor(index / run.columns) * run.size,
+                          run.size, run.size, 0, 0, run.size, run.size);
+            raw = tctx.getImageData(0, 0, run.size, run.size).data; frameIndex = index; fieldView = '';
+        }
+        function recolor(kind) {
+            if (fieldView === kind) return;
+            field.width = field.height = run.size;
+            const output = fctx.createImageData(run.size, run.size), p = output.data;
+            for (let i = 0; i < raw.length; i += 4) {
+                const h = raw[i], u = raw[i+1] + 256*raw[i+2];
+                const c = kind === 'odometer' ? colorOdo(u / (radius*radius)) : palette[Math.min(4,h)];
+                p[i] = c[0]; p[i+1] = c[1]; p[i+2] = c[2]; p[i+3] = 255;
+            }
+            fctx.putImageData(output, 0, 0); fieldView = kind;
+        }
+        function drawScaleComparison() {
+            const compact=canvas.getBoundingClientRect().width<520, font=compact?W*.036:W*.022;
+            const runs = metadata.runs.filter(function (r) { return r.seed === seed; });
+            const pad = W * .045, gap = W * .016, size = (W - 2*pad - 4*gap) / 5;
+            runs.forEach(function (r,i) {
+                const x = pad + i*(size+gap), y = H*.075;
+                label('R = ' + r.radius, x + size/2, y-28, compact?W*.039:W*.024, lines[i], 'center');
+                if (scaleAtlas) {
+                    tile.width = tile.height = 385;
+                    tctx.drawImage(scaleAtlas, i*385, 0, 385, 385, 0, 0, 385, 385);
+                    const img = tctx.getImageData(0,0,385,385), p = img.data;
+                    for (let k=0;k<p.length;k+=4) { const c=palette[Math.min(4,p[k])]; p[k]=c[0];p[k+1]=c[1];p[k+2]=c[2]; }
+                    tctx.putImageData(img,0,0);
+                    ctx.imageSmoothingEnabled=false;ctx.drawImage(tile,x,y,size,size);
+                }
+            });
+            const left=W*.105,right=W*.935,top=H*.43,bottom=H*.87;
+            label(compact?'TOPPLINGS THROUGH THE ORIGIN':'RESCALED TOPPLINGS · CROSS-SECTION THROUGH THE ORIGIN',left,top-(compact?90:45),font,'#C9BFA8');
+            ctx.strokeStyle='#4A4A5E';ctx.lineWidth=1.5;
+            [0,.2,.4,.6].forEach(function(q){const y=bottom-q/.65*(bottom-top);ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();label(q.toFixed(1),left-16,y,font,'#9D98A8','right');});
+            [-1.5,-1,0,1,1.5].forEach(function(q){const x=left+(q+1.52)/3.04*(right-left);label(String(q),x,bottom+30,font,'#9D98A8','center');});
+            // Thin traces at one fixed height scale: differences are neither
+            // normalised away nor asserted to decrease at each finite radius.
+            runs.forEach(function(r,i){ctx.beginPath();r.profile.forEach(function(v,j){const x=left+j/(r.profile.length-1)*(right-left),y=bottom-v/.65*(bottom-top);if(j)ctx.lineTo(x,y);else ctx.moveTo(x,y);});ctx.strokeStyle=lines[i];ctx.lineWidth=i===runs.length-1?3:2.5;ctx.globalAlpha=.9;ctx.stroke();});
+            ctx.globalAlpha=1;
+            label('x / R',right,bottom+78,font,'#C9BFA8','right');
+            label('u / R²',left,top-8,font,'#C9BFA8');
+            frameIndex=-1;raw=null;fieldView='';
+        }
+        function paint() {
+            ctx.fillStyle='#15131A';ctx.fillRect(0,0,W,H);
+            if (loading || !run || !atlas) { label(loading?'Loading the sandpile…':'The sandpile data could not be loaded.',W/2,H/2,W*.027,'#C9BFA8','center'); return; }
+            if (view === 'scales') { drawScaleComparison(); report(); return; }
+            const index = indexAtPosition();
+            decode(index);recolor(view);
+            const viewport=Math.min(W*.94,H*.94),size=viewport*run.size/(3.2*radius),x=(W-size)/2,y=(H-size)/2;
+            ctx.imageSmoothingEnabled=false;ctx.drawImage(field,x,y,size,size);
+            // The dashed circle marks only the initial disk, never a predicted
+            // limit shape. Every coloured pixel is the computed current state.
+            if (position<.985) {
+                ctx.strokeStyle='rgba(242,237,226,.38)';ctx.lineWidth=1.5;ctx.setLineDash([8,9]);
+                ctx.beginPath();ctx.arc(W/2,H/2,viewport/3.2,0,2*Math.PI);ctx.stroke();ctx.setLineDash([]);
+            }
+            report();
+        }
+        function report() {
+            if (!run) return;
+            const index=indexAtPosition(),stable=index===run.frames-1;
+            if(note)note.textContent=view==='scales'?'Same random field · five radii · coordinates divided by R':stable?'Stable · every site has fewer than 4 grains':index===0?'A fair coin puts 3 or 5 grains at each site':'Toppling · unstable sites send one grain to each neighbour';
+            const outRound=$('#p6-round'),outMass=$('#p6-mass'),outScale=$('#p6-scale');
+            if(outRound)outRound.textContent=view==='scales'?'Stabilized':nf.format(run.sweeps[index]);
+            if(outMass)outMass.textContent=view==='scales'?'Varies':nf.format(run.mass);
+            if(outScale)outScale.textContent=view==='scales'?'12 → 192':'R = '+radius;
+            if(range)range.value=String(Math.round(position*1000));
+        }
+        function sync() {
+            if(key&&keyView!==view){key.innerHTML=view==='odometer'?'<span>Total topplings / R²</span><span>0</span><span style="width:160px;height:10px;background:linear-gradient(90deg,#15131A,#2A2B4D,#524E91,#AE5B90,#F4A782,#FFE8B3)"></span><span>0.65</span>':grainKey;keyView=view;}
+            $$('[data-p6-radius]').forEach(function(b){const on=Number(b.getAttribute('data-p6-radius'))===radius;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
+            $$('[data-p6-view]').forEach(function(b){const on=b.getAttribute('data-p6-view')===view;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
+            const b=$('[data-p6-run="pause"]');if(b){b.textContent=!userPaused&&view!=='scales'?'Pause':'Play';b.classList.toggle('is-on',!userPaused&&view!=='scales');b.setAttribute('aria-pressed',String(!userPaused&&view!=='scales'));b.disabled=loading||view==='scales';}
+            if(range)range.disabled=loading||view==='scales';
+        }
+        function stop() { if(raf)cancelAnimationFrame(raf);raf=0;lastNow=0; }
+        function frame(now) {
+            if(!raf)return;
+            if(lastNow)elapsed=(elapsed+Math.min(80,now-lastNow))%duration;
+            lastNow=now;position=Math.max(0,Math.min(1,(elapsed-lead)/motion));
+            paint();raf=requestAnimationFrame(frame);
+        }
+        function start(){if(raf||userPaused||!pageAwake||loading||view==='scales')return;lastNow=0;raf=requestAnimationFrame(frame);sync();}
+        function loadScales() {
+            if(scaleCache.has(seed)){scaleAtlas=scaleCache.get(seed);return Promise.resolve();}
+            const target=seed;return loadImage('plates/random-convergence-scales-'+target+'.png').then(function(img){scaleCache.set(target,img);if(target===seed)scaleAtlas=img;});
+        }
+        function select() {
+            const token=++loadToken;stop();loading=true;frameIndex=-1;raw=null;fieldView='';paint();sync();
+            run=metadata.runs.find(function(r){return r.radius===radius&&r.seed===seed;});
+            Promise.all([loadImage('plates/'+run.file),loadScales()]).then(function(results){if(token!==loadToken)return;atlas=results[0];loading=false;paint();sync();start();}).catch(function(err){if(token!==loadToken)return;loading=false;atlas=null;paint();sync();console.warn('random convergence:',err);});
+        }
+        $$('[data-p6-radius]').forEach(function(b){b.addEventListener('click',function(){const r=Number(b.getAttribute('data-p6-radius'));if(!metadata||r===radius)return;radius=r;elapsed=0;position=0;if(REDUCED&&userPaused)position=1;select();});});
+        $$('[data-p6-view]').forEach(function(b){b.addEventListener('click',function(){view=b.getAttribute('data-p6-view');if(view==='scales')stop();paint();sync();start();});});
+        $$('[data-p6-run]').forEach(function(b){b.addEventListener('click',function(){const action=b.getAttribute('data-p6-run');if(!metadata)return;if(action==='new'){seed=seed===777?927:777;elapsed=0;position=userPaused&&REDUCED?1:0;select();return;}if(action==='replay'||(action==='pause'&&userPaused&&position===1)){elapsed=0;position=0;userPaused=false;}else userPaused=!userPaused;if(userPaused)stop();else start();paint();sync();});});
+        if(range)range.addEventListener('input',function(){userPaused=true;stop();position=Number(range.value)/1000;elapsed=lead+position*motion;paint();sync();});
+        fetch('plates/random-convergence.json').then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(m){metadata=m;select();}).catch(function(err){loading=false;paint();console.warn('random convergence:',err);});
+        const resize = new ResizeObserver(function () { paint(); }); resize.observe(canvas);
+        paint();sync();
+        return {pause:function(){pageAwake=false;stop();},resume:function(){pageAwake=true;paint();start();}};
+    };
     makers.explosive = function () { return randomBackgroundMaker({ prefix: 'p6x', mode: 'exploding' }); };
 
     /* ---------------------------------------------------------------------
@@ -2817,119 +2955,40 @@ const Instruments = (function () {
     };
 
     makers.randomintro = function () {
-        const n = 11, centre = n >> 1, CHIPS = 80;
-        let seed = 777;
-        function randomWord() {
-            seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
-            return seed >>> 0;
+        const n=11,c=n>>1,eta=new Int16Array(n*n),frames=[];
+        let seed=777;
+        function coin(){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return(seed>>>0)&1;}
+        for(let y=0;y<n;y++)for(let x=0;x<n;x++)if((x-c)*(x-c)+(y-c)*(y-c)<7)eta[y*n+x]=coin()?5:3;
+        let h=new Int16Array(eta);
+        for(let round=0;round<300;round++){
+            const fired=new Uint8Array(n*n),next=new Int16Array(h);let count=0;
+            for(let i=0;i<h.length;i++)if(h[i]>=4){fired[i]=1;count++;}
+            frames.push({h:new Int16Array(h),fired:fired});if(!count)break;
+            for(let i=0;i<h.length;i++)if(fired[i]){const y=Math.floor(i/n),x=i%n;if(!x||!y||x===n-1||y===n-1)throw Error('random intro reached boundary');next[i]-=4;next[i-1]++;next[i+1]++;next[i-n]++;next[i+n]++;}
+            h=next;
         }
-        const eta = new Int16Array(n * n);
-        for (let i = 0; i < eta.length; i++) eta[i] = (randomWord() & 1) ? 0 : -1;
-
-        /* Exact finite-box parallel toppling. Every unstable site fires once
-           in a round; chips crossing the edge dissipate. The stored states,
-           firing sets and travelling chips are all from this replay. */
-        const frames = [];
-        let h = new Int16Array(eta);
-        h[centre * n + centre] += CHIPS;
-        for (let round = 0; round < 200; round++) {
-            const fired = new Uint8Array(n * n);
-            let count = 0;
-            for (let i = 0; i < h.length; i++) {
-                if (h[i] >= 4) { fired[i] = 1; count++; }
+        const stable=frames[frames.length-1];
+        if(stable.h.some(v=>v>=4)||stable.h.reduce((a,b)=>a+b,0)!==eta.reduce((a,b)=>a+b,0))throw Error('random intro failed conservation');
+        return loopingRule('random-sandpile',10400,function(ctx,W,p){
+            const at=ruleClamp((p-.12)/.71)*(frames.length-1),index=Math.min(frames.length-1,Math.floor(at));
+            const f=frames[index],sub=at-index,moving=index<frames.length-1&&p>=.12&&p<.83;
+            rulePhase(ctx,W,p<.12?'RANDOM INITIAL STATE':p<.83?'TOPPLE':'STABLE',p<.12?'3 or 5 grains · fair coins':p<.83?'4 grains out · 1 to each neighbour':'every height is below 4');
+            const g=ruleGrid(ctx,W,n),cols=['#24232D','#7668A6','#B85C78','#A8D8E8','#E7B54F'];
+            for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+                const i=y*n+x,sx=g.left+x*g.cell,sy=g.top+y*g.cell;
+                const v=moving&&sub>.12&&sub<.88?f.h[i]-4*f.fired[i]:moving&&sub>=.88?frames[index+1].h[i]:f.h[i];
+                if(!v)continue;
+                ctx.fillStyle=cols[Math.min(4,v)];ctx.globalAlpha=v>=4?.96:.8;ctx.fillRect(sx+3,sy+3,g.cell-6,g.cell-6);ctx.globalAlpha=1;
+                // The dots count the actual grains still at the site. During
+                // a transfer, four dots leave and remain visible in transit.
+                const count=Math.min(v,8),spacing=g.cell*.20;
+                for(let k=0;k<count;k++){const px=sx+g.cell*.5+((k%3)-1)*spacing,py=sy+g.cell*.5+(Math.floor(k/3)-(Math.ceil(count/3)-1)/2)*spacing;ctx.beginPath();ctx.arc(px,py,g.cell*.045,0,2*Math.PI);ctx.fillStyle=v>=3?'#15131A':'#F2EDE2';ctx.fill();}
             }
-            if (!count) break;
-            frames.push({ h: new Int16Array(h), fired: fired });
-            const next = new Int16Array(h);
-            for (let i = 0; i < h.length; i++) {
-                if (!fired[i]) continue;
-                const y = Math.floor(i / n), x = i - y * n;
-                next[i] -= 4;
-                if (x) next[i - 1]++;
-                if (x + 1 < n) next[i + 1]++;
-                if (y) next[i - n]++;
-                if (y + 1 < n) next[i + n]++;
-            }
-            h = next;
-        }
-        const stable = new Int16Array(h);
-        frames.push({ h: stable, fired: new Uint8Array(n * n) });
-        for (let i = 0; i < stable.length; i++) {
-            if (stable[i] >= 4) throw new Error('random-background intro did not stabilise');
-        }
-
-        return loopingRule('random-sandpile', 6600, function (ctx, W, p) {
-            let state = eta, fired = null, sub = 0, frameNo = 0;
-            if (p >= .30 && p < .84) {
-                const at = ruleEase((p - .30) / .54) * (frames.length - 1);
-                frameNo = Math.min(frames.length - 1, Math.floor(at));
-                sub = at - frameNo;
-                state = frames[frameNo].h; fired = frames[frameNo].fired;
-            } else if (p >= .84) {
-                state = stable; frameNo = frames.length - 1;
-                fired = frames[frameNo].fired;
-            }
-            const phase = p < .18 ? 'SAMPLE' : p < .30 ? 'SOURCE'
-                        : p < .84 ? 'PARALLEL' : 'STABLE';
-            const detail = p < .18 ? 'η = 0 or −1 · 1/2' : p < .30 ? '+ 80 at 0'
-                         : p < .84 ? 'round ' + (frameNo + 1) : 'all heights < 4';
-            rulePhase(ctx, W, phase, detail);
-            const g = ruleGrid(ctx, W, n);
-            for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-                const i = y * n + x, v = state[i];
-                const order = i / (n * n);
-                const reveal = p < .18 ? ruleEase((p - order * .11) / .07) : 1;
-                const sx = g.left + x * g.cell, sy = g.top + y * g.cell;
-                ctx.globalAlpha = reveal;
-                ctx.fillStyle = v < 0 ? '#0072B2' : v === 0 ? '#24232D'
-                    : v === 1 ? '#7668A6' : v === 2 ? '#8E4257'
-                    : v === 3 ? '#A8D8E8' : '#E69F00';
-                ctx.fillRect(sx + 2, sy + 2, g.cell - 4, g.cell - 4);
-                if (fired && fired[i]) {
-                    ctx.strokeStyle = RULE_VIS.yellow; ctx.lineWidth = 3;
-                    ctx.strokeRect(sx + 3, sy + 3, g.cell - 6, g.cell - 6);
-                }
-                if (v >= 4) {
-                    ctx.fillStyle = v < 0 || v >= 3 ? RULE_VIS.white : '#FFF9E8';
-                    ctx.font = '500 ' + Math.round(g.cell * .25) + 'px "IBM Plex Mono", monospace';
-                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillText(String(v).replace('-', '−'), sx + g.cell / 2, sy + g.cell / 2);
-                }
-                ctx.globalAlpha = 1;
-            }
-
-            if (p >= .18 && p < .30) {
-                const t = ruleOut((p - .18) / .12);
-                const cx = g.left + (centre + .5) * g.cell;
-                const cy = g.top + (centre + .5) * g.cell;
-                ctx.beginPath(); ctx.arc(cx, ruleMix(g.top - 42, cy, t), g.cell * .19,
-                                         0, Math.PI * 2);
-                ctx.fillStyle = RULE_VIS.yellow; ctx.fill();
-                ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = 3; ctx.stroke();
-                ctx.fillStyle = RULE_VIS.key;
-                ctx.font = '600 ' + Math.round(g.cell * .22) + 'px "IBM Plex Mono", monospace';
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('+80', cx, ruleMix(g.top - 42, cy, t));
-            }
-
-            if (fired && sub > 0) {
-                const t = ruleEase(sub);
-                const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]];
-                for (let i = 0; i < fired.length; i++) {
-                    if (!fired[i]) continue;
-                    const y = Math.floor(i / n), x = i - y * n;
-                    const x0 = g.left + (x + .5) * g.cell;
-                    const y0 = g.top + (y + .5) * g.cell;
-                    dirs.forEach(function (d) {
-                        ctx.beginPath();
-                        ctx.arc(x0 + d[0] * g.cell * t, y0 + d[1] * g.cell * t,
-                                Math.max(3.5, g.cell * .07), 0, Math.PI * 2);
-                        ctx.fillStyle = RULE_VIS.white; ctx.fill();
-                        ctx.strokeStyle = RULE_VIS.key; ctx.lineWidth = 1.5; ctx.stroke();
-                    });
-                }
-            }
-        }, .88);
+            if(moving&&sub>.12&&sub<.88){const t=(sub-.12)/.76;for(let i=0;i<f.fired.length;i++)if(f.fired[i]){
+                const y=Math.floor(i/n),x=i%n,x0=g.left+(x+.5)*g.cell,y0=g.top+(y+.5)*g.cell;
+                [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){ctx.beginPath();ctx.arc(x0+d[0]*g.cell*t,y0+d[1]*g.cell*t,g.cell*.067,0,2*Math.PI);ctx.fillStyle='#F2EDE2';ctx.fill();ctx.strokeStyle='#15131A';ctx.lineWidth=1.5;ctx.stroke();});
+            }}
+        },.9);
     };
 
     makers.divisibleintro = function () {
@@ -11012,314 +11071,123 @@ const Instruments = (function () {
        L = (1/2)Delta - grad(V).grad, hence unit Brownian noise. The finite
        Fourier potential illustrates the mechanism, not the random medium
        or the asymptotic error bound in the theorem. */
-    function einsteinPotential(x, y) {
-        return .46 * Math.sin(x + .23) + .31 * Math.cos(y - .41)
-            + .22 * Math.sin(x + .73 * y) + .15 * Math.cos(1.7 * x - .8 * y);
-    }
-    function einsteinGradient(x, y, g) {
-        const c = Math.cos(x + .73 * y), s = Math.sin(1.7 * x - .8 * y);
-        g[0] = .46 * Math.cos(x + .23) + .22 * c - .255 * s;
-        g[1] = -.31 * Math.sin(y - .41) + .1606 * c + .12 * s;
-    }
-    function einsteinNoise(initial) {
-        let seed = initial >>> 0, spare = null;
-        function uniform() {
-            seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
-            return (seed >>> 0) / 4294967296;
-        }
-        return function () {
-            if (spare !== null) { const z = spare; spare = null; return z; }
-            const r = Math.sqrt(-2 * Math.log(Math.max(1e-12, uniform())));
-            const a = 2 * Math.PI * uniform();
-            spare = r * Math.sin(a); return r * Math.cos(a);
-        };
-    }
-
-    makers.einsteinintro = function () {
-        const noise = einsteinNoise(0xe1757e1), pairs = [], g = [0, 0];
-        const N = 640, dt = .025, sq = Math.sqrt(dt), force = .25;
-        let extent = 1;
-        for (let j = 0; j < 24; j++) {
-            const a = [[0, 0]], b = [[0, 0]];
-            for (let k = 1; k <= N; k++) {
-                const zx = sq * noise(), zy = sq * noise();
-                const u = a[k - 1], v = b[k - 1];
-                einsteinGradient(u[0], u[1], g);
-                a.push([u[0] - g[0] * dt + zx, u[1] - g[1] * dt + zy]);
-                einsteinGradient(v[0], v[1], g);
-                b.push([v[0] + (force - g[0]) * dt + zx, v[1] - g[1] * dt + zy]);
-                extent = Math.max(extent, ...a[k].map(Math.abs), ...b[k].map(Math.abs));
-            }
-            pairs.push([a, b]);
-        }
-        return loopingRule('einstein-relation', 11000, function (ctx, W, p) {
-            const q = Math.min(1, p / .88), z = q * N, k = Math.min(N - 1, Math.floor(z));
-            const f = z - k, scale = 132 / extent;
-            const colors = [RULE_VIS.cyanBright, RULE_VIS.orange];
-            [0, 1].forEach(function (side) {
-                const cx = side ? 530 : 190, cy = 314;
-                ctx.fillStyle = '#E8E1D3'; ctx.fillRect(cx - 148, 140, 296, 350);
-                ctx.strokeStyle = RULE_VIS.grid; ctx.lineWidth = 1.6;
-                ctx.beginPath(); ctx.moveTo(cx - 136, cy); ctx.lineTo(cx + 136, cy);
-                ctx.moveTo(cx, 155); ctx.lineTo(cx, 475); ctx.stroke();
-                ctx.fillStyle = colors[side]; ctx.font = '500 25px ui-monospace, monospace';
-                ctx.textAlign = 'center'; ctx.fillText(side ? 'Small force →' : 'No force', cx, 111);
-                pairs.forEach(function (pair, j) {
-                    const points = pair[side], current = points[k], next = points[k + 1];
-                    if (j === 0) {
-                        ctx.beginPath(); ctx.moveTo(cx, cy);
-                        for (let n = 1; n <= k; n++) ctx.lineTo(cx + scale * points[n][0], cy - scale * points[n][1]);
-                        ctx.strokeStyle = colors[side]; ctx.lineWidth = 2.6; ctx.globalAlpha = .65; ctx.stroke();
-                    }
-                    ctx.globalAlpha = j ? .65 : 1;
-                    ctx.beginPath(); ctx.arc(cx + scale * ruleMix(current[0], next[0], f),
-                        cy - scale * ruleMix(current[1], next[1], f), j ? 4.5 : 7.5, 0, Math.PI * 2);
-                    ctx.fillStyle = colors[side]; ctx.fill();
-                });
-                ctx.globalAlpha = 1;
-            });
-            const t = Math.max(.001, q * N * dt);
-            ctx.textAlign = 'left'; ctx.font = '500 24px ui-monospace, monospace';
-            [[Math.sqrt(t), RULE_VIS.cyanBright, '√t', 552], [force * t, RULE_VIS.orange, 'λt', 599]].forEach(function (r) {
-                ctx.fillStyle = r[1]; ctx.fillText(r[2], 50, r[3] + 8);
-                ctx.fillRect(118, r[3] - 5, 112 * r[0], 9);
-            });
-            ctx.fillStyle = RULE_VIS.ink; ctx.textAlign = 'center';
-            ctx.font = '400 23px ui-monospace, monospace';
-            ctx.fillText(q > .9 ? 'Equal scales at t = λ⁻²' : 'Same noise · different response', 360, 663);
-            ctx.textAlign = 'left';
-        }, .88);
-    };
-
     makers.einstein = function () {
-        const canvas = $('#einstein-canvas');
-        if (!canvas) return null;
-        const ctx = canvas.getContext('2d'), W = 720, M = 128, DT = .025, SQ = Math.sqrt(DT);
-        const BLUE = '#69C8F2', GOLD = '#F2BF62', WHITE = '#F2EDE2', MUTED = '#B5ADBF';
-        const outTime = $('#einstein-time'), outBalance = $('#einstein-balance');
+        const canvas = $('#einstein-canvas'), model = globalThis.EinsteinMotion;
+        if (!canvas || !model) return null;
+        const ctx = canvas.getContext('2d'), W = 800;
+        const slider = $('#einstein-time-input'), outTime = $('#einstein-time');
         const outDiffusion = $('#einstein-diffusion'), outMobility = $('#einstein-mobility');
-        const note = $('#einstein-note'), g = [0, 0], field = document.createElement('canvas');
-        field.width = field.height = 240;
-        const fc = field.getContext('2d');
-        let lambda = .125, sampleSeed = 0x4e554c4c, noise, time, step, totalSteps, sampleEvery;
-        let x0, y0, x1, y1, trails, extent, targetExtent, fieldExtent = -1;
-        let running = false, pageAwake = true, userPaused = REDUCED, raf = 0, lastNow = 0, debt = 0;
-        let narrow = false, H = 740, backing = 3, panels = [], stats = null;
+        const note = $('#einstein-note');
+        let force = .125, seed = 0x4e554c4c, run = null, progress = 0;
+        let running = false, pageAwake = true, userPaused = REDUCED;
+        let raf = 0, lastNow = 0, H = 520, backing = 2, labelScale = 1;
+        let worker = null, request = 0;
 
         function layout() {
             const cssWidth = canvas.getBoundingClientRect().width || W;
-            const wasNarrow = narrow; narrow = cssWidth < 520; H = narrow ? 1220 : 740;
-            if (wasNarrow !== narrow) fieldExtent = -1;
+            H = cssWidth < 520 ? 640 : 520;
             const dpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1;
-            backing = Math.min(3, Math.max(1, Math.ceil(cssWidth * Math.max(2, dpr) / W)));
-            if (canvas.width !== W * backing) canvas.width = W * backing;
-            if (canvas.height !== H * backing) canvas.height = H * backing;
-            panels = narrow ? [{x:32,y:76,w:656,h:382},{x:32,y:548,w:656,h:382}]
-                : [{x:24,y:84,w:324,h:332},{x:372,y:84,w:324,h:332}];
-        }
-        function reset(preview) {
-            noise = einsteinNoise(sampleSeed); time = 0; step = 0; debt = 0; lastNow = 0;
-            totalSteps = Math.ceil(1.5 / (lambda * lambda * DT));
-            sampleEvery = Math.max(1, Math.floor(totalSteps / 1000));
-            x0 = new Float64Array(M); y0 = new Float64Array(M);
-            x1 = new Float64Array(M); y1 = new Float64Array(M);
-            trails = [[], []];
-            for (let i = 0; i < 6; i++) { trails[0].push([[0, 0]]); trails[1].push([[0, 0]]); }
-            extent = targetExtent = 4; fieldExtent = -1;
-            /* A useful initial state, with the same simulation and seed as playback. */
-            advance(preview ? Math.floor(totalSteps * .72) : Math.min(48, totalSteps));
-            layout(); paint(); sync();
-        }
-        function advance(n) {
-            n = Math.min(n, totalSteps - step);
-            for (let s = 0; s < n; s++) {
-                for (let i = 0; i < M; i++) {
-                    const zx = SQ * noise(), zy = SQ * noise();
-                    einsteinGradient(x0[i], y0[i], g);
-                    x0[i] += -g[0] * DT + zx; y0[i] += -g[1] * DT + zy;
-                    einsteinGradient(x1[i], y1[i], g);
-                    x1[i] += (lambda - g[0]) * DT + zx; y1[i] += -g[1] * DT + zy;
-                    targetExtent = Math.max(targetExtent, Math.abs(x0[i]) * 1.12,
-                        Math.abs(y0[i]) * 1.12, Math.abs(x1[i]) * 1.12, Math.abs(y1[i]) * 1.12);
-                }
-                step++;
-                if (step % sampleEvery === 0 || step === totalSteps) {
-                    for (let j = 0; j < 6; j++) {
-                        trails[0][j].push([x0[j], y0[j]]); trails[1][j].push([x1[j], y1[j]]);
-                    }
-                }
-            }
-            time = step * DT;
-            /* Monotone common camera: it never chases a walker or loses the origin. */
-            extent = targetExtent;
-        }
-        function measure() {
-            const means = [0, 0], vy = [0, 0], vx = [0, 0], cross = [0, 0], my = [0, 0];
-            [x0, x1].forEach(function (xs, side) {
-                const ys = side ? y1 : y0;
-                for (let i = 0; i < M; i++) { means[side] += xs[i] / M; my[side] += ys[i] / M; }
-                for (let i = 0; i < M; i++) {
-                    const dx = xs[i] - means[side], dy = ys[i] - my[side];
-                    vx[side] += dx * dx / (M - 1); vy[side] += dy * dy / (M - 1);
-                    cross[side] += dx * dy / (M - 1);
-                }
-            });
-            return {means:means, my:my, vx:vx, vy:vy, cross:cross,
-                diffusion:vx[0] / time, mobility:(means[1] - means[0]) / (lambda * time)};
-        }
-        function background() {
-            if (Math.abs(fieldExtent / extent - 1) < .035) return;
-            fieldExtent = extent;
-            const p = panels[0], min = Math.min(p.w, p.h), rx = p.w / min, ry = p.h / min;
-            field.width = Math.round(240 * rx); field.height = Math.round(240 * ry);
-            const N = 64, vals = new Float32Array((N + 1) * (N + 1));
-            fc.fillStyle = '#191922'; fc.fillRect(0, 0, field.width, field.height);
-            for (let y = 0; y <= N; y++) for (let x = 0; x <= N; x++) {
-                vals[y * (N + 1) + x] = einsteinPotential((x / N * 2 - 1) * extent * rx, (1 - y / N * 2) * extent * ry);
-            }
-            /* Screen-space contour sampling stays bounded as the world expands. */
-            [-.65, -.3, .05, .4, .75].forEach(function (level) {
-                fc.beginPath();
-                for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-                    const k = y * (N + 1) + x;
-                    const v = [vals[k], vals[k + 1], vals[k + N + 2], vals[k + N + 1]];
-                    const corners = [[x,y],[x+1,y],[x+1,y+1],[x,y+1]], cuts = [];
-                    for (let e = 0; e < 4; e++) {
-                        const f = (e + 1) % 4;
-                        if ((v[e] < level) === (v[f] < level)) continue;
-                        const q = (level - v[e]) / (v[f] - v[e]);
-                        cuts.push([ruleMix(corners[e][0], corners[f][0], q) * field.width / N,
-                            ruleMix(corners[e][1], corners[f][1], q) * field.height / N]);
-                    }
-                    for (let e = 0; e + 1 < cuts.length; e += 2) {
-                        fc.moveTo(cuts[e][0], cuts[e][1]); fc.lineTo(cuts[e+1][0], cuts[e+1][1]);
-                    }
-                }
-                fc.strokeStyle = level < 0 ? '#303743' : '#38313D'; fc.lineWidth = .65; fc.stroke();
-            });
-        }
-        function text(label, x, y, color, size, align) {
-            ctx.fillStyle = color || MUTED; ctx.font = '400 ' + (size || 13) + 'px ui-monospace, monospace';
-            ctx.textAlign = align || 'left'; ctx.fillText(label, x, y); ctx.textAlign = 'left';
-        }
-        function drawPanel(side) {
-            const p = panels[side], xs = side ? x1 : x0, ys = side ? y1 : y0;
-            const color = side ? GOLD : BLUE, mag = narrow ? 1.8 : 1;
-            const scale = Math.min(p.w, p.h) / (2 * extent);
-            const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
-            const tx = x => cx + x * scale, ty = y => cy - y * scale;
-            text(side ? '02  WITH FORCE →' : '01  NO FORCE', p.x, p.y - 41, color, 15 * mag);
-            text(side ? 'Same noise + a small push' : '128 independent particles', p.x, p.y - 17, MUTED, 11.5 * mag);
-            ctx.save(); ctx.beginPath(); ctx.rect(p.x, p.y, p.w, p.h); ctx.clip();
-            ctx.fillStyle = '#191922'; ctx.fillRect(p.x, p.y, p.w, p.h);
-            const dx = p.w * fieldExtent / extent, dy = p.h * fieldExtent / extent;
-            ctx.drawImage(field, cx - dx / 2, cy - dy / 2, dx, dy);
-            ctx.strokeStyle = '#555060'; ctx.lineWidth = .7;
-            ctx.beginPath(); ctx.moveTo(p.x, cy); ctx.lineTo(p.x + p.w, cy);
-            ctx.moveTo(cx, p.y); ctx.lineTo(cx, p.y + p.h); ctx.stroke();
-            trails[side].forEach(function (trail, j) {
-                ctx.beginPath(); ctx.moveTo(cx, cy);
-                trail.forEach(q => ctx.lineTo(tx(q[0]), ty(q[1])));
-                ctx.lineTo(tx(xs[j]), ty(ys[j]));
-                ctx.strokeStyle = color; ctx.globalAlpha = j ? .12 : .8;
-                ctx.lineWidth = (j ? .8 : 1.65) * mag; ctx.lineJoin = 'round'; ctx.stroke();
-            });
-            ctx.globalAlpha = .68; ctx.fillStyle = color;
-            for (let i = 1; i < M; i++) {
-                ctx.beginPath(); ctx.arc(tx(xs[i]), ty(ys[i]), 2.3 * mag, 0, Math.PI * 2); ctx.fill();
-            }
-            ctx.globalAlpha = 1;
-            const mx = tx(stats.means[side]), my = ty(stats.my[side]);
-            const a = stats.vx[side], b = stats.vy[side], c = stats.cross[side];
-            const delta = Math.sqrt((a-b)*(a-b) + 4*c*c);
-            ctx.save(); ctx.translate(mx, my); ctx.rotate(-.5 * Math.atan2(2*c, a-b));
-            ctx.beginPath(); ctx.ellipse(0, 0, scale * Math.sqrt(Math.max(0, (a+b+delta)/2)),
-                scale * Math.sqrt(Math.max(0, (a+b-delta)/2)), 0, 0, Math.PI*2);
-            ctx.setLineDash([4*mag,4*mag]); ctx.strokeStyle = color; ctx.lineWidth = 1.1*mag; ctx.stroke(); ctx.restore();
-            ctx.strokeStyle = WHITE; ctx.lineWidth = 1.8*mag;
-            ctx.beginPath(); ctx.moveTo(mx-6*mag,my); ctx.lineTo(mx+6*mag,my);
-            ctx.moveTo(mx,my-6*mag); ctx.lineTo(mx,my+6*mag); ctx.stroke();
-            ctx.beginPath(); ctx.arc(tx(xs[0]), ty(ys[0]), 4.7*mag, 0, Math.PI*2);
-            ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = '#15131A'; ctx.lineWidth = 1.5*mag; ctx.stroke();
-            ctx.restore();
-            ctx.strokeStyle = '#3D3747'; ctx.lineWidth = 1; ctx.strokeRect(p.x,p.y,p.w,p.h);
-            text('0', cx + 6, p.y + p.h - 8, MUTED, 11*mag);
-            text('x = ' + (extent * p.w / Math.min(p.w, p.h)).toFixed(extent < 10 ? 1 : 0), p.x+p.w-9, p.y+p.h-8, MUTED, 11*mag, 'right');
-        }
-        function distribution() {
-            const top = narrow ? 998 : 478, left = 32, right = 688, bottom = top + 126;
-            const mag = narrow ? 1.7 : 1;
-            const p = panels[0], xExtent = extent * p.w / Math.min(p.w, p.h);
-            text('HORIZONTAL DISTRIBUTION', left, top - 25, WHITE, 13*mag);
-            if (!narrow) text('Dashed: means · +: centroids above', right, top - 25, MUTED, 10.5, 'right');
-            const bins = 36, counts = [new Uint16Array(bins), new Uint16Array(bins)];
-            [x0,x1].forEach((xs,s) => xs.forEach(x => counts[s][Math.max(0,Math.min(bins-1,Math.floor((x/xExtent+1)*bins/2)))]++));
-            let maxCount = 8;
-            counts.forEach(a => a.forEach(n => { maxCount = Math.max(maxCount,n); }));
-            const bw = (right-left)/bins, base = bottom-22, height = 102;
-            [0,1].forEach(function (s) {
-                const color = s ? GOLD : BLUE;
-                ctx.fillStyle = color; ctx.globalAlpha = .25;
-                for(let k=0;k<bins;k++) ctx.fillRect(left+k*bw,base-counts[s][k]/maxCount*height,bw-1,counts[s][k]/maxCount*height);
-                ctx.globalAlpha = 1; ctx.strokeStyle = color; ctx.lineWidth = 1.7;
-                ctx.beginPath(); ctx.moveTo(left,base);
-                for(let k=0;k<bins;k++){ const y=base-counts[s][k]/maxCount*height; ctx.lineTo(left+k*bw,y);ctx.lineTo(left+(k+1)*bw,y); }
-                ctx.lineTo(right,base);ctx.stroke();
-                const x=left+(stats.means[s]/xExtent+1)*(right-left)/2;
-                ctx.save();ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(x,top-4);ctx.lineTo(x,base);
-                ctx.strokeStyle=color;ctx.lineWidth=1.8;ctx.stroke();ctx.restore();
-            });
-            ctx.strokeStyle='#5B5464';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,base);ctx.lineTo(right,base);ctx.stroke();
-            text('−'+xExtent.toFixed(0),left,bottom,MUTED,12*mag);
-            text('0',360,bottom,MUTED,12*mag,'center');
-            text('+'+xExtent.toFixed(0),right,bottom,MUTED,12*mag,'right');
-            const y = bottom + (narrow ? 45 : 42), t = Math.max(time,DT);
-            const ratio = lambda*Math.sqrt(t), max = Math.max(Math.sqrt(t),lambda*t);
-            const barWidth = narrow ? 260 : 190, start = narrow ? 90 : 70;
-            [[Math.sqrt(t),BLUE,'√t',y],[lambda*t,GOLD,'λt',y+28]].forEach(function(r){
-                text(r[2],32,r[3]+5,r[1],14*mag);
-                ctx.fillStyle=r[1];ctx.fillRect(start,r[3]-4,barWidth*r[0]/max,6);
-            });
-            text('t* = λ⁻² = '+Math.round(1/(lambda*lambda)),688,y+4,WHITE,13*mag,'right');
-            text(ratio<.95?'Fluctuation scale leads':ratio>1.05?'Force scale leads':'The scales meet',688,y+32,MUTED,12*mag,'right');
+            backing = Math.min(3, Math.max(1, cssWidth * Math.max(2, dpr) / W));
+            labelScale = Math.max(1, W / cssWidth);
+            const width = Math.round(W * backing), height = Math.round(H * backing);
+            if (canvas.width !== width) canvas.width = width;
+            if (canvas.height !== height) canvas.height = height;
         }
         function paint() {
-            stats = measure(); background();
-            ctx.setTransform(backing,0,0,backing,0,0); ctx.globalAlpha=1;ctx.fillStyle='#15131A';ctx.fillRect(0,0,W,H);
-            drawPanel(0);drawPanel(1);distribution();
-            if(outTime)outTime.textContent=time.toFixed(1);
-            if(outBalance)outBalance.textContent=(lambda*Math.sqrt(time)).toFixed(2);
-            if(outDiffusion)outDiffusion.textContent=stats.diffusion.toFixed(3);
-            if(outMobility)outMobility.textContent=stats.mobility.toFixed(3);
-            setNote(note,step===totalSteps?'Run complete · replay or choose another force':'128 paired paths · same potential · same spatial scale');
-            canvas.dataset.time=String(time);canvas.dataset.pairs=String(M);
-            canvas.dataset.diffusion=String(stats.diffusion);canvas.dataset.mobility=String(stats.mobility);
+            ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
+            if (!run) { ctx.fillStyle = '#15141c'; ctx.fillRect(0, 0, W, H); return; }
+            model.paint(ctx, W, H, run, progress, {dark: true, labelScale: labelScale});
+            const s = Math.min(run.samples - 1, Math.round(progress * (run.samples - 1)));
+            outTime.textContent = (run.duration * progress).toFixed(1);
+            slider.value = String(Math.round(progress * 1000));
+            outDiffusion.textContent = s ? run.diffusion[s].toFixed(3) : '—';
+            outMobility.textContent = s ? run.mobility[s].toFixed(3) : '—';
+            canvas.dataset.time = String(run.duration * progress);
+            canvas.dataset.pairs = String(run.pairs);
+            canvas.dataset.diffusion = String(run.diffusion[s]);
+            canvas.dataset.mobility = String(run.mobility[s]);
+            canvas.dataset.seed = String(run.seed);
+            canvas.dataset.force = String(run.force);
         }
         function sync() {
-            $$('[data-einstein-force]').forEach(function(b){const on=+b.dataset.einsteinForce===lambda;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
-            const b=$('[data-einstein-run="pause"]');
-            if(b){b.textContent=running?'Pause':step===totalSteps?'Play again':'Play';b.classList.toggle('is-on',running);b.setAttribute('aria-pressed',String(running));}
+            $$('[data-einstein-force]').forEach(function (b) {
+                const on = +b.dataset.einsteinForce === force;
+                b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+            });
+            const b = $('[data-einstein-run="pause"]');
+            b.textContent = running ? 'Pause' : progress === 1 ? 'Play again' : 'Play';
+            b.classList.toggle('is-on', running); b.setAttribute('aria-pressed', String(running));
+        }
+        function stop() { running = false; cancelAnimationFrame(raf); raf = 0; lastNow = 0; sync(); }
+        function start() {
+            if (running || !pageAwake || userPaused || !run || progress === 1) return;
+            running = true; lastNow = 0; sync(); raf = requestAnimationFrame(frame);
         }
         function frame(now) {
-            if(!running)return;
-            if(lastNow){debt+=Math.min(50,now-lastNow)*totalSteps/22000;const n=Math.floor(debt);debt-=n;advance(n);paint();}
-            lastNow=now;
-            if(step===totalSteps){userPaused=true;stop();return;}
-            raf=requestAnimationFrame(frame);
+            if (!running) return;
+            if (lastNow) progress = Math.min(1, progress + Math.min(100, now - lastNow) / 14000);
+            lastNow = now; paint();
+            if (progress === 1) { stop(); setNote(note, 'Complete history · drag the time bar or replay'); return; }
+            raf = requestAnimationFrame(frame);
         }
-        function stop(){running=false;cancelAnimationFrame(raf);raf=0;lastNow=0;sync();}
-        function start(){if(running||!pageAwake||userPaused)return;running=true;lastNow=0;sync();raf=requestAnimationFrame(frame);}
-        $$('[data-einstein-force]').forEach(function(b){b.addEventListener('click',function(){const v=+b.dataset.einsteinForce;if(!(v>0)||v===lambda)return;
-            if(step===totalSteps&&!REDUCED)userPaused=false;
-            lambda=v;reset(REDUCED&&userPaused);start();});});
-        $$('[data-einstein-run]').forEach(function(b){b.addEventListener('click',function(){
-            const action=b.dataset.einsteinRun;
-            if(action==='pause'){if(running){userPaused=true;stop();}else{if(step===totalSteps)reset();userPaused=false;start();}}
-            else {stop();if(action==='sample')sampleSeed=(sampleSeed+0x9e3779b9)>>>0;reset();userPaused=false;start();}
-        });});
-        const resize=new ResizeObserver(function(){layout();paint();});resize.observe(canvas);
-        reset(REDUCED);start();
-        return {pause:function(){pageAwake=false;stop();},resume:function(){pageAwake=true;layout();paint();start();}};
+        function prepare() {
+            stop(); run = null; progress = 0; paint(); sync();
+            slider.value = '0'; outTime.textContent = '0'; outDiffusion.textContent = outMobility.textContent = '—';
+            canvas.dataset.loading = 'true'; setNote(note, 'Computing paired histories…');
+            const id = ++request, options = {force: force, seed: seed, pairs: 32, samples: 900};
+            if (worker) { worker.terminate(); worker = null; }
+            function ready(result) {
+                if (id !== request) return;
+                run = result; progress = REDUCED && userPaused ? 1 : .015;
+                canvas.dataset.loading = 'false'; setNote(note, ''); paint(); sync(); start();
+            }
+            function fallback() {
+                if (worker) { worker.terminate(); worker = null; }
+                setTimeout(function () {
+                    if (id !== request) return;
+                    try { ready(model.generate(options)); }
+                    catch (error) { canvas.dataset.loading = 'false'; setNote(note, 'Unable to compute this run. Try another force or reload.'); }
+                }, 0);
+            }
+            try {
+                const script = document.querySelector('script[src*="einstein-motion.js"]');
+                if (typeof Worker === 'undefined' || !script) { fallback(); return; }
+                worker = new Worker(script.src);
+                worker.onmessage = function (event) {
+                    if (id !== request) return;
+                    if (event.data.error) { fallback(); return; }
+                    worker.terminate(); worker = null; ready(event.data.run);
+                };
+                worker.onerror = fallback;
+                worker.postMessage({id: id, options: options});
+            } catch (error) { fallback(); }
+        }
+        $$('[data-einstein-force]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                const value = +b.dataset.einsteinForce;
+                if (![.25, .125, .0625].includes(value) || value === force) return;
+                force = value; prepare();
+            });
+        });
+        $$('[data-einstein-run]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                const action = b.dataset.einsteinRun;
+                if (action === 'sample') { userPaused = false; seed = (seed + 0x9e3779b9) >>> 0; prepare(); return; }
+                if (action === 'pause' && running) { userPaused = true; stop(); return; }
+                userPaused = false;
+                if (action === 'replay' || progress === 1) { progress = 0; setNote(note, ''); paint(); }
+                start();
+            });
+        });
+        slider.addEventListener('input', function () {
+            if (!run) return;
+            userPaused = true; stop(); progress = Math.max(0, Math.min(1, +slider.value / 1000));
+            setNote(note, ''); paint(); sync();
+        });
+        const resize = new ResizeObserver(function () { layout(); paint(); }); resize.observe(canvas);
+        layout(); prepare();
+        return {pause: function () { pageAwake = false; stop(); },
+            resume: function () { pageAwake = true; layout(); paint(); start(); }};
     };
 
     /* Parking: each active car uses one stack instruction per parallel round.

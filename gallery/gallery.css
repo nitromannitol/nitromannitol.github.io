@@ -990,20 +990,52 @@ a:hover { text-decoration-thickness: 1.5px; }
 }
 .einstein-unforced { background: #69C8F2; }
 .einstein-tilted { background: #F2BF62; }
-.einstein-error { background: #D55E77; }
-.einstein-heading { width: min(100%, 840px); justify-self: center; }
-.einstein-heading .family { margin-bottom: 12px; color: #69C8F2; }
-.einstein-heading h3 { font: 400 clamp(1.7rem, 3.5vw, 2.5rem)/1.15 var(--serif); color: var(--model-text); }
-.einstein-heading > p:last-child { max-width: 38em; margin-top: 12px; color: var(--model-muted); }
+/* Keep the drawing prominent, with a single playback strip beneath it. */
+.instrument--einstein { max-width: 980px; }
+.instrument--convergence { max-width: 900px; }
+.instrument--einstein > *, .instrument--convergence > * { min-width: 0; }
 .instrument--einstein > .model-control-shelf,
-.instrument--einstein > .model-readout,
-.instrument--einstein > .model-key,
-.instrument--einstein > .einstein-details { width: min(100%, 840px); justify-self: center; }
-.model-stage--einstein { width: min(100%, 840px); }
+.instrument--einstein > .einstein-details,
+.instrument--einstein > .caption,
+.instrument--convergence > .caption,
+.instrument--convergence > .model-readout,
+.instrument.instrument--convergence > .model-control-shelf { width: 100%; max-width: none; justify-self: stretch; }
+.model-stage--einstein, .model-stage--convergence { width: 100%; }
+.instrument--einstein .model-control-groups { grid-template-columns: auto auto; }
+.einstein-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; color: #D5CFD5; font: 500 .8rem/1.5 var(--sans); }
+.einstein-legend span { display: inline-flex; align-items: center; gap: 9px; }
+.einstein-legend span:last-child { margin-left: auto; color: var(--model-muted); }
+.einstein-legend i { display: inline-block; width: 25px; height: 3px; }
+.film-timeline { display: flex; align-items: center; gap: 16px; width: 100%; color: var(--model-muted); font: 500 .78rem/1.4 var(--mono); }
+.film-timeline input { flex: 1; min-width: 60px; width: 100%; height: 44px; accent-color: #F2BF62; cursor: ew-resize; }
+.film-timeline output { min-width: 5ch; text-align: right; color: var(--model-text); font-variant-numeric: tabular-nums; }
+.film-timeline .model-run { flex: 0 0 auto; grid-template-columns: 1fr 1fr 1.5fr; }
+.film-status { color: var(--model-muted); font: 400 .8rem/1.4 var(--sans); }
+.film-status:empty { display: none; }
 .einstein-details { color: var(--model-muted); }
 .einstein-details p { margin-top: 1em; }
+.einstein-details .model-readout { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 20px 0; }
+.convergence-control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.convergence-control-row .model-control-group:first-child .model-segmented { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.convergence-control-row .model-segmented .btn:not(:first-child) { border-left: 0; }
+.instrument--convergence > .model-readout { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.convergence-key { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 20px; font: 500 .75rem/1.4 var(--mono); color: var(--model-muted); }
+.convergence-key span { display: inline-flex; align-items: center; gap: 7px; }
+.convergence-key i { display: inline-block; width: 14px; height: 14px; border: 1px solid #625968; }
+.related-models { background: var(--paper); color: var(--ink); }
+.related-models > summary { padding: 30px max(24px, calc((100% - 900px) / 2)); cursor: pointer; border-top: 1px solid #C9BFA8; font: 400 1.1rem/1.4 var(--serif); }
 @media (max-width: 720px) {
-    .instrument.instrument--einstein > .model-stage { order: 0; }
+    .instrument.instrument--einstein > .model-stage,
+    .instrument.instrument--convergence > .model-stage { order: 0; }
+    .instrument--einstein .model-control-groups, .convergence-control-row { grid-template-columns: 1fr; gap: 18px; }
+    .einstein-legend { gap: 8px 18px; font-size: .74rem; }
+    .einstein-legend span:last-child { flex-basis: 100%; margin: 0; }
+    .film-timeline { gap: 10px; flex-wrap: wrap; }
+    .film-timeline .model-run { flex-basis: 100%; }
+    .instrument--einstein .btn, .instrument--convergence .btn { min-height: 44px; }
+    .instrument--convergence .model-readout dt { font-size: .56rem; letter-spacing: .04em; }
+    .instrument--convergence .model-readout > div { padding: 12px 8px; }
+    .convergence-key { gap: 8px 12px; font-size: .65rem; }
 }
 .rwrs-negative { background: #D55E77; }
 .rwrs-positive { background: #56B4E9; }
