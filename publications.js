@@ -12,7 +12,8 @@ const publications = [
       { name: "Yuval Peres", url: "https://yuvalperes.com/" }
     ],
     links: [
-      { type: "arXiv", url: "" },
+      { type: "arXiv", url: "https://arxiv.org/abs/2609.07621" },
+      { type: "PDF", url: "https://arxiv.org/pdf/2609.07621" },
       { type: "Lean", url: "https://github.com/nitromannitol/Manhattan-Transience" }
     ],
     abstract: 'Independently orient each horizontal and vertical line of Z<sup>2</sup> by a fair coin. A walker chooses one of the two lines through its current position with equal probability and takes one step in the direction of that line. <a href="https://doi.org/10.1016/0167-2789(89)90207-8">Redner (1989)</a> introduced this walk as a model of transport in an isotropic random velocity field and predicted that its root-mean-square displacement grows like n<sup>2/3</sup>. We prove that the walk is transient almost surely. The proof is a short variational argument.',
