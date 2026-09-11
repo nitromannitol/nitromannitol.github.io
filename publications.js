@@ -153,7 +153,8 @@ const publications = [
       { name: "Ecaterina Sava-Huss", url: "https://www.math.tugraz.at/~sava/" }
     ],
     links: [
-      { type: "arXiv", url: "https://arxiv.org/abs/2604.13968" }
+      { type: "arXiv", url: "https://arxiv.org/abs/2604.13968" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Divisible-Sandpile-RWRS" }
     ],
     abstract: 'The divisible sandpile, <a href="https://arxiv.org/abs/0704.0688">introduced by Lionel Levine and Yuval Peres</a>, is a continuous-mass version of the abelian sandpile: a vertex with mass greater than 1 distributes the excess equally among its neighbors. Starting from i.i.d. initial masses with mean &mu;, the pile either stabilizes everywhere or explodes. <a href="https://arxiv.org/abs/1501.07258">Levine, Murugan, Peres, and Ugurcan</a> proved a sharp mean-based phase transition on vertex-transitive graphs: stabilization when &mu; &lt; 1, explosion when &mu; &gt; 1, and explosion at &mu; = 1 when the variance is positive and finite. A key ingredient in their proof is that toppling conserves the mean mass on transitive graphs. This conservation fails on general graphs, and, surprisingly, a single heavy-tailed fluctuation can drive explosion even when &mu; &lt; 1. In this paper, we extend their phase transition to all infinite bounded-degree graphs, and show that our conditions are nearly sharp. Instead of conservation of mass, we recast stabilization as an optimal stopping problem for random walk in random scenery. Along the way, we strengthen the critical case on Z<sup>d</sup>: at &mu; = 1, explosion holds whenever the centered law is symmetric and nonzero, with no finite-variance hypothesis.',
     year: 2026
