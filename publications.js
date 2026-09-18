@@ -51,7 +51,8 @@ const publications = [
     status: "submitted",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2609.02820" },
-      { type: "Gallery", url: "gallery/#parking" }
+      { type: "Gallery", url: "gallery/#parking" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Parking-Sharpness" }
     ],
     abstract: 'In the parking model, each site of the d-dimensional lattice independently starts with one car with probability p or one parking spot with probability 1&minus;p. Cars move according to independent discrete-time simple random walks and park at the first spot they find free. We prove that in the critical regime p = 1/2, the expected number of visits to a site in n rounds is of order n<sup>(4&minus;d)/4</sup> for d &le; 3 and log n for d &ge; 4. We also prove that in the subcritical regime p &isin; (0, 1/2), the parking-time tail is bounded above and below by stretched exponentials with exponent d/(d+2). As p &uarr; 1/2, we also determine the divergence of the expected total number of visits to a site: its order is (1&minus;2p)<sup>&minus;3</sup>, (1&minus;2p)<sup>&minus;1</sup> and (1&minus;2p)<sup>&minus;1/3</sup> in dimensions one, two and three, respectively, and log(1/(1&minus;2p)) in dimensions four and higher. Our proof uses a representation of the parking process as the divisible sandpile of <a href="https://doi.org/10.1007/s11118-008-9104-6">Levine and Peres</a> plus a martingale-type term. These results answer questions posed by <a href="https://doi.org/10.1214/18-AAP1443">Damron, Gravner, Junge, Lyu and Sivakoff</a>.',
     year: 2026
