@@ -70,7 +70,8 @@ const publications = [
     status: "submitted",
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2609.02829" },
-      { type: "Gallery", url: "gallery/#divisible-percolation" }
+      { type: "Gallery", url: "gallery/#divisible-percolation" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Divisible-Sandpile-Percolation" }
     ],
     abstract: 'The divisible sandpile on Z<sup>d</sup> starts from i.i.d. masses at each site, and, in each discrete time step, a site with mass above one keeps one unit and sends the excess equally to its neighbors. <a href="https://doi.org/10.1007/s00023-015-0433-x">Levine, Murugan, Peres and Ugurcan</a> showed that at mean one this process explodes, with every site emitting infinite mass. We show that the mass emitted from a site by time t is of order t<sup>(4&minus;d)/4</sup> for d &le; 3, of order log t for d = 4, and a tail-dependent, divergent rate for d &ge; 5. We further show that the mass emitted, after diffusive rescaling, converges to a Brownian optimal-stopping value for d &le; 3 and to tail-dependent, weighted membrane fields for d &ge; 5, while at the critical dimension d = 4, after superdiffusive rescaling, it converges to the membrane model. Using these estimates, we prove that, for every d &ge; 2, the set of sites that topple contains an infinite component at some mean below one, hence it has a non-trivial percolation phase transition. This answers a variant of a question of <a href="https://doi.org/10.1214/08-AOP415">Fey, Meester and Redig</a>. The proof adapts ideas from the theory of level-set percolation of strongly correlated Gaussian fields.',
     year: 2026
