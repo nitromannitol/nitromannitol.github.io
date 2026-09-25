@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Mathematical results produced with AI models, prompted and checked by Ahmed Bou-Rabee.">
+    <title>AI-generated mathematics</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+    window.MathJax = { tex: { inlineMath: [['\(', '\)']], displayMath: [['\[', '\]']] }, chtml: { scale: 0.98 } };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
+    <style>
+        .aim code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+        header .byline { margin: 0.2em 0 0; font-size: 1.02em; opacity: 0.9; }
+        .updated { margin: 0.35em 0 0; font-size: 0.88em; opacity: 0.7; }
+
+        .aim-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.1em 1.3em;
+            margin: 1.6em 0;
+            background: var(--surface);
+            box-shadow: 0 2px 5px var(--shadow);
+        }
+        .aim-card h2 { margin: 0 0 0.6em; font-size: 1.25em; color: var(--heading); }
+        .aim-card h3 {
+            margin: 1em 0 0.3em;
+            font-size: 0.82em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            opacity: 0.65;
+            font-weight: 700;
+        }
+        .aim-card h3:first-of-type { margin-top: 0.8em; }
+        .aim-card p { margin: 0.2em 0 0.6em; }
+
+        .aim-badge {
+            display: inline-block;
+            padding: 0.15em 0.7em;
+            border-radius: 999px;
+            font-size: 0.82em;
+            font-weight: 600;
+            border: 1px solid var(--pill-color, var(--pill-default));
+            color: var(--pill-color, var(--pill-default));
+        }
+        .aim-badge--lean       { --pill-color: var(--pill-journal); }
+        .aim-badge--checked    { --pill-color: var(--pill-blog); }
+        .aim-badge--generated  { --pill-color: var(--pill-quanta); }
+        .aim-badge--unverified { --pill-color: var(--pill-placeholder); border-style: dashed; }
+
+        .aim-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 0.6em; }
+
+        .aim-owner-note {
+            background: var(--surface-muted);
+            border-left: 4px solid var(--heading);
+            border-radius: 4px;
+            padding: 0.6em 1em;
+            font-size: 0.92em;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI-generated mathematics</h1>
+        <p class="byline">Various models, prompted and checked by Ahmed Bou-Rabee</p>
+        <p class="updated">Last updated 25 September 2026</p>
+    </header>
+
+    <main class="aim">
+        <section>
+            <p><a href="index.html">&larr; Back to homepage</a></p>
+            <p>Most of the mathematics on this page was produced nearly autonomously by several versions of ChatGPT, which I prompted and directed. Anthropic's own proof, credited in the first card below, is the one result here that I did not direct. Each card names the models involved, states the result, and says what the model did and what I did. Each card also carries exactly one verification label. <span class="aim-badge aim-badge--lean">Lean-verified</span> means a Lean proof checker accepted the statement. <span class="aim-badge aim-badge--checked">Checked by me</span> means I read and checked the proof by hand. <span class="aim-badge aim-badge--generated">AI-generated</span> means the model produced and audited the proof itself, and I have not yet checked it by hand. <span class="aim-badge aim-badge--unverified">Unverified</span> means no one has checked the proof yet, so it should be read as a claim, not a theorem.</p>
+        </section>
+
+        <div class="aim-card">
+            <h2>\(\theta(p_c) = 0\) and the Kozma&ndash;Nitzan conjectures</h2>
+
+            <h3>Statement</h3>
+            <p>For Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), the probability \(\theta(p)\) that the origin lies in an infinite open cluster satisfies \(\theta(p_c) = 0\) at the critical probability, in every dimension. This is Kozma and Nitzan's Conjecture&nbsp;3. The same conclusion, \(\theta(p_c) = 0\), also holds for Bernoulli site percolation on \(\mathbb{Z}^d\), \(d \ge 3\). Kozma and Nitzan's four further conjectures, Conjectures 1, 2, 4, and 6, and three of their four further questions, Questions 5, 7, and 9, are also proved, each in a form at least as strong as stated. Question 8 fails under the reading where every minimizer must satisfy it, a distinction that matters only when minimizers tie.</p>
+
+            <h3>What the AI did</h3>
+            <p>Anthropic's Claude proved \(\theta(p_c) = 0\) for bond percolation, under the direction of Justin Leder, and formalized the proof in Lean. On top of that proof, ChatGPT Sol 5.6 Ultra produced complete proofs of Kozma and Nitzan's remaining conjectures and questions in about ten hours, and Claude Fable 5.1 formalized these in Lean. ChatGPT 5.6 then extended the argument to hypergraphs, giving \(\theta(p_c) = 0\) for site percolation as well, and formalized the extension in about 100,000 lines of Lean with support from Opus 5 and GLM 5.3.</p>
+
+            <h3>What I did</h3>
+            <p>I directed the hypergraph extension and reviewed the resulting proofs and their Lean formalizations.</p>
+
+            <h3>Models</h3>
+            <p>Claude, ChatGPT Sol 5.6 Ultra, Claude Fable 5.1, ChatGPT 5.6, Opus 5, GLM 5.3.</p>
+
+            <h3>Verification</h3>
+            <p><span class="aim-badge aim-badge--lean">Lean-verified</span></p>
+
+            <div class="aim-links">
+                <a class="resource-btn" href="https://nitromannitol.github.io/kn1-verification-b80e9/">Proofs of the remaining conjectures</a>
+                <a class="resource-btn" href="https://nitromannitol.github.io/site-percolation-7d3f2/">Extension to site percolation</a>
+                <a class="resource-btn" href="manuscripts/theta-pc-lecture-notes.pdf">Lecture notes on \(\theta(p_c) = 0\) (PDF)</a>
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>
