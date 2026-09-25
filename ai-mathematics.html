@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Mathematical results produced with AI models, prompted and checked by Ahmed Bou-Rabee.">
     <title>AI-generated mathematics</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -17,6 +16,8 @@
         header .byline { margin: 0.2em 0 0; font-size: 1.02em; opacity: 0.9; }
         .updated { margin: 0.35em 0 0; font-size: 0.88em; opacity: 0.7; }
 
+        .aim-intro { max-width: 45em; }
+
         .aim-card {
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -25,7 +26,8 @@
             background: var(--surface);
             box-shadow: 0 2px 5px var(--shadow);
         }
-        .aim-card h2 { margin: 0 0 0.6em; font-size: 1.25em; color: var(--heading); }
+        .aim-card h2 { margin: 0; font-size: 1.25em; color: var(--heading); }
+        .aim-card h2 { overflow-wrap: anywhere; }
         .aim-card h3 {
             margin: 1em 0 0.3em;
             font-size: 0.82em;
@@ -36,6 +38,16 @@
         }
         .aim-card h3:first-of-type { margin-top: 0.8em; }
         .aim-card p { margin: 0.2em 0 0.6em; }
+
+        .aim-card-head {
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.5em 0.8em;
+            margin: 0 0 0.6em;
+        }
+        .aim-card-head h2 { flex: 1 1 auto; min-width: 0; margin: 0; }
+        .aim-card-head .aim-badge { flex-shrink: 0; }
 
         .aim-badge {
             display: inline-block;
@@ -61,43 +73,83 @@
             font-size: 0.92em;
         }
 
+        .aim-table-wrap { overflow-x: auto; margin: 0.4em 0 0.8em; }
+        .aim-card table { border-collapse: collapse; width: 100%; min-width: 480px; }
+        .aim-card th, .aim-card td {
+            padding: 0.35em 0.8em;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+            font-size: 0.95em;
+        }
+        .aim-card th { font-weight: 700; }
+
+        @media (max-width: 768px) {
+            .aim-card-head { flex-direction: column; align-items: flex-start; }
+        }
+
     </style>
 </head>
 <body>
     <header>
         <h1>AI-generated mathematics</h1>
-        <p class="byline">Various models, prompted and checked by Ahmed Bou-Rabee</p>
+        <p class="byline">Results produced by AI models under the direction of Ahmed Bou-Rabee.</p>
         <p class="updated">Last updated 25 September 2026</p>
     </header>
 
     <main class="aim">
         <section>
             <p><a href="index.html">&larr; Back to homepage</a></p>
-            <p>Most of the mathematics on this page was produced nearly autonomously by several versions of ChatGPT, which I prompted and directed. Anthropic's own proof, credited in the first card below, is the one result here that I did not direct. Each card names the models involved, states the result, and says what the model did and what I did. Each card also carries exactly one verification label. <span class="aim-badge aim-badge--lean">Lean-verified</span> means a Lean proof checker accepted the statement. <span class="aim-badge aim-badge--checked">Checked by me</span> means I read and checked the proof by hand. <span class="aim-badge aim-badge--generated">AI-generated</span> means the model produced and audited the proof itself, and I have not yet checked it by hand. <span class="aim-badge aim-badge--unverified">Unverified</span> means no one has checked the proof yet, so it should be read as a claim, not a theorem.</p>
+            <p class="aim-intro">Most of the mathematics on this page was produced nearly autonomously by several versions of ChatGPT, which I prompted and directed. Each card names the models involved, states the result, and says what the model did and what I did. Each card also carries exactly one verification label. <span class="aim-badge aim-badge--lean">Lean-verified</span> means Lean accepted a proof of the formal statement, using Mathlib alone, and the formal statement was checked against the statement written here. <span class="aim-badge aim-badge--checked">Checked by me</span> means I read and checked the proof by hand. <span class="aim-badge aim-badge--generated">AI-generated</span> means the model produced and audited the proof itself, and I have not yet checked it by hand. <span class="aim-badge aim-badge--unverified">Unverified</span> means no one has checked the proof yet, so it should be read as a claim, not a theorem.</p>
         </section>
 
-        <div class="aim-card">
-            <h2>\(\theta(p_c) = 0\) and the Kozma&ndash;Nitzan conjectures</h2>
+        <div class="aim-card" id="theta-pc">
+            <div class="aim-card-head">
+                <h2>The Kozma&ndash;Nitzan conjectures and \(\theta(p_c) = 0\) for site percolation</h2>
+                <span class="aim-badge aim-badge--lean">Lean-verified</span>
+            </div>
 
             <h3>Statement</h3>
-            <p>For Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), the probability \(\theta(p)\) that the origin lies in an infinite open cluster satisfies \(\theta(p_c) = 0\) at the critical probability, in every dimension. This is Kozma and Nitzan's Conjecture&nbsp;3. The same conclusion, \(\theta(p_c) = 0\), also holds for Bernoulli site percolation on \(\mathbb{Z}^d\), \(d \ge 3\). Kozma and Nitzan's four further conjectures, Conjectures 1, 2, 4, and 6, and three of their four further questions, Questions 5, 7, and 9, are also proved, each in a form at least as strong as stated. Question 8 fails under the reading where every minimizer must satisfy it, a distinction that matters only when minimizers tie.</p>
+            <p>For Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), the probability \(\theta(p)\) that the origin lies in an infinite open cluster satisfies \(\theta(p_c) = 0\) at the critical probability, in every dimension. This is Kozma and Nitzan's Conjecture&nbsp;3. The same conclusion, \(\theta(p_c) = 0\), also holds for Bernoulli site percolation on \(\mathbb{Z}^d\), \(d \ge 3\). Kozma and Nitzan's four further conjectures, Conjectures 1, 2, 4, and 6, and three of their four further questions, Questions 5, 7, and 9, are also proved, each in a form at least as strong as stated. Question 8 fails if every minimizer must satisfy the proposed inequality; the counterexample has tied minimizers, so a suitable choice among them may still exist.</p>
 
-            <h3>What the AI did</h3>
-            <p>Anthropic's Claude proved \(\theta(p_c) = 0\) for bond percolation, under the direction of Justin Leder, and formalized the proof in Lean. On top of that proof, ChatGPT Sol 5.6 Ultra produced complete proofs of Kozma and Nitzan's remaining conjectures and questions in about ten hours, and Claude Fable 5.1 formalized these in Lean. ChatGPT 5.6 then extended the argument to hypergraphs, giving \(\theta(p_c) = 0\) for site percolation as well, and formalized the extension in about 100,000 lines of Lean with support from Opus 5 and GLM 5.3.</p>
+            <h3>Builds on</h3>
+            <p><a href="https://github.com/anthropics/formal-math">Anthropic's Lean proof that \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\)</a>, produced by Claude under the direction of Justin Leder.</p>
 
-            <h3>What I did</h3>
+            <div class="aim-table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Component</th><th>Proved by</th><th>Formalized in Lean by</th><th>Checked by</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>bond \(\theta(p_c) = 0\)</td>
+                            <td>Claude (Anthropic), directed by Justin Leder</td>
+                            <td><a href="https://github.com/anthropics/formal-math">Claude (Anthropic), directed by Justin Leder</a></td>
+                            <td>Lean (Mathlib)</td>
+                        </tr>
+                        <tr>
+                            <td>Kozma&ndash;Nitzan conjectures and questions</td>
+                            <td>ChatGPT 5.6 Sol (OpenAI), in about ten hours</td>
+                            <td><a href="https://github.com/nitromannitol/percolation-after-anthropic/tree/main/KNConjectures">Claude Fable 5.1 (Anthropic)</a></td>
+                            <td>Lean (Mathlib)</td>
+                        </tr>
+                        <tr>
+                            <td>site percolation via hypergraphs</td>
+                            <td>ChatGPT 5.6 (OpenAI)</td>
+                            <td><a href="https://github.com/nitromannitol/percolation-after-anthropic/tree/main/Hypergraph">ChatGPT 5.6 (OpenAI), with Claude Opus 5 (Anthropic) and GLM 5.3 (Zhipu)</a></td>
+                            <td>Lean (Mathlib)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <p>I directed the hypergraph extension and reviewed the resulting proofs and their Lean formalizations.</p>
 
-            <h3>Models</h3>
-            <p>Claude, ChatGPT Sol 5.6 Ultra, Claude Fable 5.1, ChatGPT 5.6, Opus 5, GLM 5.3.</p>
-
-            <h3>Verification</h3>
-            <p><span class="aim-badge aim-badge--lean">Lean-verified</span></p>
-
             <div class="aim-links">
-                <a class="resource-btn" href="https://nitromannitol.github.io/kn1-verification-b80e9/">Proofs of the remaining conjectures</a>
-                <a class="resource-btn" href="https://nitromannitol.github.io/site-percolation-7d3f2/">Extension to site percolation</a>
-                <a class="resource-btn" href="manuscripts/theta-pc-lecture-notes.pdf">Lecture notes on \(\theta(p_c) = 0\) (PDF)</a>
+                <a class="resource-btn" href="https://github.com/anthropics/formal-math">Lean proof of bond \(\theta(p_c) = 0\) (GitHub)</a>
+                <a class="resource-btn" href="https://github.com/nitromannitol/percolation-after-anthropic">Lean formalization of these results (GitHub)</a>
+                <a class="resource-btn" href="https://nitromannitol.github.io/kn1-verification-b80e9/">Proofs of the Kozma&ndash;Nitzan conjectures (web page)</a>
+                <a class="resource-btn" href="https://nitromannitol.github.io/site-percolation-7d3f2/">Extension to site percolation (web page)</a>
+                <a class="resource-btn" href="manuscripts/theta-pc-lecture-notes.pdf">Lecture notes (PDF)</a>
             </div>
         </div>
 
