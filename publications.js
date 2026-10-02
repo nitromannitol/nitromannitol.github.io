@@ -32,7 +32,8 @@ const publications = [
     ],
     status: "submitted",
     links: [
-      { type: "arXiv", url: "" },
+      { type: "arXiv", url: "https://arxiv.org/abs/2610.00090" },
+      { type: "PDF", url: "https://arxiv.org/pdf/2610.00090" },
       { type: "Lean", url: "https://github.com/nitromannitol/ORRW-Lower-Bound" }
     ],
     abstract: 'In once-reinforced random walk, every edge starts with weight one and is assigned weight &beta; &ge; 1 after its first crossing. At each step the walker chooses an incident edge with probability proportional to its weight. Davis (1990) introduced the model on Z. For sufficiently large reinforcement &beta;, the expected range in the first n steps is predicted to have order n<sup>d/(d+1)</sup> on Z<sup>d</sup>. We prove this prediction as a lower bound in every dimension d &ge; 2 and for every reinforcement parameter &beta;.',
