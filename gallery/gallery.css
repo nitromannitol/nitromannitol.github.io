@@ -1496,8 +1496,6 @@ a:hover { text-decoration-thickness: 1.5px; }
    opens onto. Nothing is resampled and nothing moves; a lattice plate is
    written one site per pixel and a hover zoom would misstate it. */
 .card-img-alt { opacity: 0; transition: opacity .28s var(--ease); }
-.card:hover .card-img-alt,
-.card:focus-visible .card-img-alt { opacity: 1; }
 
 .card-label {
     display: grid;
@@ -2046,8 +2044,6 @@ a:hover { text-decoration-thickness: 1.5px; }
 .exhibit-grid .card-img { aspect-ratio: 3 / 2; background: var(--paper); border: 1px solid var(--paper-edge); transition: background .28s var(--ease); }
 .exhibit-grid .card-img img { object-fit: contain; }
 .exhibit-grid .card-img::after { display: none; }
-.exhibit-grid .card:hover .card-img,
-.exhibit-grid .card:focus-visible .card-img { background: var(--ink); }
 .exhibit-grid .card-label { grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; padding: 16px 0 8px; align-items: baseline; flex: 0; }
 .card-copy, .card-description, .exhibit-grid .card-name { display: block; }
 .exhibit-grid .card-name { font: 500 clamp(1.03rem, 1.25vw, 1.2rem)/1.2 var(--serif); }
@@ -2070,6 +2066,27 @@ a:hover { text-decoration-thickness: 1.5px; }
 .exhibit-grid--four > .card:first-child .card-label { padding: 24px 12px 24px 0; }
 .exhibit-grid--pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .exhibit--other { padding-top: 45px; }
+/* A topic with a single study: the card lies across the page. */
+.exhibit-grid--one { grid-template-columns: minmax(0, 1fr); }
+.exhibit-grid--one > .card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
+.exhibit-grid--one > .card .card-img { aspect-ratio: 2 / 1; }
+.exhibit-grid--one > .card .card-label { padding: 24px 12px 24px 0; }
+/* Classical models related to a topic, after its research studies. */
+.exhibit-related { margin-top: 38px; padding-top: 20px; border-top: 1px solid var(--paper-edge); }
+.exhibit-related-label { margin: 0 0 18px; font: 500 .62rem/1.4 var(--mono); letter-spacing: .15em; text-transform: uppercase; color: var(--on-paper-faint); }
+.exhibit-grid--related { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.exhibit-grid--related .card-name { font-size: 1rem; }
+.exhibit-grid--related .card-description { font-size: .84rem; }
+@media (max-width: 1000px) {
+    .exhibit-grid--one > .card { gap: 24px; }
+    .exhibit-grid--related { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+    .exhibit-grid--one > .card { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+    .exhibit-grid--one > .card .card-img { width: 100%; aspect-ratio: 3 / 2; }
+    .exhibit-grid--one > .card .card-label { padding: 16px 0 8px; }
+    .exhibit-grid--related { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+}
 @media (min-width: 1100px) {
     .collection-guide { position: sticky; top: 0; z-index: 5; }
 }
@@ -2142,7 +2159,8 @@ a:hover { text-decoration-thickness: 1.5px; }
 .instrument--flow > .flow-details { width: 100%; max-width: none; }
 .instrument--flow .model-stage--flow { width: 100%; }
 .instrument--flow .model-control-groups { grid-template-columns: auto auto; justify-content: space-between; }
-.instrument--flow .model-control-groups:has([data-algebraic-gamma]) { grid-template-columns: auto auto auto; }
+.instrument--flow .model-control-groups:has([data-algebraic-gamma]),
+.instrument--flow .model-control-groups:has([data-logcorr-disorder]) { grid-template-columns: auto auto auto; }
 .flow-heading .family { color: #A8D8E8; margin-bottom: 10px; }
 .flow-heading h3 { font: 400 clamp(1.5rem, 2.5vw, 2rem)/1.2 var(--serif); color: var(--model-text); }
 .flow-readout { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; color: var(--model-muted); font: 400 .78rem/1.5 var(--mono); }
@@ -2153,6 +2171,7 @@ a:hover { text-decoration-thickness: 1.5px; }
 @media (max-width: 720px) {
     .instrument.instrument--flow > .model-stage { order: 0; }
     .instrument--flow .model-control-groups,
-    .instrument--flow .model-control-groups:has([data-algebraic-gamma]) { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+    .instrument--flow .model-control-groups:has([data-algebraic-gamma]),
+    .instrument--flow .model-control-groups:has([data-logcorr-disorder]) { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
     .instrument--flow .btn { min-height: 44px; }
 }

@@ -511,28 +511,20 @@
     }
 
     function makeHarmonicBall(ctx,W){
-        const N=61,count=N*N,c=N>>1,pad=8,cell=(W-2*pad)/N,rand=randomFactory(0x4c514742),modes=[];
-        for(let ky=-8;ky<=8;ky++)for(let kx=-8;kx<=8;kx++)if(kx||ky){const r=Math.hypot(kx,ky);modes.push([kx,ky,gaussian(rand)/r,gaussian(rand)/r]);}
-        const field=new Float64Array(count);let mean=0,variance=0;
-        for(let y=0;y<N;y++)for(let x=0;x<N;x++){let h=0;for(const m of modes){const a=TAU*(m[0]*x+m[1]*y)/N;h+=m[2]*Math.cos(a)+m[3]*Math.sin(a);}field[y*N+x]=h;mean+=h;}
-        mean/=count;for(let i=0;i<count;i++){field[i]-=mean;variance+=field[i]*field[i];}variance/=count;
-        const capacity=new Float64Array(count),gamma=Math.SQRT2,scale=.78/Math.sqrt(variance);let capMean=0;
-        for(let i=0;i<count;i++){field[i]*=scale;capacity[i]=Math.exp(gamma*field[i]-.5*gamma*gamma*scale*scale*variance);capMean+=capacity[i];}
-        capMean/=count;for(let i=0;i<count;i++)capacity[i]/=capMean;
-        const mass=new Float64Array(count),odo=new Float64Array(count),arrival=new Int16Array(count);arrival.fill(-1);const fronts=[];
-        const levels=100,totalMass=1250,src=c*N+c;
-        for(let level=0;level<levels;level++){
-            mass[src]+=totalMass/levels;const q=[src],inQ=new Uint8Array(count),front=[];inQ[src]=1;
-            for(let head=0;head<q.length;head++){
-                const i=q[head];inQ[i]=0;const excess=mass[i]-capacity[i];if(excess<=1e-8)continue;mass[i]=capacity[i];odo[i]+=excess*.25;if(arrival[i]<0){arrival[i]=level;front.push(i);}
-                const x=i%N,y=(i/N)|0,share=excess*.25,ns=[x?i-1:-1,x<N-1?i+1:-1,y?i-N:-1,y<N-1?i+N:-1];
-                for(const j of ns)if(j>=0){mass[j]+=share;if(mass[j]>capacity[j]+1e-8&&!inQ[j]){inQ[j]=1;q.push(j);}}
-            }
-            fronts.push(front);
-        }
+        /* Divisible-sandpile growth of an LQG harmonic ball: capacity is the
+           normalized chaos density of a 61 x 61 torus Gaussian field, and mass
+           1250 is released at the centre in 100 equal increments.  ARRIVAL is the
+           increment at which each site first topples (255 = never) and POSITIVE
+           the sign of the field; both are precomputed by
+           scripts/render-harmonic-ball-thumbnail.mjs, because the stabilization
+           takes about 3 s and froze the page when run here. */
+        const N=61,count=N*N,pad=8,cell=(W-2*pad)/N,levels=100;
+        const ARRIVAL=atob('////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////YmP/////////////////////////////////////////////////YltYWFti/////////////////11XVFNWXf//////////////////////////////////////////////WlBKR0ZHS1Ri////////Yl5aVlFMSEZHSlJd////////////////////////////////////////////V01FQD08PT9FT1z///9bVVBNSkdDPzw8PUFIUlz/////////////////////////////////////////Wk5FPzs4Nzc4PEJKUVNQTElGQ0A8OTY1NTY6QEhRWl9j////////////////////////////////////YlRJQTw4NTQ0NDY5PUBCQkJBQD05NTEvLzAyNTpBSVFYXWL//////////////////////////////////1tQR0A6NjMyMTEyMzQ1NTY4Ojo4NC8sKiosLjI2O0JJUVlf/////////////////////////////////1tTTEU/OjYyMC8uLi4tLS0uLzI0Mi4qJyYnKCsvMzg9RExVXGL///////////////////////////9fW1ZRTEhDPjk1Mi8tLCopKCcnKCkrLSsoJCIiIyYpLTE0OT9HUVpg//////////////////////////9aVVFOSkdDPzw4NDAuKyknJiQkIyMkJSUjIR4dHiAjJiotMTU7Q0xWXWL/////////////////////////U09MSUZCPzs3NDEuLCknJSMhICAgIB8eHBoZGRocHyMmKSwxNj5HUFddYv///////////////////////09LSEVDPzs3My8tKyknJSIgHh0cHBsaGBYVFBUWGBseISQnLDE4P0dOVFph//////////////////////9MSEZDQD05NC8sKigmJSMgHRsaGRgXFhQSERERExUXGh0fIiYrMTc9Q0hOVmD/////////////////////SkZEQj88ODItKicmJCMhHhsZFxUUExIRDw4ODg8RFBYYGx4iJisvNDg8QUlTX////////////////////0lGQ0E/PDgyLSknJSMhHx0aFxQSERAPDgwMCwwNDhATFRcaHSElKCsuMjc+R1Nh//////////////////9JRkNBPzw4My4qJyQjIR4cGRYTEA8NDAsKCQkJCgsNDxEUFxodICMlKCsvNj5KV///////////////////S0dFQkA9OjYxLCklIyAeGxgVEhANCwoJCAcHBwgJCgwOERMWGRweISMmKjA5Q09c/////////////////09LSEVCPzw5NTEsKCQgHhsYFhMQDQsJBwcGBgYGBgcICw0QExYYGx0gIyctNkBLV2L///////////////9XUk5JRUE+Ozg0LyolIR4cGhcVEg4LCAcGBQUEBAQEBQcJDA8SFRgbHiEmLDQ9SFRg////////////////YlxWT0lEQD06NzIsJyMfHRwaGRYRDAkHBgUEAwMCAgMEBgkMEBMWGR0hJSwzPEZTYP////////////////9jXFRNR0I/OzcyLSgkISAfHh0bFhALCAYFBAMCAQEBAgQGCg0RFRkcISYrMjtFU2P//////////////////15XUEpEPzs2MS0pJiQjIyIiIBsVDwoIBgQDAQAAAAEDBQgMERUZHSEmLDI6RlX///////////////////9dWFJLRUA6NTEuKyknJiYlJSMfGhQPDAkGAwEAAAABAgQIDBEWGh4iJywyO0dY//////////////////9jXVdSTEZAOzYyLy0rKikoJyYkIh4aFhIOCgYDAQAAAQMFCQ4TGBwgJCgtMzxIWP///////////////////15YUkxGQDw3NDIwLiwrKSgnJSMhHhsYEw4JBQMBAgMFBwwRFxwgIycqLjQ9SFVh//////////////////9hW1RNR0E9Ojc1MzEvLCopJyYkIyEfGxcSDQkGBQUGCAsQFhsgJCcpLDA2PUZPWF5j/////////////////2FYUEhCPzw7OTc0MS4rKSgmJSQiIB0aFhIOCwoKDA4SFxwgJCcpLC8yNz1CSVBWXGP/////////////////X1RKREA+PTw6NzIuLCooJyYlIyEfHBkWFBIRERMWGh4iJigqLC4wNDc7QERKUFhh//////////////////9YTEVBPz49OzgzLywqKSgnJiQiIB4dGxoZGRkbHiImKSorLC4vMjU4Oz5CR01WYP//////////////////WU5GQkA/PTs4NDAtLCopKCclJCIhISEhISEhIyYpLC4uLi8vMTM1ODo9QUVMVWL/////////////////YVdOR0NBPz07ODQxLy0sKykoJiUkJCUmKCgoKCkrLjEyMjExMTI0Njg7PUFFTFVi/////////////////11UTUhEQT89Ozg1MzEvLiwqKScmJiYoKiwuLi0uLzEzNDQ0MzM0NTc5Oz5BRkxUYP////////////////9cU01JRUNBPjw6NzU0MjAuKyooKCcoKi0wMjIyMjI0NTY3NzY2Nzc4Ojw/QkdMUl3/////////////////XlVPS0hFQ0A+PDo4NzUzMC0rKikpKisuMjQ1NTQ0NTY4OTo6Ojo6Ozw+QURHTFFb//////////////////9bVFBMSUVDQD48Ozo4NTIvLSwrKystMDM1Nzc2Njc4OTs9Pj4+PT0+QENGSUxRWv///////////////////19YUUxIRUNBPz48Ojc1MjAvLi4uLzE0Nzg5ODg4OTo9QENEQkFBQUNFSEpOU1z//////////////////////1lQSkdFQ0JAPjw5NzU0MzIyMjI0Njg6Ozo6Ojs8QERISUhFRERFR0pOUldg//////////////////////9iVExJR0VEQ0E+Ozo4ODg4Nzc3ODk7PD09PT0+P0NITU9NSkhISUtOU1lg/////////////////////////1dOSkhHR0VDQT49PDw8PD08PD0+P0FCQkFBQkRITVFTUk9NTE1QVVz///////////////////////////9bUU1LSklIR0VCQUA/QEBBQUJDREZISUhIR0hKTVJWWFdUU1JTV1//////////////////////////////YVZQTk1NTUxKSEZFRENEREVHSUxPUVFQTk5OUFNYW11cW1lZW2H///////////////////////////////9dVlNSUlNUVFJPTElHR0dIS05TVlhYVlRTVFZZXWFjY2JhYv///////////////////////////////////19bWVlaXWBgXFZQTUtLTE5SV1tdXVtZWFlbXmL//////////////////////////////////////////////2FhY/////9iW1VRUFBSVVlcX19eXVxcXmL///////////////////////////////////////////////////////////9gW1dWVldaXWBhYWBfYGL///////////////////////////////////////////////////////////////9gXFpbXF9hYmNjY2P//////////////////////////////////////////////////////////////////2FeXl9gY///////////////////////////////////////////////////////////////////////////YmFhY////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w=='),POSITIVE=atob('wf////8HgH/w//P//wHwP/x/+P//APyP/x/8/z8A/OP/h///BwD//P/x8/8AgL///z/+DwDg////7x8AAPj/////AQAAP/z//x8AfvwD/v/8QfD/H4D/Dz88//8D8P/gh///fwD8D/jw//8PAP4AP/7/5AAAP/D//x8AAMAD////AwAAePD//z8AAAAC////BwAAAOD//x8AAAAA/v//AQAAAMD//z8AAAAA+P//BwAAAAD///8AAAAA4P/4PwAAAAD8D/8fAAAAgP/h/wcAAADwP/z/8QCAA/+H//8zAPj4//H/PwAA//9//scHAMD//99/eAAA8P//+w8PAAD8/3//8PHAAf//xw//Hzjg/38A8P8HAOD/B4D//wAA/H8A8H8OAAD/DwD/DwAA4P8BwP8BAAD4PwD4fwAAAD4cAP4fAACAgwfA/38AACDwAPj/HwAAAD4A/v8DAIDBB+D/fwDA//jA//8PAPD/H/z//AEA/P/D/58/4AN/fPg/8Af8wIcf/wGAgz8A4MM/AHDwDwA88AcADvwDAAP4AMABfwAAAD4AMIAPPADABwAA8MEPAPADAA4+/AMA/gHB/4d/AIA/8Pz/+Q8A4A/+////OQD4AQ==');
+        const arrival=new Int16Array(count),positive=new Uint8Array(count);
+        for(let i=0;i<count;i++){const a=ARRIVAL.charCodeAt(i);arrival[i]=a===255?-1:a;positive[i]=(POSITIVE.charCodeAt(i>>3)>>(i&7))&1;}
         return function(t){
             ground(ctx,W);const local=t%12.5,level=Math.min(levels-1,Math.floor(Math.min(1,local/10)*(levels-1)));
-            for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x,a=arrival[i];if(a>=0&&a<=level)ctx.fillStyle=(a===level?C.ink:rampColour(ORDER,a/(levels-1)));else ctx.fillStyle=field[i]>0?C.deep:C.bg;ctx.fillRect(pad+x*cell,pad+y*cell,cell+.25,cell+.25);}
+            for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x,a=arrival[i];if(a>=0&&a<=level)ctx.fillStyle=(a===level?C.ink:rampColour(ORDER,a/(levels-1)));else ctx.fillStyle=positive[i]?C.deep:C.bg;ctx.fillRect(pad+x*cell,pad+y*cell,cell+.25,cell+.25);}
             dot(ctx,W/2,W/2,4.5,C.ink,C.bg,2);
             if(local>12)fadeOut(ctx,W,(local-12)/.5);
         };
@@ -770,6 +762,294 @@
         };
     }
 
+    function makeAvalanche(ctx,W){
+        /* The exact sample of Figure 1 of "Sandpile avalanches in two dimensions
+           are finite": a stationary sandpile in a wired 151 x 101 box, made by
+           Wilson's algorithm and the inverse burning bijection, shown in the
+           105 x 105 window that holds the avalanche.  First the burning tree
+           (branches whose subtree has at least 12 sites, wider for larger
+           subtrees); then one grain at the origin and the avalanche, run wave
+           by wave (waves of 3494, 1953, 3034 and 2 sites; colour counts the
+           topplings); then the six marked sites (the origin, its neighbours and
+           a distant site), the tree paths joining them up to their common
+           ancestor, the past of that ancestor (outlined), its path to the sink,
+           and the 17 edges from the joining paths to sites outside the past,
+           which the quantity L counts. */
+        const n=105,DATA=atob('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CxoBBAMPD0JIQkNib0ZGW05OQkRJV1ZTSENCRUlDUQcHAhICBhtEQUdGVVNPSEdBS05MS0ljTlleTkFBU09KW04DBQcLDQUJAQErDgozCDsNBzMfHx8fCg8NKy8vAggTDQsPJSsBDgcGCxoPDw9BRUNFQmNuSUlKTk5LUk5OSUNWU09PSEZDUkwCBxIHCxsPQUtJU19JQkdHS01DREpiZ2NaT09OU0VGW0ADDgkJBwICJycrCgAyBzsOAjMKAQ4ACwoNCwUrLw8VFxYmKwEPCQsACw8BREZDTkZDRWdiQ09DRUZGUkJDSENFY29vb2JvUQcHFxcWERtER0lHU05IQ05EQUNPTkhmaWNKRUpNU0lLW04HBwcHAScnKwALDw4zADsJAjMJDgkODg0CCwUBKw8PCgArCwIKCgEODg4PD0lHQkNOTkZiQ0FDREZKUkdHY29vb0FKam9qbgsLCw4NFxsPQEdKV1dTT0JOTUNOR0JDYm5JSENFVlNFRktOTAsKBysLBQcFCg4zDTs+Bzc3NzIHNzMOEQEHKwoKBQcrHh8JDwUDCkFFQk1HV1dTTkZnY0VTX0pNV1dXY0VDSk9KSkpAagsLCw8PDkFBT0BLTEZTT01HQ09IQkdDZWdiQ0VDT1JJRUpNAw4NBisBDg0HAwg3NzY7HQsNDDY1OTY2EgcGKwULBQsABhsfCRIfRENFRldWWkdXU0hHZ2NfSklNSklHY0hDRUZGRktGa0ALREJAC0JPQkFJRlNeSENNU05NQ0lDT0FnYkNPRVJCBwcHAw8JDCsvAQ4HAw4bCwsFGh0DDQMCDgYzEwwmKwEACw4GCwUbHxIPAkZDQklNTk5NU09IR2NPSk9CQkJIY05OREpFRkJMa29eX0JFRUNCQk1DTlVXUkdHV1dXU0hDSUVGZmNPSVdWVlEKEw4DDQErDwgHAwgbCwQJAxkHBwMNMz4+FxcrDg8GBQEBBgYWGx8KD0ZDTk9CSU5OU05DSGNCSU5OTk5CZWZjTkNESUdHQWtAW19fX19PTkdHQ0JGVlFLTUtKV1dnY05GY25JSEpDTlNMEwEHAgcrLgYJAhcbDQcDDxoBDQcXNzIDCwYLDwEJAwYDDAsLAAsFC0VWU0VHQ09IV2Nvb29CQk9PQk9FR2NuQ05PT0lHV2tBRktFRktBTEpHU09AQ1FGQldXWkdXZ2NFZmNCT0hGY14THg0XJyYhKgcHFxsFCQkDChofCQYLCjczCwAGCw8IAwgSBwYLDw5FRlNPUklJQ09BR2NPREpDT09BT0pPVmdjTUNES0VLZmtFQkFOTkRGQ0FAU0lNQ1JAR1tLVlFbTWJjb29PSk9ib04XFxcbKy0nKw0LBgsABwMPCQUbCgENCgIzAAcLAQQTHxIeDAtEQUZLTXN/f3J/f0RGRmNCQk9SX09CQEZGW01nZ2NPSENEa0FCQkJJSUNCQk9BV1djb29BRktAWldbSWdjak9EYm5uTkkGBgEmJisACwoODgUCBxMFAwobDw8ACgczDwUGAw8SGhEHBwICRUVKTXNPeX9Fe39/b29fX19fSkpPRlZWW05DTWNNQ0JCam9vX19eXl5eXl9PREFjT05NS0tBWktOQEJjaW5vbUdGQ0kDDQIrAQEOBgYLBQoHARcTDwAbBQsCDgwyDwEHAxIfGhEKDAMPcn9Pcn9PT0BLRUZ7T0pFS0FFRkZGS1ZbQU1HR2dnY0JOSUBbSkBHQkdXU0VLTk1jTkNBS0tOW15BTkdiQ05IQ0hDQkgHBwIrAgIPDgENCQ0JEgcTCQEbHw4ODQcyDwUGEx8PGR0THx9Fc3p/f19FQk9AS0t7RUtPQU9JRUVKRktOTk1KV1NIY01DTkZbREJHR0pKU0lJR0ZiQ0JOS0BLQFtfXkFnZ2dnYkdTT04BBycrHw8PAAIDDggDFREXEwYGCgMPDwA3AAMSHgoOBxMfCgpIc0pAS0pGU05OTUx7RUtBTk9FQkdDSURKR0dHWlZWdnZ3c0VbT01KSkNIU09CSUNhQ0JKQkFGRkFGWkdLQFdXZ2dzSUgHJisOAAsPBQYHAwUCEx4JEwQLAAMODg0rBgMRAwgDBRMECgoPckRCS0pIUldXV1d7QU5WU0lOTklGQ09IRktWWkNCRUNBc0pFSkZDSGNvb29vSENlY09IQ05MQ01WW01MQltNRUp3cgcmKwEEBwEBBwMIEw8GEw4THQMJDQICBycrBgMVEw8FAxIFA0Byf0JFQUtFVlpMS0Z7f0BKV1JCU19PQklPSktbXXN/T0JGc0lJTENib29aX19qb29PYk9PTUdHV1dbSUZCR0pIQ0hJcgErLiIvCAcHBhMFEwIFEw0XFxcnIicnJisLCAIjLx8fHx8PD0VzT0JPRUpNRkNCSUB2e0VKTFdWU1leT09FVlZWWXN5f0JBc0JCYm9vSkVBVltBTGthb0lNR0ZGS0xJQkNFSkZDQkZzfQcGKy8qAgkJAxUTEh8fHgcGGwYaJysOAQEBBhYjDwQFCg4PQUJyX19fX19PT09PT0Z7fn9PRUpTX09PQkVGW05NQnJDeX9Fc29vb0RLSkZXW05BQ2lvX19PTUtLSUJHR0NOSENPT0Z3cgYLDgsqLy8vLyIvHw4OCQ4MGwAbBAIODw8BCQMiDw8PDw8BQnJ+SUpPTkpEQ0RLQXV2cXtFQ0hTTkRLT0RFSkVKRnZ2c3l+f0pAS09KVVZbW09OQ0JJTklPSkBKR0NJTEJDTUNJQURKc0FMCw4PCkFNKy8PDgcDDggXGwEbHx8KCgEPCCMvBQIEAg4PQnVzQkpAQ0VTX09EQ3pKd3tFR2NdQ09FS0JPQkpKQ0Vzf09PSUlORUZWW0tGS0pJQ0JNQ09AS01KTEdHR1JCV1NPQkJIc04HC0FRXk9KTQYLQAoHBwcbCwYGBhsPAQ8NIy8ECQcDAg8JRXN/T0lNQ1JfWV9fT3pNS0tCSGZmY0pFS0JKTkRJQ0JySU9PTUdDSk5BTkxFSkVJQ0ZCQ0FFSUZGQ0RFSVJXWXN/cn9/f1FeXl9fSkpKUU5OT01NTAYLCw8PBhsfHwgHLxoCDwUDAgIPD3JfSk9PUl9PT0VKRHp/fn5/cn9vb0VSTk9IQ09Pcn9+Q0lNQkJDSUlOTUNCT0lDT0ZHU0VGc39/f39CRVZac396f09FW19FVltBQEtFU0lJSUdCBwsLCwoKCwsBDQc2DxkfHx8fHw9EQXNaX19fX0RGRUlDTk9KQEZ7cnpKRUlTREZzf39/f0lNQ0JPR0ZDQkVHQ09CQUhzf0lKU3J/f09KT3pPRUNIc0pPQkRKRUtKW0FPT0tGV1dTSEJDTU1CTQYBCw4PDgs6CAMJDgoKRVZTTXNEQk1MW0JIR0dWU0pKRkt7f3pESUdXc39/RVZbTkNOQ05JSVNfT0JIU0pPRUZzeX9Ic39CT09BTXt/f39/f0RFQ09PQUFPWl9PSktFS0FXVldXY19fTgkCCwoKAAY7Iw4DAkFMS0BXUnNORkNOW05GS01TXkRKSktAQXtCQUtKc0RFQVtOSkNIQkdDQVNFQfP//0JPQnJ/T3p/f09PUV5PQEtFRltPWl9fT0VLUk9KREZLSkVLSkdJQ0hHY0RKTgcGBQINDQY7JyMCAkVHS05HV3JDSENNW0hDRElXV1dTREVHd3tPRkJCd3NPRktKTFdSQkdDRVNIRvNP+v/x/39KSkpFS0FOUlpKT0BLRltfSkVbQU9EU0pPT0pERUpKTUpHQkNOY19PSkAGEx0HBwY7BiMPAgJJSkJLTHdyQ0VWWUJHR0dLRkp3d3NEe35LRUZGSXNESkRJR0pXV1JC8/////9BSvr/+v9KT0FNRlNfX1lfT0VCTEZbX1VbT0pCUkpKQEVHQ09CSElGQkJDYlpFS00THTcyAQA7Iy8fHwICD0FKR0p3ckdCQkNMQUtCTHd6QnNPRXtLRXN/f39NR0dHQUpKR1dX809PT1pPSUVG9vtEQkJNR1NaT09KQUJBR1ZWW1peXl9SX0pBTkNFQ09ORUNORkdTYlpJTAcSNzozDg07IwQLCg8PCkFHRUpKd3F3ckJCQ0x3d3tNRnNKQHt+T3JAS0lDTkVBR0pMRUpC809CQUpKT0lM+15fT0VGQlNaT09KT0JGRltAS0VGS1pfQEtCTUJTTkhGQ0VDRkdTYlpPTgcXOwo3Mjc7Iw4JDwALD0VJA0ZBSnd6d3d3d3J7TEpNc39AV1t6f39FSkhDQkFCSUdHQ0hG809PQkpPSk5P+kVLSkVDRVNKT0FKT09KQEFDTEtAS0VCT05CR1dXV1NPUl9CRkdjbkRLT05NOwsMNzsBJyYjCQECBQcDAkhDTEFaS0BGWnd5R3N/f0pGW0BGS0BDTlNfT0FCR0pHR/P//19BT0RLQENA+/9KT0JCYm9FS0JFS0VLRkdCQ01HS0BDTk9HS0BKQlNfX1pPSUpnZmNJTklNOwACGx4PCSMvLwUDBgcTDg5FR0ZaTk9NW0BHSXNESkBWW0ZGS05HQ1JFS0dDTElKTPNPQlpPRENKTkNCTPtFS09ib0RKSk9FQkBLSUpXU0FGS0FHQ0lKTkJNR1NJSklKT0VJY24HBwcHOwEHCxoPIy8AKy8CBAkXFxMPSAMPSkFJW19NR3JDT1ZbQUFOTkxHU15JTU1CR0dCQvNOTklJTk5JSUNFR/v/////T0JPT0pFQ0VCQkZJU0JERUJGU19fQk9JR1NPSENCSENPYl9eTQsNOwEGBhsPIwkBJisGAwIKCRMIAw5FRkNNVlpNSndzT1peT0JCTkNIUldTQkhGUUpnZ/fzXl5eX19fSENPSkvFwUv6SkJPT0FPT09CTkhTXk1DT01TX0paX0FJR2NCRUNFRmNvb0VLQAsAOz8ACwsKIw8GKwQCAw4IBhIHAgNGR1dXWUNFS01zSUVbUV9PSUdCVllTUl9SXWdqR0f3805DSkBbX09ERvb39/b7QUJJQENJTkNGQkJXV1NPTkJTTkVLSk5IQmNvb29vbm9KT0pBT0wHCzoOAQsKLwALKy8GFxcTEh4CAgNEQUtJQkNCSUhzQkBbX0pPSEdCR0JTX1pdQmtLQUFM9/NPRUdWW09PQHvGy1teX09PQVNPT09JV1ZWUlNPSEdSQ0pLTUdDT2NOT09JA0RKSUlOSAI2MTsABwsBAQcGASsECw0jHw4HAgcDRUlHQkNNQ0FzTkZbTk5IQkJCR1djRElDTWtBT01DRfNFS01bQEtFQntARkZGRkZGR1NESkRGSkdDUVNBQ0hXU0lJR0JDQWdjRUtNBwMCDgcnJyI6NzsPDQsSBQYBBysvCQ0jCgoNBxYWEw9IR0JHQ0V2c0RaQkdCR0dXVlpnZ2dnYmtvSUNP8v9KRUpbX15JQntFR0NIQ05MSVJHZ2ZjSUxDVWNNZ2diU09GSlZTT0djREkHAgMOCAYrACI7Pg4NCgsSDggHBQErLy8vCQoPDBMfHwECRVZSR3N/f09ZR0pHQUtNRkZBRltKZ2ZrSPP//09FRkFLT1pBQnt/RUZGR1dXV1dVWUNhQ0VDQmZna11iU0RKSlNfQEdjT0JNBhYSBwYrLicmOwENIi4vDw8IAwEbDwUKDwUKEx4OGR8PDw9VV3NKRUZZRkpCUkZBRkpXVVpNRktNQ/JOQU5BQEdGVltBV1Z7T09CREpNS01DT0JmY09PQklFVlpiU09PSVNJTkxjSU5IAxIeBiYmKwENOwYDIg8PCgAXEx0bAQkDCQQJFhMCDwoPQAsCSHNKSkpHS0BHV1dSSldaQ05ISk5MQ/FDQk5OTkxLS0tGS017SkpCQkJFS05DQkJFY0VDRUNAW11nY0lESldSY29vTk0HEx8JASsuHh8OOwgjLwABDwYaFxcbDwgDDxIfHx8PBQtBTQsPcn9JRUpNTU1DSEdSSltAR0NOTkhCQ/XzRVdTTUdGS0BCTXd7QEtPQkJOSU1DT0Fjb0hTT09BQVtMY05OSEZSY0pABwMPEwkIBwErLwoOOy8vBQcCDwobHQUKCAcDIi8fBAJBQURCBwtEc0JCSEdGRkZGRkZWV1tNSldXV1dSQ/L/T0lSR0tLTkZDTXtOQkFOT0ZHRkZTQk9jX19fRUtBV1pCYmdnZ2NVY0JBBwMFEw4DDAcGKwoJCw8KBAkDAQQGGgcCAgojLgQbDw9ST05OTAtyf09PT0lDQUdHQ0VDREpHRkpMSklS8/9OSUlSRlZWUkxXUntPT09BQUlMQ09STkVjSkVWVlVWWk1HZ2tLQGdzb0JOTAcTHg0HBwsGKwoOCwEMFxcXEh8VGw0HBwInIw8KCkBTTUdDRkVzSk9BTUhDQk5NQ0JOQkhKQ0JGRkdX80hDT0hXVltKV1dZUnt/QXF/QkZDT0pVY29vQUBbXUJHQ0hBW01LTUpzSkZDTgcXFxIBBiYmKw8KDgYXGwoJHxoaDg4EAQcJIwUGC+bn5+fjSHN+SUlNR1NOTklNQ0ZDRUZJQ0JIQ0hG8kZDQk9ES0ZKTEJXYkZ7QnJ5f0VDQklDYkpEQ0ZGWkJBV1dXW0RBR0pzRUdTSAsNChcXJisLBQoFBgsLDQIHBBsJCQoCDgwHIwpARuvtSkfn5/f39/f38lJCR0JCQ05CQ01HQ09PRUPy/UNSX0FCRElCQkdaZ2F7QnJCeX9ST0hzf0RDT0RBWkdHS0ZLW09PTUlzRkdTQkAKFxYWGw4MCQMECgwKDQICDxoFAwkNBwcKI0BHQUbqRkFGS0BGa01K9/JCQUf39/NOR0JHU05O8//9Q1JfSU9PT0VGR0tJSmd7cn9PT3l+f39/en9CT09GWk5NS01GS0RKTXN/RkdTQkEKGw4ODQoGAw8GBwMPAQcHBRoODwIPDQwJI0VK5+brTUdLQEdma09ASvfyR0H7TPNAR0dXV/P//khHU19PT0RKTkVDRElDQEF7f29vb29PRUpORXtyf0FIQ0VLTUtMSkdHQ3JFRkpTQkEKCwoPDwwDDw8JDAMFBwcHCQMPCQ4IAwUjLwJJ60BbX05MQktrTktOSkr39/f6R/NFQkxLSvNIQ01HU09PT05PT09CT09PRkdLQEtAS2pKSENPSnt/en9PT0RKTUlGSUtKc39JTElTT04LDg0LDgMPAAsPAg4ECgwKCgMPAg8PBSMvAANF6+9GS05CQktrX01MSVdWVlZaR/NOTUdLTff39/f3805JSENJREVTTklPSUxLRkJOTGtvQkJPSktPRHtAS0JPRUNCT0lMc25ubm9vb29OQAsNChMFBwYGFxMOAgcDCCMvAgkBIi8BBQMC1dtAS0lCV2ZrWUdHR1tOQUBJR/JHQ0RKTUtMSkNN9/N/f39CQkJVU09CT09KRldTTVZrT09PREVJQ3l/cX9/f39CSU5PdndzT0pKRWtfX05BTBMECgoDDRMNBwIDIy8qLy8iLwoSDw8P2kZGSkhCW2tLWk1GRkZLTk1HV/JK9/fzTkdDTVdXV/NJRXt/f39yf0FCT0BLSlpXV1tOTkBJU15PT095f2Vma3pFQ09FQUdzSkpAS0VGW19BAhcTDggGBxcXFhYTIg9ABisvER8fDwrV2kxCR1dXW2tLWk9OQEJNR0JLWvf3+UbzSk1HV1tLSvfzQFtPRXt/elJfQUJMVltNS0tPSk5GVlNKSk9PQGtLRXtCQkFIRklzRUZHS0FMVltBBwcXEw8PCgUJBgMSL0VCCwsaH0VBC9XZR0dHRltGRmtOS09ERkNBSkdGS01J8//ySUhLTUtLTUrzVltPRUZLel9aT0ZGW15OTk1NQUpGU19FS09BQWtuRnt/f3J/QkVzSkVBQUdHW0FPTQsJEwIECQMFAwISCUhGRUZGVtfX1tpHRktLS1tNZmtfS0pPQkJPTkxLSkhH8/n/QUZLSUtLSkzzWl5OSk5Ae0VbSkhDREtPTkNIRklTX0pFRkFDTUFrTUtKen96f09yREFHV1FWW09PSQojLy8vLy4uLy8vJiMCD0lKTdvBTkRBQUFWVltOa05bTk5LT1JPQENIV1JX9/NJTUNJSEtLTfP/VVtFRktPe0BbQU9PT0lJTUNSX19fQU1NTFdXV2drREFGS0FNe0F1c0ZLSVdbS09PTkwjBQsJCAMPCg8KIy8PDwEDRdreXl9OR0dLTUtna09bQEtFS1JJQUJXWldbTPJH9/fyQ0RJ8/9FW15JQEJMe0JaX19fSkJBQlNeSURKRkdCV1tOQGtRT09OTk9Ie39/cklMQ0lNRUtOAw8iCQwDDwIACw8KIxofHwUDDw8PD1peS0tOQEtrbkBbX19ERVNPQUdbXUtKQvJB+kf38kPy/0pBTFtfRkd3e09AQkxbT09WV1dSR0NOSUdHW05GQmtfT09PQEpna0p6f0JFQ0FDT0RKIy4tBgMCDw8FCgkAMwQGGw8SDw4ODkpZRktFR0FLakJNS1pfXl9BQk1GW0BKRvby+0xK8vP/QU9BR1ZbQHZ7REJFQkJLT0BbQEJSQkJDSUZGS09BZ2tBTUtBQWdrQEZWW19fX0VDSU9IJyciMz8/CgECDw8BPw8EGxEfCQcHA0paXkFNSkdGa0JBRktNA1lPQk1BW05JBwP1+QNJ8vNJT0FWVltFR3tLQkVDRUJGS0VbTkdXUkJDRkZWVldna0tCSUJPTWtOT09bXk5LWk9PT0AHBwIiMwI6PxIfHwUHCQ0DGh8KCQIMA0RFW09JQUtGW19fTkAHBgNJTUJCW00GCQcDDw9I9vNPSk9KTkFNRntub29vb29KTk9JSk5AUkdDSUtLTUZrUV5fT09JZ2tPRUZGW09AS0pBQU4LCQYmMw8FOx8FGwkKNzczBAoKDQIHAw4PSk9OQkZBQVZbQU4KEx8fAkZCWgcHAwUDMT8/Pz9BTEtAS09PTWtvb0FOQGtvT0pPREpNYkJDT0VLR0ZrX09KRUZBa25FS05OQUFPQEJCT0lMMz8/Pw8FOwULGw8PCgkzHw8IAwEHFxMJRUtIR1dXV1tBQklMEwkaD0hCW05MMz4/Mg8KQEZHQkZCS0FNTEtPal9KQUZrT0Fhb0JCYUdTRUtLREFrT0pPVldXZmtKTk5BT0JAR1NPSAYzPw8EBgYLOwUGCwALBwczBAoODg0DCRMCSUxGSlteREVTX04HEw4aHwJFSkkDNjM5P0FNR0dHQkpDTU1HQmZma1pBT01rb29vam9CZmZjREVJQ0Vqb0VWW0BBa0tRXl5CT09FSVNIMz4+DgkPCQwLOwkGCwIOHgA2NjYzDgYDCBMCDw8CDklaQlJfSk5MFxMECg8CAkgDBTMPQU5JTEdHU0hnZ2dnZ2tARltCREFLT0BBRmtvSGNvX0VCQ0JPakRLTkFHa05ST1pSX19fX14DMQcDDw8KDw8AOw8KCwICGw0HAjM/CAMGAhMPDwEBAw5aXl5OSAMPCBMFAwkPDgczPz8PQUJCR0FBV2drTUZGW15PTVtfT0ZGQk1HS0BrT2JPWl9FQ09Fa09KQU1La1FeRFpeSURFRUkzPgkDCQoAAQYCOz8ECwIPGgcKBzMNNzMFBxMPCg8GFxNIBgIDBQMFAxUTBQMECQozCQQDRkJnZ2dnZmtOQEtBTEZLQFZbT0hHQldWVldrQWJfRVtfX0BGa0pK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'),MARKED=[[56, 51], [55, 52], [56, 52], [57, 52], [56, 53], [8, 74]],ANC=[40, 79],GAMMA=[[40,79],[40,80],[39,80],[38,80],[37,80],[36,80],[36,81],[36,82],[35,82],[35,81],[34,81],[33,81],[33,82],[34,82],[34,83],[34,84],[33,84],[32,84],[32,85],[32,86],[32,87],[32,88],[32,89],[31,89],[30,89],[29,89],[28,89],[28,88],[27,88],[26,88],[26,87],[25,87],[24,87],[24,88],[24,89],[23,89],[22,89],[21,89],[20,89],[20,90],[19,90],[18,90],[18,91],[18,92],[17,92],[17,91],[17,90],[16,90],[16,91],[16,92],[15,92],[15,93],[15,94],[16,94],[17,94],[18,94],[18,95],[18,96],[19,96],[20,96],[20,97],[20,98],[20,99],[19,99],[18,99],[18,98],[18,97],[17,97],[17,98],[17,99],[17,100],[16,100],[15,100],[15,99],[14,99],[13,99],[13,100],[12,100],[11,100],[11,101],[12,101],[13,101],[13,102],[14,102]],GEXIT=0,CONTACTS=[[13,63,12,63],[12,69,11,69],[12,70,11,70],[11,71,11,70],[11,71,10,71],[10,72,10,71],[10,72,9,72],[9,73,9,72],[7,75,7,76],[8,75,8,76],[34,77,34,78],[35,78,35,79],[35,78,34,78],[36,78,36,79],[36,78,37,78],[39,79,39,80],[40,79,40,80]],SRC=[56, 52];
+        const count=n*n,height=new Uint8Array(count),dir=new Uint8Array(count),width=new Uint8Array(count),inC=new Uint8Array(count),inK=new Uint8Array(count),inBox=new Uint8Array(count);
+        for(let k=0;k<count;k++){const b=DATA.charCodeAt(k),j=(k/n)|0;inBox[k]=j>=2&&j<=102?1:0;height[k]=b&3;dir[k]=(b>>2)&3;width[k]=(b>>4)&3;inC[k]=(b>>6)&1;inK[k]=(b>>7)&1;}
+        const DX=[0,1,0,-1],DY=[1,0,-1,0],src=SRC[1]*n+SRC[0];
+        const nb=k=>{const i=k%n,j=(k/n)|0,out=[];for(let d=0;d<4;d++){const a=i+DX[d],b=j+DY[d];out.push(a>=0&&a<n&&b>=0&&b<n&&inBox[b*n+a]?b*n+a:-1);}return out;};
+        /* The avalanche, wave by wave; a round is one generation of topplings. */
+        const ht=Uint8Array.from(height);ht[src]++;const waves=[],odo=new Uint8Array(count);
+        while(ht[src]>=4){
+            const round=new Int16Array(count).fill(-1);let frontier=[src],r=0,last=0;
+            while(frontier.length){const next=[];
+                for(const v of frontier){if(round[v]>=0||ht[v]<4)continue;round[v]=r;last=r;ht[v]-=4;odo[v]++;
+                    for(const u of nb(v))if(u>=0){ht[u]++;if(u!==src&&ht[u]>=4&&round[u]<0)next.push(u);}}
+                frontier=next;r++;}
+            const sites=[];for(let k=0;k<count;k++)if(round[k]>=0)sites.push(k);waves.push({round,sites,rounds:last+1});
+        }
+        const support=[];for(let k=0;k<count;k++)if(odo[k])support.push(k);
+        const pad=6,cell=(W-2*pad)/n,cx=k=>pad+(k%n+.5)*cell,cy=k=>W-pad-(((k/n)|0)+.5)*cell;
+        const layer=()=>{const c=document.createElement('canvas');c.width=c.height=W;return c;};
+        const pal=DARK?{tree:'#55536a',warm:[[94,60,52],[139,80,62],[186,102,74],[226,140,96]],front:'#FFF0CB',navy:'#EDE7F6',past:'#7FC3E0',gamma:'#B79BE0',gold:'#E2C25A'}
+                      :{tree:'#c3bfcb',warm:[[241,213,188],[227,165,126],[201,105,79],[168,74,58]],front:'#6e2419',navy:'#1f2a44',past:'#3f7fa3',gamma:'#7b4f9e',gold:'#C08A00'};
+        /* Burning tree */
+        const tree=layer(),tc=tree.getContext('2d');tc.lineCap='round';tc.strokeStyle=pal.tree;
+        for(const w of [1,2,3]){tc.lineWidth=[0,.9,1.6,2.4][w];tc.beginPath();
+            for(let k=0;k<count;k++){if(!inBox[k]||width[k]!==w)continue;const x=cx(k),y=cy(k);tc.moveTo(x,y);tc.lineTo(x+DX[dir[k]]*cell,y-DY[dir[k]]*cell);}tc.stroke();}
+        /* Joining paths, past outline, outgoing path, contacts */
+        const paths=layer(),pc=paths.getContext('2d');pc.lineCap='round';pc.lineJoin='round';pc.strokeStyle=pal.navy;pc.lineWidth=2.4;pc.beginPath();
+        for(let k=0;k<count;k++){if(!inK[k])continue;const i=k%n,j=(k/n)|0,a=i+DX[dir[k]],b=j+DY[dir[k]],p=b*n+a;if(a<0||a>=n||b<0||b>=n||!inK[p])continue;pc.moveTo(cx(k),cy(k));pc.lineTo(cx(p),cy(p));}
+        pc.stroke();
+        const past=layer(),qc=past.getContext('2d');qc.strokeStyle=pal.past;qc.lineWidth=2;qc.beginPath();
+        for(let k=0;k<count;k++){if(!inC[k])continue;const s=nb(k),x=cx(k)-cell/2,y=cy(k)-cell/2;
+            if(s[0]<0||!inC[s[0]]){qc.moveTo(x,y);qc.lineTo(x+cell,y);} if(s[2]<0||!inC[s[2]]){qc.moveTo(x,y+cell);qc.lineTo(x+cell,y+cell);}
+            if(s[1]<0||!inC[s[1]]){qc.moveTo(x+cell,y);qc.lineTo(x+cell,y+cell);} if(s[3]<0||!inC[s[3]]){qc.moveTo(x,y);qc.lineTo(x,y+cell);}}
+        qc.stroke();
+        const gpts=GAMMA.map(p=>[pad+(p[0]+.5)*cell,W-pad-(p[1]+.5)*cell]),ge=gpts[gpts.length-1];gpts.push([ge[0]+DX[GEXIT]*cell,ge[1]-DY[GEXIT]*cell]);
+        return function(t){
+            ground(ctx,W);const q=t%17;
+            ctx.globalAlpha=smooth(q/1.6);ctx.drawImage(tree,0,0);ctx.globalAlpha=1;
+            /* waves between 2.6 s and 9.6 s, each given time growing with its rounds */
+            const weights=waves.map(w=>Math.sqrt(w.rounds)+1.5),total=weights.reduce((a,b)=>a+b,0);let start=2.6,current=-1,z=0;
+            for(let i=0;i<waves.length;i++){const d=7*weights[i]/total;if(q>=start){current=i;z=clamp((q-start)/(d-.25),0,1)*(waves[i].rounds-1);}start+=d;}
+            for(const k of support){let c=0;for(let i=0;i<current;i++)if(waves[i].round[k]>=0)c++;if(current>=0&&waves[current].round[k]>=0&&waves[current].round[k]<=z)c++;
+                if(!c)continue;const col=pal.warm[Math.min(4,c)-1];ctx.fillStyle=`rgb(${col})`;ctx.globalAlpha=.88;ctx.fillRect(cx(k)-cell/2,cy(k)-cell/2,cell+.3,cell+.3);}
+            ctx.globalAlpha=1;
+            if(current>=0&&q<9.8){const w=waves[current];ctx.fillStyle=pal.front;for(const k of w.sites){const age=z-w.round[k];if(age<0||age>5)continue;ctx.globalAlpha=.9*(1-age/5);ctx.fillRect(cx(k)-cell/2,cy(k)-cell/2,cell+.3,cell+.3);}ctx.globalAlpha=1;}
+            /* then the marked sites, the joining paths, the past, the path to the sink and the contacts */
+            const a1=smooth((q-9.9)/.9),a2=smooth((q-10.9)/.9),a3=smooth((q-11.9)/1.1),a4=smooth((q-13.1)/.6);
+            if(a2>0){ctx.globalAlpha=a2;ctx.drawImage(past,0,0);}
+            if(a1>0){ctx.globalAlpha=a1;ctx.drawImage(paths,0,0);}
+            if(a3>0){ctx.globalAlpha=1;ctx.strokeStyle=pal.gamma;ctx.lineWidth=2.2;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();const m=Math.max(1,Math.round(a3*(gpts.length-1)));ctx.moveTo(gpts[0][0],gpts[0][1]);for(let i=1;i<=m;i++)ctx.lineTo(gpts[i][0],gpts[i][1]);ctx.stroke();}
+            if(a4>0){ctx.globalAlpha=a4;ctx.strokeStyle=pal.gold;ctx.lineWidth=4.2;ctx.lineCap='round';ctx.beginPath();
+                for(const e of CONTACTS){const x1=pad+(e[0]+.5)*cell,y1=W-pad-(e[1]+.5)*cell,x2=pad+(e[2]+.5)*cell,y2=W-pad-(e[3]+.5)*cell;ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);}ctx.stroke();}
+            ctx.globalAlpha=1;
+            if(a1>0){for(const s of MARKED){const k=s[1]*n+s[0];dot(ctx,cx(k),cy(k),3.4,pal.navy,C.bg,1.4*a1);}
+                const k=ANC[1]*n+ANC[0];dot(ctx,cx(k),cy(k),4.2,C.bg,pal.navy,2*a1);}
+            const sx=cx(src),sy=cy(src),drop=smooth((q-1.9)/.7);if(q>1.9)dot(ctx,sx,sy-(1-drop)*W*.06,3.4,C.ink,C.bg,1.4);
+            if(q>16.4)fadeOut(ctx,W,(q-16.4)/.6);
+            return true;
+        };
+    }
+
+    function makeCentrallyExcited(ctx,W){
+        /* Centrally excited random walk on Z^2 with drift 0.4.  On its first
+           departure from a site x other than the origin the walker steps to
+           x+e_i or x-e_i with probability 1/4-0.2x_i/|x| or 1/4+0.2x_i/|x|,
+           a mean step of size 0.4 toward the origin; every later departure
+           from x, and every departure from the origin, is a simple random
+           walk step.  After n steps the range is close to the disk of radius
+           r_n=(3n/(1.6pi))^(1/3), drawn as a circle.  The picture is rescaled
+           by r_n and each visited site is coloured by (first visit/n)^(1/3),
+           old blue to recent rose.  Early on, arrows at unvisited sites show
+           the mean first step.  The walk is simulated as the film needs it. */
+        const DELTA=.4, N=4000000, H=230, S=2*H+1, KEEP=2600, NB=64, rand=randomFactory(0x43455257);
+        const first=new Int32Array(S*S).fill(-1), path=new Int32Array(2*KEEP+4);
+        let sites=new Int32Array(3*8192), count=0, x=0, y=0, j=0, steps=N;
+        function advance(n){
+            n=Math.min(n,steps);
+            while(j<=n){
+                const id=(y+H)*S+x+H;
+                if(first[id]<0){
+                    first[id]=j;
+                    if(3*count+3>sites.length){const g=new Int32Array(2*sites.length);g.set(sites);sites=g;}
+                    sites[3*count]=x;sites[3*count+1]=y;sites[3*count+2]=j;count++;
+                }
+                if(j<=KEEP+1){path[2*j]=x;path[2*j+1]=y;}
+                let px=.25,py=.25;
+                if(first[id]===j&&(x||y)){const r=Math.hypot(x,y);px-=DELTA*x/(2*r);py-=DELTA*y/(2*r);}
+                const u=rand();
+                if(u<px)x++;else if(u<.5)x--;else if(u<.5+py)y++;else y--;
+                j++;
+                if(Math.abs(x)>=H-1||Math.abs(y)>=H-1){steps=j-1;break;}
+            }
+        }
+        const stops=DARK?[[52,92,128],[75,141,178],[118,108,206],[184,92,120]]
+                        :[[118,164,190],[54,122,159],[96,84,190],[164,62,97]];
+        const fills=[], words=new Uint32Array(NB);
+        for(let b=0;b<NB;b++){
+            const q=b/(NB-1)*(stops.length-1), i=Math.min(stops.length-2,Math.floor(q)), a=q-i;
+            const c=[0,1,2].map(k=>Math.round(mix(stops[i][k],stops[i+1][k],a)));
+            fills.push(`rgb(${c[0]},${c[1]},${c[2]})`); words[b]=(255<<24|c[2]<<16|c[1]<<8|c[0])>>>0;
+        }
+        const bins=[]; for(let b=0;b<NB;b++)bins.push([]);
+        const img=ctx.createImageData(W,W), pix=new Uint32Array(img.data.buffer), col=new Int32Array(W), row=new Int32Array(W);
+        const radius=n=>Math.cbrt(3*n/(1.6*Math.PI)), R=.38*W;
+        function visited(k){let lo=0,hi=count;while(lo<hi){const m=(lo+hi)>>1;if(sites[3*m+2]<=k)lo=m+1;else hi=m;}return lo;}
+        return function(t){
+            ground(ctx,W);
+            const s=t%15, A=2.6, B=11.6, N0=120;
+            let n=s<A?N0*s/A:(s<B?N0*Math.pow(N/N0,(s-A)/(B-A)):N);
+            advance(Math.floor(n)+1); n=Math.min(n,steps);
+            const k=Math.floor(n), rn=radius(n), scale=R/Math.hypot(rn,3.4), cx=W/2, cy=W/2;
+            const sx=a=>cx+a*scale, sy=b=>cy-b*scale, detail=clamp((scale-20)/14,0,1);
+            if(scale>=3){
+                const m=visited(k), gap=scale>7?Math.min(2.2,scale*.07):-.35, size=scale-gap;
+                for(let b=0;b<NB;b++)bins[b].length=0;
+                for(let i=0;i<m;i++)bins[Math.min(NB-1,(Math.cbrt(sites[3*i+2]/Math.max(1,n))*NB)|0)].push(i);
+                for(let b=0;b<NB;b++){
+                    const bin=bins[b]; if(!bin.length)continue;
+                    ctx.beginPath();
+                    for(const i of bin)ctx.rect(sx(sites[3*i])-size/2,sy(sites[3*i+1])-size/2,size,size);
+                    ctx.fillStyle=fills[b]; ctx.fill();
+                }
+            }else{
+                for(let p=0;p<W;p++){col[p]=Math.round((p+.5-cx)/scale);row[p]=Math.round((cy-p-.5)/scale);}
+                const inv=1/Math.max(1,n);
+                for(let py=0;py<W;py++){
+                    const b=row[py], base=(b+H)*S+H, o=py*W;
+                    if(b<=-H||b>=H){for(let p=0;p<W;p++)pix[o+p]=0;continue;}
+                    for(let p=0;p<W;p++){
+                        const a=col[p], f=a>-H&&a<H?first[base+a]:-1;
+                        pix[o+p]=f>=0&&f<=k?words[Math.min(NB-1,(Math.cbrt(f*inv)*NB)|0)]:0;
+                    }
+                }
+                ctx.putImageData(img,0,0);
+            }
+            if(detail>0){
+                const half=Math.ceil(W/2/scale)+1;
+                for(let b=-half;b<=half;b++)for(let a=-half;a<=half;a++){
+                    if(!a&&!b)continue;
+                    const f=first[(b+H)*S+a+H], fade=clamp((.5*W-Math.hypot(a,b)*scale)/(.14*W),0,1);
+                    if((f>=0&&f<=k)||!fade)continue;
+                    ctx.globalAlpha=.72*detail*fade;
+                    arrow(ctx,sx(a),sy(b),Math.atan2(b,-a),scale*.3,C.slate,Math.max(1.4,scale*.055));
+                }
+                const hi=Math.min(k,KEEP),lo=Math.max(0,hi-80),pts=[];
+                for(let i=lo;i<=hi;i++)pts.push([sx(path[2*i]),sy(path[2*i+1])]);
+                const f=smooth(n-k);
+                pts.push([sx(mix(path[2*hi],path[2*hi+2],f)),sy(mix(path[2*hi+1],path[2*hi+3],f))]);
+                ctx.globalAlpha=.55*detail; trace(ctx,pts,1,C.ink,Math.max(1.2,scale*.06));
+                const p=pts[pts.length-1]; ctx.globalAlpha=detail;
+                dot(ctx,p[0],p[1],Math.max(3,scale*.17),C.yellow,C.bg,2);
+            }
+            ctx.globalAlpha=.45; ctx.beginPath(); ctx.arc(cx,cy,rn*scale,0,TAU);
+            ctx.strokeStyle=C.ink; ctx.lineWidth=2.2; ctx.stroke();
+            ctx.globalAlpha=1; dot(ctx,cx,cy,Math.max(3,Math.min(6,scale*.2)),null,C.ink,2);
+            if(s>14.2)fadeOut(ctx,W,smooth((s-14.2)/.8));
+            return true;
+        };
+    }
+
+    function makeLogCorrelated(ctx,W){
+        /* Brownian particle in a log-correlated potential:
+           dX = grad log a(X) dt + sqrt(2) dW in the plane, with
+           log a(x) = sigma * sum_{k=1..4} (g_k(x) - g_k(0)).  The g_k are
+           independent smooth random fields of equal strength, g_k varying on
+           length scale 3^k (gradient noise with quintic interpolation on a
+           randomly rotated lattice of spacing 3^k), so log a is log-correlated
+           between the scales 3 and 81.  Drawn in the style of the superdiffusion
+           thumbnails: a wash by the sign of the potential and its level lines.
+           The drift is perpendicular to the level lines and points uphill, so
+           the particle lingers near the maxima of the potential, where its
+           reversible measure a(x)dx puts its mass, and crosses the barriers
+           between them.  Euler-Maruyama with the exact gradient of the same
+           field; the camera follows the particle.  sigma is far above the weak
+           disorder of the paper, so that the trapping is visible. */
+        const OCT=4,SIGMA=3.6,DT=.004,STEPS=25000,KEEP=1,PATHSEED=6,HALF=8,octaves=[],GX=[],GY=[];
+        for(let i=0;i<16;i++){GX.push(Math.cos(TAU*(i+.5)/16));GY.push(Math.sin(TAU*(i+.5)/16));}
+        const pick=randomFactory(0x10c0);
+        for(let k=1;k<=OCT;k++){const th=TAU*pick();octaves.push({s:3**k,c:Math.cos(th),n:Math.sin(th),ox:1000*pick(),oy:1000*pick(),seed:(0x10c0*31+k*0x9e37)|0});}
+        const out=[0,0,0];
+        function field(x,y,from=0){
+            let v=0,gx=0,gy=0;
+            for(let k=from;k<OCT;k++){
+                const o=octaves[k],u=(o.c*x-o.n*y)/o.s+o.ox,w=(o.n*x+o.c*y)/o.s+o.oy,i=Math.floor(u),j=Math.floor(w),fu=u-i,fw=w-j;
+                const a00=(16*hash2(i,j,o.seed))|0,a10=(16*hash2(i+1,j,o.seed))|0,a01=(16*hash2(i,j+1,o.seed))|0,a11=(16*hash2(i+1,j+1,o.seed))|0;
+                const n00=GX[a00]*fu+GY[a00]*fw,n10=GX[a10]*(fu-1)+GY[a10]*fw,n01=GX[a01]*fu+GY[a01]*(fw-1),n11=GX[a11]*(fu-1)+GY[a11]*(fw-1);
+                const su=fu*fu*fu*(fu*(fu*6-15)+10),sw=fw*fw*fw*(fw*(fw*6-15)+10),du=30*fu*fu*(fu-1)*(fu-1),dw=30*fw*fw*(fw-1)*(fw-1);
+                const A=n00+(n10-n00)*su,B=n01+(n11-n01)*su;
+                const Au=GX[a00]+(GX[a10]-GX[a00])*su+du*(n10-n00),Bu=GX[a01]+(GX[a11]-GX[a01])*su+du*(n11-n01);
+                const Aw=GY[a00]+(GY[a10]-GY[a00])*su,Bw=GY[a01]+(GY[a11]-GY[a01])*su;
+                const nu=Au+(Bu-Au)*sw,nw=Aw+(Bw-Aw)*sw+dw*(B-A);
+                v+=A+(B-A)*sw;gx+=(nu*o.c+nw*o.n)/o.s;gy+=(nw*o.c-nu*o.n)/o.s;
+            }
+            out[0]=SIGMA*v;out[1]=SIGMA*gx;out[2]=SIGMA*gy;return out;
+        }
+        // Start near a maximum of the two coarsest fields.
+        let x=0,y=0,best=-Infinity;
+        for(let i=-30;i<=30;i++)for(let j=-30;j<=30;j++){const v=field(6*i,6*j,OCT-2)[0];if(v>best){best=v;x=6*i;y=6*j;}}
+        const rand=randomFactory(PATHSEED),sq=Math.sqrt(2*DT),path=[[x,y]];
+        let lo=[x,y],hi=[x,y];
+        for(let s=1;s<=STEPS;s++){
+            const f=field(x,y);x+=f[1]*DT+sq*gaussian(rand);y+=f[2]*DT+sq*gaussian(rand);
+            if(s%KEEP===0){path.push([x,y]);lo=[Math.min(lo[0],x),Math.min(lo[1],y)];hi=[Math.max(hi[0],x),Math.max(hi[1],y)];}
+        }
+        /* Camera: follows the particle with a dead zone, as in the superdiffusion
+           thumbnails; precomputed per path point so any frame is reproducible. */
+        const cam=new Float32Array(2*path.length);let camX=path[0][0],camY=path[0][1];
+        for(let i=0;i<path.length;i++){
+            const p=path[i],dx=p[0]-camX,dy=p[1]-camY,dead=1.0,blend=.0009;
+            if(Math.abs(dx)>dead)camX+=(dx-Math.sign(dx)*dead)*blend; if(Math.abs(dy)>dead)camY+=(dy-Math.sign(dy)*dead)*blend;
+            camX=clamp(camX,p[0]-.6*HALF,p[0]+.6*HALF);camY=clamp(camY,p[1]-.6*HALF,p[1]+.6*HALF);
+            cam[2*i]=camX;cam[2*i+1]=camY;
+        }
+        /* Potential on a grid over the region the camera can show; wash and level
+           lines (marching squares) in chunks so a frame strokes only nearby ones. */
+        const H=.3,M=HALF*1.5,X0=lo[0]-M,Y0=lo[1]-M,NX=Math.ceil((hi[0]-lo[0]+2*M)/H)+1,NY=Math.ceil((hi[1]-lo[1]+2*M)/H)+1;
+        const values=new Float32Array(NX*NY);let mean=0,square=0;
+        for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){const v=field(X0+i*H,Y0+j*H)[0];values[j*NX+i]=v;mean+=v;}
+        mean/=values.length;for(let p=0;p<values.length;p++){values[p]-=mean;square+=values[p]*values[p];}
+        const rms=Math.sqrt(square/values.length),base=DARK?[18,21,29]:[250,249,245],paper=`rgb(${base})`;
+        const wash=document.createElement('canvas');wash.width=NX;wash.height=NY;
+        const wc=wash.getContext('2d'),wi=wc.createImageData(NX,NY);
+        for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){
+            const v=values[j*NX+i]/Math.max(.001,rms),alpha=Math.min(.14,Math.abs(v)*.047),o=((NY-1-j)*NX+i)*4,tint=v<0?[161,107,137]:[76,141,165];
+            for(let ch=0;ch<3;ch++)wi.data[o+ch]=Math.round(base[ch]*(1-alpha)+tint[ch]*alpha);wi.data[o+3]=255;
+        }
+        wc.putImageData(wi,0,0);
+        const CH=24,chunks=new Map(),colors=DARK?['#655363','#476573']:['#c9b9bf','#b5c7ca'];
+        const levels=[];for(let li=-5;li<=5;li++)levels.push([li*rms*.35,li<0?0:(li>0?1:2)]);
+        const seg=(path2,ax,ay,bx,by)=>{path2.moveTo(X0+ax*H,Y0+ay*H);path2.lineTo(X0+bx*H,Y0+by*H);};
+        for(let j=0;j<NY-1;j++)for(let i=0;i<NX-1;i++){
+            const v0=values[j*NX+i],v1=values[j*NX+i+1],v2=values[(j+1)*NX+i+1],v3=values[(j+1)*NX+i];
+            const vmin=Math.min(v0,v1,v2,v3),vmax=Math.max(v0,v1,v2,v3);let c=null;
+            for(const [level,kind] of levels){
+                if(level<vmin||level>=vmax)continue;
+                const a=v0-level,b=v1-level,d=v2-level,e=v3-level,pts=[];
+                if((a<=0)!==(b<=0))pts.push(i+a/(a-b),j);
+                if((b<=0)!==(d<=0))pts.push(i+1,j+b/(b-d));
+                if((d<=0)!==(e<=0))pts.push(i+1-d/(d-e),j+1);
+                if((e<=0)!==(a<=0))pts.push(i,j+1-e/(e-a));
+                if(pts.length<4)continue;
+                if(!c){const key=Math.floor(i*H/CH)+','+Math.floor(j*H/CH);c=chunks.get(key);if(!c){c=[new Path2D(),new Path2D(),new Path2D()];chunks.set(key,c);}}
+                seg(c[kind],pts[0],pts[1],pts[2],pts[3]);if(pts.length===8)seg(c[kind],pts[4],pts[5],pts[6],pts[7]);
+            }
+        }
+        /* Played at 2.4 time units per second, the pace of the superdiffusion
+           thumbnails: about 42 s for the whole path, then a hold and a fade. */
+        const PLAY=STEPS*DT/2.4,CYCLE=PLAY+2.6;
+        const gold=DARK?'#f2c67b':'#a46525',fresh=DARK?'#fff0cb':'#562c25';
+        return function(t){
+            const local=t%CYCLE,end=Math.max(1,Math.round(Math.min(1,local/PLAY)*(path.length-1)));
+            const cx=cam[2*end],cy=cam[2*end+1],scale=W/(2*HALF),sx=p=>W/2+(p[0]-cx)*scale,sy=p=>W/2-(p[1]-cy)*scale;
+            ground(ctx,W);ctx.save();ctx.fillStyle=paper;ctx.fillRect(0,0,W,W);ctx.imageSmoothingEnabled=true;
+            const gx=(cx-HALF-X0)/H,gy=NY-1-(cy+HALF-Y0)/H;ctx.drawImage(wash,gx,gy,2*HALF/H,2*HALF/H,0,0,W,W);
+            ctx.save();ctx.translate(W/2-cx*scale,W/2+cy*scale);ctx.scale(scale,-scale);ctx.lineWidth=1/scale;
+            const i0=Math.floor((cx-HALF-X0)/CH),i1=Math.floor((cx+HALF-X0)/CH),j0=Math.floor((cy-HALF-Y0)/CH),j1=Math.floor((cy+HALF-Y0)/CH);
+            for(let kind=0;kind<3;kind++){ctx.strokeStyle=kind===2?colors[1]:colors[kind];ctx.globalAlpha=kind===2?.9:.6;
+                for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++){const c=chunks.get(i+','+j);if(c)ctx.stroke(c[kind]);}}
+            ctx.restore();
+            ctx.lineJoin='round';ctx.lineCap='round';
+            const stroke=(first,last,color,width,alpha)=>{if(last<=first)return;ctx.beginPath();ctx.moveTo(sx(path[first]),sy(path[first]));
+                for(let i=first+1;i<=last;i++)ctx.lineTo(sx(path[i]),sy(path[i]));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.globalAlpha=alpha;ctx.stroke();};
+            const pixel=W/Math.max(140,ctx.canvas.getBoundingClientRect().width||140),recent=Math.max(0,end-1800),freshFrom=Math.max(0,end-150),w=1.05*pixel;
+            stroke(0,recent,gold,w*.8,DARK?.31:.36);
+            stroke(recent,end,paper,w+2,.85);
+            stroke(recent,end,gold,w,.88);
+            stroke(freshFrom,end,fresh,w*1.08,1);
+            ctx.globalAlpha=1;const p=path[end],r=3*pixel;
+            dot(ctx,sx(p),sy(p),r*2.7,DARK?'rgba(242,198,123,.13)':'rgba(164,101,37,.10)');
+            dot(ctx,sx(p),sy(p),r,fresh,paper,1.5);
+            ctx.restore();
+            if(local>CYCLE-.6)fadeOut(ctx,W,smooth((local-CYCLE+.6)/.6));
+            return true;
+        };
+    }
+
     const FACTORIES = {
         'parking': makeParking,
         'divisible-percolation': makeDivisiblePercolation,
@@ -791,8 +1071,21 @@
         'dimensional-reduction': makeDimensionalReduction,
         'random-sandpile': makeRandomSandpile,
         'manhattan-lattice': makeManhattan,
-        'orrw-range': makeORRW
+        'orrw-range': makeORRW,
+        'sandpile-avalanche': makeAvalanche,
+        'centrally-excited-walk': makeCentrallyExcited,
+        'log-correlated-potential': makeLogCorrelated
     };
+
+    /* Thumbnails draw at most 30 times a second, and when several become
+       visible together (opening a topic) their factories are built one per
+       animation frame instead of all in one task. */
+    const FRAME_MS=30, buildQueue=[];
+    let pumping=false;
+    function scheduleBuild(job){
+        buildQueue.push(job); if(pumping) return; pumping=true;
+        requestAnimationFrame(function pump(){const next=buildQueue.shift(); if(next) next(); if(buildQueue.length) requestAnimationFrame(pump); else pumping=false;});
+    }
 
     function attach(canvas,kind,baseImage){
         const factory=FACTORIES[kind];if(!factory)return;
@@ -801,13 +1094,14 @@
         if(reduced){canvas.hidden=true;return;}
         canvas.hidden=false;canvas.style.opacity='0';
         const ctx=canvas.getContext('2d');
-        let renderer=null,running=false,visible=false,raf=0,elapsed=0,last=0,failed=false,revealed=false;
+        let renderer=null,running=false,visible=false,queued=false,raf=0,elapsed=0,last=0,failed=false,revealed=false;
         function fail(err){failed=true;running=false;cancelAnimationFrame(raf);canvas.hidden=true;baseImage.style.opacity='1';if(err){canvas.__publicationThumbnailError=String(err&&err.stack||err);console.warn('publication thumbnail '+kind+':',err);}}
         function ensure(){if(renderer||failed)return;try{renderer=factory(ctx,canvas.width);}catch(err){fail(err);}}
         function draw(){ensure();if(!renderer||failed)return;try{const ok=renderer(elapsed/1000);if(renderer.failed){fail();return;}if(!revealed&&renderer.ready!==false&&ok!==false){revealed=true;baseImage.style.opacity='0';canvas.style.opacity='1';}}catch(err){fail(err);}}
         Object.defineProperty(canvas,'__publicationThumbnailRender',{value:function(seconds){elapsed=Math.max(0,seconds*1000);draw();},configurable:true});
-        function frame(now){if(!running)return;if(!last)last=now;elapsed+=Math.min(50,now-last);last=now;draw();if(!failed)raf=requestAnimationFrame(frame);}
-        function play(){if(running||!visible||document.hidden||failed)return;ensure();running=true;last=0;raf=requestAnimationFrame(frame);}
+        function frame(now){if(!running)return;if(!last||now-last>=FRAME_MS){if(last)elapsed+=Math.min(50,now-last);last=now;draw();}if(!failed)raf=requestAnimationFrame(frame);}
+        function start(){if(running||failed)return;running=true;last=0;raf=requestAnimationFrame(frame);}
+        function play(){if(running||queued||!visible||document.hidden||failed)return;if(renderer){start();return;}queued=true;scheduleBuild(()=>{queued=false;if(!visible||document.hidden||failed)return;ensure();start();});}
         function pause(){if(!running)return;running=false;cancelAnimationFrame(raf);raf=0;last=0;}
         if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{visible=entries.some(e=>e.isIntersecting);if(visible)play();else pause();},{threshold:.01,rootMargin:'240px 0px'});observer.observe(canvas.parentElement||canvas);}else{visible=true;play();}
         document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();else play();});

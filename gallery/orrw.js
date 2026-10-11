@@ -248,10 +248,10 @@
                 if (progress >= run.steps) progress = 0;
                 userPaused = !userPaused;
                 if (userPaused) { progress = Math.floor(progress); stop(); draw(true); }
-                else { setStatus('Following every move, including repeated crossings.'); start(); report(); }
+                else { setStatus('Showing every step, including steps across previously crossed edges.'); start(); report(); }
             } else if (action === 'step') {
                 userPaused = true; stop(); progress = Math.min(run.steps, Math.floor(progress) + 1);
-                setStatus('Paused. The four incident edges determine the next-step probabilities.'); draw(true);
+                setStatus('Paused. The next step crosses each incident edge with probability proportional to its weight.'); draw(true);
             } else if (action === 'replay' || action === 'new') {
                 if (action === 'replay') userPaused = false;
                 reset(action === 'new');

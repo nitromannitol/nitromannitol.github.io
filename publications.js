@@ -1,7 +1,21 @@
 
+// The homepage groups papers by topic, in this order.
+const publicationTopics = [
+  { id: "memory", title: "Random walks with memory" },
+  { id: "sandpile", title: "Abelian sandpile" },
+  { id: "homogenization", title: "Quantitative homogenization" },
+  { id: "idla", title: "Internal DLA and divisible sandpile" },
+  { id: "unique-continuation", title: "Discrete unique continuation" },
+  { id: "pareto", title: "Pareto peeling" }
+];
+
 const publications = [
   {
     id: "sandpile-avalanches-finite",
+    topic: "sandpile",
+    thumbnail: "images/sandpile_avalanche.png",
+    thumbnailAnimation: "sandpile-avalanche",
+    altText: "The burning tree of a stationary planar sandpile, the avalanche from one added grain run wave by wave, then the tree paths joining the marked sites, the past of their common ancestor, and the edges counted by L.",
     title: "Sandpile avalanches in two dimensions are finite",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -10,11 +24,15 @@ const publications = [
       { type: "PDF", url: "https://github.com/nitromannitol/finite-avalanche/blob/main/paper/main.pdf" },
       { type: "Lean", url: "https://github.com/nitromannitol/finite-avalanche" }
     ],
-    abstract: 'For the stationary Abelian sandpile on Z<sup>2</sup>, adding one grain at the origin produces an almost surely finite avalanche. The probability that the avalanche reaches distance R is bounded above by a negative power of log R.',
+    abstract: 'In the Abelian sandpile on Z<sup>d</sup>, a site with at least 2d grains topples by sending one grain to each neighbor. <a href="https://doi.org/10.1007/s00220-004-1080-0">Athreya and J&aacute;rai</a> constructed the stationary state on Z<sup>d</sup> as the limit of the stationary states of finite boxes, and asked whether adding one grain at the origin causes only finitely many topplings. By a formula of Dhar, the expected number of topplings at a site in the stationary state of a box is proportional to the Green function of simple random walk in the box. As the box grows, this Green function stays bounded when d &ge; 3, where <a href="https://arxiv.org/abs/math/0408060">J&aacute;rai and Redig</a> proved that avalanches are almost surely finite, and grows logarithmically when d = 2, where <a href="https://arxiv.org/abs/1602.06475">Bhupatiraju, Hanson, and J&aacute;rai</a> showed that the expected radius of an avalanche is infinite. I prove that avalanches on Z<sup>2</sup> are nevertheless almost surely finite: the probability that an avalanche reaches distance R is at most a constant times a negative power of log R. <a href="https://doi.org/10.1016/0378-4371(94)90188-0">Physicists</a> studied avalanches by splitting them into waves: the origin topples once, and the other sites are then stabilized with the origin as a sink. Mark the origin, its four neighbors, and a site at distance about R<sup>1/6</sup> from the origin. Since the last wave misses a neighbor of the origin, a large avalanche contains either a wave that misses a marked site and reaches far, or a wave that contains every marked site followed immediately by a wave that misses one of them. For the second kind, the burning bijection turns the sandpile left by the wave that contains every marked site into a spanning tree of that wave and a spanning tree of the rest of the box. Joining them along any one of the L lattice edges from the tree paths between the marked sites to sites outside the wave gives L different spanning trees of the box, and in each of them the sites outside the wave are those whose paths to the boundary avoid these tree paths. Hence the expected number of these pairs of waves is at most the expected value of 1/L for a uniform spanning tree of the box. In every box, at each of order log log R scales s and given the tree at the earlier scales, L is at least a multiple of log s with probability at least a fixed &epsilon; &gt; 0, so the failure probabilities multiply, up to a small error. Waves of the first kind are rare by a bound of Barlow and Masson on paths in the uniform spanning tree.',
     year: 2026
   },
   {
     id: "subdiffusive-log-correlated-potential",
+    topic: "homogenization",
+    thumbnail: "images/log_correlated_potential.png",
+    thumbnailAnimation: "log-correlated-potential",
+    altText: "A Brownian particle drifting up the gradient of a log-correlated potential: it lingers in regions of high density and hops between them.",
     title: "Anomalous scaling limit of a Brownian particle in a log-correlated potential",
     authors: [
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
@@ -26,11 +44,15 @@ const publications = [
       { type: "PDF", url: "https://arxiv.org/pdf/2610.12335" },
       { type: "Lean", url: "https://github.com/nitromannitol/subdiffusive-process" }
     ],
-    abstract: 'A Brownian particle moving in a log-correlated random potential has an anomalous scaling limit. We prove convergence to a singular, non-Gaussian diffusion, quantitative homogenization of the associated elliptic equation, and large-scale H\u00f6lder regularity under the paper\'s standing assumptions.',
+    abstract: 'A Brownian particle whose drift is the gradient of a random potential is pushed toward high values of the potential and must cross barriers to travel. If the potential is bounded, stationary, and has rapidly decaying correlations, the particle behaves like a Brownian motion on large scales. In the log-correlated potential we study, independent fluctuations of equal strength occur at every length scale, so their effects accumulate and the effective diffusivity tends to zero. <a href="https://doi.org/10.1051/jphys:019870048090144500">Physicists predicted</a> in the 1980s that the particle is then subdiffusive, with an exponent that depends continuously on the strength of the disorder, and <a href="https://arxiv.org/abs/1712.09972">Biskup</a> asked whether the diffusion driven by the gradient of a smoothed planar Gaussian free field has a scaling limit. We prove that, at weak disorder and in every dimension d &ge; 2, the particle has a unique scaling limit. Its path law is singular with respect to every mixture of Brownian motions, and its reversible measure is Gaussian multiplicative chaos when the potential is Gaussian. The proof uses a renormalization group induction: at each scale, the elliptic operator is close to a Laplacian whose diffusivity is bounded above and below by negative powers of the scale. In dimension two the diffusivity is exactly a power of the scale, with the exponent physicists predicted. To show that the limit is unique, we adapt arguments used for the uniqueness of Liouville quantum gravity metrics. The induction follows our work on <a href="https://arxiv.org/abs/2601.22142">superdiffusion in self-similar random incompressible flows</a>, where the effective diffusivity increases with the scale instead.',
     year: 2026
   },
   {
     id: "centrally-excited-random-walk",
+    topic: "memory",
+    thumbnail: "images/centrally_excited_walk.png",
+    thumbnailAnimation: "centrally-excited-walk",
+    altText: "The sites visited by a centrally excited random walk, rescaled by the predicted radius, filling out a disk; colour shows when each site was first visited.",
     title: "Kozma's centrally excited walk converges to a Euclidean ball",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -42,11 +64,12 @@ const publications = [
       { type: "PDF", url: "https://arxiv.org/pdf/2610.10162" },
       { type: "Lean", url: "https://github.com/nitromannitol/Centrally-Excited-Random-Walk" }
     ],
-    abstract: 'A centrally excited random walk on Z<sup>d</sup> moves like simple random walk, except that its first step from each site has a drift of fixed size toward the origin. Kozma (2007) conjectured that after n steps the visited set approximates a ball of radius of order n<sup>1/(d+1)</sup>. We prove this in every dimension d &ge; 2 and show that the rescaled numbers of visits converge uniformly to a cone, which is the potential generated by the drift on a ball. The same argument shows that a drift opposite to a subgradient of a norm produces the ball of that norm. In the plane, the outer and inner radii of the visited set differ by at most n<sup>1/6</sup> times a power of log n, and the exponent 1/6 cannot be lowered.',
+    abstract: 'A centrally excited random walk on Z<sup>d</sup> starts at the origin and moves like simple random walk, except that its first step from each site other than the origin has a drift of fixed size, less than 1/d, toward the origin. At an <a href="https://doi.org/10.4171/OWR/2007/27">Oberwolfach problem session</a> in 2007, Gady Kozma conjectured that after n steps the visited set approximates a ball of radius of order n<sup>1/(d+1)</sup>. We prove this in every dimension d &ge; 2, identify the radius, and show that the rescaled numbers of visits converge uniformly to a cone, which is the potential generated by the drift on a ball. The proof compares the numbers of visits with the potential generated by the drift on the visited set, as <a href="https://arxiv.org/abs/0704.0688">Levine and Peres</a> compared the divisible-sandpile odometer with an explicit potential. A drift opposite to a subgradient of a norm produces the ball of that norm; for the &ell;<sup>&infin;</sup> and &ell;<sup>1</sup> norms this gives the squares and diamonds that <a href="https://arxiv.org/abs/1812.00726">Dembo, Groisman, Huang, and Sidoravicius</a> saw in simulations of related walks. In the plane, the outer and inner radii of the visited set differ by at most n<sup>1/6</sup> times a power of log n, and the exponent 1/6 cannot be lowered. The radius n<sup>1/(d+1)</sup> is also predicted for once-reinforced random walk with strong reinforcement; our <a href="https://arxiv.org/abs/2610.00090">earlier paper</a> proved a lower bound of order n<sup>d/(d+1)</sup> on its expected range for every reinforcement strength; for strong reinforcement, the matching upper bound and the limit shape remain open.',
     year: 2026
   },
   {
     id: "manhattan-lattice-transient",
+    topic: "memory",
     title: "The randomly oriented Manhattan lattice in 2D is transient",
     bibtexTitle: "The randomly oriented {M}anhattan lattice in {2D} is transient",
     thumbnail: "images/manhattan_lattice.svg",
@@ -66,6 +89,7 @@ const publications = [
   },
   {
     id: "orrw-range-exponent",
+    topic: "memory",
     title: "Once-reinforced random walk on Z<sup>d</sup> has range exponent at least d/(d+1)",
     bibtexTitle: "Once-reinforced random walk on {$\\mathbb{Z}^d$} has range exponent at least $d/(d+1)$",
     thumbnail: "images/orrw_range.svg",
@@ -86,6 +110,7 @@ const publications = [
   },
   {
     id: "sharpness-critical-scaling-parking",
+    topic: "idla",
     title: "Sharpness and critical scaling of parking",
     thumbnail: "images/parking.svg",
     thumbnailAnimation: "parking",
@@ -105,6 +130,7 @@ const publications = [
   },
   {
     id: "quantitative-explosion-percolation-divisible-sandpile",
+    topic: "idla",
     title: "Quantitative explosion and percolation of the divisible sandpile",
     thumbnail: "images/divisible_percolation.svg",
     thumbnailAnimation: "divisible-percolation",
@@ -124,6 +150,7 @@ const publications = [
   },
   {
     id: "eulerian-walkers",
+    topic: "memory",
     title: "Eulerian walkers on Z<sup>2</sup> have range exponent 2/3",
     bibtexTitle: "Eulerian walkers on {$\\mathbb{Z}^2$} have range exponent 2/3",
     thumbnail: "images/eulerian_walkers.png",
@@ -142,6 +169,7 @@ const publications = [
   },
   {
     id: "einstein-relation",
+    topic: "homogenization",
     title: "Quantitative Einstein relation for reversible diffusions in a random environment",
     thumbnail: "gallery/plates/p-einstein-thumbnail.svg",
     thumbnailAnimation: "einstein-relation",
@@ -158,6 +186,7 @@ const publications = [
   },
   {
     id: "critical-long-range-rcm",
+    topic: "homogenization",
     title: "Quantitative homogenization for the critical long-range random conductance model",
     thumbnail: "images/critical_long_range_rw.png",
     thumbnailAnimation: "long-range-walk",
@@ -174,6 +203,7 @@ const publications = [
   },
   {
     id: "gff-idla-cylinder",
+    topic: "idla",
     title: "Gaussian fluctuations for Internal DLA on cylinders",
     thumbnail: "images/idla_cylinder.png",
     thumbnailAnimation: "idla-cylinder",
@@ -181,7 +211,7 @@ const publications = [
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Vittoria Silvestri", url: "https://vittoriasilvestri.wordpress.com/" },
-      { name: "Ariel Yadin", url: "https://www.math.bgu.ac.il/en/people/users/yadina" }
+      { name: "Ariel Yadin", url: "https://www.math.bgu.ac.il/~yadina/" }
     ],
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2604.21142" }
@@ -191,6 +221,7 @@ const publications = [
   },
   {
     id: "divisible-sandpile-rwrs",
+    topic: "idla",
     title: "Divisible sandpiles via random walks in random scenery",
     thumbnail: "images/divisible_sandpile.png",
     thumbnailAnimation: "sandpile-rwrs",
@@ -209,6 +240,7 @@ const publications = [
   },
   {
   id: "algebraic-sd",
+  topic: "homogenization",
   title: "Superdiffusion and anomalous regularization in self-similar random incompressible flows",
   thumbnail: "images/algebraic-sd.png",
   thumbnailAnimation: "algebraic-superdiffusion",
@@ -228,6 +260,7 @@ abstract: 'A Brownian particle advected by an incompressible random drift underg
  },
   {
     id: "random-walk-sphere-packings",
+    topic: "homogenization",
     title: "Random walk on sphere packings and Delaunay triangulations in arbitrary dimension",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -248,6 +281,7 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
   },
   {
     id: "superdiffusive-clt-brownian-particle",
+    topic: "homogenization",
     title: "Superdiffusive central limit theorem for a Brownian particle in a critically-correlated incompressible random drift",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -255,22 +289,23 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
     journal: "Inventiones Mathematicae",
-    status: "to appear",
     links: [
+      { type: "Journal", url: "https://doi.org/10.1007/s00222-026-01455-z" },
       { type: "arXiv", url: "https://arxiv.org/abs/2404.01115" },
       { type: "Quanta", url: "https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/" },
       { type: "Blog", url: "https://www.scottnarmstrong.com/2024/04/superdiffusive-CLT/" },
       { type: "Lean", url: "https://github.com/scottnarmstrong/SuperdiffusionCLT" }
 
     ],
-abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
+abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub><sup>1/2</sup>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
     thumbnail: "images/sd.png",
     thumbnailAnimation: "critical-superdiffusion",
     altText: "A Brownian particle leaving a growing, irregular trail across the streamlines of a finite random incompressible flow.",
-    year: 2024
+    year: 2026
   },
   {
     id: "unique-continuation-planar-graphs",
+    topic: "unique-continuation",
     title: "Unique continuation on planar graphs",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -293,6 +328,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   },
   {
     id: "rigidity-harmonic-functions",
+    topic: "unique-continuation",
     title: "Rigidity of harmonic functions on the supercritical percolation cluster",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -313,6 +349,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   },
   {
     id: "internal-dla-mated-crt-maps",
+    topic: "idla",
     title: "Internal DLA on mated-CRT maps",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -332,6 +369,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   },
   {
     id: "harmonic-balls-liouville-quantum-gravity",
+    topic: "idla",
     title: "Harmonic balls in Liouville quantum gravity",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -351,6 +389,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   },
   {
     id: "integer-superharmonic-matrices",
+    topic: "sandpile",
     title: "Integer superharmonic matrices on the F-lattice",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -373,6 +412,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
   },
   {
     id: "hamilton-jacobi-scaling-limits",
+    topic: "pareto",
     title: "Hamilton-Jacobi scaling limits of Pareto peeling in 2D",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -394,6 +434,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
   },
   {
     id: "shape-theorem-exploding-sandpiles",
+    topic: "sandpile",
     title: "A shape theorem for exploding sandpiles",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -414,6 +455,7 @@ abstract: 'The scaling limit of the Abelian sandpile is a fully nonlinear ellipt
   },
   {
     id: "dynamic-dimensional-reduction",
+    topic: "sandpile",
     title: "Dynamic dimensional reduction in the Abelian sandpile",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -434,6 +476,7 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
   },
   {
     id: "convergence-random-abelian-sandpile",
+    topic: "sandpile",
     title: "Convergence of the random Abelian sandpile",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -457,6 +500,9 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
 const galleryAnchorByAnimation = {
   "manhattan-lattice": "manhattan-lattice",
   "orrw-range": "orrw-range",
+  "centrally-excited-walk": "excited-walk",
+  "sandpile-avalanche": "avalanche",
+  "log-correlated-potential": "log-correlated",
   "parking": "parking",
   "divisible-percolation": "divisible-percolation",
   "rotor-walk": "rotor-walk",

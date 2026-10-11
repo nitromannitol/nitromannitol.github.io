@@ -65,7 +65,7 @@
             if (out.distance) out.distance.textContent = Math.hypot(run.x[n], run.y[n]).toFixed(1);
             if (slider) { slider.value = String(n); slider.setAttribute('aria-valuetext', n.toLocaleString() + ' steps'); }
             if (pauseButton) { pauseButton.textContent = userPaused || n >= run.steps ? 'Play' : 'Pause'; pauseButton.classList.toggle('is-on', !userPaused && n < run.steps); }
-            if (out.note) out.note.textContent = n >= run.steps ? '20,000 steps · replay or sample another field' : view === 'follow' ? 'One direction per street · two choices at every junction' : 'The full revealed path · colour runs from blue to rose';
+            if (out.note) out.note.textContent = n >= run.steps ? '20,000 steps · replay or sample a new environment' : view === 'follow' ? 'One orientation per line · two possible steps from every site' : 'Whole path · coloured by time from blue to rose';
         }
         function arrow(x, y, dx, dy, length, color, lineWidth = 1.1) {
             const px = -dy, py = dx;

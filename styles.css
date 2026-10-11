@@ -101,6 +101,10 @@ a:hover {
     border-radius: 3px;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
 /* Profile Section */
 .profile {
     display: flex;
@@ -204,6 +208,64 @@ html:not(.js) .content-placeholder {
 }
 
 /* Publications */
+.pub-topic {
+    scroll-margin-top: 20px;
+}
+
+.pub-topic-title {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.pub-topic-toggle {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45em;
+    width: 100%;
+    padding: 14px 2px 8px;
+    border: none;
+    border-bottom: 2px solid var(--border);
+    background: none;
+    color: var(--heading);
+    font: inherit;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+}
+
+.pub-topic-toggle:hover {
+    color: var(--link);
+}
+
+.pub-topic-toggle .indicator {
+    width: 0.45em;
+    height: 0.45em;
+    margin-left: auto;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-0.15em, -0.15em);
+    transition: transform 0.3s ease;
+    flex: 0 0 auto;
+}
+
+.pub-topic-toggle[aria-expanded="true"] .indicator {
+    transform: rotate(225deg);
+}
+
+.pub-topic-list {
+    padding-top: 16px;
+}
+
+.js .pub-topic-list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+.js .pub-topic-list.show {
+    max-height: 200000px;
+}
+
 .publication {
     display: flex;
     align-items: flex-start;
@@ -233,7 +295,7 @@ html:not(.js) .content-placeholder {
     margin-bottom: 10px;
 }
 
-.pub-title-row h3 {
+.pub-title-row h4 {
     flex: 1;
     font-size: 1.3em;
     margin: 0;
@@ -474,7 +536,11 @@ html:not(.js) .content-placeholder {
         margin-right: 0;
     }
 
-    .pub-title-row h3 {
+    .pub-topic-title {
+        font-size: 1.3em;
+    }
+
+    .pub-title-row h4 {
         font-size: 1.2em;
     }
 

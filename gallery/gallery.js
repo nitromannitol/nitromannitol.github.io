@@ -25,18 +25,22 @@ const HEIGHTS_VOID = ['#15131A', '#4A4A5E', '#8E4257', '#A8D8E8'];
 
 /* Keyboard navigation follows the cards in the research and other-models tabs. */
 const SECTIONS = [
-    'manhattan-lattice', 'orrw-range', 'rotor-walk', 'random-sandpile',
-    'dimensional-reduction', 'f-lattice', 'sandpile-rwrs', 'divisible-percolation',
-    'pareto-peeling', 'divisible', 'idla-cylinder', 'parking',
-    'einstein-relation', 'superdiffusion', 'sphere-packing', 'long-range-walk',
-    'percolation', 'unique-continuation', 'dla', 'idla',
-    'ust', 'rotor-aggregation', 'apollonian'
+    'excited-walk', 'manhattan-lattice', 'orrw-range', 'rotor-walk',
+    'avalanche', 'f-lattice', 'random-sandpile', 'dimensional-reduction',
+    'apollonian', 'ust', 'log-correlated', 'einstein-relation',
+    'long-range-walk', 'superdiffusion', 'sphere-packing', 'parking',
+    'divisible-percolation', 'idla-cylinder', 'sandpile-rwrs', 'divisible',
+    'idla', 'rotor-aggregation', 'dla', 'unique-continuation',
+    'percolation', 'pareto-peeling'
 ];
 
 /* A model page may host several instruments. Each dedicated research page
    mounts its animated definition first and its single-stage live model next. */
 const PAGE_MAKERS = {
     'manhattan-lattice': ['manhattan'],
+    'avalanche': ['avalanche'],
+    'excited-walk': ['excited'],
+    'log-correlated': ['logcorr'],
     'orrw-range': ['orrw'],
     'dimensional-reduction': ['dimredintro', 'dimredlive', 'dimredscale'],
     'apollonian':        ['apollointro', 'apollo'],
@@ -66,7 +70,7 @@ const PAGE_MAKERS = {
    a wide construction film before their live model, so positional matching
    can pause one maker while a different canvas is visible. */
 const MAKER_TARGETS = {
-    manhattan: '#manhattan-canvas', orrw: '#orrw-canvas',
+    manhattan: '#manhattan-canvas', orrw: '#orrw-canvas', avalanche: '#avalanche-canvas', excited: '#excited-canvas', logcorr: '#logcorr-canvas',
     dimredintro: '#rule-dimensional-reduction', dimredlive: '#dimred-canvas',
     dimredscale: '#dimred-scale-canvas',
     apollointro: '#rule-apollonian', apollo: '#apollo-canvas',
@@ -100,6 +104,9 @@ const MAKER_TARGETS = {
 
 const TITLES = {
     'manhattan-lattice': 'The randomly oriented Manhattan lattice',
+    'avalanche': 'Sandpile avalanches in two dimensions',
+    'excited-walk': 'Kozma’s centrally excited walk',
+    'log-correlated': 'Brownian motion in a log-correlated potential',
     'orrw-range': 'Once-reinforced random walk',
     'dimensional-reduction': 'Dynamic dimensional reduction',
     'apollonian': 'Integer superharmonic matrices on Z\u00b2',
@@ -114,10 +121,10 @@ const TITLES = {
     'rotor-walk': 'Eulerian walkers on Z²',
     'superdiffusion': 'Brownian motion in an incompressible random drift',
     'long-range-walk': 'Critical long-range random conductance walk',
-    'sphere-packing': 'Random walk on a sphere packing',
+    'sphere-packing': 'Random walk on orthogonal tilings',
     'pareto-peeling': 'Pareto peeling',
     'percolation': 'Supercritical percolation cluster',
-    'einstein-relation': 'Einstein relation in a random environment',
+    'einstein-relation': 'Quantitative Einstein relation',
     'sandpile-rwrs': 'Sandpiles and random walk in random scenery',
     'parking': 'Sharpness and critical scaling of parking',
     'divisible-percolation': 'Quantitative explosion and percolation of the divisible sandpile',
@@ -335,6 +342,9 @@ const Instruments = (function () {
     const makers = {};
     makers.manhattan = function () { return globalThis.ManhattanGallery.create(); };
     makers.orrw = function () { return globalThis.OrrwGallery.create(); };
+    makers.avalanche = function () { return globalThis.AvalancheGallery.create(); };
+    makers.excited = function () { return globalThis.ExcitedGallery.create(); };
+    makers.logcorr = function () { return globalThis.LogCorrelatedGallery.create(); };
 
     function setActive(k, on) {
         on = !!on;
@@ -1761,8 +1771,8 @@ const Instruments = (function () {
                 if (mode === 'explore') setNote(elNote, 'Explore \u00b7 click a circle, drag, scroll');
                 else if (phase < .28) setNote(elNote, 'Three tangent parents');
                 else if (phase < .67) setNote(elNote,
-                    'Reflection \u03ba ' + curvature(focus.other) + ' \u2192 ' + curvature(focus.W));
-                else setNote(elNote, '\u03ba = ' + curvature(focus.W));
+                    'Curvatures: Soddy precursor ' + curvature(focus.other) + ' \u2192 child ' + curvature(focus.W));
+                else setNote(elNote, 'Child curvature ' + curvature(focus.W));
             }
         }
 
@@ -2042,7 +2052,7 @@ const Instruments = (function () {
         if (!gl) {
             const ctx = canvas.getContext('2d');
             function showStatic(name) {
-                mode = name; note.textContent = 'Exact computed configuration';
+                mode = name; note.textContent = 'Computed configuration';
                 loadImage(plates[name].final).then(function (img) {
                     ctx.fillStyle = '#07080D'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.imageSmoothingEnabled = false;
@@ -2237,7 +2247,7 @@ const Instruments = (function () {
             if (outRound) outRound.textContent = nf.format(t || 0);
             if (outFired) outFired.textContent = nf.format(n || 0);
             if (roundLabel) roundLabel.textContent = mode === 'exploding'
-                ? 'Parallel round' : 'Toppling sweep';
+                ? 'Time' : 'Toppling sweep';
             if (keyTitle) keyTitle.textContent = 'Stable height';
             if (timeItems) timeItems.hidden = true;
             if (heightItems) heightItems.hidden = false;
@@ -2245,14 +2255,14 @@ const Instruments = (function () {
             if (phase < .075) {
                 note.textContent = mode === 'empty' ? 'Background η = 0'
                     : mode === 'random' ? 'Background η ∈ {−1, 0}'
-                    : 'Background σ ∈ {2, 3}';
+                    : 'Background η ∈ {2, 3}';
             } else if (phase < .16) {
                 note.textContent = mode === 'exploding'
                     ? 'Add 2 grains at the origin' : 'Add 4,200,000 grains at the origin';
             } else if (v.q < .999) {
                 note.textContent = 'Toppling';
             } else if (mode === 'exploding') {
-                note.textContent = 'Still active at round 1,858';
+                note.textContent = 'Unstable sites remain at time 1,858';
             } else if (v.settle < .9) {
                 note.textContent = 'Final stable heights';
             } else {
@@ -2432,7 +2442,7 @@ const Instruments = (function () {
                 }
             });
             const left=W*.105,right=W*.935,top=H*.43,bottom=H*.87;
-            label(compact?'TOPPLINGS THROUGH THE ORIGIN':'RESCALED TOPPLINGS · CROSS-SECTION THROUGH THE ORIGIN',left,top-(compact?90:45),font,'#C9BFA8');
+            label(compact?'ODOMETER / R² THROUGH THE ORIGIN':'ODOMETER / R² ON THE HORIZONTAL LINE THROUGH THE ORIGIN',left,top-(compact?90:45),font,'#C9BFA8');
             ctx.strokeStyle='#4A4A5E';ctx.lineWidth=1.5;
             [0,.2,.4,.6].forEach(function(q){const y=bottom-q/.65*(bottom-top);ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();label(q.toFixed(1),left-16,y,font,'#9D98A8','right');});
             [-1.5,-1,0,1,1.5].forEach(function(q){const x=left+(q+1.52)/3.04*(right-left);label(String(q),x,bottom+30,font,'#9D98A8','center');});
@@ -2441,7 +2451,7 @@ const Instruments = (function () {
             runs.forEach(function(r,i){ctx.beginPath();r.profile.forEach(function(v,j){const x=left+j/(r.profile.length-1)*(right-left),y=bottom-v/.65*(bottom-top);if(j)ctx.lineTo(x,y);else ctx.moveTo(x,y);});ctx.strokeStyle=lines[i];ctx.lineWidth=i===runs.length-1?3:2.5;ctx.globalAlpha=.9;ctx.stroke();});
             ctx.globalAlpha=1;
             label('x / R',right,bottom+78,font,'#C9BFA8','right');
-            label('u / R²',left,top-8,font,'#C9BFA8');
+            label('v / R²',left,top-8,font,'#C9BFA8');
             frameIndex=-1;raw=null;fieldView='';
         }
         function paint() {
@@ -2471,7 +2481,7 @@ const Instruments = (function () {
             if(range)range.value=String(Math.round(position*1000));
         }
         function sync() {
-            if(key&&keyView!==view){key.innerHTML=view==='odometer'?'<span>Total topplings / R²</span><span>0</span><span style="width:160px;height:10px;background:linear-gradient(90deg,#15131A,#2A2B4D,#524E91,#AE5B90,#F4A782,#FFE8B3)"></span><span>0.65</span>':grainKey;keyView=view;}
+            if(key&&keyView!==view){key.innerHTML=view==='odometer'?'<span>Odometer / R²</span><span>0</span><span style="width:160px;height:10px;background:linear-gradient(90deg,#15131A,#2A2B4D,#524E91,#AE5B90,#F4A782,#FFE8B3)"></span><span>0.65</span>':grainKey;keyView=view;}
             $$('[data-p6-radius]').forEach(function(b){const on=Number(b.getAttribute('data-p6-radius'))===radius;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
             $$('[data-p6-view]').forEach(function(b){const on=b.getAttribute('data-p6-view')===view;b.classList.toggle('is-on',on);b.setAttribute('aria-pressed',String(on));});
             const b=$('[data-p6-run="pause"]');if(b){b.textContent=!userPaused&&view!=='scales'?'Pause':'Play';b.classList.toggle('is-on',!userPaused&&view!=='scales');b.setAttribute('aria-pressed',String(!userPaused&&view!=='scales'));b.disabled=loading||view==='scales';}
@@ -3690,9 +3700,9 @@ const Instruments = (function () {
         const first = front(all), left = all.filter(function (i) { return first.indexOf(i) < 0; });
         const second = front(left);
         return loopingRule('pareto-peeling', 6400, function (ctx, W, p) {
-            const phase = p < .18 ? 'CLOUD' : p < .38 ? 'TEST' : p < .56 ? 'BOUNDARY'
+            const phase = p < .18 ? 'POINTS' : p < .38 ? 'BOUNDARY POINTS' : p < .56 ? 'HULL BOUNDARY'
                         : p < .72 ? 'PEEL' : 'NEXT';
-            rulePhase(ctx, W, phase, p < .72 ? 'minimal → remove' : 'layer 2');
+            rulePhase(ctx, W, phase, p < .72 ? 'boundary points → remove' : 'peel 2');
             const left0 = W * .17, top = W * .16, size = W * .66;
             ctx.strokeStyle = RULE_VIS.grid; ctx.lineWidth = 3;
             ctx.strokeRect(left0, top, size, size);
@@ -4712,8 +4722,8 @@ const Instruments = (function () {
         function edgeReached() {
             stop();
             setPhase(null);
-            note.textContent = 'Finite-board boundary reached';
-            if (live) live.textContent = 'The walker reached the edge of the finite board.';
+            note.textContent = 'Boundary of the 801-by-801 box reached';
+            if (live) live.textContent = 'The walker reached the boundary of the 801-by-801 box.';
         }
 
         function startShapeLoop() {
@@ -5040,7 +5050,7 @@ const Instruments = (function () {
             } else if (!watching) {
                 note.textContent = '';
             } else if (!model.filled[model.y * N + model.x]) {
-                note.textContent = 'First empty site';
+                note.textContent = 'First unoccupied site';
             } else {
                 note.textContent = 'Walk';
             }
@@ -5459,11 +5469,11 @@ const Instruments = (function () {
             if (outRadius) outRadius.textContent = maxR.toFixed(1);
             if (outWidth) outWidth.textContent = Math.max(0, maxR - innerRadius()).toFixed(1);
             if (note) {
-                if (done) note.textContent = 'Finite-board boundary reached';
-                else if (settlePending) note.textContent = 'First empty site';
-                else if (anim && anim.progress < .42) note.textContent = 'Turn';
-                else if (anim) note.textContent = 'Move';
-                else note.textContent = pace === 'grow' ? '' : 'Turn';
+                if (done) note.textContent = 'Boundary of the grid reached';
+                else if (settlePending) note.textContent = 'First unoccupied site';
+                else if (anim && anim.progress < .42) note.textContent = 'Rotate rotor';
+                else if (anim) note.textContent = 'Step';
+                else note.textContent = pace === 'grow' ? '' : 'Rotate rotor';
             }
         }
         function syncControls() {
@@ -5792,7 +5802,7 @@ const Instruments = (function () {
                 else if (count >= meta.count) note.textContent = 'Complete';
                 else if (!running && userPaused) note.textContent = 'Paused';
                 else if (pace === 'grow') note.textContent = 'Bright tips: recent attachments';
-                else note.textContent = phase === 'contact' ? 'Contact with cluster' : 'Attach at first contact';
+                else note.textContent = phase === 'contact' ? 'Next attachment site (yellow)' : 'Site attached';
             }
         }
         function draw(now) {
@@ -6236,10 +6246,10 @@ const Instruments = (function () {
             if (elFiring) elFiring.textContent = nf.format(nFire);
             if (elDiff) elDiff.textContent = nf.format(totD[0]);
             if (elOther) elOther.textContent = nf.format(totD[zPick]);
-            if (elZ) elZ.textContent = zPick === 0 ? 'central' : String(zPick) + ' off centre';
+            if (elZ) elZ.textContent = zPick === 0 ? 'center' : 'offset ' + String(zPick);
             if (note) note.textContent = done
-                ? 'At rest after ' + nf.format(roundNo) + ' rounds'
-                : 'Round ' + nf.format(roundNo);
+                ? 'Stable at time ' + nf.format(roundNo)
+                : 'Time ' + nf.format(roundNo);
         }
 
         function advance(n) {
@@ -7186,8 +7196,8 @@ const Instruments = (function () {
             xs.push(u); ys.push(v); jumps.push(j); conductances.push(a);
             n++; if (j > maxJump) maxJump = j;
             if (note) note.textContent = j >= 12
-                ? 'Long jump \u00b7 ' + j.toFixed(1)
-                : 'One fixed environment';
+                ? 'Jump length ' + j.toFixed(1)
+                : 'One realization of the conductances';
             if (n >= TARGET) done = true;
             return !done;
         }
@@ -7281,7 +7291,7 @@ const Instruments = (function () {
             if (outMax) outMax.textContent = maxJump.toFixed(1);
             if (outRatio) outRatio.textContent =
                 (Math.hypot(xs[n], ys[n]) / natural).toFixed(2);
-            if (done && note) note.textContent = 'Finite-cutoff run complete';
+            if (done && note) note.textContent = '16,000 jumps complete';
         }
         function advance(k) {
             let live = true;
@@ -7619,8 +7629,8 @@ const Instruments = (function () {
             if (outResidual) outResidual.textContent = residual < 1e-3
                 ? residual.toExponential(1) : residual.toFixed(3);
             if (note) note.textContent = done
-                ? 'Harmonic coordinates reached'
-                : (sweeps ? 'Relaxing coordinates' : 'Boundary values fixed');
+                ? 'Harmonic embedding reached'
+                : (sweeps ? 'Averaging positions' : 'Boundary values fixed');
         }
 
         /* Watch is a clock, not a sweep count: three sweeps a second at
@@ -8150,7 +8160,7 @@ const Instruments = (function () {
             if (!nAlive) return false;
             const ok = peelOnce();
             composite(); update();
-            note.textContent = nAlive ? 'Layer ' + nf.format(nLayers) : 'Complete';
+            note.textContent = nAlive ? 'Peel ' + nf.format(nLayers) : 'Complete';
             syncControls();
             return ok && nAlive > 0;
         }
@@ -8165,10 +8175,10 @@ const Instruments = (function () {
             if (watchPhase === 'front') {
                 if (!prepareLayer()) return false;
                 watchPhase = quick ? 'commit' : 'select';
-                note.textContent = quick ? 'Layer ' + nf.format(nLayers + 1) : 'Identify outer front';
+                note.textContent = quick ? 'Peel ' + nf.format(nLayers + 1) : 'Boundary of the Pareto hull';
             } else if (watchPhase === 'select') {
                 watchPhase = 'commit';
-                note.textContent = 'Select minimal points';
+                note.textContent = 'Points on the boundary';
             } else if (watchPhase === 'commit') {
                 commitPrepared();
                 /* the next front is prepared at once, so the yellow front never
@@ -8176,10 +8186,10 @@ const Instruments = (function () {
                 if (nAlive) prepareLayer();
                 if (quick) watchPhase = 'front';
                 else watchPhase = 'hold';
-                note.textContent = nAlive ? (quick ? 'Layer ' + nf.format(nLayers) : 'Remove layer') : 'Complete';
+                note.textContent = nAlive ? (quick ? 'Peel ' + nf.format(nLayers) : 'Remove boundary points') : 'Complete';
             } else {
                 watchPhase = 'front';
-                note.textContent = nAlive ? 'Advance to next layer' : 'Complete';
+                note.textContent = nAlive ? 'Next peel' : 'Complete';
             }
             composite(); update(); syncControls();
             return nAlive > 0;
@@ -8265,7 +8275,7 @@ const Instruments = (function () {
                     userPaused = true; clock.stop();
                     peelOnce(); watchPhase = 'hold';
                     composite(); update();
-                    note.textContent = nAlive ? 'Layer ' + nf.format(nLayers) : 'Complete';
+                    note.textContent = nAlive ? 'Peel ' + nf.format(nLayers) : 'Complete';
                     syncControls();
                 }
                 if (a === 'reset') {
@@ -8577,8 +8587,8 @@ const Instruments = (function () {
                 };
                 out.innerHTML =
                     'C(<b>' + nd.p0 + '</b>, <b>' + nd.q0 + '</b>) = (<b>' + nd.p1 + '</b>, <b>'
-                    + nd.q1 + '</b>), reduced. Selected ' + (kind === 'std' ? 'standard' : 'alternate')
-                    + ' tile areas: parents ' + sz(nd.p0) + ' and ' + sz(nd.q0)
+                    + nd.q1 + '</b>). ' + (kind === 'std' ? 'Standard' : 'Alternate')
+                    + ' tiles: parents ' + sz(nd.p0) + ' and ' + sz(nd.q0)
                     + '; children ' + sz(nd.p1) + ' and ' + sz(nd.q1) + '.';
             }
             drawTree();
@@ -9112,7 +9122,7 @@ const Instruments = (function () {
             if (!sweep()) { halt(); return false; }
             if (hiNow < G.tol) { halt(); return false; }
             draw(); syncControls();
-            if (note) note.textContent = 'Sweep ' + nf.format(sweeps);
+            if (note) note.textContent = 'Time step ' + nf.format(sweeps);
             return true;
         }
 
@@ -9144,15 +9154,15 @@ const Instruments = (function () {
             draw(); syncControls();
             if (!ok || hiNow < G.tol) { halt(); return false; }
             if (note) note.textContent = complete
-                ? 'Dissipating remaining excess'
-                : 'Sweep ' + nf.format(sweeps);
+                ? 'Every vertex of the final cluster contains mass'
+                : 'Time step ' + nf.format(sweeps);
             return true;
         }
 
         function halt() {
             done = true;
             front = []; draw();
-            if (note) note.textContent = 'Stable';
+            if (note) note.textContent = 'Maximum excess mass below 10⁻⁶';
             syncControls();
         }
 
@@ -9276,7 +9286,7 @@ const Instruments = (function () {
                     if (!sweep()) halt();
                     else if (hiNow < G.tol) halt();
                     else {
-                        draw(); note.textContent = 'Sweep ' + nf.format(sweeps); syncControls();
+                        draw(); note.textContent = 'Time step ' + nf.format(sweeps); syncControls();
                     }
                 }
                 if (action === 'replay') {
@@ -10243,7 +10253,7 @@ const Instruments = (function () {
             cameraSnap = true; draw(); syncControls();
             if (note) note.textContent = seen >= D.n
                 ? 'All cells visited'
-                : 'Finite-run safety limit reached';
+                : 'Step limit of 2,000,000 reached';
         }
 
         function tick() {
@@ -10495,13 +10505,13 @@ const Instruments = (function () {
             if (!running) return;
             if (lastNow) progress = Math.min(1, progress + Math.min(100, now - lastNow) / 14000);
             lastNow = now; paint();
-            if (progress === 1) { stop(); setNote(note, 'Complete history · drag the time bar or replay'); return; }
+            if (progress === 1) { stop(); setNote(note, 'Run complete · drag the time bar or replay'); return; }
             raf = requestAnimationFrame(frame);
         }
         function prepare() {
             stop(); run = null; progress = 0; paint(); sync();
             slider.value = '0'; outTime.textContent = '0'; outDiffusion.textContent = outMobility.textContent = '—';
-            canvas.dataset.loading = 'true'; setNote(note, 'Computing paired histories…');
+            canvas.dataset.loading = 'true'; setNote(note, 'Computing 32 pairs of paths…');
             const id = ++request, options = {force: force, seed: seed, pairs: 32, samples: 900};
             if (worker) { worker.terminate(); worker = null; }
             function ready(result) {
@@ -10730,7 +10740,7 @@ const Instruments = (function () {
             if (outRound) outRound.textContent = nf.format(roundNo);
             if (outActive) outActive.textContent = nf.format(activeCount);
             if (outOrigin) outOrigin.textContent = nf.format(odometer[(N >> 1) * N + (N >> 1)]);
-            if (note) note.textContent = activeCount ? (density === .5 ? 'Critical density' : 'Subcritical density') : 'Every car is parked';
+            if (note) note.textContent = activeCount ? (density === .5 ? 'Critical regime p = 1/2' : 'Subcritical regime p < 1/2') : 'Every car is parked';
         }
         function sync() {
             $$('[data-parking-p]').forEach(function (b) {
@@ -11016,7 +11026,7 @@ const Instruments = (function () {
             if (outRound) outRound.textContent = nf.format(t);
             if (outToppled) outToppled.textContent = nf.format(setSize);
             if (outLargest) outLargest.textContent = nf.format(largestSize);
-            if (note) note.textContent = !t ? 'Initial sites with mass above 1'
+            if (note) note.textContent = !t ? 'Sites with initial mass above 1'
                 : rho === 1 ? 'Level set {uₜ > 0.075√t}' : 'Finite-time toppled set {uₜ > 0}';
         }
         function sync() {
@@ -11110,7 +11120,7 @@ const Instruments = (function () {
                 });
             }
             ctx.fillStyle=RULE_VIS.key;ctx.font='600 25px ui-monospace, monospace';
-            ctx.fillText('(g + Pu)\u207a',278,638);
+            ctx.fillText('(\u03b6 + Pu)\u207a',278,638);
         },.86);
     };
 
@@ -11129,7 +11139,7 @@ const Instruments = (function () {
         const outH=$('#rwrs-horizon'),outV=$('#rwrs-value'),note=$('#rwrs-note');
         const outHLabel=outH&&outH.closest('div')?$('dt',outH.closest('div')):null,
               outVLabel=outV&&outV.closest('div')?$('dt',outV.closest('div')):null;
-        if(outHLabel){outHLabel.textContent='\\(q_n(x)\\) range over \\(D\\)';
+        if(outHLabel){outHLabel.textContent='\\(\\min_D q_n\\) \u2026 \\(\\max_D q_n\\)';
             if(window.typeset)window.typeset(outHLabel);}
         if(outVLabel){outVLabel.textContent='\\(\\max_{x\\in D} w_{n+1}(x)\\)';
             if(window.typeset)window.typeset(outVLabel);}
@@ -11243,8 +11253,8 @@ const Instruments = (function () {
         function phaseNote(local,n,positive){
             if(local<.32)return'q\u2099 = g + Pw\u2099 \u00b7 n = '+n;
             if(local<.44)return'w\u2099\u208a\u2081 = max(q\u2099, 0) \u00b7 n = '+n;
-            if(local<.56)return'Continuation {q\u2099 > 0} \u00b7 '+positive+' sites';
-            return'Walk continues only while q\u2099 > 0';
+            if(local<.56)return'Continuation set {q\u2099 > 0} \u00b7 '+positive+' sites';
+            return'Walk stops at the first k with w\u2087\u2082\u208b\u2096(X\u2096) = 0';
         }
         function paint(){
             ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#0F0E13';ctx.fillRect(0,0,W0,H0);
@@ -11374,7 +11384,7 @@ const Instruments = (function () {
                 ctx.textAlign='center';ctx.globalAlpha=Math.min(1,(t-starts[i])/.3);ctx.fillStyle=wk.col;ctx.fillText(parts.join(wk.rel),360,i?640:598);ctx.globalAlpha=1;});
             ctx.fillStyle=RULE_VIS.quiet;ctx.font=QUIET;ctx.textAlign='center';
             ctx.fillText(done?'maximum and minimum are attained on the boundary':
-                t<T_DEF?'f(o) = average of the four neighbours':t<starts[1]?'step to the largest neighbour':'step to the smallest neighbour',360,682);
+                t<T_DEF?'f(o) = average of f over the four neighbours':t<starts[1]?'step to the neighbour where f is largest':'step to the neighbour where f is smallest',360,682);
         },.93);
     };
 
@@ -11560,8 +11570,8 @@ const Instruments = (function () {
         }
         function status(st,m){
             const k=G.modes[st.i].k,K=G.KMAX;
-            if(st.m>0)return'zeros on the boundary '+(2*k)+' → '+(2*k+2);
-            return(2*k)+' zeros on the boundary'+(k===K?', the most it resolves':'')+' · zero set crosses '+nf.format(m.crossed)+' edges · untouched: '+(100*m.untouched/G.ballCount).toFixed(1)+' % of B₂ₙ, '+(100*m.untouchedInner/G.innerCount).toFixed(1)+' % of Bₙ';
+            if(st.m>0)return'sign changes on S₂ₙ₊₁: '+(2*k)+' → '+(2*k+2);
+            return(2*k)+' sign changes on S₂ₙ₊₁'+(k===K?' (largest k shown)':'')+' · f changes sign across '+nf.format(m.crossed)+' edges · no incident sign change: '+(100*m.untouched/G.ballCount).toFixed(1)+' % of B₂ₙ, '+(100*m.untouchedInner/G.innerCount).toFixed(1)+' % of Bₙ';
         }
         function paint(){
             const D=G.schedule.D,t=elapsed%D,st=frameState(t);
@@ -11774,7 +11784,7 @@ const Instruments = (function () {
         function paint() {
             ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = '#0F0E13'; ctx.fillRect(0,0,W,H);
             if (!ready || !G) {
-                if (note) note.textContent = 'Loading exact finite graph';
+                if (note) note.textContent = 'Loading map';
                 return;
             }
             const scale = BASE_SCALE*cameraZoom;
@@ -11832,7 +11842,7 @@ const Instruments = (function () {
             if (outRadius) outRadius.textContent = String(radius);
             if (note) {
                 if (particles >= target) note.textContent = 'Boundary reached';
-                else note.textContent = 'Settling particle ' + (particles + 1);
+                else note.textContent = 'Settling explorer ' + (particles + 1);
             }
         }
         function captureGhost() {
@@ -12223,9 +12233,9 @@ const Instruments = (function () {
             if (outMismatch) outMismatch.textContent = nf.format(bad);
             if (outSites) outSites.textContent = '1,024';
             if (note) note.textContent = roundNo < TAU
-                ? (view === 'firing' ? 'Same firing set in every marked corner'
+                ? (view === 'firing' ? 'Same toppling sites in every marked corner'
                                      : 'Same odometer in every marked corner')
-                : 'Reached the theorem time τ₁₆';
+                : 'Time τ₁₆ = 241';
         }
         function reset() {
             big = makeState(BIG); small = makeState(SMALL); roundNo = 0;
@@ -12411,13 +12421,13 @@ const Instruments = (function () {
 
             if (outRows) outRows.textContent = nf.format(Math.min(N, row)) + ' / ' + N;
             if (outSites) outSites.textContent = nf.format(topplings) + ' / ' + nf.format(NN);
-            if (outLegal) outLegal.textContent = valid ? 'yes · height ' + lastBefore : 'no';
+            if (outLegal) outLegal.textContent = valid ? 'yes · ' + lastBefore + ' grains' : 'no';
             if (note) {
-                if (sourceHold > 0) note.textContent = 'The frozen line sends one grain to every site above it';
+                if (sourceHold > 0) note.textContent = 'The frozen line topples once: one grain to each site of the bottom line';
                 else if (!valid) note.textContent = 'Schedule error';
-                else if (row >= N) note.textContent = 'Every site of Qₖ has toppled once';
-                else if (orderAt <= 1) note.textContent = 'A height-three site starts the next line';
-                else note.textContent = 'Legal topplings propagate along the line';
+                else if (row >= N) note.textContent = 'Every site of the box has toppled once';
+                else if (orderAt <= 1) note.textContent = 'A site of the next line has 4 grains and topples';
+                else note.textContent = 'Every site of the line topples';
             }
         }
         function sync() {
@@ -12628,8 +12638,8 @@ const Instruments = (function () {
             if (outR) outR.textContent = A[n + 1] + ' / ' + B[n];
             if (outGap) outGap.textContent = A[n + 1] + '  >  3^' + (n - 1);
             if (note) note.textContent = mode === 'integer'
-                ? 'Integer values force denominator cancellation'
-                : 'Dirichlet voltage: h(s)=0 and h(t)=1';
+                ? 'Integer u: Aₙ₊₁ divides u(t) − u(s)'
+                : 'Dirichlet problem: h(s)=0 and h(t)=1';
         }
         function sync() {
             $$('[data-perc-gadget-mode]').forEach(function (b) {
@@ -12721,7 +12731,7 @@ function frontispiece() {
                promise a sequence the viewer will never see. */
             const cap = canvas.parentNode.querySelector('figcaption');
             if (cap) cap.textContent =
-                'Abelian sandpile from one source: 1,299,052 grains, one site per pixel';
+                'Single-source sandpile on Z\u00b2: final configuration for 1,299,052 grains';
             loadImage('plates/' + last.file).then(paint).catch(function () {});
             return;
         }

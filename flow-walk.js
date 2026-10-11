@@ -193,7 +193,7 @@
                 ctx.lineTo(left + bar, bottom); ctx.lineTo(left + bar, bottom - 4 * pixel); ctx.stroke();
                 ctx.fillStyle = dark ? '#b9b3bb' : '#69636c'; ctx.font = (10 * pixel) + 'px ui-monospace, monospace';
                 ctx.textAlign = 'left'; ctx.fillText(unit + (unit === 1 ? ' unit' : ' units'), left, bottom - 9 * pixel);
-                ctx.textAlign = 'right'; ctx.fillText(view === 'whole' ? 'WHOLE PATH' : 'FOLLOWING THE WALK', W - 24 * pixel, bottom);
+                ctx.textAlign = 'right'; ctx.fillText(view === 'whole' ? 'WHOLE PATH' : 'FOLLOWING THE PARTICLE', W - 24 * pixel, bottom);
             }
             ctx.restore();
         };
@@ -233,7 +233,7 @@
                 toggle.textContent = paused ? 'Play' : 'Pause';
                 toggle.classList.toggle('is-on', !paused); toggle.setAttribute('aria-pressed', String(!paused));
             }
-            if (note) note.textContent = (paused ? 'Paused' : 'One continuous random walk') + ' · ' + (view === 'follow' ? 'fixed scale' : 'full history');
+            if (note) note.textContent = (paused ? 'Paused' : 'One Euler–Maruyama path') + ' · ' + (view === 'follow' ? 'fixed scale' : 'whole path');
         }
         function reset() {
             run = create({ seed, fieldSeed, gamma }); paintRun = createPainter(run);

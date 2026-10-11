@@ -147,12 +147,19 @@ function handleDeepLink() {
 
     if (hash.startsWith('pub-')) {
         const done = openSectionById('publications');
-        if (done) done.then(onOpened, ignoreAbort);
+        if (done) done.then(() => openTopicContaining(hash)).then(onOpened, ignoreAbort);
         return;
     }
 
     const done = openSectionById(hash);
     if (done) done.then(onOpened, ignoreAbort);
+}
+
+function openTopicContaining(id) {
+    const el = document.getElementById(id);
+    const group = el && el.closest('.pub-topic');
+    if (!group) return Promise.resolve();
+    return setCollapsibleOpen(group.querySelector('.pub-topic-toggle'), true);
 }
 
 function renderPublications() {
@@ -161,11 +168,51 @@ function renderPublications() {
         throw new Error('Publications container not found');
     }
 
+    const groups = publicationTopics
+        .map(topic => ({ ...topic, pubs: publications.filter(pub => pub.topic === topic.id) }))
+        .filter(group => group.pubs.length);
+    // A paper without a known topic still appears, under "Other".
+    const unsorted = publications.filter(pub => !publicationTopics.some(topic => topic.id === pub.topic));
+    if (unsorted.length) groups.push({ id: 'other', title: 'Other', pubs: unsorted });
+
     const fragment = document.createDocumentFragment();
-    publications.forEach(pub => fragment.appendChild(createPublicationElement(pub)));
+    groups.forEach(group => fragment.appendChild(createTopicGroup(group)));
 
     container.innerHTML = '';
     container.appendChild(fragment);
+}
+
+function createTopicGroup(group) {
+    const section = document.createElement('section');
+    section.classList.add('pub-topic');
+    section.id = `pub-topic-${group.id}`;
+    const listId = `pub-topic-${group.id}-list`;
+
+    const heading = document.createElement('h3');
+    heading.classList.add('pub-topic-title');
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.classList.add('pub-topic-toggle');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-controls', listId);
+    toggle.innerHTML = `<span>${group.title}</span>` +
+        '<span class="indicator" aria-hidden="true"></span>';
+    toggle.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        setCollapsibleOpen(toggle, open).catch(() => { /* superseded */ });
+    });
+    heading.appendChild(toggle);
+    section.appendChild(heading);
+
+    const list = document.createElement('div');
+    list.classList.add('pub-topic-list');
+    list.id = listId;
+    list.hidden = true;
+    list.inert = true;
+    list.setAttribute('aria-hidden', 'true');
+    group.pubs.forEach(pub => list.appendChild(createPublicationElement(pub)));
+    section.appendChild(list);
+    return section;
 }
 
 function createPublicationElement(pub) {
@@ -239,7 +286,7 @@ function appendTitle(wrapper, pub) {
     const titleRow = document.createElement('div');
     titleRow.classList.add('pub-title-row');
 
-    const titleEl = document.createElement('h3');
+    const titleEl = document.createElement('h4');
     titleEl.innerHTML = `<em>${pub.title}</em>`;
     titleRow.appendChild(titleEl);
 
