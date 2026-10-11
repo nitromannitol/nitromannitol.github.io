@@ -1,6 +1,19 @@
 
 const publications = [
   {
+    id: "sandpile-avalanches-finite",
+    title: "Sandpile avalanches in two dimensions are finite",
+    authors: [
+      { name: "Ahmed Bou-Rabee" }
+    ],
+    links: [
+      { type: "PDF", url: "https://github.com/nitromannitol/finite-avalanche/blob/main/paper/main.pdf" },
+      { type: "Lean", url: "https://github.com/nitromannitol/finite-avalanche" }
+    ],
+    abstract: 'For the stationary Abelian sandpile on Z<sup>2</sup>, adding one grain at the origin produces an almost surely finite avalanche. The probability that the avalanche reaches distance R is bounded above by a negative power of log R.',
+    year: 2026
+  },
+  {
     id: "centrally-excited-random-walk",
     title: "Limit shapes of centrally excited random walks",
     authors: [
