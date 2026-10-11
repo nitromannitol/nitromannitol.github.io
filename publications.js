@@ -1,6 +1,21 @@
 
 const publications = [
   {
+    id: "subdiffusive-log-correlated-potential",
+    title: "Anomalous scaling limit of a Brownian particle in a log-correlated potential",
+    authors: [
+      { name: "Ahmed Bou-Rabee" },
+      { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
+      { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
+    ],
+    links: [
+      { type: "PDF", url: "https://github.com/nitromannitol/subdiffusive-process/blob/main/paper/multifractal.pdf" },
+      { type: "Lean", url: "https://github.com/nitromannitol/subdiffusive-process" }
+    ],
+    abstract: 'A Brownian particle moving in a log-correlated random potential has an anomalous scaling limit. We prove convergence to a singular, non-Gaussian diffusion, quantitative homogenization of the associated elliptic equation, and large-scale H\u00f6lder regularity under the paper\'s standing assumptions.',
+    year: 2026
+  },
+  {
     id: "sandpile-avalanches-finite",
     title: "Sandpile avalanches in two dimensions are finite",
     authors: [
@@ -241,7 +256,8 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2404.01115" },
       { type: "Quanta", url: "https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/" },
-      { type: "Blog", url: "https://www.scottnarmstrong.com/2024/04/superdiffusive-CLT/" }
+      { type: "Blog", url: "https://www.scottnarmstrong.com/2024/04/superdiffusive-CLT/" },
+      { type: "Lean", url: "https://github.com/scottnarmstrong/SuperdiffusionCLT" }
 
     ],
 abstract: 'A Brownian particle advected by an incompressible vector field undergoes enhanced diffusion. The extent of this enhancement depends on the correlation structure of the field. Above a critical correlation threshold, the particle is superdiffusive, with mean squared displacement scaling algebraically in time (t<sup>α</sup>, α > 1). Below the threshold, diffusion is enhanced, but the particle retains the usual diffusive scaling (α = 1). In the critical case studied here, the mean squared displacement has order t√log(t), so the typical displacement is √t·(log t)<sup>1/4</sup>. More precisely, for almost every frozen environment, |log ε<sup>2</sup>|<sup>−1/4</sup> εX<sub>t/ε<sup>2</sup></sub> converges in law to √(2c<sub>*</sub>)W<sub>t</sub>. This rate was predicted using heuristic renormalization-group arguments beginning in the 1980s. Our proof makes the renormalization argument rigorous using stochastic homogenization and gives a quenched Brownian path limit under the critical superdiffusive scaling. See this <a href="https://www.scottnarmstrong.com/2024/04/superdiffusive-clt/">blog post</a> and <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for more.',
