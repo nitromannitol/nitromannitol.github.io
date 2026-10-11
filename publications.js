@@ -4,12 +4,13 @@ const publications = [
     id: "subdiffusive-log-correlated-potential",
     title: "Anomalous scaling limit of a Brownian particle in a log-correlated potential",
     authors: [
-      { name: "Ahmed Bou-Rabee" },
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
+      { name: "Ahmed Bou-Rabee" },
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
     links: [
-      { type: "PDF", url: "https://github.com/nitromannitol/subdiffusive-process/blob/main/paper/multifractal.pdf" },
+      { type: "arXiv", url: "https://arxiv.org/abs/2610.12335" },
+      { type: "PDF", url: "https://arxiv.org/pdf/2610.12335" },
       { type: "Lean", url: "https://github.com/nitromannitol/subdiffusive-process" }
     ],
     abstract: 'A Brownian particle moving in a log-correlated random potential has an anomalous scaling limit. We prove convergence to a singular, non-Gaussian diffusion, quantitative homogenization of the associated elliptic equation, and large-scale H\u00f6lder regularity under the paper\'s standing assumptions.',
