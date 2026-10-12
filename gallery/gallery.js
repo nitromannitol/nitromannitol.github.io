@@ -7908,8 +7908,6 @@ const Instruments = (function () {
             return out;
         };
         const EXTRA_BALLS = [
-            ['tri', 3, Math.PI / 2, 1.116, 1],
-            ['pent', 5, Math.PI / 2, 0.578, 2],
             ['oct', 8, Math.PI / 8, 0.319, 3],
             ['deca', 10, Math.PI / 2, 0.255, 3],
             ['dodeca', 12, 0, 0.215, 4]
