@@ -7885,7 +7885,7 @@ const Instruments = (function () {
             hex: {
                 ball: [R(0), R(1), R(2), R(3), R(4), R(5)],
                 depth: 0.428, umax: null, hold: 6, u: null, level: null,
-                note: 'No closed form for this limit is known, so no curves are drawn: the least of the six single-cone solutions is 0.82 at the centre, and the peel measures 0.43.'
+                note: 'The regular 6-gon: 6 facet cones; the measured number of peels is about 0.428\u00b7\u221an.'
             }
         };
 
@@ -7916,8 +7916,8 @@ const Instruments = (function () {
             NORMS[b[0]] = {
                 ball: NG(b[1], b[2]), depth: b[3], umax: null, hold: 3 * b[4],
                 u: null, level: null,
-                note: 'The regular ' + b[1] + '-gon: ' + b[1] + ' facet cones, and a peel measured at '
-                    + b[3].toFixed(3) + '\u00b7\u221an layers. No closed form for this limit is known, so no curves are drawn.'
+                note: 'The regular ' + b[1] + '-gon: ' + b[1] + ' facet cones; the measured number of peels is about '
+                    + b[3].toFixed(3) + '\u00b7\u221an.'
             };
         });
         let normKey = 'l1', norm = NORMS.l1, cones = null;
