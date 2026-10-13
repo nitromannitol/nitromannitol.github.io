@@ -21,6 +21,7 @@ const publications = [
       { name: "Ahmed Bou-Rabee" }
     ],
     links: [
+      { type: "arXiv", url: "https://arxiv.org/abs/2610.13940" },
       { type: "PDF", url: "https://github.com/nitromannitol/finite-avalanche/blob/main/paper/main.pdf" },
       { type: "Lean", url: "https://github.com/nitromannitol/finite-avalanche" }
     ],
