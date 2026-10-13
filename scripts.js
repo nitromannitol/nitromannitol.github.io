@@ -464,8 +464,8 @@ function appendLinks(wrapper, links) {
             linkBtn.rel = 'noopener noreferrer';
         }
 
-        linkBtn.textContent = capitalizeFirstLetter(link.type);
-        linkBtn.setAttribute('aria-label', `${link.type} link`);
+        linkBtn.textContent = link.label || capitalizeFirstLetter(link.type);
+        linkBtn.setAttribute('aria-label', `${link.label || link.type} link`);
         linksDiv.appendChild(linkBtn);
     });
     wrapper.appendChild(linksDiv);
