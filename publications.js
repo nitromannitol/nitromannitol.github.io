@@ -55,7 +55,9 @@ const publications = [
     title: "Kozma's centrally excited walk converges to a Euclidean ball",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Yuval Peres", url: "https://yuvalperes.com/" }
+      { name: "Tuan-Minh Nguyen" },
+      { name: "Yuval Peres", url: "https://yuvalperes.com/" },
+      { name: "Arvind Singh" }
     ],
     status: "submitted",
     links: [
