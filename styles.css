@@ -501,65 +501,41 @@ html:not(.js) .content-placeholder {
 .lean-tracker {
     display: inline-flex;
     align-items: center;
-    gap: 0.45em;
-    margin: 0 0.1em;
-    padding: 0.05em 0.6em;
-    border: 1px solid #00e5ff;
-    border-radius: 4px;
-    background: #0a0e17;
-    color: #00e5ff;
-    font-family: 'Orbitron', 'Courier New', monospace;
-    font-size: 0.85em;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    gap: 0.4em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+    font-variant-numeric: tabular-nums;
+    color: var(--heading);
     white-space: nowrap;
-    vertical-align: baseline;
-    text-shadow: 0 0 4px rgba(0, 229, 255, 0.9);
-    box-shadow: 0 0 6px rgba(0, 229, 255, 0.5), inset 0 0 6px rgba(0, 229, 255, 0.2);
 }
 
 .lean-live-dot {
-    width: 0.55em;
-    height: 0.55em;
+    width: 0.45em;
+    height: 0.45em;
     border-radius: 50%;
-    background: #ff2bd6;
-    box-shadow: 0 0 6px #ff2bd6;
-    animation: lean-blink 1.2s steps(1, end) infinite;
-}
-
-.lean-live-label {
-    color: #ff2bd6;
-    font-size: 0.75em;
-    text-shadow: 0 0 4px rgba(255, 43, 214, 0.9);
-}
-
-#lean-count {
-    animation: lean-flicker 5s linear infinite;
+    background: var(--pill-journal);
+    animation: lean-pulse 2.4s ease-in-out infinite;
 }
 
 .lean-bar {
     position: relative;
-    width: 3.6em;
-    height: 0.55em;
-    border: 1px solid rgba(0, 229, 255, 0.7);
-    border-radius: 2px;
+    width: 3em;
+    height: 0.3em;
+    border-radius: 999px;
+    background: var(--border);
     overflow: hidden;
 }
 
 .lean-bar-fill {
     position: absolute;
     inset: 0 auto 0 0;
-    background: repeating-linear-gradient(90deg, #00e5ff 0 3px, transparent 3px 4px);
-    box-shadow: 0 0 6px rgba(0, 229, 255, 0.8);
+    border-radius: inherit;
+    background: var(--link);
 }
 
-@keyframes lean-blink {
-    50% { opacity: 0.15; }
-}
-
-@keyframes lean-flicker {
-    0%, 90%, 94%, 100% { opacity: 1; }
-    92% { opacity: 0.45; }
+@keyframes lean-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
 }
 
 @media (prefers-reduced-motion: reduce) {
