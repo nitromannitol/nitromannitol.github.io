@@ -446,7 +446,8 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
     links: [
       { type: "Journal", url: "https://doi.org/10.1214/23-AAP1976" },
       { type: "arXiv", url: "https://arxiv.org/abs/2102.04422" },
-      { type: "Notebook", url: "notebooks/exploding_sandpiles.html" }
+      { type: "Notebook", url: "notebooks/exploding_sandpiles.html" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Exploding-Sandpiles" }
     ],
   abstract: 'Some sandpiles explode: sites topple without stopping. I prove that random, exploding sandpiles have a limit shape. The proof uses ideas from my <a href="https://arxiv.org/abs/2009.05968">dimensional reduction paper</a> to compare the dynamics of an exploding sandpile to a <a href="references/schonmann.pdf">bootstrap percolation</a> process. This project grew out of a question posed by Lionel Levine during <a href="https://math7710.wordpress.com/2020/10/13/october-13-student-research-projects/"> an online topics class he ran during the COVID pandemic.</a>',
     thumbnail: "images/exploding_pile.png",
@@ -467,7 +468,8 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
     links: [
       { type: "Journal", url: "https://doi.org/10.1007/s00220-022-04322-z" },
       { type: "arXiv", url: "https://arxiv.org/abs/2009.05968" },
-      { type: "Code", url: "https://github.com/nitromannitol/arbitrarydim_sandpiles" }
+      { type: "Code", url: "https://github.com/nitromannitol/arbitrarydim_sandpiles" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Dynamic-Dimensional-Reduction" }
     ],
 abstract: 'Dimensional reduction in sandpiles, the property that slices of higher-dimensional sandpiles correspond to lower-dimensional ones, has been conjectured since <a href="references/LKG.pdf">at least 1990</a>. I prove an exact version of this conjecture. The key insight is that dimensional reduction is closely tied to a discrete parabolic regularity of the sandpile. The proof demonstrates that the "flow" of sandpile dynamics preserves certain derivative bounds, allowing dimensional reduction to occur.',
     thumbnail: "images/dim_reduction.png",
