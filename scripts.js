@@ -180,6 +180,13 @@ function renderPublications() {
 
     container.innerHTML = '';
     container.appendChild(fragment);
+
+    // The intro states how many papers have a Lean formalization.
+    const leanCount = document.getElementById('lean-count');
+    if (leanCount) {
+        const formalized = publications.filter(pub => (pub.links || []).some(link => link.type === 'Lean')).length;
+        leanCount.textContent = `${formalized}/${publications.length}`;
+    }
 }
 
 function createTopicGroup(group) {
