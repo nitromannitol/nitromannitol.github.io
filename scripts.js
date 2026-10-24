@@ -181,11 +181,14 @@ function renderPublications() {
     container.innerHTML = '';
     container.appendChild(fragment);
 
-    // The intro states how many papers have a Lean formalization.
-    const leanCount = document.getElementById('lean-count');
-    if (leanCount) {
+    // The intro's live tracker counts the papers with a Lean formalization.
+    const leanTracker = document.getElementById('lean-tracker');
+    if (leanTracker) {
+        const total = publications.length;
         const formalized = publications.filter(pub => (pub.links || []).some(link => link.type === 'Lean')).length;
-        leanCount.textContent = `${formalized}/${publications.length}`;
+        document.getElementById('lean-count').textContent = `${formalized}/${total}`;
+        document.getElementById('lean-bar-fill').style.width = `${(100 * formalized / total).toFixed(2)}%`;
+        leanTracker.setAttribute('aria-label', `${formalized} of ${total} papers formalized`);
     }
 }
 
