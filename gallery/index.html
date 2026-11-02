@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="vendor/katex/katex.min.css?v=baed7079">
-<link rel="stylesheet" href="gallery.css?v=5e9f68e9">
+<link rel="stylesheet" href="gallery.css?v=e6cb77a0">
 <meta property="og:title" content="A Gallery of Mathematical Research">
 <meta property="og:description" content="Definitions, simulations, and mathematical statements from research in probability.">
 <meta property="og:image" content="https://nitromannitol.github.io/gallery/plates/p3-wall-paper.png">
@@ -37,7 +37,7 @@
 
 <div id="ledger">
 <div class="sheet collection" id="sheet-own" data-panel="own">
-<nav class="collection-guide" aria-label="Topics"><span class="collection-guide-label">Explore by topic</span><a href="#topic-memory"><span>Random walks with memory</span></a><a href="#topic-sandpile"><span>Abelian sandpile</span></a><a href="#topic-homogenization"><span>Quantitative homogenization</span></a><a href="#topic-idla"><span>Internal DLA and divisible sandpile</span></a><a href="#topic-unique-continuation"><span>Discrete unique continuation</span></a><a href="#topic-pareto"><span>Pareto peeling</span></a></nav>
+<nav class="collection-guide" aria-label="Topics"><span class="collection-guide-label">Explore by topic</span><a href="#topic-memory"><span>Random walks with memory</span></a><a href="#topic-sandpile"><span>Abelian sandpile</span></a><a href="#topic-homogenization"><span>Quantitative homogenization</span></a><a href="#topic-idla"><span>Internal DLA and divisible sandpile</span></a><a href="#topic-unique-continuation"><span>Discrete unique continuation</span></a><a href="#topic-pareto"><span>Pareto peeling</span></a><a href="#topic-fpp"><span>First-passage percolation</span></a></nav>
 <section class="exhibit" id="topic-memory" aria-labelledby="heading-memory">
 <header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">I</span><h2 id="heading-memory">Random walks with memory</h2></div><p>A random walk with memory chooses each step using its own past, such as the sites or edges it has already visited, so its position alone is not a Markov chain. The basic questions are whether the walk is recurrent or transient, how far it travels in \(n\) steps, and the shape of the set of sites it visits.</p></header>
 <div class="exhibit-grid exhibit-grid--four">
@@ -251,6 +251,18 @@
         <img class="card-img-alt" src="plates/p-peeling-wall-void.png" alt="" loading="lazy" decoding="async">
     </span>
     <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-copy"><span class="card-name">Pareto peeling</span><span class="card-description">When the unit ball of the norm defining the Pareto hull has a facet, Pareto peeling of a random point set in two dimensions has a scaling limit described by a first-order Hamilton&ndash;Jacobi equation, with an explicit Hamiltonian that is both non-coercive and non-convex.</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+</a>
+</div>
+</section>
+<section class="exhibit" id="topic-fpp" aria-labelledby="heading-fpp">
+<header class="exhibit-heading"><div><span class="exhibit-index" aria-hidden="true">VII</span><h2 id="heading-fpp">First-passage percolation</h2></div><p>First-passage percolation, introduced by Hammersley and Welsh in 1965, gives the edges of a lattice random weights, or space a random density, and studies the random metric they define: the passage time between two points is the least total weight of a path joining them. The ball of radius \(t\) in this metric grows linearly in \(t\) and, rescaled by \(t\), converges to a deterministic convex set, the limit shape. The basic questions concern the fluctuations of passage times around their linear growth and the geometry of geodesics.</p></header>
+<div class="exhibit-grid exhibit-grid--one">
+<a class="card card--feature" href="#first-passage" data-plate="first-passage">
+    <span class="card-img">
+        <img src="plates/p-fpp-wall-paper.png?v=d02312cb" alt="" loading="lazy" decoding="async">
+        <img class="card-img-alt" src="plates/p-fpp-wall-void.png?v=3389e422" alt="" loading="lazy" decoding="async">
+    </span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-copy"><span class="card-name">Rotationally invariant first-passage percolation</span><span class="card-description">In every dimension \(d\ge2\), the passage time over a distance \(n\) has an exponential moment on the scale \(n^{\frac12(1-\varepsilon)}\) around \(\mu n\), so its variance is at most a constant times \(n^{1-\varepsilon}\).</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 </div>
 </section>
@@ -675,6 +687,60 @@
     <nav class="band band--void band--tight study-nav">
         <div class="nav-row">
             <a href="#percolation" data-plate-link="percolation"><span class="nav-dir">Previous</span><span class="nav-name">Rigidity of harmonic functions on the supercritical percolation cluster</span></a>
+            <a class="nav-next" href="#first-passage" data-plate-link="first-passage"><span class="nav-dir">Next</span><span class="nav-name">Rotationally invariant first-passage percolation</span></a>
+        </div>
+    </nav>
+</section>
+
+<section class="study" id="study-first-passage" data-plate="first-passage" aria-labelledby="t-first-passage" role="dialog" aria-modal="true" hidden>
+    <div class="study-bar">
+        <button type="button" class="study-back" data-close>&larr;&ensp;Models</button>
+        <span class="study-title">Rotationally invariant first-passage percolation</span>
+    </div>
+
+    <section class="band band--paper band--head">
+        <div class="col">
+            <p class="family">First-passage percolation</p>
+            <h2 id="t-first-passage">Rotationally invariant first-passage percolation</h2>
+            <p class="lead">Distances in \(\mathbb R^d\), \(d\ge2\), measured by integrating a random density along curves.</p>
+            <p>The density is a bounded function of smoothed white noise. Its value at a point depends only on the noise near that point, and its law does not change under rotations and translations. The passage time \(T(0,x)\) grows like \(\mu|x|\), where \(\mu\) is the time constant, so the ball \(\{x:T(0,x)\le t\}\), rescaled by \(t\), converges to the Euclidean ball of radius \(1/\mu\). The question is how far \(T(0,x)\) fluctuates around \(\mu|x|\). Classical concentration inequalities, going back to Kesten on the lattice, bound the fluctuations by order \(|x|^{1/2}\); in the plane they are predicted to be of order \(|x|^{1/3}\).</p>
+        </div>
+    </section>
+
+    <section class="band band--void band--model-live">
+        <div class="instrument instrument--model instrument--flow" data-model-theme="first-passage">
+            <div class="stage model-stage model-stage--flow" style="--stage-max:900px"><canvas id="fpp-canvas" width="1800" height="1260" role="img" aria-label="One sample of rotationally invariant first-passage percolation in the plane. The background shows the random density, blue where it is small and rose where it is large. The coloured region is the set of points within passage time t of the origin, with its boundaries at earlier times drawn as thin lines. Gold curves are geodesics from the origin to points of its boundary, and a dashed circle has radius t divided by the estimated time constant."></canvas></div>
+            <div class="film-timeline"><label for="fpp-time-input">Time \(t\)</label><input id="fpp-time-input" type="range" min="0" max="1000" step="1" value="0" aria-label="Passage time t"><output id="fpp-time" for="fpp-time-input">0.0</output></div>
+            <div class="model-control-shelf" aria-label="First-passage percolation controls"><div class="model-control-groups">
+                <div class="model-control-group"><span class="model-control-label">View</span><div class="model-segmented"><button type="button" class="btn is-on" data-fpp-view="ball" aria-pressed="true">Ball</button><button type="button" class="btn" data-fpp-view="geodesics" aria-pressed="false">Geodesics</button></div></div>
+                <div class="model-control-group"><span class="model-control-label">Contrast \(\sigma\)</span><div class="model-segmented model-segmented--three"><button type="button" class="btn" data-fpp-sigma="0.8" aria-pressed="false">0.8</button><button type="button" class="btn is-on" data-fpp-sigma="1.6" aria-pressed="true">1.6</button><button type="button" class="btn" data-fpp-sigma="2.4" aria-pressed="false">2.4</button></div></div>
+                <div class="model-control-group"><span class="model-control-label">Run</span><div class="model-run"><button type="button" class="btn is-on" data-fpp-run="pause">Pause</button><button type="button" class="btn" data-fpp-run="replay">Replay</button><button type="button" class="btn" data-fpp-run="new">New sample</button></div></div>
+            </div></div>
+            <dl class="readout model-readout"><div><dt>Largest \(|x|\) in the ball</dt><dd id="fpp-outer">0.0</dd></div><div><dt>Smallest \(|x|\) outside the ball</dt><dd id="fpp-inner">0.0</dd></div><div><dt>Radius \(t/\hat\mu\) of the circle</dt><dd id="fpp-circle">0.0</dd></div></dl>
+            <p class="model-phase-chip" id="fpp-note">Growing</p>
+            <p class="caption">One sample in the plane. The background shows the density \(\rho\): blue where it is small, so that passage is fast, and rose where it is large. The coloured region is the ball \(\{x:T(0,x)\le t\}\), coloured by the passage time from the origin, with its boundaries at earlier times drawn as thin lines. Gold curves are geodesics from the origin to the farthest point of the ball on each of 180 equally spaced rays, drawn wider where more of them share a path; the white one ends on the positive horizontal axis. The dashed circle has radius \(t/\hat\mu\), where \(\hat\mu\) estimates the time constant from this sample. By subadditivity \(\mathbf E\,T(0,x)\ge\mu|x|\), so at small times the ball tends to lag behind the circle. The theorem below bounds \(|T(0,x)-\mu|x||\), which contains both the random part \(T(0,x)-\mathbf E\,T(0,x)\) and the nonrandom part \(\mathbf E\,T(0,x)-\mu|x|\).</p>
+            <details class="deeper flow-details"><summary>The finite simulation</summary><p>White noise is approximated by independent standard Gaussian variables at the points of the grid \(h\mathbb Z^2\) with \(h=1/6\), and \(\chi(x)=\exp\bigl(1-1/(1-|x|^2)\bigr)\) for \(|x|&lt;1\) and \(\chi(x)=0\) otherwise. The convolution \(\chi*\omega\) is normalized to have variance one, and \(\rho=\exp\bigl(\sigma\tanh(\chi*\omega/2)\bigr)\), so that \(e^{-\sigma}\le\rho\le e^{\sigma}\); the three buttons set \(\sigma=0.8,\,1.6,\,2.4\). Passage times from the origin are computed by Dijkstra&rsquo;s algorithm on a grid of 421 by 421 points, each joined to its 32 neighbours at the displacements \(h(1,0)\), \(h(1,1)\), \(h(2,1)\), \(h(3,1)\), \(h(3,2)\) and their images under the symmetries of the square; the edge from \(u\) to \(v\) has weight \(|v-u|\,(\rho(u)+\rho(v))/2\). This grid metric is not exactly rotationally invariant: when \(\rho\) is constant, it differs from \(\rho\) times the Euclidean distance by at most 1.3 percent. The film stops when the ball first reaches distance 16.1 from the origin, and \(\hat\mu\) is the average of \(T(0,x)/|x|\) over the grid points \(x\) with \(11.3\le|x|\le12.9\).</p></details>
+        </div>
+    </section>
+
+    <section class="band band--paper">
+        <div class="col">
+            <p class="def"><b>Definition.</b> Let \(d\ge2\), let \(\omega\) be Gaussian white noise on \(\mathbb R^d\), let \(\chi\) be a smooth radial function supported in the closed unit ball, and let \(\psi\) be a continuous function with values between two positive constants. The density is \(\rho=\psi(\chi*\omega)\), and the passage time between \(u,v\in\mathbb R^d\) is \[T(u,v)=\inf_{\pi}\int_\pi\rho(x)\,|dx|,\] where the infimum is over the rectifiable curves \(\pi\) from \(u\) to \(v\). By subadditivity, the time constant \(\mu=\lim_{t\to\infty}t^{-1}\mathbf E\,T(0,te_1)\) exists, and it is positive and finite.</p>
+            <p class="statement"><b>Theorem.</b> There exist \(\varepsilon&gt;0\) and \(C&lt;\infty\) such that, for every \(x\in\mathbb R^d\) with \(|x|\ge1\), \[\mathbf E\left[\exp\left(\frac{\bigl|T(0,x)-\mu|x|\bigr|}{C|x|^{\frac12(1-\varepsilon)}}\right)\right]\le2.\] In particular, \(\operatorname{Var}T(0,x)\le2C^2|x|^{1-\varepsilon}\) for \(|x|\ge1\). <span class="src">(Armstrong&ndash;Bou-Rabee, Theorem 1.1)</span></p>
+            <p>The same bound holds for every density that depends only on the noise within unit distance, lies between two positive constants, and is equivariant under rotations and translations, where \(\omega\) is Gaussian white noise or a homogeneous Poisson process. <span class="src">(Theorem 1.2)</span> For \(d=2\), with \(\chi\ge0\) and \(\psi\) smooth and increasing, the variance bound was proved by <a href="https://arxiv.org/abs/2604.01214">Basu, Sidoravicius and Sly</a>.</p>
+            <p>On \(\mathbb Z^d\) with independent and identically distributed edge weights, <a href="https://doi.org/10.1214/aoap/1177005426">Kesten</a> proved that \(\operatorname{Var}T(0,x)\le C|x|\) under mild conditions on the weights, and asked for a bound by \(|x|^{1-\varepsilon}\). <a href="https://arxiv.org/abs/math/0203262">Benjamini, Kalai and Schramm</a> improved his bound by a factor \(1/\log|x|\) for weights taking two values, this was later extended to broad classes of weights, and Kesten&rsquo;s question remains open. In a companion paper, the same authors answer it in every direction in which the time constant satisfies a nondegenerate \(C^{2,\alpha}\) condition; no law of the weights is known to satisfy this condition.</p>
+            <details class="deeper"><summary>The idea of the proof</summary>
+            <figure class="paperfig"><img src="plates/p-fpp-slabs.svg?v=641aec82" width="754" height="186" alt="Six slabs of width n between 0 and K n e1. A minimizing chain of points on the faces of the slabs is joined by wavy near-geodesics; another chain is drawn dotted; one slab is shaded." loading="lazy" decoding="async"><figcaption>Slabs of width \(n\) between \(0\) and \(Kne_1\): the black dots form a minimizing chain, joined by near-geodesics for the slab passage times \(T^{(i)}\), and the grey dots joined by the dotted line form another chain. From Figure 1 of the paper.</figcaption></figure>
+            <p>Write \(T_n=T(0,ne_1)\) and fix a large integer \(K\). The passage time \(T_{Kn}\) is close to the minimum, over the chains of points \(0=x_0,x_1,\ldots,x_K=Kne_1\) with \(x_i\cdot e_1=in\), of the sum of the passage times \(T^{(i)}(x_{i-1},x_i)\) across the slabs \([(i-1)n,in]\times\mathbb R^{d-1}\), and these passage times are independent. The Efron&ndash;Stein inequality then gives \(\operatorname{Var}T_{Kn}\le CK\operatorname{Var}T_n\), which gains a power only if \(C\) can be replaced by \(1/2\). Basu, Sidoravicius and Sly did this by proving that the geodesic is chaotic.</p>
+            <p>The proof here inducts instead on the bound \(\mathbf E\exp\bigl(|T_s-\mu s|/Q_s\bigr)\le2\) on the scale \(Q_s=As^{\frac12-\frac1K}\), which controls both the random fluctuations and the difference \(\mathbf E\,T_s-\mu s\). By the induction hypothesis and rotational invariance, near-geodesics stay within distance of order \((nQ_n)^{1/2}\) of the segment between their endpoints. Following Benjamini, Kalai and Schramm, the passage time is averaged over translations of its endpoints. Each piece of the noise then affects only a small fraction of the translated passage times, and the modified Poincar&eacute; inequality of <a href="https://arxiv.org/abs/math/0609730">Bena&iuml;m and Rossignol</a> improves the Efron&ndash;Stein bound by a factor \(1/\log K\). The proof uses neither planarity nor the FKG inequality, so it applies in every dimension.</p>
+            </details>
+            <p class="cite">S. Armstrong and A. Bou-Rabee, &ldquo;Fluctuation bounds for rotationally invariant first-passage percolation&rdquo; (2026), <a href="https://arxiv.org/abs/2610.42124">arXiv:2610.42124</a> · <a href="https://github.com/nitromannitol/FPP-variance">Lean formalization</a>. The companion paper, &ldquo;Curvature and variance in lattice first-passage percolation&rdquo;, and its formalization are in the same repository.</p>
+        </div>
+    </section>
+
+    <nav class="band band--void band--tight study-nav">
+        <div class="nav-row">
+            <a href="#pareto-peeling" data-plate-link="pareto-peeling"><span class="nav-dir">Previous</span><span class="nav-name">Pareto peeling</span></a>
             <span></span>
         </div>
     </nav>
@@ -2295,7 +2361,8 @@ window.typeset = function (root) {
 <script defer src="avalanche.js?v=1397c7aa"></script>
 <script defer src="excited.js?v=bd83c4e3"></script>
 <script defer src="logcorr.js?v=8375db81"></script>
+<script defer src="fpp.js?v=e4afd4ac"></script>
 <script defer src="../flow-walk.js?v=6192ce63"></script>
-<script defer src="gallery.js?v=ebc4d401"></script>
+<script defer src="gallery.js?v=a1d9c2ae"></script>
 </body>
 </html>

@@ -31,7 +31,7 @@ const SECTIONS = [
     'long-range-walk', 'superdiffusion', 'sphere-packing', 'parking',
     'divisible-percolation', 'idla-cylinder', 'sandpile-rwrs', 'divisible',
     'idla', 'rotor-aggregation', 'dla', 'unique-continuation',
-    'percolation', 'pareto-peeling'
+    'percolation', 'pareto-peeling', 'first-passage'
 ];
 
 /* A model page may host several instruments. Each dedicated research page
@@ -41,6 +41,7 @@ const PAGE_MAKERS = {
     'avalanche': ['avalanche'],
     'excited-walk': ['excited'],
     'log-correlated': ['logcorr'],
+    'first-passage': ['fpp'],
     'orrw-range': ['orrw'],
     'dimensional-reduction': ['dimredintro', 'dimredlive', 'dimredscale'],
     'apollonian':        ['apollointro', 'apollo'],
@@ -70,7 +71,7 @@ const PAGE_MAKERS = {
    a wide construction film before their live model, so positional matching
    can pause one maker while a different canvas is visible. */
 const MAKER_TARGETS = {
-    manhattan: '#manhattan-canvas', orrw: '#orrw-canvas', avalanche: '#avalanche-canvas', excited: '#excited-canvas', logcorr: '#logcorr-canvas',
+    manhattan: '#manhattan-canvas', orrw: '#orrw-canvas', avalanche: '#avalanche-canvas', excited: '#excited-canvas', logcorr: '#logcorr-canvas', fpp: '#fpp-canvas',
     dimredintro: '#rule-dimensional-reduction', dimredlive: '#dimred-canvas',
     dimredscale: '#dimred-scale-canvas',
     apollointro: '#rule-apollonian', apollo: '#apollo-canvas',
@@ -123,6 +124,7 @@ const TITLES = {
     'long-range-walk': 'Critical long-range random conductance walk',
     'sphere-packing': 'Random walk on orthogonal tilings',
     'pareto-peeling': 'Pareto peeling',
+    'first-passage': 'Rotationally invariant first-passage percolation',
     'percolation': 'Supercritical percolation cluster',
     'einstein-relation': 'Quantitative Einstein relation',
     'sandpile-rwrs': 'Sandpiles and random walk in random scenery',
@@ -345,6 +347,7 @@ const Instruments = (function () {
     makers.avalanche = function () { return globalThis.AvalancheGallery.create(); };
     makers.excited = function () { return globalThis.ExcitedGallery.create(); };
     makers.logcorr = function () { return globalThis.LogCorrelatedGallery.create(); };
+    makers.fpp = function () { return globalThis.FirstPassageGallery.create(); };
 
     function setActive(k, on) {
         on = !!on;

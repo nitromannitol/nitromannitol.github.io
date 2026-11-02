@@ -6,10 +6,29 @@ const publicationTopics = [
   { id: "homogenization", title: "Quantitative homogenization" },
   { id: "idla", title: "Internal DLA and divisible sandpile" },
   { id: "unique-continuation", title: "Discrete unique continuation" },
-  { id: "pareto", title: "Pareto peeling" }
+  { id: "pareto", title: "Pareto peeling" },
+  { id: "fpp", title: "First-passage percolation" }
 ];
 
 const publications = [
+  {
+    id: "fpp-rotationally-invariant-variance",
+    topic: "fpp",
+    thumbnail: "images/first_passage_percolation.png",
+    thumbnailAnimation: "first-passage-percolation",
+    altText: "The ball of a random metric in the plane growing from the origin, with its rough boundary and the geodesics from the origin to the boundary, which merge into a tree.",
+    title: "Fluctuation bounds for rotationally invariant first-passage percolation",
+    authors: [
+      { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
+      { name: "Ahmed Bou-Rabee" }
+    ],
+    links: [
+      { type: "arXiv", url: "https://arxiv.org/abs/2610.42124" },
+      { type: "Lean", url: "https://github.com/nitromannitol/FPP-variance" }
+    ],
+    abstract: 'In first-passage percolation, a random medium defines a random metric, and one asks how much the distance between two far-apart points fluctuates. Here distances in R<sup>d</sup> are measured by integrating a random density along curves. In the main example the density is a bounded function of smoothed white noise, so it depends only on the noise nearby and its law does not change under rotations and translations. The passage time T<sub>n</sub> over a distance n grows like &mu;n, and classical concentration inequalities show that it fluctuates by at most order &radic;n; in the plane, the fluctuations are predicted to be of order n<sup>1/3</sup>. <a href="https://doi.org/10.1214/aoap/1177005426">Kesten</a> asked whether the variance is at most n<sup>1&minus;&epsilon;</sup>. On the lattice this is still open, and <a href="https://arxiv.org/abs/math/0203262">Benjamini, Kalai, and Schramm</a> improved the linear bound to n/log n. <a href="https://arxiv.org/abs/2604.01214">Basu, Sidoravicius, and Sly</a> broke this barrier for rotationally invariant models in the plane. We prove that, in every dimension d &ge; 2, T<sub>n</sub> has an exponential moment on the scale n<sup>(1&minus;&epsilon;)/2</sup> around &mu;n, so its variance is at most a constant times n<sup>1&minus;&epsilon;</sup>. As in their work, the proof is an induction on scales, but in place of their proof that the geodesic is chaotic, we average the passage time over translations of its endpoints, as Benjamini, Kalai, and Schramm did, and use a logarithmic improvement of the Efron&ndash;Stein inequality due to <a href="https://arxiv.org/abs/math/0609730">Bena&iuml;m and Rossignol</a>. A <a href="https://github.com/nitromannitol/FPP-variance/blob/main/papers/CurvatureVariance.pdf">companion paper</a> proves the same bound on Z<sup>d</sup> in every direction in which the limit shape satisfies a nondegenerate curvature condition, a condition not yet known to hold for any law of the edge weights. Both papers are formalized in Lean.',
+    year: 2026
+  },
   {
     id: "sandpile-avalanches-finite",
     topic: "sandpile",
@@ -502,6 +521,7 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
 ];
 
 const galleryAnchorByAnimation = {
+  "first-passage-percolation": "first-passage",
   "manhattan-lattice": "manhattan-lattice",
   "orrw-range": "orrw-range",
   "centrally-excited-walk": "excited-walk",

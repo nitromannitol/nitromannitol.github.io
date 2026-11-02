@@ -2160,18 +2160,24 @@ a:hover { text-decoration-thickness: 1.5px; }
 .instrument--flow .model-stage--flow { width: 100%; }
 .instrument--flow .model-control-groups { grid-template-columns: auto auto; justify-content: space-between; }
 .instrument--flow .model-control-groups:has([data-algebraic-gamma]),
-.instrument--flow .model-control-groups:has([data-logcorr-disorder]) { grid-template-columns: auto auto auto; }
+.instrument--flow .model-control-groups:has([data-logcorr-disorder]),
+.instrument--flow .model-control-groups:has([data-fpp-sigma]) { grid-template-columns: auto auto auto; }
 .flow-heading .family { color: #A8D8E8; margin-bottom: 10px; }
 .flow-heading h3 { font: 400 clamp(1.5rem, 2.5vw, 2rem)/1.2 var(--serif); color: var(--model-text); }
 .flow-readout { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; color: var(--model-muted); font: 400 .78rem/1.5 var(--mono); }
 .flow-readout output { color: var(--model-text); margin-left: 12px; font-variant-numeric: tabular-nums; }
 .flow-readout .film-status { margin: 0; }
 .flow-details { color: var(--model-muted); }
+/* A figure from a paper, inside a statement band. */
+.paperfig { margin: 1.2em 0 1.4em; }
+.paperfig img { display: block; width: 100%; height: auto; }
+.paperfig figcaption { margin-top: .7em; font-size: .9rem; line-height: 1.5; color: var(--on-paper-faint); }
 .flow-details p { margin-top: 1em; }
 @media (max-width: 720px) {
     .instrument.instrument--flow > .model-stage { order: 0; }
     .instrument--flow .model-control-groups,
     .instrument--flow .model-control-groups:has([data-algebraic-gamma]),
-    .instrument--flow .model-control-groups:has([data-logcorr-disorder]) { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+    .instrument--flow .model-control-groups:has([data-logcorr-disorder]),
+    .instrument--flow .model-control-groups:has([data-fpp-sigma]) { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
     .instrument--flow .btn { min-height: 44px; }
 }

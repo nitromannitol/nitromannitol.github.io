@@ -1050,6 +1050,130 @@
         };
     }
 
+    function makeFirstPassage(ctx,W){
+        /* Rotationally invariant first-passage percolation in the plane, as on
+           the gallery page (gallery/fpp.js) on a smaller grid.  White noise is
+           approximated by independent Gaussians on the grid (1/5)Z^2 and
+           convolved with the smooth bump exp(1-1/(1-|x|^2)) on the unit disk,
+           normalized to unit variance; rho = exp(1.6 tanh(phi/2)).  Passage
+           times from the centre come from Dijkstra's algorithm with 32
+           neighbour directions, the edge from u to v having weight
+           |v-u|(rho(u)+rho(v))/2.  The ball {T <= t} grows, coloured by passage
+           time, with its front, the geodesics from the origin to the farthest
+           point of the ball on 96 rays (wider where they share a path), and the
+           circle of radius t/mu, mu estimated from the sample.  The view zooms
+           out with the ball; each cycle draws a new sample. */
+        const N=181,R=5,h=1/R,c=(N-1)>>1,NN=N*N,M=N+2*R,SIGMA=1.6,RAYS=96,CYCLE=13,GROW=10;
+        const OFF=[];
+        for(const [a,b] of [[1,0],[1,1],[2,1],[3,1],[3,2]]){const seen=new Set();for(const [x,y] of [[a,b],[b,a]])for(const sx of [1,-1])for(const sy of [1,-1]){const k=sx*x+','+sy*y;if(!seen.has(k)){seen.add(k);OFF.push([sx*x,sy*y]);}}}
+        const DI=OFF.map(o=>o[0]),DJ=OFF.map(o=>o[1]),LEN=OFF.map(o=>Math.hypot(o[0],o[1])*h/2);
+        const kv=[],ko=[];let norm=0;
+        for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){const r2=(dx*dx+dy*dy)/(R*R);if(r2>=1)continue;const v=Math.exp(1-1/(1-r2));kv.push(v);ko.push(dy*M+dx);norm+=v*v;}
+        norm=Math.sqrt(norm);
+        const w=new Float32Array(M*M),phi=new Float32Array(NN),rho=new Float32Array(NN),T=new Float64Array(NN),parent=new Int32Array(NN);
+        const order=new Int32Array(NN),done=new Uint8Array(NN),dist=new Float32Array(NN),outer=new Float32Array(NN);
+        for(let j=0;j<N;j++)for(let i=0;i<N;i++)dist[j*N+i]=Math.hypot(i-c,j-c)*h;
+        let cap=1<<15,hk=new Float64Array(cap),hv=new Int32Array(cap),size=0,kMax=0,tMax=1,mu=1;
+        function push(key,v){
+            if(size===cap){cap*=2;const a=new Float64Array(cap),b=new Int32Array(cap);a.set(hk);b.set(hv);hk=a;hv=b;}
+            let i=size++;while(i>0){const q=(i-1)>>1;if(hk[q]<=key)break;hk[i]=hk[q];hv[i]=hv[q];i=q;}hk[i]=key;hv[i]=v;
+        }
+        function pop(){
+            const top=hv[0],key=hk[--size],v=hv[size];let i=0;
+            for(;;){let l=2*i+1;if(l>=size)break;if(l+1<size&&hk[l+1]<hk[l])l++;if(hk[l]>=key)break;hk[i]=hk[l];hv[i]=hv[l];i=l;}
+            hk[i]=key;hv[i]=v;return top;
+        }
+        const base=DARK?[18,21,29]:[250,249,245],paper=`rgb(${base})`,fast=[76,141,165],slow=[161,107,137],washA=DARK?.3:.16;
+        const ramp=DARK?[[52,92,128],[75,141,178],[118,108,206],[184,92,120]]:[[150,190,210],[92,150,182],[130,118,206],[190,112,138]];
+        const tree=DARK?'#f2c67b':'#a46525',fresh=DARK?'#fff0cb':'#562c25',front=DARK?'#cfe8f1':'#2f6f8f',ring=DARK?'#a2a3ac':'#777383';
+        const wash=document.createElement('canvas');wash.width=wash.height=N;
+        const ball=document.createElement('canvas');ball.width=ball.height=N;
+        const wc=wash.getContext('2d'),bc=ball.getContext('2d'),bimg=bc.createImageData(N,N),words=new Uint32Array(bimg.data.buffer);
+        const NB=64,colours=new Uint32Array(NB);
+        for(let b=0;b<NB;b++){const q=b/(NB-1)*(ramp.length-1),i=Math.min(ramp.length-2,Math.floor(q)),a=q-i,col=[0,1,2].map(k=>Math.round(mix(ramp[i][k],ramp[i+1][k],a)));colours[b]=((Math.round(255*(DARK?.5:.34))<<24)|(col[2]<<16)|(col[1]<<8)|col[0])>>>0;}
+        let shown=0,cycle=-1;
+        function sample(seed){
+            const rand=randomFactory(seed);
+            for(let k=0;k<w.length;k++)w[k]=gaussian(rand);
+            const K=kv.length,wi=wc.createImageData(N,N);
+            for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+                const b0=(j+R)*M+i+R;let sum=0;for(let k=0;k<K;k++)sum+=kv[k]*w[b0+ko[k]];
+                const p=sum/norm,id=j*N+i;phi[id]=p;rho[id]=Math.exp(SIGMA*Math.tanh(p/2));
+                const u=clamp((Math.tanh(p/2)/Math.tanh(1.25)+1)/2,0,1),a=washA*(.45+1.1*Math.abs(u-.5)),o=((N-1-j)*N+i)*4;
+                for(let ch=0;ch<3;ch++)wi.data[o+ch]=Math.round(base[ch]*(1-a)+(fast[ch]+(slow[ch]-fast[ch])*u)*a);
+                wi.data[o+3]=255;
+            }
+            wc.putImageData(wi,0,0);
+            T.fill(Infinity);parent.fill(-1);done.fill(0);size=0;
+            const src=c*N+c;let count=0;T[src]=0;push(0,src);
+            while(size){
+                const key=hk[0],p=pop();if(done[p])continue;done[p]=1;order[count++]=p;
+                const pi=p%N,pj=(p-pi)/N,rp=rho[p];
+                for(let e=0;e<OFF.length;e++){
+                    const qi=pi+DI[e],qj=pj+DJ[e];if(qi<0||qj<0||qi>=N||qj>=N)continue;
+                    const q=qj*N+qi;if(done[q])continue;const nt=key+LEN[e]*(rp+rho[q]);
+                    if(nt<T[q]){T[q]=nt;parent[q]=p;push(nt,q);}
+                }
+            }
+            let m=0;for(let k=0;k<NN;k++){m=Math.max(m,dist[order[k]]);outer[k]=m;}
+            const limit=.46*c*h;kMax=0;while(kMax+1<NN&&outer[kMax+1]<=limit)kMax++;
+            tMax=T[order[kMax]];let mean=0,n=0;
+            for(let k=0;k<NN;k++)if(dist[k]>=.7*limit&&dist[k]<=.8*limit){mean+=T[k]/dist[k];n++;}
+            mu=mean/n;words.fill(0);shown=0;bc.putImageData(bimg,0,0);
+        }
+        function reached(t){let lo=0,hi=kMax+1;while(lo<hi){const m=(lo+hi)>>1;if(T[order[m]]<=t)lo=m+1;else hi=m;}return lo;}
+        const uses=new Uint16Array(NN),touched=new Int32Array(NN),X=p=>(p%N-c)*h,Y=p=>(Math.floor(p/N)-c)*h;
+        return function(time){
+            const index=Math.floor(time/CYCLE),local=time-index*CYCLE;
+            if(index!==cycle){cycle=index;sample(0x46505031+0x9e3779b9*index>>>0||1);}
+            const t=tMax*Math.min(1,local/GROW),k=reached(t);
+            if(k<shown){words.fill(0);shown=0;}
+            if(k>shown){for(let m=shown;m<k;m++){const p=order[m],i=p%N,j=(p-i)/N;words[(N-1-j)*N+i]=colours[Math.min(NB-1,(T[p]/tMax*NB)|0)];}shown=k;bc.putImageData(bimg,0,0);}
+            const half=Math.max(3.4,1.22*t/mu+1),scale=W/(2*half),L=c*h+h/2,side=2*L*scale,u=1/scale;
+            ground(ctx,W);ctx.fillStyle=paper;ctx.fillRect(0,0,W,W);
+            ctx.imageSmoothingEnabled=true;ctx.drawImage(wash,W/2-L*scale,W/2-L*scale,side,side);
+            ctx.globalAlpha=.6;ctx.drawImage(ball,W/2-L*scale,W/2-L*scale,side,side);ctx.globalAlpha=1;
+            ctx.save();ctx.translate(W/2,W/2);ctx.scale(scale,-scale);ctx.lineJoin='round';ctx.lineCap='round';
+            let nt=0;const ends=[],reach=Math.min(c-1,(k?outer[k-1]:0)/h+2);
+            if(t>0){
+                for(let r=0;r<RAYS;r++){
+                    const th=TAU*r/RAYS,cs=Math.cos(th),sn=Math.sin(th);let last=c*N+c;
+                    for(let q=.5;q<=reach;q+=.5){const p=Math.round(c+q*sn)*N+Math.round(c+q*cs);if(T[p]<=t)last=p;}
+                    ends.push(last);
+                }
+                for(const e of ends)for(let p=e;p>=0;p=parent[p]){if(!uses[p]++)touched[nt++]=p;}
+            }
+            const bins=[];
+            for(let m=0;m<nt;m++){const p=touched[m],q=parent[p];if(q>=0){const b=Math.min(6,Math.floor(Math.log2(uses[p])));(bins[b]||(bins[b]=new Path2D())).moveTo(X(p),Y(p));bins[b].lineTo(X(q),Y(q));}}
+            for(let m=0;m<nt;m++)uses[touched[m]]=0;
+            ctx.strokeStyle=tree;
+            for(let b=0;b<bins.length;b++)if(bins[b]){ctx.globalAlpha=Math.min(1,.5+.09*b);ctx.lineWidth=1.3*(1+.5*b)*u;ctx.stroke(bins[b]);}
+            if(t>0){
+                const path=new Path2D(),lo=Math.max(0,c-Math.ceil(reach)-1),hi=Math.min(N-2,c+Math.ceil(reach)+1),P=i=>(i-c)*h;
+                for(let j=lo;j<=hi;j++)for(let i=lo;i<=hi;i++){
+                    const v0=T[j*N+i]-t,v1=T[j*N+i+1]-t,v2=T[(j+1)*N+i+1]-t,v3=T[(j+1)*N+i]-t,n0=v0<=0,n1=v1<=0,n2=v2<=0,n3=v3<=0;
+                    if(n0===n1&&n1===n2&&n2===n3)continue;const pts=[];
+                    if(n0!==n1)pts.push(i+v0/(v0-v1),j);if(n1!==n2)pts.push(i+1,j+v1/(v1-v2));
+                    if(n2!==n3)pts.push(i+1-v2/(v2-v3),j+1);if(n3!==n0)pts.push(i,j+1-v3/(v3-v0));
+                    path.moveTo(P(pts[0]),P(pts[1]));path.lineTo(P(pts[2]),P(pts[3]));
+                    if(pts.length===8){path.moveTo(P(pts[4]),P(pts[5]));path.lineTo(P(pts[6]),P(pts[7]));}
+                }
+                ctx.globalAlpha=.95;ctx.strokeStyle=front;ctx.lineWidth=2*u;ctx.stroke(path);
+                const g=new Path2D();let first=true;
+                for(let p=ends[0];p>=0;p=parent[p]){if(first){g.moveTo(X(p),Y(p));first=false;}else g.lineTo(X(p),Y(p));}
+                ctx.globalAlpha=.9;ctx.strokeStyle=paper;ctx.lineWidth=5.6*u;ctx.stroke(g);
+                ctx.globalAlpha=1;ctx.strokeStyle=fresh;ctx.lineWidth=2.8*u;ctx.stroke(g);
+                ctx.globalAlpha=.8;ctx.strokeStyle=ring;ctx.lineWidth=1.5*u;ctx.setLineDash([6*u,6*u]);
+                ctx.beginPath();ctx.arc(0,0,t/mu,0,TAU);ctx.stroke();ctx.setLineDash([]);
+            }
+            ctx.restore();ctx.globalAlpha=1;
+            if(ends.length){const e=ends[0];dot(ctx,W/2+X(e)*scale,W/2-Y(e)*scale,4.5,fresh,paper,1.6);}
+            dot(ctx,W/2,W/2,4.2,paper,fresh,2);
+            if(local>CYCLE-.8)fadeOut(ctx,W,smooth((local-CYCLE+.8)/.8));
+            return true;
+        };
+    }
+
     const FACTORIES = {
         'parking': makeParking,
         'divisible-percolation': makeDivisiblePercolation,
@@ -1074,7 +1198,8 @@
         'orrw-range': makeORRW,
         'sandpile-avalanche': makeAvalanche,
         'centrally-excited-walk': makeCentrallyExcited,
-        'log-correlated-potential': makeLogCorrelated
+        'log-correlated-potential': makeLogCorrelated,
+        'first-passage-percolation': makeFirstPassage
     };
 
     /* Thumbnails draw at most 30 times a second, and when several become
