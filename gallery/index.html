@@ -262,7 +262,7 @@
         <img src="plates/p-fpp-wall-paper.png?v=d02312cb" alt="" loading="lazy" decoding="async">
         <img class="card-img-alt" src="plates/p-fpp-wall-void.png?v=3389e422" alt="" loading="lazy" decoding="async">
     </span>
-    <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-copy"><span class="card-name">Rotationally invariant first-passage percolation</span><span class="card-description">In every dimension \(d\ge2\), the passage time over a distance \(n\) has an exponential moment on the scale \(n^{\frac12(1-\varepsilon)}\) around \(\mu n\), so its variance is at most a constant times \(n^{1-\varepsilon}\).</span></span><span class="card-open" aria-hidden="true">↗</span></span>
+    <span class="card-label"><span class="card-no" aria-hidden="true">01</span><span class="card-copy"><span class="card-name">Rotationally invariant first-passage percolation</span><span class="card-description">On \(\mathbb R^d\), \(d\ge2\), the passage time over a distance \(n\) has variance at most a constant times \(n^{1-\varepsilon}\), with exponential tails on the scale \(n^{\frac12(1-\varepsilon)}\).</span></span><span class="card-open" aria-hidden="true">↗</span></span>
 </a>
 </div>
 </section>
@@ -734,7 +734,7 @@
             <p>Write \(T_n=T(0,ne_1)\) and fix a large integer \(K\). The passage time \(T_{Kn}\) is close to the minimum, over the chains of points \(0=x_0,x_1,\ldots,x_K=Kne_1\) with \(x_i\cdot e_1=in\), of the sum of the passage times \(T^{(i)}(x_{i-1},x_i)\) across the slabs \([(i-1)n,in]\times\mathbb R^{d-1}\), and these passage times are independent. The Efron&ndash;Stein inequality then gives \(\operatorname{Var}T_{Kn}\le CK\operatorname{Var}T_n\), which gains a power only if \(C\) can be replaced by \(1/2\). Basu, Sidoravicius and Sly did this by proving that the geodesic is chaotic.</p>
             <p>The proof here inducts instead on the bound \(\mathbf E\exp\bigl(|T_s-\mu s|/Q_s\bigr)\le2\) on the scale \(Q_s=As^{\frac12-\frac1K}\), which controls both the random fluctuations and the difference \(\mathbf E\,T_s-\mu s\). By the induction hypothesis and rotational invariance, near-geodesics stay within distance of order \((nQ_n)^{1/2}\) of the segment between their endpoints. Following Benjamini, Kalai and Schramm, the passage time is averaged over translations of its endpoints. Each piece of the noise then affects only a small fraction of the translated passage times, and the modified Poincar&eacute; inequality of <a href="https://arxiv.org/abs/math/0609730">Bena&iuml;m and Rossignol</a> improves the Efron&ndash;Stein bound by a factor \(1/\log K\). The proof uses neither planarity nor the FKG inequality, so it applies in every dimension.</p>
             </details>
-            <p class="cite">S. Armstrong and A. Bou-Rabee, &ldquo;Fluctuation bounds for rotationally invariant first-passage percolation&rdquo; (2026), <a href="https://arxiv.org/abs/2610.42124">arXiv:2610.42124</a> · <a href="https://github.com/nitromannitol/FPP-variance">Lean formalization</a>. The companion paper, &ldquo;Curvature and variance in lattice first-passage percolation&rdquo;, and its formalization are in the same repository.</p>
+            <p class="cite">S. Armstrong and A. Bou-Rabee, &ldquo;Fluctuation bounds for rotationally invariant first-passage percolation&rdquo; (2026), <a href="https://arxiv.org/abs/2610.42124">arXiv:2610.42124</a> · <a href="https://github.com/nitromannitol/FPP-variance">Lean formalization</a>.</p>
         </div>
     </section>
 
