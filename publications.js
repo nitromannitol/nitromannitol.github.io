@@ -360,7 +360,9 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     volume: "378(06)",
     pages: "3823-3896",
     links: [
-      { type: "arXiv", url: "https://arxiv.org/abs/2303.04736" }
+      { type: "Journal", url: "https://doi.org/10.1090/tran/9264" },
+      { type: "arXiv", url: "https://arxiv.org/abs/2303.04736" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Percolation-Rigidity" }
     ],
   abstract: 'H. A. Heilbronn <a href="references/heilbronn.pdf">showed</a> in 1949 that the dimension of the space of discrete harmonic polynomials on Z<sup>d</sup> coincides with that of R<sup>d</sup>. This theorem holds for any periodic lattice and was recently extended by <a href="https://arxiv.org/abs/1609.09431">Scott Armstrong and Paul Dario</a> to the supercritical percolation cluster, where their proof used the fact that, on large scales, the cluster resembles R<sup>d</sup>. However, in models such as the <a href="https://arxiv.org/abs/1109.0449?context=math">Ising model</a>, the <a href="https://arxiv.org/abs/1012.4809">abelian sandpile</a>, and <a href="https://arxiv.org/abs/1508.04284">Anderson localization</a>, small-scale changes in the graph induce qualitatively distinct global behavior. Motivated by this, we prove three theorems on the supercritical cluster that do not hold on Z<sup>d</sup>. Using quantitative homogenization, we show the absence of non-constant Lipschitz harmonic functions and the absence of non-constant integer-valued harmonic functions of at most linear growth. In dimension 2, we also show that a function harmonic outside a finite set, with integer-valued graph Laplacian and uniform decay faster than 1/|x|, must have finite support. We expect these results and our techniques will help in understanding other models on the cluster. (The final section includes many conjectures and partial results regarding the abelian sandpile on the cluster.)',
     thumbnail: "images/lipschitz-percolation-harmonic.png",
