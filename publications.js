@@ -513,6 +513,7 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
     links: [
       { type: "Journal", url: "https://doi.org/10.1214/21-AOP1528" },
       { type: "arXiv", url: "https://arxiv.org/abs/1909.07849" },
+      { type: "Lean", url: "https://github.com/nitromannitol/Random-Abelian-Sandpile" },
       { type: "Pictures", url: "https://twitter.com/sandpileofthed1" }
     ],
         abstract:"I show that the abelian sandpile, started with a random initial configuration on any periodic lattice, approximates the solution of a deterministic, fully nonlinear elliptic PDE at large scales. The PDE is implicitly identified through the ergodic theorem, using ideas from non-divergence form stochastic homogenization. Although the exact form of the PDE remains unknown, it is definitively non-universal: it depends on the fine, local structure of both the initial lattice and randomness.",
