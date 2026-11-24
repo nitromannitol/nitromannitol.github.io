@@ -179,6 +179,7 @@ const publications = [
     ],
     links: [
       { type: "arXiv", url: "https://arxiv.org/abs/2608.23545" },
+      { type: "Slides", url: "talks/eulerian_walkers_slides.pdf" },
       { type: "Lean", url: "https://github.com/nitromannitol/rotor-23" }
     ],
     abstract: 'In the Eulerian walker model (also known as rotor walk), each site of the square lattice begins with an arrow pointing to one of its four neighbors. A walker that starts at the origin repeatedly turns the arrow at its current site clockwise by 90&deg; and steps in the new direction. <a href="https://arxiv.org/abs/cond-mat/9611019">Priezzhev, Dhar, Dhar, and Krishnamurthy (1996)</a> introduced this as a model of self-organized criticality and conjectured that, for independent uniform initial directions, the region explored in the first t steps has radius of order t<sup>1/3</sup>. We establish this conjecture and further show that the walker visits every lattice site infinitely often, and that the region it has visited by time t, rescaled by t<sup>1/3</sup>, converges to a convex body.',
