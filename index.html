@@ -1,224 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <script>document.documentElement.classList.add('js');</script>
-  <!-- Google tag (gtag.js) -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ahmed Bou-Rabee</title>
+  <meta name="description" content="Ahmed Bou-Rabee is an assistant professor of mathematics at the University of Pennsylvania working in probability, elliptic PDE, and statistical physics.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;family=Inter:wght@400;500;600&amp;display=swap">
+  <link rel="stylesheet" href="assets/site.css?v=20261126">
+  <script>
+    (function () { // links into the old one-page homepage go to the new pages
+      var h = location.hash;
+      var to = /^#pub-/.test(h) ? "publications.html" + h : ({"#publications": "publications.html", "#talks": "talks.html", "#teaching": "teaching.html", "#coding": "code.html"})[h];
+      if (to) location.replace(to);
+    }());
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VTJ6HLCNX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-4VTJ6HLCNX');
   </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ahmed Bou-Rabee is an assistant professor of mathematics at the University of Pennsylvania working in probability, elliptic PDE, and statistical physics.">
-    <title>Ahmed Bou-Rabee</title>
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=20261024-lean-subtle">
 </head>
-<body>
-    <header>
-        <h1>Ahmed <span class="nowrap">Bou-Rabee</span></h1>
-        <div class="profile">
-            <img src="me.jpg" alt="Portrait of Ahmed Bou-Rabee" width="1123" height="1162" fetchpriority="high" decoding="async">
-            <div class="contact-info">
-                <p>University of Pennsylvania</p>
-                <p>Department of Mathematics</p>
-                <p>Office: 4N65 DRL</p>
-                <p>Email: <a href="mailto:ahmedmb@gmail.com">ahmedmb@gmail.com</a></p>
-            </div>
+<body data-page="home">
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap">
+    <header class="masthead">
+      <div class="id">
+        <img class="portrait" src="me.jpg" alt="Portrait of Ahmed Bou-Rabee" width="1123" height="1162" fetchpriority="high" decoding="async">
+        <div class="id-text">
+          <h1 class="name">Ahmed Bou-Rabee</h1>
+          <p class="role">Department of Mathematics, University of Pennsylvania</p>
+          <p class="contact"><a href="mailto:ahmedmb@gmail.com">ahmedmb@gmail.com</a><span>Office 4N65 DRL</span><a href="https://arxiv.org/search/?query=%22Ahmed+Bou-Rabee%22&amp;searchtype=author&amp;abstracts=show&amp;order=-announced_date_first&amp;size=50">arXiv</a><a href="https://github.com/nitromannitol">GitHub</a></p>
         </div>
+      </div>
+      <nav aria-label="Site"><ul class="menu"><li><a data-page="publications" href="publications.html">Publications</a></li><li><a data-page="talks" href="talks.html">Talks</a></li><li><a data-page="gallery" href="gallery/">Gallery</a></li><li><a data-page="teaching" href="teaching.html">Teaching</a></li><li><a data-page="code" href="code.html">Code</a></li><li><a data-page="ai-mathematics" href="ai-mathematics.html">AI mathematics</a></li><li><a data-page="lean" href="lean.html">Lean</a></li></ul></nav>
     </header>
-
-    <main>
-        <section>
-            <p>
-                I am currently at the <a href="https://www.math.upenn.edu">University of Pennsylvania</a>
-                as an Assistant Professor of Mathematics.
-            </p>
-
-            <p> My research is in probability theory, with a focus on applying ideas from elliptic PDE to problems in statistical physics. See this <a href="https://www.quantamagazine.org/new-superdiffusion-proof-probes-the-mysterious-math-of-turbulence-20250516/">Quanta article</a> for a non-technical discussion of some of my recent work. For a gallery of my research, see <a href="gallery/">here</a>.</p>
-
-            <p>
-                Before coming to UPenn, I was an <a href="https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2202940&amp;HistoricalAwards=false">NSF Postdoctoral Fellow</a> / Courant Instructor at the <a href="https://cims.nyu.edu/">Courant Institute</a> with <a href="https://www.scottnarmstrong.com">Scott Armstrong</a>. I spent the first year of my NSF postdoc at <a href="https://www.cornell.edu/">Cornell University</a> with <a href="https://lionellevine.github.io/">Lionel Levine</a>. I received my PhD at the <a href="https://www.uchicago.edu">University of Chicago</a> under the supervision of <a href="https://campuspress.yale.edu/charlessmart/">Charles K. Smart</a> in June 2022. Previously, I was an undergraduate student at <a href="https://www.stanford.edu">Stanford University</a>.
-            </p>
-
-            <p>I co-organize the <a href="https://sites.google.com/view/penntempleprobabilityseminar/about">Penn/Temple probability seminar</a>.</p>
-
-            <p>I am auto-formalizing all of my papers in Lean. This is an experimental science, and the strategy changes with each new model. All of the code in the repositories below was written by AI agents: Anthropic, OpenAI, DeepSeek, GLM, Kimi and Mistral agents. A majority was written by Anthropic agents, followed by OpenAI agents. What works best at the moment (November 2026) is a single Opus 5.5 xhigh agent directing worker agents, such as Terra or Haiku agents. All of the formalizations are built on Mathlib, and I am collecting the shared dependencies between my projects in the library <a href="https://github.com/nitromannitol/Lattice-Probability">Lattice-Probability</a>.</p>
-
-            <p>Papers formalized so far: <span class="lean-tracker" id="lean-tracker" role="status" aria-label="21 of 25 papers formalized"><span class="lean-live-dot" aria-hidden="true"></span><span id="lean-count" aria-hidden="true">21/25</span><span class="lean-bar" aria-hidden="true"><span class="lean-bar-fill" id="lean-bar-fill" style="width: 84.00%"></span></span></span>, in over 6 million lines of Lean. Those that have been formalized have a link below.</p>
-
-            <p>New results that I produced and checked with AI models, such as the extension of Anthropic's proof that &theta;(p<sub>c</sub>) = 0 to <a href="https://nitromannitol.github.io/site-percolation-7d3f2/">site percolation</a>, are collected on my <a href="ai-mathematics.html">AI-generated mathematics</a> page.</p>
-        </section>
-
-        <section id="publications">
-            <h2 class="section-heading">
-                <button type="button" class="collapsible" aria-expanded="false" aria-controls="publications-content">
-                    Papers
-                    <span class="indicator" aria-hidden="true"></span>
-                </button>
-            </h2>
-            <div id="publications-content" class="content">
-                <p class="content-placeholder">Loading publications…</p>
-                <noscript>
-                    <p>Enable JavaScript to see the publication list, or visit
-                    <a href="https://arxiv.org/search/?query=%22Ahmed+Bou-Rabee%22&amp;searchtype=author&amp;abstracts=show&amp;order=-announced_date_first&amp;size=50">my arXiv author page</a>.</p>
-                </noscript>
-            </div>
-        </section>
-
-        <section id="talks">
-            <h2 class="section-heading">
-                <button type="button" class="collapsible" aria-expanded="false" aria-controls="talks-content">
-                    Talks
-                    <span class="indicator" aria-hidden="true"></span>
-                </button>
-            </h2>
-            <div id="talks-content" class="content">
-                <ul>
-			<li>Mathematical Fluid Dynamics Workshop, University of Basel, Switzerland, June 7-11, 2027</li>
-			<li>Los Angeles Probability Forum, Caltech, December 3, 2026</li>
-			<li>Princeton University Probability Seminar, October 27, 2026</li>
-			<li><a href="https://sites.google.com/view/mpc47">47th Midwest Probability Colloquium</a>, Northwestern University, October 15-17, 2026</li>
-			<li>CUNY Probability Seminar, October 6, 2026</li>
-			<li>Rutgers University Discrete Math Seminar, October 5, 2026</li>
-			<li><a href="https://www.ams.org/meetings/sectional/2332_program.html">AMS Fall Eastern Sectional Meeting</a>, Special Session on Schramm&ndash;Loewner Evolutions (SLE) Theory and Random Matrix Theory (RMT), George Washington University, October 3-4, 2026</li>
-			<li><a href="https://www.ams.org/meetings/sectional/2332_program.html">AMS Fall Eastern Sectional Meeting</a>, Special Session on the Geometry of Discrete Stochastic Spatial Models, George Washington University, October 3-4, 2026</li>
-			<li>University of Bath Workshop, United Kingdom, September 7-11, 2026</li>
-			<li><a href="https://www.icbs.cn/">International Congress of Basic Science (ICBS)</a>, Invited Lecture, Beijing, August 10-21, 2026</li>
-                    <li><a href="https://www.coinflippers.org/coin-flippers-2026">Coin Flippers 2026: The ICM Satellite Edition</a>, University of Delaware, Newark, DE, July 21-22, 2026</li>
-                    <li>45th Conference on Stochastic Processes and their Applications, Invited Session, Ithaca, June 14-20, 2026</li>
-                    <li><a href="https://brinmrc.umd.edu/spring26-smls/">Statistical Mechanics of Lattice Systems</a> (Maryland), March 2-6, 2026</li>
-                    <li>University of Maryland Probability Seminar, February 25, 2026 </li>
-                    <li><a href="https://eventos.cmm.uchile.cl/cpp2025/">Topological Phase Transitions and Localization of Random Fields</a> (Chile), December 7-12, 2025</li>
-                    <li>CUNY Probability Seminar, October 28, 2025</li>
-                    <li>University of Wisconsin, PDE Geometric Analysis Seminar, October 27, 2025 </li>
-                    <li>Columbia University, Probability Seminar, October 24, 2025 </li>
-                    <li>ETH Zurich Analysis Seminar, March 18, 2025 </li>
-                    <li>University of Toronto Mathematics Colloquium, January 15, 2025 </li>
-                    <li>University of Southern California Mathematics Colloquium, January 13, 2025 </li>
-                    <li>UCLA Mathematics Colloquium, January 8, 2025 </li>
-                    <li>Vanderbilt Mathematics Colloquium, January 6, 2025 </li>
-                    <li>University of South Carolina Mathematics Colloquium, December 10, 2024</li>
-                    <li>Duke Probability Seminar, December 5, 2024</li>
-                    <li>University of Pennsylvania Probability and Combinatorics Seminar, December 3, 2024</li>
-                    <li>University of Chicago Mathematics Colloquium, November 18, 2024</li>
-                    <li>University of Chicago Probability Seminar, October 4, 2024</li>
-                    <li>Yale Analysis Seminar, September 26, 2024</li>
-                    <li><a href="https://www.imsi.institute/">IMSI</a>, <a href="https://www.imsi.institute/activities/two-dimensional-random-geometry/">Two-Dimensional Random Geometry</a>, July 8-12, 2024</li>
-                    <li>Aalto University, <a href="https://math.aalto.fi/en/research/mathphys/pft2024/">Probabilistic Field Theories</a>, June 17-19, 2024</li>
-                    <li>MIT Analysis Seminar, April 16, 2024</li>
-                    <li>NYU Probability Seminar, April 12, 2024</li>
-                    <li>McGill University Probability Seminar, March 28, 2024</li>
-                    <li><a href="http://www.fields.utoronto.ca/">The Fields Institute</a>, <a href="http://www.fields.utoronto.ca/activities/23-24/kpzwork">KPZ meets KPZ</a>, March 4-8, 2024</li>
-                    <li>Los Angeles Probability Forum, February 29, 2024</li>
-                    <li>University of Hagen, Analysis Seminar, November 29, 2023</li>
-                    <li>NYU Analysis Seminar, November 2, 2023</li>
-                    <li>AMS 2023 Fall Eastern Sectional Meeting, Special Session, September 9, 2023</li>
-                    <li><a href="https://www.cirm-math.com/">CIRM</a>, <a href="https://conferences.cirm-math.fr/2928.html">Percolation and interactions</a>, August 3, 2023</li>
-                    <li><a href="https://www.spa2023.org/">43rd Conference on Stochastic Processes and their Applications</a>, Invited Session, July 26, 2023</li>
-                    <li><a href="https://percolation.ethz.ch/">Percolation Today</a>, April 4, 2023</li>
-                    <li>University of British Columbia Probability Seminar, March 1, 2023</li>
-                    <li>University of Victoria Dynamics and Probability Seminar, February 28, 2023</li>
-                    <li>Institute for Advanced Study Probability Seminar, November 2, 2022</li>
-                    <li>Penn/Temple Probability Seminar, November 1, 2022</li>
-                    <li>Cornell Probability Seminar, October 24, 2022</li>
-                    <li><a href="https://doi.org/10.14760/OWR-2022-27">Oberwolfach, Universality: Random Matrices, Random Geometry and SPDEs</a>, June 4, 2022</li>
-                    <li>Yale Analysis Seminar, March 3, 2022</li>
-                    <li>University of Utah Stochastics Seminar, February 25, 2022</li>
-                    <li>LU-NU-UMN Joint Probability Seminar, October 27, 2021</li>
-                    <li>Bernoulli-IMS, Organized Session, July 22, 2021</li>
-                    <li>Stanford Probability Seminar, May 10, 2021</li>
-                    <li>UC Berkeley Probability Seminar, February 10, 2021</li>
-                    <li>Cornell Math 7710 Guest Lecture, October 27, 2020</li>
-                    <li>Cornell Probability Seminar, September 23, 2019</li>
-                    <li>CCNY Mathematics Colloquium, September 19, 2019</li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="coding">
-            <h2 class="section-heading">
-                <button type="button" class="collapsible" aria-expanded="false" aria-controls="coding-content">
-                    Coding
-                    <span class="indicator" aria-hidden="true"></span>
-                </button>
-            </h2>
-            <div id="coding-content" class="content">
-                <ul>
-                    <li><a href="https://github.com/nitromannitol/Lattice-Probability">Lattice-Probability</a> — reusable Lean 4 library for probability and analysis</li>
-                    <li><a href="https://github.com/nitromannitol/percolation-after-anthropic">percolation-after-anthropic</a> — Lean proofs of the Kozma–Nitzan inequalities, independent hyperedge gluing and critical site percolation</li>
-                    <li><a href="https://github.com/nitromannitol/Percolation-Cluster-Homogenization">Percolation-Cluster-Homogenization</a> — Lean formalization of Armstrong and Dario, <em>Elliptic regularity and quantitative homogenization on percolation clusters</em></li>
-                    <li><a href="https://github.com/nitromannitol/Quantitative-Stochastic-Homogenization">Quantitative-Stochastic-Homogenization</a> — Lean formalization, in progress, of Armstrong, Kuusi and Mourrat, <em>Quantitative stochastic homogenization and large-scale regularity</em></li>
-                    <li><a href="notebooks/intro_abelian_networks.html">Introduction to Abelian networks in Julia</a> <a href="notebooks/intro_abelian_networks.ipynb">[Notebook]</a></li>
-                    <li><a href="linear_exp_kuwait/linear_exp.html">COVID-19 Data Visualization</a></li>
-                    <li><a href="aggregate/kuwait_forecasts.html">COVID-19 Aggregate Forecasts</a></li>
-                    <li><a href="tomography-visualizer/tomography.html">Tomography Visualizer</a></li>
-                    <li><a href="https://github.com/nitromannitol/f-lattice-recursion">f-lattice-recursion</a> — code for <em>Integer superharmonic matrices on the F-lattice</em></li>
-                    <li><a href="https://github.com/nitromannitol/2d_pareto_peeling">2d_pareto_peeling</a> — code for <em>Hamilton–Jacobi scaling limits of Pareto peeling in 2D</em></li>
-                    <li><a href="https://github.com/nitromannitol/arbitrarydim_sandpiles">arbitrarydim_sandpiles</a> — code for <em>Dynamic dimensional reduction in the Abelian sandpile</em></li>
-                    <li><a href="notebooks/exploding_sandpiles.html">Exploding sandpiles notebook</a> — notebook for <em>A shape theorem for exploding sandpiles</em></li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="teaching">
-            <h2 class="section-heading">
-                <button type="button" class="collapsible" aria-expanded="false" aria-controls="teaching-content">
-                    Teaching
-                    <span class="indicator" aria-hidden="true"></span>
-                </button>
-            </h2>
-            <div id="teaching-content" class="content">
-                <ul>
-                    <li><h3> University of Pennsylvania</h3>
-                        <ul>
-                            <li> In Spring 2026, I taught Math 6490 (the second semester of graduate probability).
-                            </li>
-                        </ul>
-                    </li>
-                    <li><h3>New York University</h3>
-                        <ul>
-                            <li>In Spring 2025, I taught MATH-UA 262 Ordinary Differential Equations.</li>
-                            <li>In Fall 2024, I taught MATH-UA 325 Analysis.</li>
-                            <li>In Fall 2023 and Spring 2024, I taught MATH-UA 120 Discrete Mathematics.</li>
-                        </ul>
-                    </li>
-                    <li><h3>University of Chicago</h3>
-                        <ul>
-                            <li>In Spring 2022 and 2019, I was a teaching assistant for <a href="http://galton.uchicago.edu/~lalley/Courses/383/index.html">STAT 383 Measure-Theoretic Probability 2</a>.</li>
-                            <li>In Winter 2022, I was a teaching assistant for STAT 33910 Financial Statistics.</li>
-                            <li>In Fall 2021, I was a teaching assistant for STAT 312 Stochastic Processes.</li>
-                            <li>In Winter 2021, I was a teaching assistant for STAT 33910 Financial Statistics.</li>
-                            <li>In Fall 2020, I was a teaching assistant for STAT 25150 Introduction to Mathematical Probability.</li>
-                            <li>In Spring 2020, I was a teaching assistant for STAT 234 Statistical Models and Methods.</li>
-                            <li>In Fall 2017 and 2018, I was a teaching assistant for <a href="http://galton.uchicago.edu/~lalley/Courses/312/index.html">STAT 312 Stochastic Processes</a>.</li>
-                            <li>In Winter and Spring 2017, I was a teaching assistant for STAT 220 Statistical Methods and Applications.</li>
-                        </ul>
-                    </li>
-                    <li><h3>Chinese University of Hong Kong Shenzhen</h3>
-                        <ul>
-                            <li>In Summer 2016, I was a lecturer for <a href="https://web.stanford.edu/class/engr108/">Introduction to Matrix Methods</a>.</li>
-                        </ul>
-                    </li>
-                    <li><h3>Stanford University</h3>
-                        <ul>
-                            <li>In Fall 2014 and 2015, I was a teaching assistant for <a href="https://web.stanford.edu/class/engr108/">Introduction to Matrix Methods</a>.</li>
-                            <li>In Winter 2014, I was a teaching assistant for <a href="https://web.stanford.edu/class/ee364a/">Convex Optimization</a>.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </section>
+    <main id="main">
+      <section class="intro">
+        <p>I am currently at the <a href="https://www.math.upenn.edu">University of Pennsylvania</a> as an Assistant Professor of Mathematics.</p>
+        <p>My research is in probability theory, with a focus on applying ideas from elliptic PDE to problems in statistical physics.</p>
+        <p>Before coming to UPenn, I was an <a href="https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2202940&amp;HistoricalAwards=false">NSF Postdoctoral Fellow</a> / Courant Instructor at the <a href="https://cims.nyu.edu/">Courant Institute</a> with <a href="https://www.scottnarmstrong.com">Scott Armstrong</a>. I spent the first year of my NSF postdoc at <a href="https://www.cornell.edu/">Cornell University</a> with <a href="https://lionellevine.github.io/">Lionel Levine</a>. I received my PhD at the <a href="https://www.uchicago.edu">University of Chicago</a> under the supervision of <a href="https://campuspress.yale.edu/charlessmart/">Charles K. Smart</a> in June 2022. Previously, I was an undergraduate student at <a href="https://www.stanford.edu">Stanford University</a>.</p>
+        <p>I co-organize the <a href="https://sites.google.com/view/penntempleprobabilityseminar/about">Penn/Temple probability seminar</a>.</p>
+      </section>
+      <section>
+        <h2 class="label">Selected work</h2>
+        <ul class="cites" id="selected"></ul>
+        <noscript><p>Enable JavaScript to see the list, or visit <a href="https://arxiv.org/search/?query=%22Ahmed+Bou-Rabee%22&amp;searchtype=author&amp;abstracts=show&amp;order=-announced_date_first&amp;size=50">my arXiv author page</a>.</p></noscript>
+        <p class="more"><a href="publications.html">All publications →</a></p>
+      </section>
     </main>
-
-    <script src="publications.js?v=20261126-review-fixes" defer></script>
-    <script src="einstein-motion.js?v=45fed615" defer></script>
-    <script src="flow-walk.js?v=6192ce63" defer></script>
-    <script src="thumbnail-animations.js?v=20261102-fpp" defer></script>
-    <script src="scripts.js?v=20261024-lean-tracker" defer></script>
+  </div>
+  <script src="publications.js?v=20261126"></script>
+  <script src="assets/site.js?v=20261126"></script>
 </body>
 </html>

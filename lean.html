@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lean formalizations · Ahmed Bou-Rabee</title>
+  <meta name="description" content="Lean formalizations of the papers of Ahmed Bou-Rabee.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;family=Inter:wght@400;500;600&amp;display=swap">
+  <link rel="stylesheet" href="assets/site.css?v=20261126">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VTJ6HLCNX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4VTJ6HLCNX');
+  </script>
+</head>
+<body data-page="lean">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="./">Ahmed Bou-Rabee</a>
+      <nav aria-label="Site"><ul class="menu"><li><a data-page="publications" href="publications.html">Publications</a></li><li><a data-page="talks" href="talks.html">Talks</a></li><li><a data-page="gallery" href="gallery/">Gallery</a></li><li><a data-page="teaching" href="teaching.html">Teaching</a></li><li><a data-page="code" href="code.html">Code</a></li><li><a data-page="ai-mathematics" href="ai-mathematics.html">AI mathematics</a></li><li><a data-page="lean" href="lean.html">Lean</a></li></ul></nav>
+    </div>
+  </header>
+  <div class="wrap">
+    <main id="main">
+      <h1 class="title">Lean formalizations</h1>
+      <div class="intro">
+        <p>I am auto-formalizing all of my papers in Lean. This is an experimental science, and the strategy changes with each new model. All of the code in the repositories below was written by AI agents: Anthropic, OpenAI, DeepSeek, GLM, Kimi and Mistral agents. A majority was written by Anthropic agents, followed by OpenAI agents. What works best at the moment (November 2026) is a single Opus 5.5 xhigh agent directing worker agents, such as Terra or Haiku agents. All of the formalizations are built on Mathlib, and I am collecting the shared dependencies between my projects in the library <a href="https://github.com/nitromannitol/Lattice-Probability">Lattice-Probability</a>.</p>
+        <p>Papers formalized so far: <span class="tracker" id="tracker"></span>, in over 6 million lines of Lean.</p>
+        <p><a href="https://palomar-registry.org/">Palomar</a> is a public registry of Lean 4 formalizations whose proofs were machine-checked at one pinned GitHub commit.</p>
+      </div>
+      <ul class="lean-list" id="lean-list"></ul>
+    </main>
+  </div>
+  <script src="publications.js?v=20261126"></script>
+  <script src="assets/site.js?v=20261126"></script>
+</body>
+</html>

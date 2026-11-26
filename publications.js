@@ -14,6 +14,7 @@ const publications = [
   {
     id: "fpp-rotationally-invariant-variance",
     topic: "fpp",
+    posted: "2026-10-30",
     thumbnail: "images/first_passage_percolation.png",
     thumbnailAnimation: "first-passage-percolation",
     altText: "The ball of a random planar metric growing from the origin, with the geodesics from the origin merging into a tree.",
@@ -32,6 +33,7 @@ const publications = [
   {
     id: "sandpile-avalanches-finite",
     topic: "sandpile",
+    posted: "2026-10-09",
     thumbnail: "images/sandpile_avalanche.png",
     thumbnailAnimation: "sandpile-avalanche",
     altText: "The burning tree of a stationary planar sandpile, the avalanche from one added grain run wave by wave, then the tree paths joining the marked sites, the past of their common ancestor, and the edges counted by L.",
@@ -50,6 +52,7 @@ const publications = [
   {
     id: "subdiffusive-log-correlated-potential",
     topic: "homogenization",
+    posted: "2026-10-08",
     thumbnail: "images/log_correlated_potential.png",
     thumbnailAnimation: "log-correlated-potential",
     altText: "A Brownian particle drifting up the gradient of a log-correlated potential: it lingers in regions of high density and hops between them.",
@@ -69,6 +72,7 @@ const publications = [
   {
     id: "centrally-excited-random-walk",
     topic: "memory",
+    posted: "2026-10-07",
     thumbnail: "images/centrally_excited_walk.png",
     thumbnailAnimation: "centrally-excited-walk",
     altText: "The sites visited by a centrally excited random walk, rescaled by the predicted radius, filling out a disk; colour shows when each site was first visited.",
@@ -90,6 +94,7 @@ const publications = [
   {
     id: "manhattan-lattice-transient",
     topic: "memory",
+    posted: "2026-09-07",
     title: "The randomly oriented Manhattan lattice in 2D is transient",
     bibtexTitle: "The randomly oriented {M}anhattan lattice in {2D} is transient",
     thumbnail: "images/manhattan_lattice.svg",
@@ -109,6 +114,7 @@ const publications = [
   {
     id: "orrw-range-exponent",
     topic: "memory",
+    posted: "2026-09-07",
     title: "Once-reinforced random walk on Z<sup>d</sup> has range exponent at least d/(d+1)",
     bibtexTitle: "Once-reinforced random walk on {$\\mathbb{Z}^d$} has range exponent at least $d/(d+1)$",
     thumbnail: "images/orrw_range.svg",
@@ -129,6 +135,7 @@ const publications = [
   {
     id: "sharpness-critical-scaling-parking",
     topic: "idla",
+    posted: "2026-09-02",
     title: "Sharpness and critical scaling of parking",
     thumbnail: "images/parking.svg",
     thumbnailAnimation: "parking",
@@ -149,6 +156,7 @@ const publications = [
   {
     id: "quantitative-explosion-percolation-divisible-sandpile",
     topic: "idla",
+    posted: "2026-09-02",
     title: "Quantitative explosion and percolation of the divisible sandpile",
     thumbnail: "images/divisible_percolation.svg",
     thumbnailAnimation: "divisible-percolation",
@@ -169,6 +177,7 @@ const publications = [
   {
     id: "eulerian-walkers",
     topic: "memory",
+    posted: "2026-08-24",
     title: "Eulerian walkers on Z<sup>2</sup> have range exponent 2/3",
     bibtexTitle: "Eulerian walkers on {$\\mathbb{Z}^2$} have range exponent 2/3",
     thumbnail: "images/eulerian_walkers.png",
@@ -189,6 +198,7 @@ const publications = [
   {
     id: "einstein-relation",
     topic: "homogenization",
+    posted: "2026-05-25",
     title: "Quantitative Einstein relation for reversible diffusions in a random environment",
     thumbnail: "gallery/plates/p-einstein-thumbnail.svg",
     thumbnailAnimation: "einstein-relation",
@@ -207,6 +217,7 @@ const publications = [
   {
     id: "critical-long-range-rcm",
     topic: "homogenization",
+    posted: "2026-04-22",
     title: "Quantitative homogenization for the critical long-range random conductance model",
     thumbnail: "images/critical_long_range_rw.png",
     thumbnailAnimation: "long-range-walk",
@@ -225,6 +236,7 @@ const publications = [
   {
     id: "gff-idla-cylinder",
     topic: "idla",
+    posted: "2026-04-22",
     title: "Gaussian fluctuations for Internal DLA on cylinders",
     thumbnail: "images/idla_cylinder.png",
     thumbnailAnimation: "idla-cylinder",
@@ -244,6 +256,7 @@ const publications = [
   {
     id: "divisible-sandpile-rwrs",
     topic: "idla",
+    posted: "2026-04-15",
     title: "Divisible sandpiles via random walks in random scenery",
     thumbnail: "images/divisible_sandpile.png",
     thumbnailAnimation: "sandpile-rwrs",
@@ -263,6 +276,7 @@ const publications = [
   {
   id: "algebraic-sd",
   topic: "homogenization",
+  posted: "2026-01-29",
   title: "Superdiffusion and anomalous regularization in self-similar random incompressible flows",
   thumbnail: "images/algebraic-sd.png",
   thumbnailAnimation: "algebraic-superdiffusion",
@@ -283,6 +297,7 @@ abstract: 'A Brownian particle advected by an incompressible random drift underg
   {
     id: "random-walk-sphere-packings",
     topic: "homogenization",
+    posted: "2024-05-19",
     title: "Random walk on sphere packings and Delaunay triangulations in arbitrary dimension",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -305,6 +320,7 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
   {
     id: "superdiffusive-clt-brownian-particle",
     topic: "homogenization",
+    posted: "2024-04-01",
     title: "Superdiffusive central limit theorem for a Brownian particle in a critically-correlated incompressible random drift",
     authors: [
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
@@ -329,6 +345,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   {
     id: "unique-continuation-planar-graphs",
     topic: "unique-continuation",
+    posted: "2023-09-24",
     title: "Unique continuation on planar graphs",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -352,6 +369,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   {
     id: "rigidity-harmonic-functions",
     topic: "unique-continuation",
+    posted: "2023-03-08",
     title: "Rigidity of harmonic functions on the supercritical percolation cluster",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -375,6 +393,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   {
     id: "internal-dla-mated-crt-maps",
     topic: "idla",
+    posted: "2022-11-09",
     title: "Internal DLA on mated-CRT maps",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -396,6 +415,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   {
     id: "harmonic-balls-liouville-quantum-gravity",
     topic: "idla",
+    posted: "2022-08-24",
     title: "Harmonic balls in Liouville quantum gravity",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -417,6 +437,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
   {
     id: "integer-superharmonic-matrices",
     topic: "sandpile",
+    posted: "2021-10-14",
     title: "Integer superharmonic matrices on the F-lattice",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -440,6 +461,7 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
   {
     id: "hamilton-jacobi-scaling-limits",
     topic: "pareto",
+    posted: "2021-10-12",
     title: "Hamilton–Jacobi scaling limits of Pareto peeling in 2D",
     authors: [
       { name: "Ahmed Bou-Rabee" },
@@ -462,6 +484,7 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
   {
     id: "shape-theorem-exploding-sandpiles",
     topic: "sandpile",
+    posted: "2021-02-08",
     title: "A shape theorem for exploding sandpiles",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -484,6 +507,7 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
   {
     id: "dynamic-dimensional-reduction",
     topic: "sandpile",
+    posted: "2020-09-13",
     title: "Dynamic dimensional reduction in the Abelian sandpile",
     authors: [
       { name: "Ahmed Bou-Rabee" }
@@ -506,6 +530,7 @@ abstract: 'Dimensional reduction in sandpiles, the property that slices of highe
   {
     id: "convergence-random-abelian-sandpile",
     topic: "sandpile",
+    posted: "2019-09-17",
     title: "Convergence of the random Abelian sandpile",
     authors: [
       { name: "Ahmed Bou-Rabee" }
