@@ -32,62 +32,13 @@
   </header>
   <div class="wrap">
     <main id="main">
-      <div class="aim-head">
-        <h1 class="title">AI-generated mathematics</h1>
-        <p>Results produced by AI models under the direction of Ahmed Bou-Rabee.</p>
-        <p class="updated">Last updated 25 September 2026</p>
-      </div>
-      <div class="aim">
-                    <p class="prose">Most of the mathematics on this page was produced nearly autonomously by several versions of ChatGPT, which I prompted and directed. Each card names the models involved, states the result, and says what the model did and what I did. Each card also carries exactly one verification label. <span class="tag lean-tag">Lean-verified</span> means Lean accepted a proof of the formal statement, using Mathlib alone, and the formal statement was checked against the statement written here. <span class="tag">Checked by me</span> means I read and checked the proof by hand. <span class="tag">AI-generated</span> means the model produced and audited the proof itself, and I have not yet checked it by hand.</p>
-        
-        <article class="aim-card" id="theta-pc">
-            
-                <h2>The Kozma&ndash;Nitzan conjectures and \(\theta(p_c) = 0\) for site percolation <span class="tag lean-tag">Lean-verified</span></h2>
-
-            <h3>Statement</h3>
-            <p>For Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), the probability \(\theta(p)\) that the origin lies in an infinite open cluster satisfies \(\theta(p_c) = 0\) at the critical probability, in every dimension. This is Kozma and Nitzan's Conjecture&nbsp;3. The same conclusion, \(\theta(p_c) = 0\), also holds for Bernoulli site percolation on \(\mathbb{Z}^d\), \(d \ge 3\). Kozma and Nitzan's four further conjectures, Conjectures 1, 2, 4, and 6, and three of their four further questions, Questions 5, 7, and 9, are also proved, each in a form at least as strong as stated. Question 8 fails if every minimizer must satisfy the proposed inequality; the counterexample has tied minimizers, so a suitable choice among them may still exist.</p>
-
-            <h3>Builds on</h3>
-            <p><a href="https://github.com/anthropics/formal-math">Anthropic's Lean proof that \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\)</a>, produced by Claude under the direction of Justin Leder.</p>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr><th>Component</th><th>Proved by</th><th>Formalized in Lean by</th><th>Checked by</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>bond \(\theta(p_c) = 0\)</td>
-                            <td>Claude (Anthropic), directed by Justin Leder</td>
-                            <td><a href="https://github.com/anthropics/formal-math">Claude (Anthropic), directed by Justin Leder</a></td>
-                            <td>Lean (Mathlib)</td>
-                        </tr>
-                        <tr>
-                            <td>Kozma&ndash;Nitzan conjectures and questions</td>
-                            <td>ChatGPT 5.6 Sol (OpenAI), in about ten hours</td>
-                            <td><a href="https://github.com/nitromannitol/percolation-after-anthropic/tree/main/KNConjectures">Claude Fable 5.1 (Anthropic)</a></td>
-                            <td>Lean (Mathlib)</td>
-                        </tr>
-                        <tr>
-                            <td>site percolation via hypergraphs</td>
-                            <td>ChatGPT 5.6 (OpenAI)</td>
-                            <td><a href="https://github.com/nitromannitol/percolation-after-anthropic/tree/main/Hypergraph">ChatGPT 5.6 (OpenAI), with Claude Opus 5 (Anthropic) and GLM 5.3 (Zhipu)</a></td>
-                            <td>Lean (Mathlib)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p>I directed the hypergraph extension and reviewed the resulting proofs and their Lean formalizations.</p>
-
-            <ul class="aim-links">
-                <li><a href="https://github.com/anthropics/formal-math">Lean proof of bond \(\theta(p_c) = 0\) (GitHub)</a></li>
-                <li><a href="https://github.com/nitromannitol/percolation-after-anthropic">Lean formalization of these results (GitHub)</a></li>
-                <li><a href="https://nitromannitol.github.io/kn1-verification-b80e9/">Proofs of the Kozma&ndash;Nitzan conjectures (web page)</a></li>
-                <li><a href="https://nitromannitol.github.io/site-percolation-7d3f2/">Extension to site percolation (web page)</a></li>
-                <li><a href="manuscripts/theta-pc-lecture-notes.pdf">Lecture notes (PDF)</a></li>
-            </ul>
-        </article>
-      </div>
+      <h1 class="title">AI-generated mathematics</h1>
+      <section class="aim">
+        <h2>The Kozma&ndash;Nitzan conjectures and \(\theta(p_c) = 0\) for site percolation</h2>
+        <p class="prose">Anthropic's Lean proof that \(\theta(p_c) = 0\) for Bernoulli bond percolation on \(\mathbb{Z}^d\), \(d \ge 2\), which is Kozma and Nitzan's Conjecture&nbsp;3, was produced by Claude under the direction of Justin Leder. Building on it, ChatGPT&nbsp;5.6, which I prompted and directed, proved that \(\theta(p_c) = 0\) also holds for Bernoulli site percolation on \(\mathbb{Z}^d\), \(d \ge 3\), and proved Kozma and Nitzan's Conjectures 1, 2, 4, and 6 and Questions 5, 7, and 9, each in a form at least as strong as stated.</p>
+        <p class="prose">All of these proofs are checked by Lean, using Mathlib alone. The formalizations were written by Claude Fable&nbsp;5.1 (the Kozma&ndash;Nitzan results) and by ChatGPT&nbsp;5.6 with Claude Opus&nbsp;5 and GLM&nbsp;5.3 (site percolation).</p>
+        <p class="links aim-row"><span><a href="https://github.com/nitromannitol/percolation-after-anthropic">Lean formalization</a></span><span><a href="https://nitromannitol.github.io/kn1-verification-b80e9/">Proofs of the Kozma&ndash;Nitzan conjectures</a></span><span><a href="https://nitromannitol.github.io/site-percolation-7d3f2/">Extension to site percolation</a></span><span><a href="manuscripts/theta-pc-lecture-notes.pdf">Lecture notes</a></span><span><a href="https://github.com/anthropics/formal-math">Anthropic's Lean proof</a></span></p>
+      </section>
     </main>
   </div>
 </body>

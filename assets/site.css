@@ -158,6 +158,9 @@ a.posted:hover { color: var(--accent-hover); text-decoration: underline; }
 .lean-list .t { font-style: italic; }
 
 /* ---------- AI mathematics ---------- */
+.aim { display: grid; gap: 14px; }
+.aim h2 { margin: 0; }
+.aim-row { font-size: 0.85rem; margin: 4px 0 0; }
 .aim-head { display: grid; gap: 6px; }
 .aim-head p { margin: 0; color: var(--muted); }
 .updated { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.04em; }
