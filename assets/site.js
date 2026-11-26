@@ -152,9 +152,10 @@
     topicList.innerHTML = publicationTopics.map(t => {
       const items = pubs.filter(p => p.topic === t.id).sort(newestFirst);
       if (!items.length) return "";
-      return `<section id="pub-topic-${t.id}"><h2 class="ruled">${t.title}</h2>` +
+      return `<section class="topic" id="pub-topic-${t.id}"><h2><button type="button" class="topic-toggle" aria-expanded="false" aria-controls="topic-body-${t.id}">${t.title}<span class="chev" aria-hidden="true"></span></button></h2>` +
+        `<div class="topic-body" id="topic-body-${t.id}" hidden>` +
         `<ul class="cites pub-list">${items.map(p => citation(p, "list")).join("")}</ul>` +
-        `<ul class="cards pub-cards" hidden>${items.map(card).join("")}</ul></section>`;
+        `<ul class="cards pub-cards" hidden>${items.map(card).join("")}</ul></div></section>`;
     }).join("");
 
     const anim = window.PublicationThumbnailAnimations;
@@ -169,13 +170,26 @@
     document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
     try { const v = localStorage.getItem("pub-view"); if (v === "list" || v === "pictures") setView(v); } catch (e) { /* storage unavailable */ }
 
+    // topic headings open and close their papers; all start closed, as on the earlier homepage
+    const setTopic = (section, open) => {
+      const btn = section.querySelector(".topic-toggle");
+      btn.setAttribute("aria-expanded", String(open));
+      section.querySelector(".topic-body").hidden = !open;
+    };
+    topicList.addEventListener("click", e => {
+      const btn = e.target.closest(".topic-toggle");
+      if (btn) setTopic(btn.closest(".topic"), btn.getAttribute("aria-expanded") !== "true");
+    });
+
     const showHash = () => {
       const h = decodeURIComponent(location.hash.slice(1));
       if (!h) return;
       let el = document.getElementById(h);
-      if (el && h.startsWith("pub-") && !h.startsWith("pub-topic-") && el.closest("[hidden]")) setView("list");
-      el = document.getElementById(h);
       if (!el) return;
+      const topic = el.closest(".topic");
+      if (topic) setTopic(topic, true);
+      if (h.startsWith("pub-") && !h.startsWith("pub-topic-") && el.closest("[hidden]")) setView("list");
+      el = document.getElementById(h);
       el.scrollIntoView();
       el.classList.remove("target"); void el.offsetWidth; el.classList.add("target");
     };

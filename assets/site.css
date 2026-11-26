@@ -97,7 +97,17 @@ noscript p { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 
 /* ---------- Citation lists ---------- */
-.topic-list { display: grid; gap: 44px; }
+.topic-list { display: grid; border-top: 1px solid var(--rule); }
+.topic { border-bottom: 1px solid var(--rule); scroll-margin-top: 80px; }
+.topic h2 { margin: 0; font-size: 1.25rem; }
+.topic-toggle {
+  font: inherit; color: var(--ink); background: none; border: 0; cursor: pointer; text-align: left;
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0;
+}
+.topic-toggle:hover { color: var(--accent); }
+.chev { flex: none; width: 9px; height: 9px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translate(-2px, -2px); transition: transform 0.2s; color: var(--muted); }
+.topic-toggle[aria-expanded="true"] .chev { transform: rotate(-135deg) translate(-2px, -2px); }
+.topic-body { padding-block: 4px 28px; }
 .cites { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; font-size: 0.97rem; line-height: 1.55; }
 .cites > li { padding-left: 1.5em; text-indent: -1.5em; overflow-wrap: anywhere; scroll-margin-top: 90px; }
 .cites .t { font-style: italic; }
@@ -184,6 +194,6 @@ a.posted:hover { color: var(--accent-hover); text-decoration: underline; }
   .links > * { padding-block: 5px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .target { animation: none; }
+  .target, .chev { animation: none; transition: none; }
   .thumb img { transition: none; }
 }
