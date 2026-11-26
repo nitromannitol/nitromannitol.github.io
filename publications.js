@@ -289,7 +289,7 @@ abstract: 'A Brownian particle advected by an incompressible random drift underg
       { name: "Ewain Gwynne", url: "https://math.uchicago.edu/~ewain/" }
     ],
     journal: "Proceedings of the London Mathematical Society",
-    volume: "131",
+    volume: "131(3)",
     pages: "e70084",
     links: [
       { type: "Journal", url: "https://doi.org/10.1112/plms.70084" },
@@ -311,7 +311,7 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
       { name: "Ahmed Bou-Rabee" },
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
-    journal: "Inventiones Mathematicae",
+    journal: "Inventiones mathematicae",
     links: [
       { type: "Journal", url: "https://doi.org/10.1007/s00222-026-01455-z" },
       { type: "arXiv", url: "https://arxiv.org/abs/2404.01115" },
@@ -332,7 +332,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     title: "Unique continuation on planar graphs",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Bill Cooperman", url: "https://cprmn.org/" },
+      { name: "William Cooperman", url: "https://cprmn.org/" },
       { name: "Shirshendu Ganguly", url: "https://www.stat.berkeley.edu/~sganguly/" }
     ],
   journal: "Discrete Analysis",
@@ -355,11 +355,11 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     title: "Rigidity of harmonic functions on the supercritical percolation cluster",
     authors: [
       { name: "Ahmed Bou-Rabee" },
-      { name: "Bill Cooperman", url: "https://cprmn.org/" },
+      { name: "William Cooperman", url: "https://cprmn.org/" },
       { name: "Paul Dario", url: "https://pauldario.pages.math.cnrs.fr/webpage-of-paul-dario/" }
     ],
     journal: "Transactions of the American Mathematical Society",
-    volume: "378(06)",
+    volume: "378(6)",
     pages: "3823-3896",
     links: [
       { type: "Journal", url: "https://doi.org/10.1090/tran/9264" },
@@ -384,6 +384,7 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
     volume: "52(6)",
     pages: "2173-2237",
     links: [
+      { type: "Journal", url: "https://doi.org/10.1214/24-AOP1693" },
       { type: "arXiv", url: "https://arxiv.org/abs/2211.04891" }
     ],
     abstract: 'We prove the convergence of internal diffusion limited aggregation on a family of random planar maps, mated-CRT maps, to the LQG harmonic balls constructed in <a href="https://arxiv.org/abs/2208.11795">our previous work</a>. The proof combines an idea of <a href="https://arxiv.org/abs/1111.0486">Hugo Duminil-Copin, Cyrille Lucas, Ariel Yadin, and Amir Yehudayoff</a> together with inputs from LQG theory. Mated-CRT maps are currently the only random planar maps for which the <a href="https://arxiv.org/abs/2003.10320">convergence of random walk to Liouville Brownian motion</a> has been established, and this fact plays a crucial role in our proof. It would be particularly interesting to determine the law governing the fluctuations around the limit shape.',
@@ -401,10 +402,11 @@ abstract: 'A Brownian particle advected by an incompressible vector field underg
       { name: "Ewain Gwynne", url: "https://math.uchicago.edu/~ewain/" }
     ],
       journal: "Proceedings of the London Mathematical Society", 
-      volume: "130",
+      volume: "130(1)",
       pages: "e70018",
       year: 2025,
     links: [
+      { type: "Journal", url: "https://doi.org/10.1112/plms.70018" },
       { type: "arXiv", url: "https://arxiv.org/abs/2208.11795" }
     ],
     abstract: 'We prove the well-posedness of Hele-Shaw flow on Liouville Quantum Gravity (LQG) surfaces and then use this to construct LQG harmonic balls, domains that satisfy the mean value property on LQG surfaces. LQG harmonic balls are the conjectured scaling limit of internal diffusion-limited aggregation on random planar maps. Almost surely, for Lebesgue-almost every mass, they are neither <a href = "https://arxiv.org/abs/2109.01252">LQG metric balls</a> nor Lipschitz domains; for every mass, the boundaries of their complementary components are Jordan curves. There are many interesting properties of LQG harmonic balls to explore, such as their Hausdorff dimension and the structure of their induced geodesics.',
@@ -438,13 +440,13 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
   {
     id: "hamilton-jacobi-scaling-limits",
     topic: "pareto",
-    title: "Hamilton-Jacobi scaling limits of Pareto peeling in 2D",
+    title: "Hamilton–Jacobi scaling limits of Pareto peeling in 2D",
     authors: [
       { name: "Ahmed Bou-Rabee" },
       { name: "Peter S. Morfe", url: "https://sites.google.com/view/pmorfe/home" }
     ],
     journal: "Probability Theory and Related Fields",
-    volume: "188",
+    volume: "188(1–2)",
     pages: "235-307",
     year: 2024,
     links: [
@@ -487,7 +489,7 @@ abstract: 'The scaling limit of the abelian sandpile is a fully nonlinear ellipt
       { name: "Ahmed Bou-Rabee" }
     ],
     journal: "Communications in Mathematical Physics",
-    volume: "390",
+    volume: "390(2)",
     pages: "933-958",
     year: 2022,
     links: [
