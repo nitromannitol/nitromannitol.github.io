@@ -58,7 +58,6 @@
     if (withTools) {
       if (p.abstract) items.push(`<button type="button" data-summary="${p.id}" aria-expanded="false" aria-controls="sum-${withTools}-${p.id}">Summary</button>`);
       items.push(`<button type="button" data-bibtex="${p.id}">BibTeX</button>`);
-      items.push(`<button type="button" data-permalink="${p.id}">Copy link</button>`);
     }
     return items.length ? ` <span class="links">${items.map(x => `<span>${x}</span>`).join("")}</span>` : "";
   }
@@ -88,7 +87,7 @@
     return `<li class="card" id="card-${p.id}">${thumb}<div class="card-body">${a(arxiv, p.title, "t")}<span class="meta">${meta}</span>${linkRow(p, "card")}${summaryBox(p, "card")}</div></li>`;
   }
 
-  // ---------- BibTeX and copying (as on the earlier homepage) ----------
+  // ---------- BibTeX (as on the earlier homepage) ----------
   function plain(html) { const t = document.createElement("template"); t.innerHTML = html; return (t.content.textContent || "").trim(); }
   function bibtex(p) {
     const arxiv = linkOf(p, "arXiv");
@@ -130,12 +129,6 @@
     }
     const b = e.target.closest("button[data-bibtex]");
     if (b) { copy(bibtex(byId[b.dataset.bibtex]), b); return; }
-    const l = e.target.closest("button[data-permalink]");
-    if (l) {
-      const url = location.href.split("#")[0] + "#pub-" + l.dataset.permalink;
-      copy(url, l);
-      history.replaceState(null, "", "#pub-" + l.dataset.permalink);
-    }
   });
 
   // ---------- menu: mark the current page ----------
