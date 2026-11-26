@@ -14,7 +14,7 @@
   --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, monospace;
-  --column: 740px;
+  --column: 800px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -48,9 +48,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .skip:focus { top: 12px; color: var(--paper); text-decoration: none; }
 
+/* the column sits on the left, not centred */
 .wrap {
-  max-width: calc(var(--column) + 32px); margin: 0 auto;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  max-width: calc(var(--column) + 112px); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px), min(7vw, 96px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 
@@ -86,7 +87,7 @@ h2 { margin: 0 0 16px; font-weight: 600; font-size: 1.3rem; line-height: 1.25; t
 h2.label { font-family: var(--sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
 .ruled { padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
 .intro { display: grid; gap: 14px; }
-.intro p, .prose { margin: 0; max-width: 64ch; }
+.intro p, .prose { margin: 0; max-width: 72ch; }
 .more { margin: 24px 0 0; font-family: var(--sans); font-size: 0.9rem; font-weight: 500; }
 noscript p { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
 
