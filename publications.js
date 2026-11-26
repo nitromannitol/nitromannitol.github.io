@@ -267,8 +267,8 @@ const publications = [
   thumbnailAnimation: "algebraic-superdiffusion",
   altText: "A jagged Brownian path wandering through a finite random incompressible flow with several spatial scales.",
   authors: [
-      { name: "Ahmed Bou-Rabee" },
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
+      { name: "Ahmed Bou-Rabee" },
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
     links: [
@@ -306,8 +306,8 @@ abstract: 'Random walks on graphs approximating Euclidean space are known to con
     topic: "homogenization",
     title: "Superdiffusive central limit theorem for a Brownian particle in a critically-correlated incompressible random drift",
     authors: [
-      { name: "Ahmed Bou-Rabee" },
       { name: "Scott Armstrong", url: "https://www.scottnarmstrong.com" },
+      { name: "Ahmed Bou-Rabee" },
       { name: "Tuomo Kuusi", url: "https://sites.google.com/site/tuomokuusimath/home" }
     ],
     journal: "Inventiones Mathematicae",
