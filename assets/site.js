@@ -4,7 +4,7 @@
 
   const SELF = "Ahmed Bou-Rabee";
   // Selected work on the homepage, chosen by the author; shown newest first.
-  const SELECTED = ["sandpile-avalanches-finite", "eulerian-walkers", "algebraic-sd", "superdiffusive-clt-brownian-particle", "integer-superharmonic-matrices"];
+  const SELECTED = ["sandpile-avalanches-finite", "eulerian-walkers", "algebraic-sd", "superdiffusive-clt-brownian-particle", "integer-superharmonic-matrices", "dynamic-dimensional-reduction"];
   // Palomar registry entries, from data.palomar-registry.org/repositories/{owner}/{repo}.json (checked 2026-11-26).
   const PALOMAR = {
     "nitromannitol/dynamic-dimensional-reduction": "PALOMAR-2026-10-27-000012",
